@@ -10,6 +10,12 @@
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #include <cassert>
+#include <filesystem>	//ファイルやディレクトリに関する操作を行うためのライブラリ
+#include <fstream>	//ファイルに書いたり読んだりするライブラリ
+#include <chrono>	//時間を扱うライブラリ
+#include <dbghelp.h>
+#pragma comment(lib, "Dbghelp.lib")
+#include <strsafe.h>	
 #pragma warning(pop)
 
 //クライアント領域のサイズ
@@ -36,7 +42,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg,
 }
 
 //ログを出力する関数
-void Log(const std::string& message) {
+void Log(std::ofstream& os, const std::string& message) {
+	os << message << std::endl;
 	OutputDebugStringA(message.c_str());
 }
 
@@ -70,9 +77,52 @@ std::string ConvertString(const std::wstring& str) {
 	return result;
 }
 
+//クラッシュハンドルを登録するための関数
+static LONG WINAPI ExportDump(EXCEPTION_POINTERS* exception) {
+	//時刻を取得して、時刻を名前に入れたファイルを作成。Dumpsディレクトリ以下に出力
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+	wchar_t filepath[MAX_PATH] = { 0 };
+	CreateDirectory(L"./Dumps", nullptr);
+	StringCchPrintfW(filepath, MAX_PATH, L"./Dumps/%04d-%02d%02d-%02d%02d.dmp", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute);
+	HANDLE dumpFileHandle = CreateFile(filepath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_WRITE | FILE_SHARE_READ, 0, CREATE_ALWAYS, 0, 0);
+	//processId(このexeのId)とクラッシュ(例外)の発生したthreadIdを取得
+	DWORD processId = GetCurrentProcessId();
+	DWORD threadId = GetCurrentThreadId();
+	//設定情報を入力
+	MINIDUMP_EXCEPTION_INFORMATION minidumpInformation{ 0 };
+	minidumpInformation.ThreadId = threadId;
+	minidumpInformation.ExceptionPointers = exception;
+	minidumpInformation.ClientPointers = TRUE;
+	//Dumpを出力。MiniDumpNormalは最低限の情報を出力するフラグ
+	MiniDumpWriteDump(GetCurrentProcess(), processId, dumpFileHandle, MiniDumpNormal, &minidumpInformation, nullptr, nullptr);
+	//他に関連づけられているSEH例外ハンドラがあれば実行。通常はプロセスを終了する
+	return EXCEPTION_EXECUTE_HANDLER;
+}
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+
+	//誰も補足しなかった場合に(Unhandled)、補足する関数を登録
+	//main関数が始まってすぐに登録すると良い
+	SetUnhandledExceptionFilter(ExportDump);
+
+	//ログのディレクトリを用意
+	std::filesystem::create_directory("logs");
+	//現在時刻を取得(UTC時刻)
+	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+	//ログファイルの名前にコンマはいらないので、削って秒にする
+	std::chrono::time_point < std::chrono::system_clock, std::chrono::seconds>
+		nowSeconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
+	//日本時間(PCの設定時間)に変換
+	std::chrono::zoned_time localTime{ std::chrono::current_zone(), nowSeconds };
+	//formatを使って年月日_時分秒の文字列に変換
+	std::string dateString = std::format("{:%Y%m%d_%H%M%S}", localTime);
+	//時刻を使ってファイル名を決定
+	std::string logFilePath = std::string("logs/") + dateString + ".log";
+	//ファイルを作って書き込み準備
+	std::ofstream logStream(logFilePath);
+
 	WNDCLASS wc{};
 	//ウィンドウプロシージャ
 	wc.lpfnWndProc = WindowProc;
@@ -89,9 +139,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//クライアント領域を元に実際のサイズにwrcを変更してもらう
 	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
 
+	//ウィンドウを生成
 	HWND hwnd = CreateWindow(
 		wc.lpszClassName,		//利用するクラス名
-		L"LE2B_22_マスヤ_ゴウ",	//タイトルバーの文字
+		L"CG2",					//タイトルバーの文字
 		WS_OVERLAPPEDWINDOW,	//よく見るウィンドウスタイル
 		CW_USEDEFAULT,			//表示x座標(Windowsに任せる)
 		CW_USEDEFAULT,			//表示y座標(WindowsOSに任せる)
@@ -102,6 +153,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		wc.hInstance,			//インスタンスハンドル
 		nullptr					//オプション
 	);
+
+#ifdef _DEBUG
+	ID3D12Debug1* debugController = nullptr;
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+		//デバッグレイヤーを有効化する
+		debugController->EnableDebugLayer();
+		//さらにGPU側でもチェックを行うようにする
+		debugController->SetEnableGPUBasedValidation(true);
+	}
+#endif // DEBUG
+
 
 	//ウィンドウを表示
 	ShowWindow(hwnd, SW_SHOW);
@@ -128,7 +190,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//ソフトウェアアダプタでなければ採用！
 		if (!(adapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)) {
 			//採用したアダプタの情報をログに出力。wstringの方なので注意
-			Log(ConvertString(std::format(L"Use Adapter:{}\n", adapterDesc.Description)));
+			Log(logStream, ConvertString(std::format(L"Use Adapter:{}\n", adapterDesc.Description)));
 			break;
 		}
 		useAdapter = nullptr;	//ソフトウェアアダプタの場合は見なかったことにする
@@ -148,13 +210,46 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//指定した機能レベルでデバイスが生成できたかを確認
 		if (SUCCEEDED(hr)) {
 			//生成できたのでログ出力を行ってループを抜ける
-			Log(std::format("FeatureLevel : {}\n", featureLevelString[i]));
+			Log(logStream, std::format("FeatureLevel : {}\n", featureLevelString[i]));
 			break;
 		}
 	}
 	//デバイスの生成がうまくいかなかったので起動できない
 	assert(device != nullptr);
-	Log("Complete create D3D12Device!!!\n");
+	//初期化完了のログを出す
+	Log(logStream, "Complete create D3D12Device!!!\n");	
+
+#ifdef _DEBUG
+	ID3D12InfoQueue* infoQueue = nullptr;
+	if (SUCCEEDED(device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
+		//ヤバいエラー時に止まる
+		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
+		//エラー時に止まる
+		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
+		//警告時に止まる
+		infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+
+		//抑制するメッセージのID
+		D3D12_MESSAGE_ID denyIds[] = {
+			//Windows11でのDXGIデバッグレイヤーとDX12デバッグレイヤーの相互作用バグによるエラーメッセージ
+			//https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
+			D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE
+		};
+		//抑制するレベル
+		D3D12_MESSAGE_SEVERITY severities[] = { D3D12_MESSAGE_SEVERITY_INFO };
+		D3D12_INFO_QUEUE_FILTER filter{};
+		filter.DenyList.NumIDs = _countof(denyIds);
+		filter.DenyList.pIDList = denyIds;
+		filter.DenyList.NumSeverities = _countof(severities);
+		filter.DenyList.pSeverityList = severities;
+		//指定したメッセージの表示を抑制する
+		infoQueue->PushStorageFilter(&filter);
+
+		//解放
+		infoQueue->Release();
+	}
+#endif // _DEBUG
+
 
 	//コマンドキューを生成する
 	ID3D12CommandQueue* commandQueue = nullptr;
@@ -224,6 +319,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	device->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles[1]);
 
 	MSG msg{};
+
+	//初期値0でFenceを作る
+	ID3D12Fence* fence = nullptr;
+	uint64_t fenceValue = 0;
+	hr = device->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+	assert(SUCCEEDED(hr));
+
+	//FenceのSignalを待つためのイベントを作成する
+	HANDLE fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	assert(fenceEvent != nullptr);
+
+	//わざとクラッシュさせてみる
+	/*uint32_t* p = nullptr;
+	*p = 100;*/
+	
 	//ウィンドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
 		//Windowにメッセージが来てたら最優先で処理させる
@@ -235,11 +345,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//ゲームの処理
 			//これから書きこむバックバッファのインデックスを取得
 			UINT backBufferIndex = swapChain->GetCurrentBackBufferIndex();
+			//TransitionBarrierの設定
+			D3D12_RESOURCE_BARRIER barrier{};
+			//今回のバリアはTransition
+			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+			//Noneにしておく
+			barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+			//バリアを張る対象のリソース。現在のバックバッファに対して行う
+			barrier.Transition.pResource = swapChainResources[backBufferIndex];
+			//遷移前(現在)のResourceState
+			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+			//遷移後のResourceState
+			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+			//TransitionBarrierを張る
+			commandList->ResourceBarrier(1, &barrier);
 			//描画先のRTVを指定する
 			commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, nullptr);
 			//指定した色で画面全体をクリアする
 			float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };	//青っぽい色。RGBAの順
 			commandList->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
+			//画面に描く処理はすべて終わり、画面に映すので、状態を遷移
+			//今回はRenderTargetからPresentにする
+			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+			//TransitionBarrierを張る
+			commandList->ResourceBarrier(1, &barrier);
 			//コマンドリストの内容を確定させる。すべてのコマンドを詰んでからCloseすること
 			hr = commandList->Close();
 			assert(SUCCEEDED(hr));
@@ -249,6 +379,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			commandQueue->ExecuteCommandLists(1, commandLists);
 			//GPUとOSに画面の交換を行うように通知する
 			swapChain->Present(1, 0);
+			//Fenceの値を更新する
+			fenceValue++;
+			//GPUがここまでたどり着いたときに、Fenceの値を指定した値に代入するようにSignalを送る
+			commandQueue->Signal(fence, fenceValue);
+			//Fenceの値が指定したSignal値にたどり着いているか確認する
+			//GetCompletedValueの初期値はFence作成時に渡した初期値
+			if (fence->GetCompletedValue() < fenceValue) {
+				//指定した値にたどり着いていないので、たどり着くまで待つようにイベントを設定する
+				fence->SetEventOnCompletion(fenceValue, fenceEvent);
+				//イベント待つ
+				WaitForSingleObject(fenceEvent, INFINITE);
+			}
 			//次のフレーム用のコマンドリストを準備
 			hr = commandAllocator->Reset();
 			assert(SUCCEEDED(hr));
