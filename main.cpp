@@ -4,14 +4,15 @@
 #include "header.h"
 #include "externals.h"
 #include "function.h"
+//#include "PSO.h"
 #pragma warning(pop)
-
-/*コメントスペース*/
-//03_00の17ページからスタート
 
 //クライアント領域のサイズ
 const int32_t kClientWidth = 1280;
 const int32_t kClientHeight = 720;
+
+/*コメントスペース*/
+//03_00の17ページからスタート
 
 //ウィンドウサイズを表す構造体にクライアント領域を入れる
 RECT wrc = { 0, 0, kClientWidth, kClientHeight };
@@ -356,6 +357,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		L"ps_6_0", dxcUtils, dxcCompiler, includeHandler, logStream);
 	assert(pixelShaderBlob != nullptr);
 
+	//PSOの設定をする
+	//PipelineStateObject* PSO = new PipelineStateObject(device, hr, dxcUtils, dxcCompiler, includeHandler, logStream);
+
 	//DepthStencilTextureをウィンドウサイズで作成
 	ID3D12Resource* depthStencilResource = CreateDepthStencilTextureResource(device, kClientWidth, kClientHeight);
 
@@ -388,6 +392,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	pixelShaderBlob->GetBufferSize() };								//PixelShader
 	graphicsPieplineStateDesc.BlendState = blendDesc;				//BlendState
 	graphicsPieplineStateDesc.RasterizerState = rasterizerDesc;		//RastarizerState
+
 	//書き込むRTVの情報
 	graphicsPieplineStateDesc.NumRenderTargets = 1;
 	graphicsPieplineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
@@ -404,6 +409,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	hr = device->CreateGraphicsPipelineState(&graphicsPieplineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
+
+	//PSOを生成する
+	//PSO->Generate(device, hr);
 
 	//実際に頂点リソースを作る
 	ID3D12Resource* vertexResource = CreateBufferResource(device, sizeof(VertexData) * 6);
@@ -701,7 +709,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dxgiFactory->Release();
 	useAdapter->Release();
 	vertexResource->Release();
-	graphicsPipelineState->Release();
+	//delete PSO;
 	signatureBlob->Release();
 	if (errorBlob) {
 		errorBlob->Release();
@@ -709,6 +717,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	rootSignature->Release();
 	pixelShaderBlob->Release();
 	vertexShaderBlob->Release();
+	graphicsPipelineState->Release();
 	materialResource->Release();
 	wvpResource->Release();
 	intermediateResource->Release();		
