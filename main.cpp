@@ -658,10 +658,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	const uint32_t descriptorSizeDSV = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
 	//Textureを呼んで転送する
-	DirectX::ScratchImage mipImages = LoadTexture("Resources/uvChecker.png");
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	ID3D12Resource* textureResource = CreateTextureResource(device, metadata);
-	ID3D12Resource* intermediateResource = UploadTextureData(textureResource, mipImages, device, commandList);
+	DirectX::ScratchImage mipImages[2];
+	const DirectX::TexMetadata& metadata0 = mipImages[0].GetMetadata();
+	mipImages[0] = LoadTexture("Resources/uvChecker.png");
+	ID3D12Resource* textureResource0 = CreateTextureResource(device, metadata0);
+	ID3D12Resource* intermediateResource0 = UploadTextureData(textureResource0, mipImages[0], device, commandList);
+
+	mipImages[1] = LoadTexture("Resources/monsterBall.png");
+	const DirectX::TexMetadata& metadata1 = mipImages[1].GetMetadata();
+	ID3D12Resource* textureResource1 = CreateTextureResource(device, metadata1);
+	ID3D12Resource* intermediateResource1 = UploadTextureData(textureResource1, mipImages[1], device, commandList);
 
 	//------------------------------------------//
 	//				ImGuiの初期化					//
@@ -680,10 +686,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//metaDataを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata.format;
+	srvDesc.Format = metadata0.format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
-	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+	srvDesc.Texture2D.MipLevels = UINT(metadata0.mipLevels);
 
 	//SRVを作成するDescriptorHeapの場所を決める
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
@@ -692,7 +698,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	textureSrvHandleCPU.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	textureSrvHandleGPU.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	//SRVの生成
-	device->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
+	device->CreateShaderResourceView(textureResource0, &srvDesc, textureSrvHandleCPU);
 
 	/*メインループ！！！！！！！！！*/
 	//ウィンドウの×ボタンが押されるまでループ
@@ -860,7 +866,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	graphicsPipelineState->Release();
 	materialResource->Release();
 	wvpResource->Release();
-	intermediateResource->Release();
+	intermediateResource0->Release();
 	CoUninitialize();
 #ifdef _DEBUG
 	debugController->Release();
