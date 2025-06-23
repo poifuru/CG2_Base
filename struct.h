@@ -1,4 +1,5 @@
 #pragma once
+#include "header.h"
 
 //Vector2構造体
 struct Vector2 {
@@ -43,5 +44,11 @@ struct VertexData {
 //マテリアルの構造体
 struct Material {
 	Vector4 color;
-	//int32_t enableLighting;
+	int32_t enableLighting;
+};
+
+//TransformationMatrix構造体
+struct TransformationMatrix {
+	Matrix4x4 WVP;
+	Matrix4x4 World;
 };

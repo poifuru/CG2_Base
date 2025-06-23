@@ -15,7 +15,7 @@ const int32_t kClientHeight = 720;
 const int32_t kSubdivision = 16;
 
 /*コメントスペース*/
-//03_00の17ページからスタート
+//05_03の16ページからスタート
 
 //ウィンドウサイズを表す構造体にクライアント領域を入れる
 RECT wrc = { 0, 0, kClientWidth, kClientHeight };
@@ -290,13 +290,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
 
 	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	ID3D12Resource* materialResource = CreateBufferResource(device, sizeof(Vector4));
+	ID3D12Resource* materialResource = CreateBufferResource(device, sizeof(Material));
 	//マテリアルにデータを書き込む
-	Vector4* materialData = nullptr;
+	Material* materialData = nullptr;
 	//書き込むためのアドレスを取得
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	//今回は赤を書き込んでみる
-	*materialData = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	//Lightingを有効にする
+	materialData->enableLighting = true;
 
 	//WVP用のリソースを作る。Matrix4x4　1つ分のサイズを用意する
 	ID3D12Resource* wvpResource = CreateBufferResource(device, sizeof(Matrix4x4));
@@ -497,6 +499,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	vertexDataSprite[5].texcooord = { 1.0f, 1.0f };
 	vertexDataSprite[5].normal = { 0.0f, 0.0f, -1.0f };
 
+	//Sprite用のTransformationMatrix用のリソースを作る。Matrix4x4 1分のサイズを用意する
+	ID3D12Resource* transformationMatrixResourceSprite = CreateBufferResource(device, sizeof(Matrix4x4));
+	//データを書き込む
+	Matrix4x4* transformationMatrixDataSprite = nullptr;
+	//書き込むためのアドレスを取得
+	transformationMatrixResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixDataSprite));
+	//単位行列を書き込んでおく
+	*transformationMatrixDataSprite = MakeIdentity4x4();
+
 	//球描画用の頂点を作成する
 	ID3D12Resource* vertexResourceSphere = CreateBufferResource(device, sizeof(VertexData) * 1536);
 
@@ -508,6 +519,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	vertexBufferViewSphere.SizeInBytes = sizeof(VertexData) * 1536;
 	//1頂点当たりのサイズ
 	vertexBufferViewSphere.StrideInBytes = sizeof(VertexData);
+
+	//Sprite用のマテリアルリソースを作成する
+	ID3D12Resource* materialResourceSprite = CreateBufferResource(device, sizeof(Material));
+	//マテリアルリソースにデータを書き込む
+	Material* materialDataSprite = nullptr;
+	//書き込むためのアドレスを取得
+	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));
+	//今回は赤を書き込んでみる
+	materialDataSprite->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	//Lightingを有効にする
+	materialDataSprite->enableLighting = false;
 
 	//データを書き込む
 	VertexData* vertexDataSphere = nullptr;
@@ -612,15 +634,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			vertexDataSphere[start + 5].normal.z = vertexDataSphere[start].position.z;
 		}
 	}
-
-	//Sprite用のTransformationMatrix用のリソースを作る。Matrix4x4 1分のサイズを用意する
-	ID3D12Resource* transformationMatrixResourceSprite = CreateBufferResource(device, sizeof(Matrix4x4));
-	//データを書き込む
-	Matrix4x4* transformationMatrixDataSprite = nullptr;
-	//書き込むためのアドレスを取得
-	transformationMatrixResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixDataSprite));
-	//単位行列を書き込んでおく
-	*transformationMatrixDataSprite = MakeIdentity4x4();
 
 	//ビューポート
 	D3D12_VIEWPORT viewport{};
@@ -738,10 +751,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// RGBAカラーエディターを表示
 			if (ImGui::ColorEdit4("Color", color)) {
 				// 色が変更されたらmaterialDataに反映
-				materialData->x = color[0];
-				materialData->y = color[1];
-				materialData->z = color[2];
-				materialData->w = color[3];
+				materialData->color.x = color[0];
+				materialData->color.y = color[1];
+				materialData->color.z = color[2];
+				materialData->color.w = color[3];
 			}
 
 			ImGui::DragFloat3("cameraTranslate", &cameraTransform.translate.x, 0.01f);
@@ -803,6 +816,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//Spriteの描画。変更が必要なものだけ変更する
 			commandList->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);	//VBVを設定
 			commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU[0]);
+			//マテリアルCBufferの場所を設定
+			commandList->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
 			//TransformationMatrixCBufferの場所を設定
 			commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
 			//描画！！　(DrawCall/ドローコール)

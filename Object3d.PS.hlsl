@@ -5,6 +5,13 @@ struct Material
     float32_t4 color;
     int32_t enableLighting;
 };
+
+struct TransformationMatrix
+{
+    float32_t4x4 WVP;
+    float32_t4x4 World;
+};
+
 ConstantBuffer<Material> gMaterial : register(b0);
 
 struct PixelShaderOutput
