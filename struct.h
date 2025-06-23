@@ -37,4 +37,11 @@ struct Transform {
 struct VertexData {
 	Vector4 position;
 	Vector2 texcooord;
+	Vector3 normal;
+};
+
+//マテリアルの構造体
+struct Material {
+	Vector4 color;
+	int32_t enableLighting;
 };

@@ -324,7 +324,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	assert(SUCCEEDED(hr));
 
 	//InputLayout
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs[2] = {};
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
 	inputElementDescs[0].SemanticName = "POSITION";
 	inputElementDescs[0].SemanticIndex = 0;
 	inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -334,6 +334,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	inputElementDescs[1].SemanticIndex = 0;
 	inputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
 	inputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
+	inputElementDescs[2].SemanticName = "NORMAL";
+	inputElementDescs[2].SemanticIndex = 0;
+	inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 	inputLayoutDesc.pInputElementDescs = inputElementDescs;
@@ -474,19 +479,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//1枚目の三角形
 	vertexDataSprite[0].position = { 0.0f, 360.0f, 0.0f, 1.0f };	//左下
 	vertexDataSprite[0].texcooord = { 0.0f, 1.0f };
+	vertexDataSprite[0].normal = { 0.0f, 0.0f, -1.0f };
 	vertexDataSprite[1].position = { 0.0f, 0.0f, 0.0f, 1.0f };		//左上
 	vertexDataSprite[1].texcooord = { 0.0f, 0.0f };
+	vertexDataSprite[1].normal = { 0.0f, 0.0f, -1.0f };
 	vertexDataSprite[2].position = { 640.0f, 360.0f, 0.0f, 1.0f };	//右下
 	vertexDataSprite[2].texcooord = { 1.0f, 1.0f };
+	vertexDataSprite[2].normal = { 0.0f, 0.0f, -1.0f };
 	//2枚目の三角形
 	vertexDataSprite[3].position = { 0.0f, 0.0f, 0.0f, 1.0f };		//左上
 	vertexDataSprite[3].texcooord = { 0.0f, 0.0f };
+	vertexDataSprite[3].normal = { 0.0f, 0.0f, -1.0f };
 	vertexDataSprite[4].position = { 640.0f, 0.0f, 0.0f, 1.0f };	//右上
 	vertexDataSprite[4].texcooord = { 1.0f, 0.0f };
+	vertexDataSprite[4].normal = { 0.0f, 0.0f, -1.0f };
 	vertexDataSprite[5].position = { 640.0f, 360.0f, 0.0f, 1.0f };	//右下
 	vertexDataSprite[5].texcooord = { 1.0f, 1.0f };
+	vertexDataSprite[5].normal = { 0.0f, 0.0f, -1.0f };
 
-	//球描画用の頂点
+	//球描画用の頂点を作成する
 	ID3D12Resource* vertexResourceSphere = CreateBufferResource(device, sizeof(VertexData) * 1536);
 
 	//頂点バッファビューを作る
@@ -574,6 +585,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			vertexDataSphere[start + 3].texcooord = { u, v };
 			vertexDataSphere[start + 4].texcooord = { uNext, vNext };
 			vertexDataSphere[start + 5].texcooord = { uNext, v };
+
+			//法線の情報を書き込む
+			vertexDataSphere[start + 0].normal.x = vertexDataSphere[start].position.x;
+			vertexDataSphere[start + 0].normal.y = vertexDataSphere[start].position.y;
+			vertexDataSphere[start + 0].normal.z = vertexDataSphere[start].position.z;
+
+			vertexDataSphere[start + 1].normal.x = vertexDataSphere[start].position.x;
+			vertexDataSphere[start + 1].normal.y = vertexDataSphere[start].position.y;
+			vertexDataSphere[start + 1].normal.z = vertexDataSphere[start].position.z;
+
+			vertexDataSphere[start + 2].normal.x = vertexDataSphere[start].position.x;
+			vertexDataSphere[start + 2].normal.y = vertexDataSphere[start].position.y;
+			vertexDataSphere[start + 2].normal.z = vertexDataSphere[start].position.z;
+
+			vertexDataSphere[start + 3].normal.x = vertexDataSphere[start].position.x;
+			vertexDataSphere[start + 3].normal.y = vertexDataSphere[start].position.y;
+			vertexDataSphere[start + 3].normal.z = vertexDataSphere[start].position.z;
+
+			vertexDataSphere[start + 4].normal.x = vertexDataSphere[start].position.x;
+			vertexDataSphere[start + 4].normal.y = vertexDataSphere[start].position.y;
+			vertexDataSphere[start + 4].normal.z = vertexDataSphere[start].position.z;
+
+			vertexDataSphere[start + 5].normal.x = vertexDataSphere[start].position.x;
+			vertexDataSphere[start + 5].normal.y = vertexDataSphere[start].position.y;
+			vertexDataSphere[start + 5].normal.z = vertexDataSphere[start].position.z;
 		}
 	}
 
