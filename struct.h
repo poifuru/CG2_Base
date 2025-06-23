@@ -43,5 +43,5 @@ struct VertexData {
 //マテリアルの構造体
 struct Material {
 	Vector4 color;
-	int32_t enableLighting;
+	//int32_t enableLighting;
 };
