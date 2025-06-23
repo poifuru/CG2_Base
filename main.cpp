@@ -11,6 +11,9 @@
 const int32_t kClientWidth = 1280;
 const int32_t kClientHeight = 720;
 
+//球描画の分割数
+const int32_t kSubdivision = 16;
+
 /*コメントスペース*/
 //03_00の17ページからスタート
 
@@ -293,7 +296,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//書き込むためのアドレスを取得
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
 	//今回は赤を書き込んでみる
-	*materialData = Vector4(1.0f, 1.0f, 1.0f, 1.0f);	
+	*materialData = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
 	//WVP用のリソースを作る。Matrix4x4　1つ分のサイズを用意する
 	ID3D12Resource* wvpResource = CreateBufferResource(device, sizeof(Matrix4x4));
@@ -483,6 +486,97 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	vertexDataSprite[5].position = { 640.0f, 360.0f, 0.0f, 1.0f };	//右下
 	vertexDataSprite[5].texcooord = { 1.0f, 1.0f };
 
+	//球描画用の頂点
+	ID3D12Resource* vertexResourceSphere = CreateBufferResource(device, sizeof(VertexData) * 1536);
+
+	//頂点バッファビューを作る
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSphere{};
+	//リソースの先頭のアドレスから使う
+	vertexBufferViewSphere.BufferLocation = vertexResourceSphere->GetGPUVirtualAddress();
+	//使用するサイズは頂点1536個分のサイズ
+	vertexBufferViewSphere.SizeInBytes = sizeof(VertexData) * 1536;
+	//1頂点当たりのサイズ
+	vertexBufferViewSphere.StrideInBytes = sizeof(VertexData);
+
+	//データを書き込む
+	VertexData* vertexDataSphere = nullptr;
+	vertexResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSphere));
+
+	//球描画で経度緯度を分割するための変数
+	const float kLonEvery = float(M_PI) * 2.0f / float(kSubdivision);
+	const float kLatEvery = float(M_PI) / float(kSubdivision);
+	//球の半径
+	const float radius = 1.0f;
+
+	//緯度の方向に分割
+	for (int latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+		float lat = float(-M_PI) / 2.0f + kLatEvery * latIndex;//θ
+		float latNext = lat + kLatEvery;
+		//経度の方向に分割しながら線を描く
+		for (int lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+			float lon = lonIndex * kLonEvery;//φ
+			float lonNext = lon + kLonEvery;
+
+			//頂点インデックス(6つ分)
+			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+
+			// 4つの角を計算（a,b,c,d の順）
+			Vector4 a = {
+				radius * cosf(lat) * cosf(lon),
+				radius * sinf(lat),
+				radius * cosf(lat) * sinf(lon),
+				1.0f
+			};
+
+			Vector4 b = {
+				radius * cosf(latNext) * cosf(lon),
+				radius * sinf(latNext),
+				radius * cosf(latNext) * sinf(lon),
+				1.0f
+			};
+
+			Vector4 c = {
+				radius * cosf(lat) * cosf(lonNext),
+				radius * sinf(lat),
+				radius * cosf(lat) * sinf(lonNext),
+				1.0f
+			};
+
+			Vector4 d = {
+				radius * cosf(latNext) * cosf(lonNext),
+				radius * sinf(latNext),
+				radius * cosf(latNext) * sinf(lonNext),
+				1.0f
+			};
+
+			// 三角形1: a, b, d
+			vertexDataSphere[start + 0].position = a;
+			vertexDataSphere[start + 1].position = b;
+			vertexDataSphere[start + 2].position = d;
+
+			// 三角形2: a, d, c
+			vertexDataSphere[start + 3].position = a;
+			vertexDataSphere[start + 4].position = d;
+			vertexDataSphere[start + 5].position = c;
+
+			//Texcoordを計算して書き込む
+			float u = float(lonIndex) / float(kSubdivision);
+			float uNext = float(lonIndex + 1) / float(kSubdivision);
+			float v = 1.0f - float(latIndex) / float(kSubdivision);
+			float vNext = 1.0f - float(latIndex + 1) / float(kSubdivision);
+
+			// 三角形1: a, b, d
+			vertexDataSphere[start + 0].texcooord = { u, v };
+			vertexDataSphere[start + 1].texcooord = { u, vNext };
+			vertexDataSphere[start + 2].texcooord = { uNext, vNext };
+
+			// 三角形2: a, d, c
+			vertexDataSphere[start + 3].texcooord = { u, v };
+			vertexDataSphere[start + 4].texcooord = { uNext, vNext };
+			vertexDataSphere[start + 5].texcooord = { uNext, v };
+		}
+	}
+
 	//Sprite用のTransformationMatrix用のリソースを作る。Matrix4x4 1分のサイズを用意する
 	ID3D12Resource* transformationMatrixResourceSprite = CreateBufferResource(device, sizeof(Matrix4x4));
 	//データを書き込む
@@ -512,7 +606,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//Transform
 	Transform transform{ {1.0f, 1.0f, 1.0f}, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
-	Transform cameraTransform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -5.0f} };
+	Transform cameraTransform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -10.0f} };
 	Transform transformSprite{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 
 	//Sprite用のWorldViewProjectionMatrixを作る
@@ -574,7 +668,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui_ImplWin32_NewFrame();
 			ImGui::NewFrame();
 			//開発用UIの処理。実際に開発用のUIを出す場合にはここをゲーム固有の処理にする
-			ImGui::ShowDemoWindow();
 
 			//オブジェクトの更新処理
 			transform.rotate.y += 0.01f;
@@ -597,6 +690,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				materialData->z = color[2];
 				materialData->w = color[3];
 			}
+
+			ImGui::DragFloat3("cameraTranslate", &cameraTransform.translate.x, 0.01f);
+			ImGui::DragFloat3("camerarotate", &cameraTransform.rotate.x, 0.01f);
 
 			//ImGuiの内部コマンドを生成する
 			ImGui::Render();
@@ -636,7 +732,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//RootSignatureを設定。PSOに設定しているけど別途設定が必要
 			commandList->SetGraphicsRootSignature(rootSignature);
 			commandList->SetPipelineState(graphicsPipelineState);		//PSOを設定
-			commandList->IASetVertexBuffers(0, 1, &vertexBufferView);	//VBVを設定
+
+			commandList->IASetVertexBuffers(0, 1, &vertexBufferViewSphere);	//VBVを設定
+
 			//形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			//マテリアルCBufferの場所を設定
@@ -646,13 +744,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//wvp用のCBufferの場所を設定
 			commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 			//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
-			commandList->DrawInstanced(6, 1, 0, 0);
+			//commandList->DrawInstanced(6, 1, 0, 0);
+			commandList->DrawInstanced(1536, 1, 0, 0);
 			//Spriteの描画。変更が必要なものだけ変更する
 			commandList->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);	//VBVを設定
 			//TransformationMatrixCBufferの場所を設定
 			commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
 			//描画！！　(DrawCall/ドローコール)
-			commandList->DrawInstanced(6, 1, 0, 0);
+			//commandList->DrawInstanced(6, 1, 0, 0);
 			//実際のImGui描画コマンドを詰む
 			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 			//画面に描く処理はすべて終わり、画面に映すので、状態を遷移
@@ -720,7 +819,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	graphicsPipelineState->Release();
 	materialResource->Release();
 	wvpResource->Release();
-	intermediateResource->Release();		
+	intermediateResource->Release();
 	CoUninitialize();
 #ifdef _DEBUG
 	debugController->Release();
