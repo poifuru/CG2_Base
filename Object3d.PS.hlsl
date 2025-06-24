@@ -35,8 +35,9 @@ PixelShaderOutput main(VertexShaderOutput input)
     //Lighttingの計算	
     if (gMaterial.enableLighting != 0)  //Lightingする場合
     {
-        float cos = saturate(dot(normalize(input.normal), -gDirectionalLight.direction));
-        output.color = gMaterial.color * textureColor * gDirectionalLight.color * cos * gDirectionalLight.intensity;    
+        float NdotL = dot(normalize(input.normal), -normalize(gDirectionalLight.direction));
+        float halfLambert = saturate(NdotL * 0.5 + 0.5); // 0〜1にマップ
+        output.color = gMaterial.color * textureColor * gDirectionalLight.color * halfLambert * gDirectionalLight.intensity;
     }
     else //Lightingしない場合
     {
