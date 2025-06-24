@@ -1,5 +1,7 @@
 #pragma once
-#include <Windows.h>
+#ifndef __HLSL_VERSION
+#include <Windows.h>  // HLSL側では __HLSL_VERSION が定義されてないのでスキップできる
+#endif
 #include <cstdint>
 #include <string>
 #include <format>

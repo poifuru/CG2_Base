@@ -52,3 +52,10 @@ struct TransformationMatrix {
 	Matrix4x4 WVP;
 	Matrix4x4 World;
 };
+
+//平行光源構造体
+struct DirectionalLight {
+	Vector4 color;		//ライトの色
+	Vector3 direction;	//ライトの向き
+	float intensity;	//輝度
+};

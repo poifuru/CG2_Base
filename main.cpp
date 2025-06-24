@@ -260,12 +260,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	//Offsetを自動計算
 
 	//RootParameter作成。複数設定できるので配列。今回は結果1つだけなので長さ1の配列
-	D3D12_ROOT_PARAMETER rootParameter[3] = {};
+	D3D12_ROOT_PARAMETER rootParameter[4] = {};
 	rootParameter[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	rootParameter[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
 	rootParameter[0].Descriptor.ShaderRegister = 0;
 	rootParameter[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
-	rootParameter[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	//PixelShaderで使う
+	rootParameter[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	//VertexShaderで使う
 	rootParameter[1].Descriptor.ShaderRegister = 0;						//レジスタ番号とバインド
 	descriptionRootSignature.pParameters = rootParameter;				//ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameter);	//配列の長さ
@@ -275,6 +275,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	rootParameter[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
 	rootParameter[2].DescriptorTable.pDescriptorRanges = descriptorRange;	//Tableの中身の配列を指定
 	rootParameter[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);	//Tableで利用する数
+
+	//平行光源用のCBV
+	rootParameter[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParameter[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	rootParameter[3].Descriptor.ShaderRegister = 1;
 
 	//Samplerの設定
 	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
@@ -295,19 +300,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Material* materialData = nullptr;
 	//書き込むためのアドレスを取得
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-	//今回は赤を書き込んでみる
+	//とりあえず白を書き込んでみる
 	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	//Lightingを有効にする
 	materialData->enableLighting = true;
 
 	//WVP用のリソースを作る。Matrix4x4　1つ分のサイズを用意する
-	ID3D12Resource* wvpResource = CreateBufferResource(device, sizeof(Matrix4x4));
+	ID3D12Resource* wvpResource = CreateBufferResource(device, sizeof(TransformationMatrix));
 	//データを書き込む
-	Matrix4x4* wvpData = nullptr;
+	TransformationMatrix* wvpData = nullptr;
 	//書き込むためのアドレスを取得
 	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 	//単位行列を書き込んでおく
-	*wvpData = MakeIdentity4x4();
+	wvpData->WVP = MakeIdentity4x4();
 
 	//シリアライズしてバイナリにする
 	ID3DBlob* signatureBlob = nullptr;
@@ -500,13 +505,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	vertexDataSprite[5].normal = { 0.0f, 0.0f, -1.0f };
 
 	//Sprite用のTransformationMatrix用のリソースを作る。Matrix4x4 1分のサイズを用意する
-	ID3D12Resource* transformationMatrixResourceSprite = CreateBufferResource(device, sizeof(Matrix4x4));
+	ID3D12Resource* transformationMatrixResourceSprite = CreateBufferResource(device, (sizeof(Matrix4x4) * 2 + 255) & ~255);
 	//データを書き込む
 	Matrix4x4* transformationMatrixDataSprite = nullptr;
 	//書き込むためのアドレスを取得
 	transformationMatrixResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixDataSprite));
 	//単位行列を書き込んでおく
 	*transformationMatrixDataSprite = MakeIdentity4x4();
+
+	//Sprite用のマテリアルリソースを作成する
+	ID3D12Resource* materialResourceSprite = CreateBufferResource(device, sizeof(Material));
+	//マテリアルリソースにデータを書き込む
+	Material* materialDataSprite = nullptr;
+	//書き込むためのアドレスを取得
+	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));
+	//白を書き込んでみる
+	materialDataSprite->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	//Lightingを有効にする
+	materialDataSprite->enableLighting = false;
 
 	//球描画用の頂点を作成する
 	ID3D12Resource* vertexResourceSphere = CreateBufferResource(device, sizeof(VertexData) * 1536);
@@ -519,17 +535,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	vertexBufferViewSphere.SizeInBytes = sizeof(VertexData) * 1536;
 	//1頂点当たりのサイズ
 	vertexBufferViewSphere.StrideInBytes = sizeof(VertexData);
-
-	//Sprite用のマテリアルリソースを作成する
-	ID3D12Resource* materialResourceSprite = CreateBufferResource(device, sizeof(Material));
-	//マテリアルリソースにデータを書き込む
-	Material* materialDataSprite = nullptr;
-	//書き込むためのアドレスを取得
-	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));
-	//今回は赤を書き込んでみる
-	materialDataSprite->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	//Lightingを有効にする
-	materialDataSprite->enableLighting = false;
 
 	//データを書き込む
 	VertexData* vertexDataSphere = nullptr;
@@ -609,31 +614,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			vertexDataSphere[start + 5].texcooord = { uNext, v };
 
 			//法線の情報を書き込む
-			vertexDataSphere[start + 0].normal.x = vertexDataSphere[start].position.x;
-			vertexDataSphere[start + 0].normal.y = vertexDataSphere[start].position.y;
-			vertexDataSphere[start + 0].normal.z = vertexDataSphere[start].position.z;
-
-			vertexDataSphere[start + 1].normal.x = vertexDataSphere[start].position.x;
-			vertexDataSphere[start + 1].normal.y = vertexDataSphere[start].position.y;
-			vertexDataSphere[start + 1].normal.z = vertexDataSphere[start].position.z;
-
-			vertexDataSphere[start + 2].normal.x = vertexDataSphere[start].position.x;
-			vertexDataSphere[start + 2].normal.y = vertexDataSphere[start].position.y;
-			vertexDataSphere[start + 2].normal.z = vertexDataSphere[start].position.z;
-
-			vertexDataSphere[start + 3].normal.x = vertexDataSphere[start].position.x;
-			vertexDataSphere[start + 3].normal.y = vertexDataSphere[start].position.y;
-			vertexDataSphere[start + 3].normal.z = vertexDataSphere[start].position.z;
-
-			vertexDataSphere[start + 4].normal.x = vertexDataSphere[start].position.x;
-			vertexDataSphere[start + 4].normal.y = vertexDataSphere[start].position.y;
-			vertexDataSphere[start + 4].normal.z = vertexDataSphere[start].position.z;
-
-			vertexDataSphere[start + 5].normal.x = vertexDataSphere[start].position.x;
-			vertexDataSphere[start + 5].normal.y = vertexDataSphere[start].position.y;
-			vertexDataSphere[start + 5].normal.z = vertexDataSphere[start].position.z;
+			for (int i = 0; i < 6; ++i) {
+				Vector3 pos = {
+					vertexDataSphere[start + i].position.x,
+					vertexDataSphere[start + i].position.y,
+					vertexDataSphere[start + i].position.z
+				};
+				vertexDataSphere[start + i].normal = Normalize(pos); // 正規化しよう！
+			}
 		}
 	}
+
+	//平行光源のResourceを作成してデフォルト値を書き込む
+	ID3D12Resource* dierctionalLightResource = CreateBufferResource(device, sizeof(DirectionalLight));
+	DirectionalLight* directionalLightData = nullptr;
+	//書き込むためのアドレス取得
+	dierctionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
+	//実際に書き込み
+	directionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	directionalLightData->direction = { 0.0f, 1.0f, 0.0f };
+	directionalLightData->intensity = 1.0f;
 
 	//ビューポート
 	D3D12_VIEWPORT viewport{};
@@ -718,7 +718,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//テクスチャ切り替え用の変数
 	bool useMonsterBall = true;
-
+	//スプライト切り替え
+	bool useSprite = false;
+	
 	/*メインループ！！！！！！！！！*/
 	//ウィンドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
@@ -737,16 +739,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//オブジェクトの更新処理
 			transform.rotate.y += 0.01f;
-			Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+			wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 			Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
 			Matrix4x4 viewMatrix = Inverse(cameraMatrix);
 			Matrix4x4 projectionMatrix = MakePerspectiveFOVMatrix(0.45f, float(kClientWidth) / float(kClientHeight), 0.1f, 100.0f);
-			Matrix4x4 worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
-			*wvpData = worldViewProjectionMatrix;
+			Matrix4x4 worldViewProjectionMatrix = Multiply(wvpData->World, Multiply(viewMatrix, projectionMatrix));
+			wvpData->WVP = worldViewProjectionMatrix;
 
 			//ImGuiと変数を結び付ける
 			// 色変更用のUI
-			static float color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };  // 初期値：白
+			static float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };  // 初期値：白
 
 			// RGBAカラーエディターを表示
 			if (ImGui::ColorEdit4("Color", color)) {
@@ -760,6 +762,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::DragFloat3("cameraTranslate", &cameraTransform.translate.x, 0.01f);
 			ImGui::DragFloat3("camerarotate", &cameraTransform.rotate.x, 0.01f);
 			ImGui::Checkbox("useMonsterBall", &useMonsterBall);
+			ImGui::Checkbox("useSprite", &useSprite);
+			ImGui::DragFloat3("lightDirection", &directionalLightData->direction.x, 0.01f);
 
 			//ImGuiの内部コマンドを生成する
 			ImGui::Render();
@@ -780,8 +784,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 			//TransitionBarrierを張る
 			commandList->ResourceBarrier(1, &barrier);
-			////描画先のRTVを指定する
-			//commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, nullptr);
+			//描画先のRTVを指定する
+			commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, nullptr);
 			//描画先のRTVとDSVを設定する
 			D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 			commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, &dsvHandle);
@@ -810,6 +814,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			commandList->SetGraphicsRootDescriptorTable(2, useMonsterBall ? textureSrvHandleGPU[1] : textureSrvHandleGPU[0]);
 			//wvp用のCBufferの場所を設定
 			commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+			//Lighting用のCBufferの場所を設定
+			commandList->SetGraphicsRootConstantBufferView(3, dierctionalLightResource->GetGPUVirtualAddress());
 			//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
 			//commandList->DrawInstanced(6, 1, 0, 0);
 			commandList->DrawInstanced(1536, 1, 0, 0);
@@ -821,7 +827,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//TransformationMatrixCBufferの場所を設定
 			commandList->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
 			//描画！！　(DrawCall/ドローコール)
-			commandList->DrawInstanced(6, 1, 0, 0);
+			if (useSprite) {
+				commandList->DrawInstanced(6, 1, 0, 0);
+			}
 			//実際のImGui描画コマンドを詰む
 			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 			//画面に描く処理はすべて終わり、画面に映すので、状態を遷移
