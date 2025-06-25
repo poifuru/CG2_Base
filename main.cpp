@@ -545,105 +545,109 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	indexDataSprite[0] = 0; indexDataSprite[1] = 1; indexDataSprite[2] = 2;
 	indexDataSprite[3] = 1; indexDataSprite[4] = 4; indexDataSprite[5] = 2;
 
-	//球描画用の頂点を作成する
-	ID3D12Resource* vertexResourceSphere = CreateBufferResource(device, sizeof(VertexData) * 1536);
+	//モデル読み込み
+	ModelData modelData = LoadObjFile("Resources", "axis.obj");
+
+	//モデル描画用の頂点を作成する
+	ID3D12Resource* vertexResourceSphere = CreateBufferResource(device, sizeof(VertexData) * modelData.vertices.size());
 	//頂点バッファビューを作る
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSphere{};
 	//リソースの先頭のアドレスから使う
-	vertexBufferViewSphere.BufferLocation = vertexResourceSphere->GetGPUVirtualAddress();
+	vertexBufferViewSphere.BufferLocation = vertexResourceSphere->GetGPUVirtualAddress();//リソースの先頭のアドレスから使う
 	//使用するサイズは頂点1536個分のサイズ
-	vertexBufferViewSphere.SizeInBytes = sizeof(VertexData) * 1536;
+	vertexBufferViewSphere.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());//使用するリソースのサイズは頂点のサイズ
 	//1頂点当たりのサイズ
-	vertexBufferViewSphere.StrideInBytes = sizeof(VertexData);
+	vertexBufferViewSphere.StrideInBytes = sizeof(VertexData);//1頂点あたりのサイズ
 
 	//データを書き込む
 	VertexData* vertexDataSphere = nullptr;
-	vertexResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSphere));
+	vertexResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSphere));//書き込むためのアドレスを取得
+	std::memcpy(vertexDataSphere, modelData.vertices.data(), sizeof(VertexData)* modelData.vertices.size());
 
-	//球描画で経度緯度を分割するための変数
-	const float kLonEvery = float(M_PI) * 2.0f / float(kSubdivision);
-	const float kLatEvery = float(M_PI) / float(kSubdivision);
-	//球の半径
-	const float radius = 1.0f;
+	////球描画で経度緯度を分割するための変数
+	//const float kLonEvery = float(M_PI) * 2.0f / float(kSubdivision);
+	//const float kLatEvery = float(M_PI) / float(kSubdivision);
+	////球の半径
+	//const float radius = 1.0f;
 
-	//緯度の方向に分割
-	for (int latIndex = 0; latIndex < kSubdivision; ++latIndex) {
-		float lat = float(-M_PI) / 2.0f + kLatEvery * latIndex;//θ
-		float latNext = lat + kLatEvery;
-		//経度の方向に分割しながら線を描く
-		for (int lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
-			float lon = lonIndex * kLonEvery;//φ
-			float lonNext = lon + kLonEvery;
+	////緯度の方向に分割
+	//for (int latIndex = 0; latIndex < kSubdivision; ++latIndex) {
+	//	float lat = float(-M_PI) / 2.0f + kLatEvery * latIndex;//θ
+	//	float latNext = lat + kLatEvery;
+	//	//経度の方向に分割しながら線を描く
+	//	for (int lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
+	//		float lon = lonIndex * kLonEvery;//φ
+	//		float lonNext = lon + kLonEvery;
 
-			//頂点インデックス(6つ分)
-			uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
+	//		//頂点インデックス(6つ分)
+	//		uint32_t start = (latIndex * kSubdivision + lonIndex) * 6;
 
-			// 4つの角を計算（a,b,c,d の順）
-			Vector4 a = {
-				radius * cosf(lat) * cosf(lon),
-				radius * sinf(lat),
-				radius * cosf(lat) * sinf(lon),
-				1.0f
-			};
+	//		// 4つの角を計算（a,b,c,d の順）
+	//		Vector4 a = {
+	//			radius * cosf(lat) * cosf(lon),
+	//			radius * sinf(lat),
+	//			radius * cosf(lat) * sinf(lon),
+	//			1.0f
+	//		};
 
-			Vector4 b = {
-				radius * cosf(latNext) * cosf(lon),
-				radius * sinf(latNext),
-				radius * cosf(latNext) * sinf(lon),
-				1.0f
-			};
+	//		Vector4 b = {
+	//			radius * cosf(latNext) * cosf(lon),
+	//			radius * sinf(latNext),
+	//			radius * cosf(latNext) * sinf(lon),
+	//			1.0f
+	//		};
 
-			Vector4 c = {
-				radius * cosf(lat) * cosf(lonNext),
-				radius * sinf(lat),
-				radius * cosf(lat) * sinf(lonNext),
-				1.0f
-			};
+	//		Vector4 c = {
+	//			radius * cosf(lat) * cosf(lonNext),
+	//			radius * sinf(lat),
+	//			radius * cosf(lat) * sinf(lonNext),
+	//			1.0f
+	//		};
 
-			Vector4 d = {
-				radius * cosf(latNext) * cosf(lonNext),
-				radius * sinf(latNext),
-				radius * cosf(latNext) * sinf(lonNext),
-				1.0f
-			};
+	//		Vector4 d = {
+	//			radius * cosf(latNext) * cosf(lonNext),
+	//			radius * sinf(latNext),
+	//			radius * cosf(latNext) * sinf(lonNext),
+	//			1.0f
+	//		};
 
-			// 三角形1: a, b, d
-			vertexDataSphere[start + 0].position = a;
-			vertexDataSphere[start + 1].position = b;
-			vertexDataSphere[start + 2].position = d;
+	//		// 三角形1: a, b, d
+	//		vertexDataSphere[start + 0].position = a;
+	//		vertexDataSphere[start + 1].position = b;
+	//		vertexDataSphere[start + 2].position = d;
 
-			// 三角形2: a, d, c
-			vertexDataSphere[start + 3].position = a;
-			vertexDataSphere[start + 4].position = d;
-			vertexDataSphere[start + 5].position = c;
+	//		// 三角形2: a, d, c
+	//		vertexDataSphere[start + 3].position = a;
+	//		vertexDataSphere[start + 4].position = d;
+	//		vertexDataSphere[start + 5].position = c;
 
-			//Texcoordを計算して書き込む
-			float u = float(lonIndex) / float(kSubdivision);
-			float uNext = float(lonIndex + 1) / float(kSubdivision);
-			float v = 1.0f - float(latIndex) / float(kSubdivision);
-			float vNext = 1.0f - float(latIndex + 1) / float(kSubdivision);
+	//		//Texcoordを計算して書き込む
+	//		float u = float(lonIndex) / float(kSubdivision);
+	//		float uNext = float(lonIndex + 1) / float(kSubdivision);
+	//		float v = 1.0f - float(latIndex) / float(kSubdivision);
+	//		float vNext = 1.0f - float(latIndex + 1) / float(kSubdivision);
 
-			// 三角形1: a, b, d
-			vertexDataSphere[start + 0].texcooord = { u, v };
-			vertexDataSphere[start + 1].texcooord = { u, vNext };
-			vertexDataSphere[start + 2].texcooord = { uNext, vNext };
+	//		// 三角形1: a, b, d
+	//		vertexDataSphere[start + 0].texcooord = { u, v };
+	//		vertexDataSphere[start + 1].texcooord = { u, vNext };
+	//		vertexDataSphere[start + 2].texcooord = { uNext, vNext };
 
-			// 三角形2: a, d, c
-			vertexDataSphere[start + 3].texcooord = { u, v };
-			vertexDataSphere[start + 4].texcooord = { uNext, vNext };
-			vertexDataSphere[start + 5].texcooord = { uNext, v };
+	//		// 三角形2: a, d, c
+	//		vertexDataSphere[start + 3].texcooord = { u, v };
+	//		vertexDataSphere[start + 4].texcooord = { uNext, vNext };
+	//		vertexDataSphere[start + 5].texcooord = { uNext, v };
 
-			//法線の情報を書き込む
-			for (int i = 0; i < 6; ++i) {
-				Vector3 pos = {
-					vertexDataSphere[start + i].position.x,
-					vertexDataSphere[start + i].position.y,
-					vertexDataSphere[start + i].position.z
-				};
-				vertexDataSphere[start + i].normal = Normalize(pos); // 正規化しよう！
-			}
-		}
-	}
+	//		//法線の情報を書き込む
+	//		for (int i = 0; i < 6; ++i) {
+	//			Vector3 pos = {
+	//				vertexDataSphere[start + i].position.x,
+	//				vertexDataSphere[start + i].position.y,
+	//				vertexDataSphere[start + i].position.z
+	//			};
+	//			vertexDataSphere[start + i].normal = Normalize(pos); // 正規化しよう！
+	//		}
+	//	}
+	//}
 
 	//平行光源のResourceを作成してデフォルト値を書き込む
 	ID3D12Resource* dierctionalLightResource = CreateBufferResource(device, sizeof(DirectionalLight));
@@ -699,12 +703,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//Textureを呼んで転送する
 	DirectX::ScratchImage mipImages[2];
-	const DirectX::TexMetadata& metadata0 = mipImages[0].GetMetadata();
 	mipImages[0] = LoadTexture("Resources/uvChecker.png");
+	const DirectX::TexMetadata& metadata0 = mipImages[0].GetMetadata();
 	ID3D12Resource* textureResource0 = CreateTextureResource(device, metadata0);
 	ID3D12Resource* intermediateResource0 = UploadTextureData(textureResource0, mipImages[0], device, commandList);
 
-	mipImages[1] = LoadTexture("Resources/monsterBall.png");
+	mipImages[1] = LoadTexture(modelData.material.textureFilePath);
 	const DirectX::TexMetadata& metadata1 = mipImages[1].GetMetadata();
 	ID3D12Resource* textureResource1 = CreateTextureResource(device, metadata1);
 	ID3D12Resource* intermediateResource1 = UploadTextureData(textureResource1, mipImages[1], device, commandList);
@@ -746,7 +750,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//テクスチャ切り替え用の変数
 	bool useMonsterBall = true;
 	//スプライト切り替え
-	bool useSprite = true;
+	bool useSprite = false;
 	
 	/*メインループ！！！！！！！！！*/
 	//ウィンドウの×ボタンが押されるまでループ
@@ -765,7 +769,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//開発用UIの処理。実際に開発用のUIを出す場合にはここをゲーム固有の処理にする
 
 			//オブジェクトの更新処理
-			transform.rotate.y += 0.01f;
+			//transform.rotate.y += 0.01f;
 			wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 			Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
 			Matrix4x4 viewMatrix = Inverse(cameraMatrix);
@@ -794,6 +798,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			ImGui::DragFloat3("cameraTranslate", &cameraTransform.translate.x, 0.01f);
 			ImGui::DragFloat3("camerarotate", &cameraTransform.rotate.x, 0.01f);
+			ImGui::DragFloat3("Materialrotate", &transform.rotate.x, 0.01f);
 			ImGui::Checkbox("useMonsterBall", &useMonsterBall);
 			ImGui::Checkbox("useSprite", &useSprite);
 			ImGui::DragFloat3("lightDirection", &directionalLightData->direction.x, 0.01f);

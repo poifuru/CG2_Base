@@ -66,3 +66,14 @@ struct DirectionalLight {
 	Vector3 direction;	//ライトの向き
 	float intensity;	//輝度
 };
+
+//MaterialData構造体
+struct MaterialData {
+	std::string textureFilePath;
+};
+
+//ModelData構造体
+struct ModelData {
+	std::vector<VertexData> vertices;
+	MaterialData material;
+};

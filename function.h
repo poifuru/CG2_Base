@@ -57,3 +57,9 @@ std::ofstream Logtext();
 //DescriptorHandleを取得する関数(CPUとGPU)
 D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
 D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index);
+
+//マテリアルファイルの読み込み関数
+MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+
+//ファイル読み込みの関数
+ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
