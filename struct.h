@@ -22,6 +22,11 @@ struct Vector4 {
 	float w;
 };
 
+//3x3Matrix構造体
+struct Matrix3x3 {
+	float m[3][3];
+};
+
 //4x4Matrix構造体
 struct Matrix4x4 {
 	float m[4][4];
@@ -45,6 +50,8 @@ struct VertexData {
 struct Material {
 	Vector4 color;
 	int32_t enableLighting;
+	float padding[3];
+	Matrix4x4 uvTranform;
 };
 
 //TransformationMatrix構造体

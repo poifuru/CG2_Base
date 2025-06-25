@@ -150,46 +150,46 @@ IDxcBlob* CompilerShader(
 	return shaderBlob;
 }
 
-//Resource作成関数
-ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
-	assert(device != nullptr);
+	//Resource作成関数
+	ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInBytes) {
+		assert(device != nullptr);
 
-	// アップロードヒープのプロパティ
-	D3D12_HEAP_PROPERTIES uploadHeapProperties = {};
-	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
-	uploadHeapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-	uploadHeapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-	uploadHeapProperties.CreationNodeMask = 1;
-	uploadHeapProperties.VisibleNodeMask = 1;
+		// アップロードヒープのプロパティ
+		D3D12_HEAP_PROPERTIES uploadHeapProperties = {};
+		uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
+		uploadHeapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+		uploadHeapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+		uploadHeapProperties.CreationNodeMask = 1;
+		uploadHeapProperties.VisibleNodeMask = 1;
 
-	// リソースのディスクリプション（バッファとして）
-	D3D12_RESOURCE_DESC vertexResourceDesc = {};
-	vertexResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	vertexResourceDesc.Alignment = 0;
-	vertexResourceDesc.Width = sizeInBytes;
-	vertexResourceDesc.Height = 1;
-	vertexResourceDesc.DepthOrArraySize = 1;
-	vertexResourceDesc.MipLevels = 1;
-	vertexResourceDesc.Format = DXGI_FORMAT_UNKNOWN;
-	vertexResourceDesc.SampleDesc.Count = 1;
-	vertexResourceDesc.SampleDesc.Quality = 0;
-	vertexResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	vertexResourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+		// リソースのディスクリプション（バッファとして）
+		D3D12_RESOURCE_DESC vertexResourceDesc = {};
+		vertexResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+		vertexResourceDesc.Alignment = 0;
+		vertexResourceDesc.Width = sizeInBytes;
+		vertexResourceDesc.Height = 1;
+		vertexResourceDesc.DepthOrArraySize = 1;
+		vertexResourceDesc.MipLevels = 1;
+		vertexResourceDesc.Format = DXGI_FORMAT_UNKNOWN;
+		vertexResourceDesc.SampleDesc.Count = 1;
+		vertexResourceDesc.SampleDesc.Quality = 0;
+		vertexResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+		vertexResourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-	// リソースの作成
-	ID3D12Resource* vertexResource = nullptr;
-	HRESULT hr = device->CreateCommittedResource(
-		&uploadHeapProperties,
-		D3D12_HEAP_FLAG_NONE,
-		&vertexResourceDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&vertexResource)
-	);
-	assert(SUCCEEDED(hr));
+		// リソースの作成
+		ID3D12Resource* vertexResource = nullptr;
+		HRESULT hr = device->CreateCommittedResource(
+			&uploadHeapProperties,
+			D3D12_HEAP_FLAG_NONE,
+			&vertexResourceDesc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&vertexResource)
+		);
+		assert(SUCCEEDED(hr));
 
-	return vertexResource;
-}
+		return vertexResource;
+	}
 
 //DescriptorHeapの作成関数
 ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible) {
