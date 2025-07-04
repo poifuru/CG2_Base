@@ -106,10 +106,10 @@ PipelineStateObject::PipelineStateObject(ID3D12Device* device, HRESULT hr, IDxcU
 
 
 	//DepthStencilTextureをウィンドウサイズで作成
-	depthStencilResource_ = CreateDepthStencilTextureResource(device, kClientWidth, kClientHeight);
+	//depthStencilResource_ = CreateDepthStencilTextureResource(device, kClientWidth, kClientHeight);
 
 	//DSV用のヒープでディスクリプタの数は1。DSVはShader内で触るものではないので、ShaderVisibleはfalse
-	dsvDescriptorHeap_ = CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+	//dsvDescriptorHeap_ = CreateDescriptorHeap(device, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 
 	//DSVの設定
 	dsvDesc_.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;		//Format。基本的にはResourceに合わせる

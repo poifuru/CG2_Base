@@ -31,25 +31,25 @@ IDxcBlob* CompilerShader(
 	std::ofstream& os);
 
 //Resource作成関数
-ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);
+ComPtr<ID3D12Resource> CreateBufferResource(const ComPtr<ID3D12Device>& device, size_t sizeInBytes);
 
 //DescriptorHeapの作成関数
-ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
+ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(const ComPtr<ID3D12Device>& device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
 //Textureデータを読みこむ関数
 DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
 //DirectXのTexrureResourceを作る関数
-ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
+ComPtr<ID3D12Resource> CreateTextureResource(const ComPtr<ID3D12Device>& device, const DirectX::TexMetadata& metadata);
 
 //TextureResourceにデータを転送する関数
 [[nodiscard]]
-ID3D12Resource* UploadTextureData(
-	ID3D12Resource* texture, const DirectX::ScratchImage& mipImages,
-	ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
+ComPtr<ID3D12Resource> UploadTextureData(
+	const ComPtr<ID3D12Resource>& texture, const DirectX::ScratchImage& mipImages,
+	const ComPtr<ID3D12Device>& device, const ComPtr<ID3D12GraphicsCommandList>& commandList);
 
 //DepthStencilTexture作成関数
-ID3D12Resource* CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);
+ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(const ComPtr<ID3D12Device>& device, int32_t width, int32_t height);
 
 //ログをテキストで出す関数
 std::ofstream Logtext();
