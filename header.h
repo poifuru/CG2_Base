@@ -20,9 +20,11 @@
 #pragma comment(lib, "dxguid.lib")
 #include <dxcapi.h>
 #pragma comment(lib, "dxcompiler.lib")	
-#include "Matrix.h"
+#include "Math.h"
 #include "struct.h"
 #include <vector>
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <sstream>
+#include <wrl.h>
+using namespace Microsoft::WRL;
