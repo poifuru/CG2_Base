@@ -1,6 +1,7 @@
 #pragma once
 #include <d3d12.h>
 
+//ComPtrでやってることの原理
 class ResourceObject{
 private:	//メンバ変数
 	ID3D12Resource* resource_;

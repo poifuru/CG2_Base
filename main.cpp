@@ -6,6 +6,107 @@
 #include "function.h"
 //#include "PSO.h"
 #pragma warning(pop)
+#include <xaudio2.h>
+#pragma comment(lib,"xaudio2.lib")
+
+//サウンドデータの読み込み関数
+SoundData SoundLoadWave(const char* filename) {
+	//HRESULT result;
+
+	/*1,ファイルを開く*/
+	//ファイルストリームのインスタンス
+	std::ifstream file;
+	//wavファイルをバイナリーモードで開く
+	file.open(filename, std::ios_base::binary);
+	//ファイルが開けなければassert
+	assert(file.is_open());
+
+	/*2,wavデータ読み込み*/
+	//RIFFヘッダーの読み込み
+	RiffHeader riff;
+	file.read((char*)&riff, sizeof(riff));
+	//ファイルがRIFFかチェック
+	if (strncmp(riff.chunk.id, "RIFF", 4) != 0) {
+		assert(0);
+	}
+	//タイプがWAVEかチェック
+	if (strncmp(riff.type, "WAVE", 4) != 0) {
+		assert(0);
+	}
+
+	//Formatチャンクの読み込み
+	FormatChunk format = {};
+	//チャンクヘッダーの確認
+	file.read((char*)&format, sizeof(ChunkHeader));
+	if (strncmp(format.chunk.id, "fmt ", 4) != 0) {
+		assert(0);
+	}
+
+	//チャンク本体の読み込み
+	assert(format.chunk.size <= sizeof(format.fmt));
+	file.read((char*)&format.fmt, format.chunk.size);
+
+	//Dataチャンクの読み込み
+	ChunkHeader data;
+	file.read((char*)&data, sizeof(data));
+	//JUNKチャンクを検出した場合
+	if (strncmp(data.id, "JUNK", 4) != 0) {
+		//読み取り位置をJUNKチャンクの終わりまで進める
+		file.seekg(data.size, std::ios_base::cur);
+		//再読み込み
+		file.read((char*)&data, sizeof(data));
+	}
+
+	if (strncmp(data.id, "data", 4) != 0) {
+		assert(0);
+	}
+
+	//Dataチャンクのデータ部(波形データ)の読み込み
+	char* pBuffer = new char[data.size];
+	file.read(pBuffer, data.size);
+
+	//waveファイルを閉じる
+	file.close();
+
+	//returnするための音声データ
+	SoundData soundData = {};
+
+	soundData.wfex = format.fmt;
+	soundData.pBuffer = reinterpret_cast<BYTE*>(pBuffer);
+	soundData.bufferSize = data.size;
+
+	return soundData;
+}
+
+//音声データを解放する関数
+void SoundUnload(SoundData* soundData) {
+	//バッファのメモリを解放
+	delete[] soundData->pBuffer;
+
+	soundData->pBuffer = 0;
+	soundData->bufferSize = 0;
+	soundData->wfex = {};
+}
+
+//音声再生の関数
+void SoundPlayWave(IXAudio2* xAudio2, const SoundData& soundData) {
+	HRESULT result;
+
+	//波形フォーマットを元にSourceVoiceの生成
+	IXAudio2SourceVoice* pSourceVoice = nullptr;
+	result = xAudio2->CreateSourceVoice(&pSourceVoice, &soundData.wfex);
+	assert(SUCCEEDED(result));
+
+	//再生する波形データの設定
+	XAUDIO2_BUFFER buf{};
+	buf.pAudioData = soundData.pBuffer;
+	buf.AudioBytes = soundData.bufferSize;
+	buf.Flags = XAUDIO2_END_OF_STREAM;
+
+	//波形データの再生
+	result = pSourceVoice->SubmitSourceBuffer(&buf);
+	result = pSourceVoice->Start();
+}
 
 struct D3DResourceLeakChecker {
 	~D3DResourceLeakChecker()
@@ -171,7 +272,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 #endif // _DEBUG
 
-
 	//コマンドキューを生成する
 	ComPtr<ID3D12CommandQueue> commandQueue = nullptr;
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
@@ -307,6 +407,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
 	descriptionRootSignature.pStaticSamplers = staticSamplers;
 	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
+
+	//サウンドの導入
+	ComPtr<IXAudio2> xAudio2;
+	IXAudio2MasteringVoice* masterVoice;
+
+	hr = XAudio2Create(&xAudio2, 0, XAUDIO2_DEFAULT_PROCESSOR);
+	assert(SUCCEEDED(hr));
+
+	//マスターボイスを生成
+	hr = xAudio2->CreateMasteringVoice(&masterVoice);
+
+	//音声の読み込み
+	SoundData soundData1 = SoundLoadWave("Resources/sounds/Alarm01.wav");
 
 	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	ComPtr<ID3D12Resource> materialResource = CreateBufferResource(device.Get(), sizeof(Material));
@@ -560,7 +673,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	indexDataSprite[3] = 1; indexDataSprite[4] = 3; indexDataSprite[5] = 2;
 
 	//モデル読み込み
-	ModelData modelData = LoadObjFile("Resources", "axis.obj");
+	ModelData modelData = LoadObjFile("Resources/models", "axis.obj");
 
 	//モデル描画用の頂点を作成する
 	ComPtr<ID3D12Resource> vertexResourceSphere = CreateBufferResource(device.Get(), sizeof(VertexData) * modelData.vertices.size());
@@ -717,7 +830,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//Textureを呼んで転送する
 	DirectX::ScratchImage mipImages[2];
-	mipImages[0] = LoadTexture("Resources/uvChecker.png");
+	mipImages[0] = LoadTexture("Resources/textures/uvChecker.png");
 	const DirectX::TexMetadata& metadata0 = mipImages[0].GetMetadata();
 	ComPtr<ID3D12Resource> textureResource0 = CreateTextureResource(device.Get(), metadata0);
 	ComPtr<ID3D12Resource> intermediateResource0 = UploadTextureData(textureResource0, mipImages[0], device.Get(), commandList);
@@ -760,6 +873,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//SRVの生成
 	device->CreateShaderResourceView(textureResource0.Get(), &srvDesc, textureSrvHandleCPU[0]);
 	device->CreateShaderResourceView(textureResource1.Get(), &srvDesc, textureSrvHandleCPU[1]);
+
+	//BGM再生
+	SoundPlayWave(xAudio2.Get(), soundData1);
+
+	//xAudio2と音声解放
+	xAudio2.Reset();
+	SoundUnload(&soundData1);
 
 	//テクスチャ切り替え用の変数
 	bool useMonsterBall = true;
