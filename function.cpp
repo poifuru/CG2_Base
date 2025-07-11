@@ -208,7 +208,13 @@ DirectX::ScratchImage LoadTexture(const std::string& filePath) {
 	//テクスチャファイルを読み込んでプログラムで扱えるようにする
 	DirectX::ScratchImage image{};
 	std::wstring filePathW = ConvertString(filePath);
+	OutputDebugStringW((L"探してるファイル: " + filePathW + L"\n").c_str());
 	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	if (FAILED(hr)) {
+		std::wstringstream ss;
+		ss << L"[エラー] テクスチャ読み込み失敗！HRESULT: 0x" << std::hex << hr << std::endl;
+		OutputDebugStringW(ss.str().c_str());
+	}
 	assert(SUCCEEDED(hr));
 
 	//ミップマップの作成

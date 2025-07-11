@@ -419,7 +419,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	hr = xAudio2->CreateMasteringVoice(&masterVoice);
 
 	//音声の読み込み
-	SoundData soundData1 = SoundLoadWave("Resources/sounds/Alarm01.wav");
+	SoundData soundData1 = SoundLoadWave("Resources/Alarm01.wav");
 
 	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	ComPtr<ID3D12Resource> materialResource = CreateBufferResource(device.Get(), sizeof(Material));
@@ -673,7 +673,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	indexDataSprite[3] = 1; indexDataSprite[4] = 3; indexDataSprite[5] = 2;
 
 	//モデル読み込み
-	ModelData modelData = LoadObjFile("Resources/models", "axis.obj");
+	ModelData modelData = LoadObjFile("Resources", "axis.obj");
 
 	//モデル描画用の頂点を作成する
 	ComPtr<ID3D12Resource> vertexResourceSphere = CreateBufferResource(device.Get(), sizeof(VertexData) * modelData.vertices.size());
@@ -830,7 +830,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//Textureを呼んで転送する
 	DirectX::ScratchImage mipImages[2];
-	mipImages[0] = LoadTexture("Resources/textures/uvChecker.png");
+	mipImages[0] = LoadTexture("Resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata0 = mipImages[0].GetMetadata();
 	ComPtr<ID3D12Resource> textureResource0 = CreateTextureResource(device.Get(), metadata0);
 	ComPtr<ID3D12Resource> intermediateResource0 = UploadTextureData(textureResource0, mipImages[0], device.Get(), commandList);
@@ -876,10 +876,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//BGM再生
 	SoundPlayWave(xAudio2.Get(), soundData1);
-
-	//xAudio2と音声解放
-	xAudio2.Reset();
-	SoundUnload(&soundData1);
 
 	//テクスチャ切り替え用の変数
 	bool useMonsterBall = true;
@@ -1055,6 +1051,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//解放処理
 	CloseHandle(fenceEvent);
 	CoUninitialize();
+	//xAudio2と音声解放
+	xAudio2.Reset();
+	SoundUnload(&soundData1);
 #ifdef _DEBUG
 	//debugController->Release();
 #endif //_DEBUG
