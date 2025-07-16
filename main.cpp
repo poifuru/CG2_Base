@@ -8,6 +8,8 @@
 #pragma warning(pop)
 #include <xaudio2.h>
 #pragma comment(lib,"xaudio2.lib")
+#include "DebugCamera.h"
+#include "globalVariables.h"
 
 //サウンドデータの読み込み関数
 SoundData SoundLoadWave(const char* filename) {
@@ -120,13 +122,6 @@ struct D3DResourceLeakChecker {
 	}
 };
 
-//クライアント領域のサイズ
-const int32_t kClientWidth = 1280;
-const int32_t kClientHeight = 720;
-
-//球描画の分割数
-const int32_t kSubdivision = 16;
-
 /*コメントスペース*/
 //05_03の16ページからスタート
 
@@ -220,6 +215,52 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//適切なアダプタが見つからなかったので起動できない
 	assert(useAdapter != nullptr);
 
+	//dxcCompilerを初期化
+	ComPtr<IDxcUtils> dxcUtils = nullptr;
+	ComPtr<IDxcCompiler3> dxcCompiler = nullptr;
+	hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+	assert(SUCCEEDED(hr));
+	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
+	assert(SUCCEEDED(hr));
+
+	//後のincludeに対応するための設定を作る
+	ComPtr<IDxcIncludeHandler> includeHandler = nullptr;
+	hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
+	assert(SUCCEEDED(hr));
+
+	/*入力デバイスの初期化処理*/
+	//DirectInputの初期化
+	ComPtr<IDirectInput8> directInput = nullptr;
+	hr = DirectInput8Create(wc.hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr);
+	assert(SUCCEEDED(hr));
+
+	//キーボードデバイスの生成
+	ComPtr<IDirectInputDevice8> keyboard = nullptr;
+	hr = directInput->CreateDevice(GUID_SysKeyboard, &keyboard, NULL);
+	assert(SUCCEEDED(hr));
+
+	//入力データ形式のセット
+	hr = keyboard->SetDataFormat(&c_dfDIKeyboard);	//標準形式
+	assert(SUCCEEDED(hr));
+
+	//排他制御レベルのセット
+	hr = keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+	assert(SUCCEEDED(hr));
+
+	//マウスデバイスの生成
+	ComPtr<IDirectInputDevice8> mouse = nullptr;
+	hr = directInput->CreateDevice(GUID_SysMouse, &mouse, NULL);
+	assert(SUCCEEDED(hr));
+
+	//入力データ形式のセット
+	hr = mouse->SetDataFormat(&c_dfDIMouse);
+	assert(SUCCEEDED(hr));
+
+	//排他制御レベルのセット
+	hr = mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	assert(SUCCEEDED(hr));
+
+	//デバイス生成
 	ComPtr<ID3D12Device> device = nullptr;
 	//機能レベルとログ出力用の文字列
 	D3D_FEATURE_LEVEL featureLevels[] = {
@@ -348,19 +389,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	HANDLE fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 	assert(fenceEvent != nullptr);
 
-	//dxcCompilerを初期化
-	ComPtr<IDxcUtils> dxcUtils = nullptr;
-	ComPtr<IDxcCompiler3> dxcCompiler = nullptr;
-	hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
-	assert(SUCCEEDED(hr));
-	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
-	assert(SUCCEEDED(hr));
-
-	//後のincludeに対応するための設定を作る
-	ComPtr<IDxcIncludeHandler> includeHandler = nullptr;
-	hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
-	assert(SUCCEEDED(hr));
-
 	//RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags =
@@ -407,41 +435,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
 	descriptionRootSignature.pStaticSamplers = staticSamplers;
 	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
-
-	//サウンドの導入
-	ComPtr<IXAudio2> xAudio2;
-	IXAudio2MasteringVoice* masterVoice;
-
-	hr = XAudio2Create(&xAudio2, 0, XAUDIO2_DEFAULT_PROCESSOR);
-	assert(SUCCEEDED(hr));
-
-	//マスターボイスを生成
-	hr = xAudio2->CreateMasteringVoice(&masterVoice);
-
-	//音声の読み込み
-	SoundData soundData1 = SoundLoadWave("Resources/Alarm01.wav");
-
-	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	ComPtr<ID3D12Resource> materialResource = CreateBufferResource(device.Get(), sizeof(Material));
-	//マテリアルにデータを書き込む
-	Material* materialData = nullptr;
-	//書き込むためのアドレスを取得
-	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
-	//とりあえず白を書き込んでみる
-	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	//Lightingを有効にする
-	materialData->enableLighting = true;
-	//UVtransformの初期化
-	materialData->uvTranform = MakeIdentity4x4();
-
-	//WVP用のリソースを作る。Matrix4x4　1つ分のサイズを用意する
-	ComPtr<ID3D12Resource> wvpResource = CreateBufferResource(device.Get(), sizeof(TransformationMatrix));
-	//データを書き込む
-	TransformationMatrix* wvpData = nullptr;
-	//書き込むためのアドレスを取得
-	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
-	//単位行列を書き込んでおく
-	wvpData->WVP = MakeIdentity4x4();
 
 	//シリアライズしてバイナリにする
 	ComPtr<ID3DBlob> signatureBlob = nullptr;
@@ -553,6 +546,41 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	hr = device->CreateGraphicsPipelineState(&graphicsPieplineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
+
+	//サウンドの導入
+	ComPtr<IXAudio2> xAudio2;
+	IXAudio2MasteringVoice* masterVoice;
+
+	hr = XAudio2Create(&xAudio2, 0, XAUDIO2_DEFAULT_PROCESSOR);
+	assert(SUCCEEDED(hr));
+
+	//マスターボイスを生成
+	hr = xAudio2->CreateMasteringVoice(&masterVoice);
+
+	//音声の読み込み
+	SoundData soundData1 = SoundLoadWave("Resources/Alarm01.wav");
+
+	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
+	ComPtr<ID3D12Resource> materialResource = CreateBufferResource(device.Get(), sizeof(Material));
+	//マテリアルにデータを書き込む
+	Material* materialData = nullptr;
+	//書き込むためのアドレスを取得
+	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
+	//とりあえず白を書き込んでみる
+	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	//Lightingを有効にする
+	materialData->enableLighting = true;
+	//UVtransformの初期化
+	materialData->uvTranform = MakeIdentity4x4();
+
+	//WVP用のリソースを作る。Matrix4x4　1つ分のサイズを用意する
+	ComPtr<ID3D12Resource> wvpResource = CreateBufferResource(device.Get(), sizeof(TransformationMatrix));
+	//データを書き込む
+	TransformationMatrix* wvpData = nullptr;
+	//書き込むためのアドレスを取得
+	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+	//単位行列を書き込んでおく
+	wvpData->WVP = MakeIdentity4x4();
 
 	//PSOを生成する
 	//PSO->Generate(device, hr);
@@ -689,7 +717,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//データを書き込む
 	VertexData* vertexDataSphere = nullptr;
 	vertexResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSphere));//書き込むためのアドレスを取得
-	std::memcpy(vertexDataSphere, modelData.vertices.data(), sizeof(VertexData)* modelData.vertices.size());
+	std::memcpy(vertexDataSphere, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
 
 	////球描画で経度緯度を分割するための変数
 	//const float kLonEvery = float(M_PI) * 2.0f / float(kSubdivision);
@@ -840,21 +868,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ComPtr<ID3D12Resource> textureResource1 = CreateTextureResource(device.Get(), metadata1);
 	ComPtr<ID3D12Resource> intermediateResource1 = UploadTextureData(textureResource1, mipImages[1], device.Get(), commandList);
 
-	//------------------------------------------//
-	//				ImGuiの初期化					//
-	//------------------------------------------//
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(hwnd);
-	ImGui_ImplDX12_Init(device.Get(),
-		swapChainDesc.BufferCount,
-		rtvDesc.Format,
-		srvDescriptorHeap.Get(),
-		srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-		srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart()
-	);
-
 	//metaDataを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = metadata0.format;
@@ -881,7 +894,53 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	bool useMonsterBall = true;
 	//スプライト切り替え
 	bool useSprite = false;
-	
+
+	/********入力デバイス組********/
+	//キーボード情報の取得開始
+	keyboard->Acquire();
+	//全キーの入力状態を取得する
+	BYTE key[256] = {};
+
+	//マウス
+	mouse->Acquire();
+	/****************************/
+
+	/*mainループで使いたい変数を入れるとこ*/
+	MouseInput mouseInput{
+		0, 0, 0,
+		false, false,
+		false, false,
+		false, false,
+	};
+
+	//カメラ用
+	Matrix4x4 cameraMatrix = {};
+	Matrix4x4 viewMatrix = {};
+	Matrix4x4 projectionMatrix = {};
+	Matrix4x4 worldViewProjectionMatrix = {};
+
+	//デバッグカメラ
+	DebugCamera* debugCamera = new DebugCamera();
+	debugCamera->Initialize();
+	bool debugMode = false;
+
+	/*********************************/
+
+	//------------------------------------------//
+	//				ImGuiの初期化					//
+	//------------------------------------------//
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(hwnd);
+	ImGui_ImplDX12_Init(device.Get(),
+		swapChainDesc.BufferCount,
+		rtvDesc.Format,
+		srvDescriptorHeap.Get(),
+		srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+		srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart()
+	);
+
 	/*メインループ！！！！！！！！！*/
 	//ウィンドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
@@ -891,33 +950,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			DispatchMessage(&msg);
 		}
 		else {
-			//ゲームの処理//
 			// //フレームの先頭をImGuiに伝えてあげる
 			ImGui_ImplDX12_NewFrame();
 			ImGui_ImplWin32_NewFrame();
 			ImGui::NewFrame();
-			//開発用UIの処理。実際に開発用のUIを出す場合にはここをゲーム固有の処理にする
-
-			//オブジェクトの更新処理
-			//transform.rotate.y += 0.01f;
-			wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-			Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
-			Matrix4x4 viewMatrix = Inverse(cameraMatrix);
-			Matrix4x4 projectionMatrix = MakePerspectiveFOVMatrix(0.45f, float(kClientWidth) / float(kClientHeight), 0.1f, 100.0f);
-			Matrix4x4 worldViewProjectionMatrix = Multiply(wvpData->World, Multiply(viewMatrix, projectionMatrix));
-			wvpData->WVP = worldViewProjectionMatrix;
-
-			//UVtransform
-			Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransformSprite.scale);
-			uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransformSprite.rotate.z));
-			uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransformSprite.translate));
-			materialDataSprite->uvTranform = uvTransformMatrix;
 
 			//ImGuiと変数を結び付ける
 			// 色変更用のUI
 			static float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };  // 初期値：白
 
-			// RGBAカラーエディターを表示
+			ImGui::Checkbox("debugMode", &debugMode);
 			if (ImGui::ColorEdit4("Color", color)) {
 				// 色が変更されたらmaterialDataに反映
 				materialData->color.x = color[0];
@@ -925,7 +967,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				materialData->color.z = color[2];
 				materialData->color.w = color[3];
 			}
-
 			ImGui::DragFloat3("cameraTranslate", &cameraTransform.translate.x, 0.01f);
 			ImGui::DragFloat3("camerarotate", &cameraTransform.rotate.x, 0.01f);
 			ImGui::DragFloat3("Materialrotate", &transform.rotate.x, 0.01f);
@@ -936,13 +977,71 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
 			ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);
 
-
 			//ImGuiの内部コマンドを生成する
 			ImGui::Render();
+
+			//入力処理
+			keyboard->GetDeviceState(sizeof(key), key);
+			//マウスの状態を取得
+			DIMOUSESTATE mouseState = {};
+			hr = mouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseState);
+			if (FAILED(hr)) {
+				if (hr == DIERR_INPUTLOST || hr == DIERR_NOTACQUIRED) {
+					mouse->Acquire();
+				}
+			}
+
+			//ゲームの処理//
+			//入力処理は更新処理よりも上に
+			if (mouseInput.left) {
+				OutputDebugStringA("press\n");
+			}
+			if (mouseInput.IsLeftTriggered()) {
+				OutputDebugStringA("Trigger\n");
+			}
+
+			// 前フレームの状態を保存する
+			mouseInput.prevLeft = mouseInput.left;
+			mouseInput.prevRight = mouseInput.right;
+			mouseInput.prevMid = mouseInput.mid;
+
+			mouseInput.x = static_cast<float>(mouseState.lX);
+			mouseInput.y = static_cast<float>(mouseState.lY);
+			mouseInput.z = static_cast<float>(mouseState.lZ);
+
+			mouseInput.left = (mouseState.rgbButtons[0] & 0x80);
+			mouseInput.right = (mouseState.rgbButtons[1] & 0x80);
+			mouseInput.mid = (mouseState.rgbButtons[2] & 0x80);
+
+			//=======オブジェクトの更新処理=======//
+			//カメラ
+			cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
+			viewMatrix = Inverse(cameraMatrix);
+			projectionMatrix = MakePerspectiveFOVMatrix(0.45f, float(kClientWidth) / float(kClientHeight), 0.1f, 100.0f);
+			if (!ImGui::GetIO().WantCaptureMouse) {
+				if (!debugMode) {
+					worldViewProjectionMatrix = Multiply(wvpData->World, Multiply(viewMatrix, projectionMatrix));
+				}
+				else if (debugMode) {
+					debugCamera->Updata(hwnd, hr, keyboard, key, mouse, &mouseInput);
+					worldViewProjectionMatrix = Multiply(wvpData->World, Multiply(debugCamera->GetViewMatrix(), debugCamera->GetProjectionMatrix()));
+				}
+			}
+
+			//オブジェクト
+			wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+			wvpData->WVP = worldViewProjectionMatrix;
+
+			//UVtransform
+			Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransformSprite.scale);
+			uvTransformMatrix = Multiply(uvTransformMatrix, MakeRotateZMatrix(uvTransformSprite.rotate.z));
+			uvTransformMatrix = Multiply(uvTransformMatrix, MakeTranslateMatrix(uvTransformSprite.translate));
+			materialDataSprite->uvTranform = uvTransformMatrix;
 
 			//光源のdirectionの正規化
 			directionalLightData->direction = Normalize(directionalLightData->direction);
 
+			//=======コマンド君達=======//
 			//これから書きこむバックバッファのインデックスを取得
 			UINT backBufferIndex = swapChain->GetCurrentBackBufferIndex();
 			//TransitionBarrierの設定
@@ -970,7 +1069,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//指定した深度で画面全体をクリアする
 			commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 			//ImGui描画用のDescriptorHeapの設定
-			ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap.Get()};
+			ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap.Get() };
 			commandList->SetDescriptorHeaps(1, descriptorHeaps);
 			/*三角形描画！*/
 			commandList->RSSetViewports(1, &viewport);					//Viewportを設定
@@ -993,7 +1092,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			commandList->SetGraphicsRootConstantBufferView(3, dierctionalLightResource->GetGPUVirtualAddress());
 			//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
 			//commandList->DrawInstanced(6, 1, 0, 0);
-			commandList->DrawInstanced(1536, 1, 0, 0);
+			commandList->DrawInstanced(static_cast<UINT>(modelData.vertices.size()), 1, 0, 0);
 			//Spriteの描画。変更が必要なものだけ変更する
 			commandList->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);
 			commandList->IASetIndexBuffer(&indexBufferViewSprite);	//IBVを設定
@@ -1019,7 +1118,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			assert(SUCCEEDED(hr));
 
 			//GPUにコマンドリストの実行を行わせる
-			ID3D12CommandList* commandLists[] = { commandList.Get()};
+			ID3D12CommandList* commandLists[] = { commandList.Get() };
 			commandQueue->ExecuteCommandLists(1, commandLists);
 			//GPUとOSに画面の交換を行うように通知する
 			swapChain->Present(1, 0);
@@ -1048,27 +1147,37 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 
-	//解放処理
+	//------------解放処理-------------//
+	// ================================
+	//  入力系
+	keyboard.Reset();
+	mouse.Reset();
+	directInput.Reset();
+
+	// ================================
+	// GPU系
 	CloseHandle(fenceEvent);
-	CoUninitialize();
-	//xAudio2と音声解放
+
+	// ================================
+	// サウンド系
 	xAudio2.Reset();
-	SoundUnload(&soundData1);
+	SoundUnload(&soundData1);  // バッファ解放
+
+	// ================================
+	// D3D12系（必要ならリソース解放）
+
+	// ================================
+	// COM系
+	CoUninitialize();
+
 #ifdef _DEBUG
-	//debugController->Release();
-#endif //_DEBUG
-	CloseWindow(hwnd);
+	ComPtr<ID3D12DebugDevice> debugDevice;
+	device.As(&debugDevice); // 変換
+	debugDevice->ReportLiveDeviceObjects(D3D12_RLDO_SUMMARY | D3D12_RLDO_DETAIL);
+#endif
 
-	//リソースリークチェック
-	/*ComPtr<IDXGIDebug1> debug;
-	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
-		debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
-		debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
-		debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
-	}*/
-
-	//出力ウィンドウへの文字出力
-	OutputDebugStringA("Hello,DirectX!\n");
-
+	// ================================
+	// ウィンドウ
+	DestroyWindow(hwnd); // ← CloseWindow より DestroyWindow の方が自然（WM_DESTROY 発生）
 	return 0;
 };

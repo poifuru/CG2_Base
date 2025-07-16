@@ -6,8 +6,9 @@
 #include <string>
 #include <format>
 #include <d3d12.h>
-#include <dxgi1_6.h>
+#include <d3d12sdklayers.h>
 #pragma comment(lib, "d3d12.lib")
+#include <dxgi1_6.h>
 #pragma comment(lib, "dxgi.lib")
 #include <cassert>
 #include <filesystem>	//ファイルやディレクトリに関する操作を行うためのライブラリ
@@ -28,3 +29,7 @@
 #include <sstream>
 #include <wrl.h>
 using namespace Microsoft::WRL;
+#define DIRECTINPUT_VERSION		0x0800	//DirectInputのバージョン指定
+#include <dinput.h>
+#pragma	comment(lib, "dinput8.lib")
+#pragma	comment(lib, "dxguid.lib")

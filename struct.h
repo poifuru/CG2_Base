@@ -1,5 +1,9 @@
 #pragma once
-#include "header.h"
+#include <Windows.h>
+#include <vector>
+#include <string>
+#include <fstream>
+#include <Mmreg.h>
 
 //Vector2構造体
 struct Vector2 {
@@ -189,4 +193,42 @@ struct SoundData {
 	BYTE* pBuffer;
 	//バッファのサイズ
 	unsigned int bufferSize;
+};
+
+//マウス構造体
+struct MouseInput {
+	//マウスの座標
+	float x;
+	float y;
+	float z;
+
+	//クリック・トリガーなどの判定
+	bool left;
+	bool prevLeft;
+	bool right;
+	bool prevRight;
+	bool mid;
+	bool prevMid;
+
+	//トリガーの判定
+	bool IsLeftTriggered() const {
+		return left && !prevLeft;
+	}
+	bool IsRightTriggered() const {
+		return right && !prevRight;
+	}
+	bool IsMidTriggered() const {
+		return mid && !prevMid;
+	}
+
+	//リリース判定
+	bool IsLeftReleased() const {
+		return !left && prevLeft;
+	}
+	bool IsRightReleased() const {
+		return !right && prevRight;
+	}
+	bool IsMidReleased() const {
+		return !mid && prevMid;
+	}
 };
