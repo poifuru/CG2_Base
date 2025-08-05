@@ -13,10 +13,7 @@ using namespace Microsoft::WRL;
 #pragma	comment(lib, "dinput8.lib")
 #pragma	comment(lib, "dxguid.lib")
 #include "Math.h"
-
-//クライアント領域のサイズ
-const int32_t kClientWidth = 1280;
-const int32_t kClientHeight = 720;
+#include "globalVariables.h"
 
 class DebugCamera{
 private:	//メンバ変数
@@ -53,8 +50,8 @@ public:	//メンバ関数
 	void Updata(HWND hwnd, HRESULT hr, ComPtr<IDirectInputDevice8W> keyboard, BYTE key[], ComPtr<IDirectInputDevice8W> mouse, MouseInput* mouseInput);
 
 	//ゲッター
+	Matrix4x4 GetWorldMatrix () { return worldMatrix_; }
 	Matrix4x4 GetViewMatrix() { return viewMatrix_; }
 	Matrix4x4 GetProjectionMatrix() { return projectionMatrix_; }
-
 };
 

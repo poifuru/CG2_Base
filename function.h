@@ -1,6 +1,7 @@
 #pragma once
 #include "header.h"
 #include "externals.h"
+#include "struct.h"
 
 //ウィンドウプロシージャ
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
@@ -62,4 +63,4 @@ D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descrip
 MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
 //ファイル読み込みの関数
-ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
+ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename, bool inversion);
