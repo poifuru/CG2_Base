@@ -21,8 +21,6 @@
 #pragma comment(lib, "dxguid.lib")
 #include <dxcapi.h>
 #pragma comment(lib, "dxcompiler.lib")	
-#include "Math.h"
-#include "struct.h"
 #include <vector>
 #define _USE_MATH_DEFINES
 #include <math.h>

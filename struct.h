@@ -131,8 +131,9 @@ struct Transform {
 //頂点データの構造体
 struct VertexData {
 	Vector4 position;
-	Vector2 texcooord;
+	Vector2 texcoord;
 	Vector3 normal;
+	float padding1;
 };
 
 //マテリアルの構造体
@@ -147,13 +148,30 @@ struct Material {
 struct TransformationMatrix {
 	Matrix4x4 WVP;
 	Matrix4x4 World;
+	Matrix4x4 WorldInverseTranspose;
 };
+
+//Sprite構造体
+struct SpriteData {
+	Vector2 size;			//幅と高さ
+	Transform transform;	//SRT
+	Transform uvTransform;	//uvのSRT
+	Material* material;		//紐づけるマテリアルポインタ
+	Matrix4x4 wvpMatrix;	//wvp行列ポインタ
+};
+
+//enum Light {
+//	none,
+//	lambert,
+//	halfLambert,
+//};
 
 //平行光源構造体
 struct DirectionalLight {
 	Vector4 color;		//ライトの色
 	Vector3 direction;	//ライトの向き
 	float intensity;	//輝度
+	//Light mode;			//ライティングの設定
 };
 
 //MaterialData構造体
