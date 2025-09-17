@@ -4,7 +4,6 @@
 #include "header.h"
 #include "externals.h"
 #include "function.h"
-//#include "PSO.h"
 #pragma warning(pop)
 #include <xaudio2.h>
 #pragma comment(lib,"xaudio2.lib")
@@ -15,6 +14,7 @@
 #include "SphereModel.h"
 #include "globalVariables.h"
 #include "struct.h"
+#include "_3DModel.h"
 
 //サウンドデータの読み込み関数
 SoundData SoundLoadWave (const char* filename) {
@@ -498,9 +498,6 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 													   L"ps_6_0", dxcUtils.Get (), dxcCompiler.Get (), includeHandler.Get (), logStream);
 	assert (pixelShaderBlob != nullptr);
 
-	//PSOの設定をする
-	//PipelineStateObject* PSO = new PipelineStateObject(device, hr, dxcUtils, dxcCompiler, includeHandler, logStream);
-
 	//DepthStencilTextureをウィンドウサイズで作成
 	ComPtr<ID3D12Resource> depthStencilResource = CreateDepthStencilTextureResource (device.Get (), kClientWidth, kClientHeight);
 
@@ -562,92 +559,22 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	hr = xAudio2->CreateMasteringVoice (&masterVoice);
 
 	//音声の読み込み
-	SoundData soundData1 = SoundLoadWave ("Resources/Alarm01.wav");
+	SoundData soundData1 = SoundLoadWave ("Resources/Sounds/Alarm01.wav");
 
 	//PSOを生成する
 	//PSO->Generate(device, hr);
 
 #pragma region Plane
-	//モデル読み込み	プレーン
-	ModelData modelData = LoadObjFile ("Resources", "plane.obj", false);
-	//モデル描画用の頂点を作成する
-	ComPtr<ID3D12Resource> vertexResourceModel = CreateBufferResource (device.Get (), sizeof (VertexData) * modelData.vertices.size ());
-	//頂点バッファビューを作る
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewModel{};
-	//リソースの先頭のアドレスから使う
-	vertexBufferViewModel.BufferLocation = vertexResourceModel->GetGPUVirtualAddress ();//リソースの先頭のアドレスから使う
-	//使用するサイズは頂点1536個分のサイズ
-	vertexBufferViewModel.SizeInBytes = UINT (sizeof (VertexData) * modelData.vertices.size ());//使用するリソースのサイズは頂点のサイズ
-	//1頂点当たりのサイズ
-	vertexBufferViewModel.StrideInBytes = sizeof (VertexData);//1頂点あたりのサイズ
-	//データを書き込む
-	VertexData* vertexDataModel = nullptr;
-	vertexResourceModel->Map (0, nullptr, reinterpret_cast<void**>(&vertexDataModel));//書き込むためのアドレスを取得
-	std::memcpy (vertexDataModel, modelData.vertices.data (), sizeof (VertexData)* modelData.vertices.size ());
-
-	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	ComPtr<ID3D12Resource> materialResource = CreateBufferResource (device.Get (), sizeof (Material));
-	//マテリアルにデータを書き込む
-	Material* materialData = nullptr;
-	//書き込むためのアドレスを取得
-	materialResource->Map (0, nullptr, reinterpret_cast<void**>(&materialData));
-	//とりあえず白を書き込んでみる
-	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	//Lightingを有効にする
-	materialData->enableLighting = true;
-	//UVtransformの初期化
-	materialData->uvTranform = MakeIdentity4x4 ();
-
-	//WVP用のリソースを作る。Matrix4x4　1つ分のサイズを用意する
-	ComPtr<ID3D12Resource> wvpResource = CreateBufferResource (device.Get (), sizeof (TransformationMatrix));
-	//データを書き込む
-	TransformationMatrix* wvpData = nullptr;
-	//書き込むためのアドレスを取得
-	wvpResource->Map (0, nullptr, reinterpret_cast<void**>(&wvpData));
-	//単位行列を書き込んでおく
-	wvpData->World = MakeIdentity4x4 ();
-	wvpData->WVP = MakeIdentity4x4 ();
+	_3DModel* plane = new _3DModel (device.Get (), "Resources/plane", "plane", true);
 #pragma endregion
 
 #pragma region Bunny
-	//モデル読み込み	バニー
-	ModelData bunny = LoadObjFile ("Resources", "bunny.obj", true);
-	ComPtr<ID3D12Resource> vertexBufferBunny = CreateBufferResource (device.Get (), sizeof (VertexData) * bunny.vertices.size ());
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewBunny{};
-	vertexBufferViewBunny.BufferLocation = vertexBufferBunny->GetGPUVirtualAddress ();
-	vertexBufferViewBunny.SizeInBytes = UINT (sizeof (VertexData) * bunny.vertices.size ());
-	vertexBufferViewBunny.StrideInBytes = sizeof (VertexData);
-	VertexData* vertexDataBunny = nullptr;
-	vertexBufferBunny->Map (0, nullptr, reinterpret_cast<void**>(&vertexDataBunny));
-	std::memcpy (vertexDataBunny, bunny.vertices.data (), sizeof (VertexData)* bunny.vertices.size ());
-
-	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	ComPtr<ID3D12Resource> materialBufferBunny = CreateBufferResource (device.Get (), sizeof (Material));
-	//マテリアルにデータを書き込む
-	Material* materialDataBunny = nullptr;
-	//書き込むためのアドレスを取得
-	materialBufferBunny->Map (0, nullptr, reinterpret_cast<void**>(&materialDataBunny));
-	//とりあえず白を書き込んでみる
-	materialDataBunny->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	//Lightingを有効にする
-	materialDataBunny->enableLighting = true;
-	//UVtransformの初期化
-	materialDataBunny->uvTranform = MakeIdentity4x4 ();
-
-	//WVP用のリソースを作る。Matrix4x4　1つ分のサイズを用意する
-	ComPtr<ID3D12Resource> wvpBufferBunny = CreateBufferResource (device.Get (), sizeof (TransformationMatrix));
-	//データを書き込む
-	TransformationMatrix* wvpDataBunny = nullptr;
-	//書き込むためのアドレスを取得
-	wvpBufferBunny->Map (0, nullptr, reinterpret_cast<void**>(&wvpDataBunny));
-	//単位行列を書き込んでおく
-	wvpDataBunny->World = MakeIdentity4x4 ();
-	wvpDataBunny->WVP = MakeIdentity4x4 ();
+	_3DModel* bunny = new _3DModel (device.Get (), "Resources/bunny", "bunny", false);
 #pragma endregion
 
 #pragma region Teapot
 	//モデル読み込み	ティーポッド
-	ModelData teapot = LoadObjFile ("Resources", "teapot.obj", true);
+	ModelData teapot = LoadObjFile ("Resources", "teapot", true);
 	ComPtr<ID3D12Resource> vertexBufferTeapot = CreateBufferResource (device.Get (), sizeof (VertexData) * teapot.vertices.size ());
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewTeapot{};
 	vertexBufferViewTeapot.BufferLocation = vertexBufferTeapot->GetGPUVirtualAddress ();
@@ -742,7 +669,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	srvDesc.Texture2D.MipLevels = UINT (metadata0.mipLevels);
 
-	mipImages[1] = LoadTexture (modelData.material.textureFilePath);
+	mipImages[1] = LoadTexture (plane->GetModelData().material.textureFilePath);
 	const DirectX::TexMetadata& metadata1 = mipImages[1].GetMetadata ();
 	ComPtr<ID3D12Resource> textureResource1 = CreateTextureResource (device.Get (), metadata1);
 	ComPtr<ID3D12Resource> intermediateResource1 = UploadTextureData (textureResource1, mipImages[1], device.Get (), commandList);
@@ -754,7 +681,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	srvDescModel.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	srvDescModel.Texture2D.MipLevels = UINT (metadata1.mipLevels);
 
-	mipImages[2] = LoadTexture (bunny.material.textureFilePath);
+	mipImages[2] = LoadTexture (bunny->GetModelData().material.textureFilePath);
 	const DirectX::TexMetadata& metadata2 = mipImages[2].GetMetadata ();
 	ComPtr<ID3D12Resource> textureResource2 = CreateTextureResource (device.Get (), metadata2);
 	ComPtr<ID3D12Resource> intermediateResource2 = UploadTextureData (textureResource2, mipImages[2], device.Get (), commandList);
@@ -826,6 +753,9 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	SphereModel* sphere = new SphereModel (device.Get (), 16);
 	sphere->Initialize ({ 0.0f, 0.0f, 0.0f }, 1.0f);
+
+	plane->Initialize ();
+	bunny->Initialize ();
 
 	//カメラ用
 	Matrix4x4 cameraMatrix = {};
@@ -954,13 +884,12 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			//オブジェクト
-			wvpData->World = MakeAffineMatrix (transform.scale, transform.rotate, transform.translate);
+			/*wvpData->World = MakeAffineMatrix (transform.scale, transform.rotate, transform.translate);
 			wvpData->WVP = Multiply(wvpData->World, Multiply (viewMatrix, projectionMatrix));;
-			wvpData->WorldInverseTranspose = Transpose (Inverse (wvpData->World));
+			wvpData->WorldInverseTranspose = Transpose (Inverse (wvpData->World));*/
+			plane->Update (&viewMatrix, &projectionMatrix);
 
-			wvpDataBunny->World = MakeAffineMatrix (transformBunny.scale, transformBunny.rotate, transformBunny.translate);
-			wvpDataBunny->WVP = Multiply (wvpDataBunny->World, Multiply (viewMatrix, projectionMatrix));
-			wvpDataBunny->WorldInverseTranspose = Transpose (Inverse (wvpDataBunny->World));
+			bunny->Update (&viewMatrix, &projectionMatrix);
 
 			wvpDataTeapot->World = MakeAffineMatrix (transformTeapot.scale, transformTeapot.rotate, transformTeapot.translate);
 			wvpDataTeapot->WVP = Multiply (wvpDataTeapot->World, Multiply (viewMatrix, projectionMatrix));
@@ -1004,37 +933,25 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 			if (ImGui::CollapsingHeader ("plane")) {
 				ImGui::Checkbox ("Draw##plane", &usePlane);
-				float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-				if (ImGui::ColorEdit4 ("Color##plane", color)) {
-					// 色が変更されたらmaterialDataに反映
-					materialData->color.x = color[0];
-					materialData->color.y = color[1];
-					materialData->color.z = color[2];
-					materialData->color.w = color[3];
-				}
-				ImGui::DragFloat3 ("scale##plane", &transform.scale.x, 0.01f);
-				ImGui::DragFloat3 ("rotate##plane", &transform.rotate.x, 0.01f);
-				ImGui::DragFloat3 ("translate##plane", &transform.translate.x, 0.01f);
-				ImGui::RadioButton ("none##plane", &materialData->enableLighting, 0);
-				ImGui::RadioButton ("lambert##plane", &materialData->enableLighting, 1);
-				ImGui::RadioButton ("halfLambert##plane", &materialData->enableLighting, 2);
+				//float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+				//if (ImGui::ColorEdit4 ("Color##plane", color)) {
+				//	// 色が変更されたらmaterialDataに反映
+				//	materialData->color.x = color[0];
+				//	materialData->color.y = color[1];
+				//	materialData->color.z = color[2];
+				//	materialData->color.w = color[3];
+				//}
+				//ImGui::DragFloat3 ("scale##plane", &transform.scale.x, 0.01f);
+				//ImGui::DragFloat3 ("rotate##plane", &transform.rotate.x, 0.01f);
+				//ImGui::DragFloat3 ("translate##plane", &transform.translate.x, 0.01f);
+				//ImGui::RadioButton ("none##plane", &materialData->enableLighting, 0);
+				//ImGui::RadioButton ("lambert##plane", &materialData->enableLighting, 1);
+				//ImGui::RadioButton ("halfLambert##plane", &materialData->enableLighting, 2);
+				plane->ImGui ();
 			}
 			if (ImGui::CollapsingHeader ("bunny")) {
 				ImGui::Checkbox ("Draw##bunny", &useBunny);
-				float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-				if (ImGui::ColorEdit4 ("Color##bunny", color)) {
-					// 色が変更されたらmaterialDataに反映
-					materialDataBunny->color.x = color[0];
-					materialDataBunny->color.y = color[1];
-					materialDataBunny->color.z = color[2];
-					materialDataBunny->color.w = color[3];
-				}
-				ImGui::DragFloat3 ("scale##bunny", &transformBunny.scale.x, 0.01f);
-				ImGui::DragFloat3 ("rotate##bunny", &transformBunny.rotate.x, 0.01f);
-				ImGui::DragFloat3 ("translate##bunny", &transformBunny.translate.x, 0.01f);
-				ImGui::RadioButton ("none##bunny", &materialDataBunny->enableLighting, 0);
-				ImGui::RadioButton ("lambert##bunny", &materialDataBunny->enableLighting, 1);
-				ImGui::RadioButton ("halfLambert##bunny", &materialDataBunny->enableLighting, 2);
+				bunny->ImGui ();
 			}
 			if (ImGui::CollapsingHeader ("teapod")) {
 				ImGui::Checkbox ("Draw##teapod", &useTeapot);
@@ -1113,34 +1030,15 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			//RootSignatureを設定。PSOに設定しているけど別途設定が必要
 			commandList->SetGraphicsRootSignature (rootSignature.Get ());
 			commandList->SetPipelineState (graphicsPipelineState.Get ());		//PSOを設定
-			//形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-			commandList->IASetPrimitiveTopology (D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			commandList->IASetVertexBuffers (0, 1, &vertexBufferViewModel);	//VBVを設定
-			//wvp用のCBufferの場所を設定
-			commandList->SetGraphicsRootConstantBufferView (0, wvpResource->GetGPUVirtualAddress ());
-			//マテリアルCBufferの場所を設定
-			commandList->SetGraphicsRootConstantBufferView (1, materialResource->GetGPUVirtualAddress ());
-			//SRVのDescirptorTableの先頭を設定。2はrootParameter[2]である。
-			commandList->SetGraphicsRootDescriptorTable (2, useMonsterBall ? textureSrvHandleGPU[1] : textureSrvHandleGPU[0]);
-			//Lighting用のCBufferの場所を設定
-			commandList->SetGraphicsRootConstantBufferView (3, dierctionalLightResource->GetGPUVirtualAddress ());
 			//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
 			if (useSphere) {
 				sphere->Draw (commandList.Get (), textureSrvHandleGPU[0], dierctionalLightResource.Get ());
 			}
 			if (usePlane) {
-				commandList->IASetVertexBuffers (0, 1, &vertexBufferViewModel);	//VBVを設定
-				commandList->SetGraphicsRootConstantBufferView (0, wvpResource->GetGPUVirtualAddress ());
-				commandList->SetGraphicsRootConstantBufferView (1, materialResource->GetGPUVirtualAddress ());
-				commandList->SetGraphicsRootDescriptorTable (2, textureSrvHandleGPU[1]);
-				commandList->DrawInstanced (static_cast<UINT>(modelData.vertices.size ()), 1, 0, 0);
+				plane->Draw (commandList.Get (), textureSrvHandleGPU[1], dierctionalLightResource.Get ());
 			}
 			if (useBunny) {
-				commandList->IASetVertexBuffers (0, 1, &vertexBufferViewBunny);	//VBVを設定
-				commandList->SetGraphicsRootConstantBufferView (0, wvpBufferBunny->GetGPUVirtualAddress ());
-				commandList->SetGraphicsRootConstantBufferView (1, materialBufferBunny->GetGPUVirtualAddress ());
-				commandList->SetGraphicsRootDescriptorTable (2, textureSrvHandleGPU[2]);
-				commandList->DrawInstanced (static_cast<UINT>(bunny.vertices.size ()), 1, 0, 0);
+				bunny->Draw (commandList.Get (), textureSrvHandleGPU[2], dierctionalLightResource.Get ());
 			}
 			if (useTeapot) {
 				commandList->IASetVertexBuffers (0, 1, &vertexBufferViewTeapot);	//VBVを設定

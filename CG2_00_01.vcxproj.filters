@@ -16,6 +16,18 @@
     <Filter Include="imgui">
       <UniqueIdentifier>{2ae7fe3c-d338-4c5d-bffa-4f2d593c3310}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\model/sprite_cpp">
+      <UniqueIdentifier>{01d6f405-b361-4eea-a119-8b18777e96f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\model/sprite_h">
+      <UniqueIdentifier>{5b9a9687-1c22-4a57-ac3b-0173bdc68263}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\PSO関連_cpp">
+      <UniqueIdentifier>{222bddf7-7625-4653-b03d-6d6cef2ffeb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\PSO関連_cpp">
+      <UniqueIdentifier>{b7bb6969-6de0-4a8a-a0b1-65911f8b4c8c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -48,9 +60,6 @@
     <ClCompile Include="function.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="PSO.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Sound.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -60,11 +69,14 @@
     <ClCompile Include="globalVariables.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="SphereModel.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\model/sprite_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>ソース ファイル\model/sprite_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="_3DModel.cpp">
+      <Filter>ソース ファイル\model/sprite_cpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -111,9 +123,6 @@
     <ClInclude Include="function.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="PSO.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="ResourceObject.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -126,11 +135,14 @@
     <ClInclude Include="globalVariables.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Sprite.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="SphereModel.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\model/sprite_h</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>ヘッダー ファイル\model/sprite_h</Filter>
+    </ClInclude>
+    <ClInclude Include="_3DModel.h">
+      <Filter>ヘッダー ファイル\model/sprite_h</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
