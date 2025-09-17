@@ -148,6 +148,7 @@ struct Material {
 struct TransformationMatrix {
 	Matrix4x4 WVP;
 	Matrix4x4 World;
+	//ライティングの時に正しい法線を計算する
 	Matrix4x4 WorldInverseTranspose;
 };
 
@@ -181,8 +182,11 @@ struct MaterialData {
 
 //ModelData構造体
 struct ModelData {
-	std::vector<VertexData> vertices;
 	MaterialData material;
+	std::vector<VertexData> vertices;
+	size_t vertexCount;
+	std::vector<uint32_t> indices;
+	size_t indexCount;
 };
 
 //チャンクヘッダ

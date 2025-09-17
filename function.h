@@ -63,4 +63,4 @@ D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descrip
 MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
 //ファイル読み込みの関数
-ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename, bool inversion);
+ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename, bool inversion = false);

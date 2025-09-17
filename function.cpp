@@ -373,7 +373,6 @@ D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descrip
 		}
 
 		//MaterialDataを返す
-
 		return materialData;
 	}
 
@@ -387,7 +386,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descrip
 		std::string line;				//ファイルから読んだ１行を格納するもの
 
 		//ファイルを開く
-		std::ifstream file(directoryPath + "/" + filename);	//ファイルを開く
+		std::ifstream file(directoryPath + "/" + filename + ".obj");	//ファイルを開く
 		assert(file.is_open());	//とりあえず開けなかったら止める
 
 		//実際にファイルを読み、ModelDataを構築していく
@@ -400,7 +399,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descrip
 			if (identifier == "v") {
 				Vector4 position;
 				s >> position.x >> position.y >> position.z;
-				position.x *= 1.0f;
+				position.x *= -1.0f;
 				if (inversion) {
 					position.x *= -1.0f;
 				}
@@ -416,7 +415,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descrip
 			else if (identifier == "vn") {
 				Vector3 normal;
 				s >> normal.x >> normal.y >> normal.z;
-				normal.x *= 1.0f;
+				normal.x *= -1.0f;
 				if (inversion) {
 					normal.x *= -1.0f;
 				}
@@ -458,6 +457,9 @@ D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descrip
 				modelData.material = LoadMaterialTemplateFile(directoryPath, materialFilename);
 			}
 		}
+
+		//頂点数を取得
+		modelData.vertexCount = static_cast<uint32_t>(modelData.vertices.size ());
 
 		//ModelDataを返す
 		return modelData;
