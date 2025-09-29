@@ -1,20 +1,21 @@
 #pragma warning(push)
 //C4023の警告を見なかったことにする
 #pragma warning(disable:4023)
-#include "header.h"
+#include "engine/utility/header.h"
 #include "externals.h"
-#include "function.h"
+#include "engine/utility/function.h"
 #pragma warning(pop)
 #include <xaudio2.h>
 #pragma comment(lib,"xaudio2.lib")
 #include <Xinput.h>
 #pragma comment(lib, "xinput.lib")
-#include "DebugCamera.h"
-#include "Sprite.h"
-#include "SphereModel.h"
-#include "globalVariables.h"
-#include "struct.h"
-#include "Model.h"
+#include "engine/camera/DebugCamera.h"
+#include "engine/2d/Sprite.h"
+#include "engine/3d/sphereModel.h"
+#include "engine/utility/globalVariables.h"
+#include "engine/utility/struct.h"
+#include "engine/utility/Math.h"
+#include "engine/3d/Model.h"
 
 //サウンドデータの読み込み関数
 SoundData SoundLoadWave (const char* filename) {
@@ -490,11 +491,11 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	//Shaderをコンパイルする
-	ComPtr<IDxcBlob> vertexShaderBlob = CompilerShader (L"Object3d.VS.hlsl",
+	ComPtr<IDxcBlob> vertexShaderBlob = CompilerShader (L"engine/shader/Object3d.VS.hlsl",
 														L"vs_6_0", dxcUtils.Get (), dxcCompiler.Get (), includeHandler.Get (), logStream);
 	assert (vertexShaderBlob != nullptr);
 
-	ComPtr<IDxcBlob> pixelShaderBlob = CompilerShader (L"Object3d.PS.hlsl",
+	ComPtr<IDxcBlob> pixelShaderBlob = CompilerShader (L"engine/shader/Object3d.PS.hlsl",
 													   L"ps_6_0", dxcUtils.Get (), dxcCompiler.Get (), includeHandler.Get (), logStream);
 	assert (pixelShaderBlob != nullptr);
 

@@ -1,6 +1,6 @@
 #include "Model.h"
-#include "function.h"
-#include "Math.h"
+#include "../utility/function.h"
+#include "../utility/Math.h"
 
 Model::Model (ID3D12Device* device, const std::string& directoryPath, const std::string& filename, bool inversion) {
 	model_ = LoadObjFile (directoryPath, filename, inversion);

@@ -1,5 +1,5 @@
 #pragma once
-#include "struct.h"
+#include "../utility/struct.h"
 #include <Windows.h>
 #include <d3d12.h>
 #include <d3d12sdklayers.h>
@@ -12,8 +12,8 @@ using namespace Microsoft::WRL;
 #include <dinput.h>
 #pragma	comment(lib, "dinput8.lib")
 #pragma	comment(lib, "dxguid.lib")
-#include "Math.h"
-#include "globalVariables.h"
+#include "../utility/Math.h"
+#include "../utility/globalVariables.h"
 
 class DebugCamera{
 private:	//メンバ変数
