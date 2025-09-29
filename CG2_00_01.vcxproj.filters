@@ -16,17 +16,17 @@
     <Filter Include="imgui">
       <UniqueIdentifier>{2ae7fe3c-d338-4c5d-bffa-4f2d593c3310}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\model/sprite_cpp">
-      <UniqueIdentifier>{01d6f405-b361-4eea-a119-8b18777e96f5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\model/sprite_h">
-      <UniqueIdentifier>{5b9a9687-1c22-4a57-ac3b-0173bdc68263}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\PSO関連_cpp">
       <UniqueIdentifier>{222bddf7-7625-4653-b03d-6d6cef2ffeb7}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\PSO関連_cpp">
       <UniqueIdentifier>{b7bb6969-6de0-4a8a-a0b1-65911f8b4c8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\3Dobj">
+      <UniqueIdentifier>{01d6f405-b361-4eea-a119-8b18777e96f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\2Dobj">
+      <UniqueIdentifier>{4b0a51e9-9fac-40a7-b5df-c0609f39aece}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -70,13 +70,13 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="SphereModel.cpp">
-      <Filter>ソース ファイル\model/sprite_cpp</Filter>
+      <Filter>ソース ファイル\3Dobj</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>ソース ファイル\3Dobj</Filter>
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
-      <Filter>ソース ファイル\model/sprite_cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="_3DModel.cpp">
-      <Filter>ソース ファイル\model/sprite_cpp</Filter>
+      <Filter>ソース ファイル\2Dobj</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -135,14 +135,14 @@
     <ClInclude Include="globalVariables.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="SphereModel.h">
-      <Filter>ヘッダー ファイル\model/sprite_h</Filter>
-    </ClInclude>
     <ClInclude Include="Sprite.h">
-      <Filter>ヘッダー ファイル\model/sprite_h</Filter>
+      <Filter>ソース ファイル\2Dobj</Filter>
     </ClInclude>
-    <ClInclude Include="_3DModel.h">
-      <Filter>ヘッダー ファイル\model/sprite_h</Filter>
+    <ClInclude Include="Model.h">
+      <Filter>ソース ファイル\3Dobj</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereModel.h">
+      <Filter>ソース ファイル\3Dobj</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

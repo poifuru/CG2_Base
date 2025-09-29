@@ -14,7 +14,7 @@
 #include "SphereModel.h"
 #include "globalVariables.h"
 #include "struct.h"
-#include "_3DModel.h"
+#include "Model.h"
 
 //サウンドデータの読み込み関数
 SoundData SoundLoadWave (const char* filename) {
@@ -565,16 +565,16 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	//PSO->Generate(device, hr);
 
 #pragma region Plane
-	_3DModel* plane = new _3DModel (device.Get (), "Resources/plane", "plane", true);
+	Model* plane = new Model (device.Get (), "Resources/plane", "plane", true);
 #pragma endregion
 
-#pragma region Bunny
-	_3DModel* bunny = new _3DModel (device.Get (), "Resources/bunny", "bunny", false);
+#pragma region bunny
+	Model* bunny = new Model (device.Get (), "Resources/bunny", "bunny", false);
 #pragma endregion
 
 #pragma region Teapot
 	//モデル読み込み	ティーポッド
-	ModelData teapot = LoadObjFile ("Resources", "teapot", true);
+	ModelData teapot = LoadObjFile ("Resources/teapot", "teapot", true);
 	ComPtr<ID3D12Resource> vertexBufferTeapot = CreateBufferResource (device.Get (), sizeof (VertexData) * teapot.vertices.size ());
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewTeapot{};
 	vertexBufferViewTeapot.BufferLocation = vertexBufferTeapot->GetGPUVirtualAddress ();
@@ -638,7 +638,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//Transform
 	Transform transform{ {1.0f, 1.0f, 1.0f}, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
-	Transform transformBunny{ {1.0f, 1.0f, 1.0f}, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+	Transform transformModel{ {1.0f, 1.0f, 1.0f}, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
 	Transform transformTeapot{ {1.0f, 1.0f, 1.0f}, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
 	Transform cameraTransform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -10.0f} };
 	Transform transformSprite{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
@@ -663,11 +663,11 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	ComPtr<ID3D12Resource> intermediateResource0 = UploadTextureData (textureResource0, mipImages[0], device.Get (), commandList);
 
 	//metaDataを基にSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata0.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
-	srvDesc.Texture2D.MipLevels = UINT (metadata0.mipLevels);
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDescSphere{};
+	srvDescSphere.Format = metadata0.format;
+	srvDescSphere.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDescSphere.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+	srvDescSphere.Texture2D.MipLevels = UINT (metadata0.mipLevels);
 
 	mipImages[1] = LoadTexture (plane->GetModelData().material.textureFilePath);
 	const DirectX::TexMetadata& metadata1 = mipImages[1].GetMetadata ();
@@ -675,11 +675,11 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	ComPtr<ID3D12Resource> intermediateResource1 = UploadTextureData (textureResource1, mipImages[1], device.Get (), commandList);
 
 	//metaDataを基にSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDescModel{};
-	srvDescModel.Format = metadata1.format;
-	srvDescModel.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDescModel.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
-	srvDescModel.Texture2D.MipLevels = UINT (metadata1.mipLevels);
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDescPlane{};
+	srvDescPlane.Format = metadata1.format;
+	srvDescPlane.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDescPlane.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+	srvDescPlane.Texture2D.MipLevels = UINT (metadata1.mipLevels);
 
 	mipImages[2] = LoadTexture (bunny->GetModelData().material.textureFilePath);
 	const DirectX::TexMetadata& metadata2 = mipImages[2].GetMetadata ();
@@ -720,8 +720,8 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	textureSrvHandleCPU[3] = GetCPUDescriptorHandle (srvDescriptorHeap.Get (), descriptorSizeSRV, 4);
 	textureSrvHandleGPU[3] = GetGPUDescriptorHandle (srvDescriptorHeap.Get (), descriptorSizeSRV, 4);
 	//SRVの生成
-	device->CreateShaderResourceView (textureResource0.Get (), &srvDesc, textureSrvHandleCPU[0]);
-	device->CreateShaderResourceView (textureResource1.Get (), &srvDescModel, textureSrvHandleCPU[1]);
+	device->CreateShaderResourceView (textureResource0.Get (), &srvDescSphere, textureSrvHandleCPU[0]);
+	device->CreateShaderResourceView (textureResource1.Get (), &srvDescPlane, textureSrvHandleCPU[1]);
 	device->CreateShaderResourceView (textureResource2.Get (), &srvDescBunny, textureSrvHandleCPU[2]);
 	device->CreateShaderResourceView (textureResource3.Get (), &srvDescTeapot, textureSrvHandleCPU[3]);
 
@@ -777,7 +777,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ぷれーん
 	bool usePlane = false;
 	//うさぎ
-	bool useBunny = false;
+	bool useModel = false;
 	//てぃーぽっと
 	bool useTeapot = false;
 
@@ -949,8 +949,8 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 				//ImGui::RadioButton ("halfLambert##plane", &materialData->enableLighting, 2);
 				plane->ImGui ();
 			}
-			if (ImGui::CollapsingHeader ("bunny")) {
-				ImGui::Checkbox ("Draw##bunny", &useBunny);
+			if (ImGui::CollapsingHeader ("Model")) {
+				ImGui::Checkbox ("Draw##Model", &useModel);
 				bunny->ImGui ();
 			}
 			if (ImGui::CollapsingHeader ("teapod")) {
@@ -1037,7 +1037,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (usePlane) {
 				plane->Draw (commandList.Get (), textureSrvHandleGPU[1], dierctionalLightResource.Get ());
 			}
-			if (useBunny) {
+			if (useModel) {
 				bunny->Draw (commandList.Get (), textureSrvHandleGPU[2], dierctionalLightResource.Get ());
 			}
 			if (useTeapot) {

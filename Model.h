@@ -5,7 +5,7 @@
 #include <wrl.h>
 using namespace Microsoft::WRL;
 
-class _3DModel {
+class Model {
 public:	//メンバ関数
 	//コンストラクタ
 	/// <summary>
@@ -13,7 +13,7 @@ public:	//メンバ関数
 	/// </summary>
 	/// <param name="directoryPath">3Dモデルファイルが存在するディレクトリのパス。</param>
 	/// <param name="filename">読み込む3Dモデルのファイル名。</param>
-	_3DModel (ID3D12Device* device, const std::string& directoryPath, const std::string& filename, bool inversion = false);
+	Model (ID3D12Device* device, const std::string& directoryPath, const std::string& filename, bool inversion = false);
 
 	/// <summary>
 	/// モデルのSRT

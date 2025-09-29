@@ -1,8 +1,8 @@
-#include "_3DModel.h"
+#include "Model.h"
 #include "function.h"
 #include "Math.h"
 
-_3DModel::_3DModel (ID3D12Device* device, const std::string& directoryPath, const std::string& filename, bool inversion) {
+Model::Model (ID3D12Device* device, const std::string& directoryPath, const std::string& filename, bool inversion) {
 	model_ = LoadObjFile (directoryPath, filename, inversion);
 
 	//===リソースの初期化===//
@@ -41,7 +41,7 @@ _3DModel::_3DModel (ID3D12Device* device, const std::string& directoryPath, cons
 	materialData_->uvTranform = MakeIdentity4x4 ();
 }
 
-void _3DModel::Initialize (Vector3 scale, Vector3 rotate, Vector3 position) {
+void Model::Initialize (Vector3 scale, Vector3 rotate, Vector3 position) {
 	transform_ = {
 		scale,
 		rotate,
@@ -56,7 +56,7 @@ void _3DModel::Initialize (Vector3 scale, Vector3 rotate, Vector3 position) {
 	memcpy (vertexDataPtr_.get(), vertexData_.data (), sizeof (VertexData) * model_.vertexCount);
 }
 
-void _3DModel::Update (Matrix4x4* view, Matrix4x4* proj) {
+void Model::Update (Matrix4x4* view, Matrix4x4* proj) {
 	transformationMatrix_.World = MakeAffineMatrix (transform_.scale, transform_.rotate, transform_.translate);
 	transformationMatrix_.WVP = Multiply (transformationMatrix_.World, Multiply (*view, *proj));
 
@@ -68,7 +68,7 @@ void _3DModel::Update (Matrix4x4* view, Matrix4x4* proj) {
 	materialData_->uvTranform = MakeAffineMatrix (uvTransform_.scale, uvTransform_.rotate, uvTransform_.translate);
 }
 
-void _3DModel::Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light) {
+void Model::Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light) {
 	//どんな形状で描画するのか
 	cmdList->IASetPrimitiveTopology (D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//頂点バッファをセットする
@@ -84,7 +84,7 @@ void _3DModel::Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HA
 	cmdList->DrawInstanced (static_cast<UINT>(model_.vertexCount), 1, 0, 0);
 }
 
-void _3DModel::ImGui () {
+void Model::ImGui () {
 	std::string label = "##" + id_;
 	float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	if (ImGui::ColorEdit4 (("Color" + label).c_str(), color)) {
