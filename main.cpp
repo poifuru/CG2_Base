@@ -1,14 +1,9 @@
 #pragma warning(push)
 //C4023の警告を見なかったことにする
 #pragma warning(disable:4023)
-#include "engine/utility/header.h"
-#include "externals.h"
+//エンジンに使うヘッダーファイル群
+#include "header/Engine.h"
 #include "engine/utility/function.h"
-#pragma warning(pop)
-#include <xaudio2.h>
-#pragma comment(lib,"xaudio2.lib")
-#include <Xinput.h>
-#pragma comment(lib, "xinput.lib")
 #include "engine/camera/DebugCamera.h"
 #include "engine/2d/Sprite.h"
 #include "engine/3d/sphereModel.h"
@@ -16,6 +11,15 @@
 #include "engine/utility/struct.h"
 #include "engine/utility/Math.h"
 #include "engine/3d/Model.h"
+#include "externals.h"
+#pragma warning(pop)
+#include <xaudio2.h>
+#pragma comment(lib,"xaudio2.lib")
+#include <Xinput.h>
+#pragma comment(lib, "xinput.lib")
+#include <format>// C++20のformat() 文字列整形
+#include <chrono>	//時間を扱うライブラリ
+#include <sstream>// stringstream
 
 //サウンドデータの読み込み関数
 SoundData SoundLoadWave (const char* filename) {

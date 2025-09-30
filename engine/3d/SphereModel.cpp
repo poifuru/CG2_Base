@@ -1,4 +1,5 @@
 #include "SphereModel.h"
+#include "../../header/pch.h"
 #include "../utility/function.h"
 #include "../utility/Math.h"
 

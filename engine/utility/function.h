@@ -1,7 +1,11 @@
 #pragma once
-#include "header.h"
-#include "struct.h"
+#include "../../header/ComPtr.h"
+#include "../../header/DX12/dxcapi.h"
+#include "../../header/WinSupport.h"
+#include "../../header/DX12/directX12.h"
+#include "../../header/file.h"
 #include "../../externals.h"
+#include "struct.h"
 
 //ウィンドウプロシージャ
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
