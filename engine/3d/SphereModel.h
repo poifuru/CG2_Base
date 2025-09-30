@@ -33,6 +33,9 @@ private:	//メンバ変数
 	//球の縦横の分割数
 	int kSubdivision_;
 
+	//ImGuiで色を変える
+	float color_[4];
+
 public:		//メンバ関数
 	SphereModel (ID3D12Device* device, int subdivision);
 	~SphereModel ();

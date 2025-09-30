@@ -19,8 +19,6 @@
 
 //サウンドデータの読み込み関数
 SoundData SoundLoadWave (const char* filename) {
-	//HRESULT result;
-
 	/*1,ファイルを開く*/
 	//ファイルストリームのインスタンス
 	std::ifstream file;
@@ -401,9 +399,10 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	//SRVを使う
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	//Offsetを自動計算
 
-	//RootSignature作成
-	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
-	descriptionRootSignature.Flags =
+	//-----RootSignatureをモデルとスプライト用の2つ作る-----//
+	//***モデル用***//
+	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignatureModel{};
+	descriptionRootSignatureModel.Flags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	//RootParameter作成。複数設定できるので配列。今回は結果1つだけなので長さ1の配列
@@ -411,11 +410,12 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	rootParameter[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	rootParameter[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	//VertexShaderで使う
 	rootParameter[0].Descriptor.ShaderRegister = 0;
+
 	rootParameter[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	rootParameter[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
 	rootParameter[1].Descriptor.ShaderRegister = 1;						//レジスタ番号とバインド
-	descriptionRootSignature.pParameters = rootParameter;				//ルートパラメータ配列へのポインタ
-	descriptionRootSignature.NumParameters = _countof (rootParameter);	//配列の長さ
+	descriptionRootSignatureModel.pParameters = rootParameter;				//ルートパラメータ配列へのポインタ
+	descriptionRootSignatureModel.NumParameters = _countof (rootParameter);	//配列の長さ
 
 	//DescriptorTable
 	rootParameter[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;	//DiscriptorTableを使う
@@ -427,6 +427,11 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	rootParameter[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	rootParameter[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	rootParameter[3].Descriptor.ShaderRegister = 3;
+
+	//***スプライト用***//
+
+
+	//-----------------------------------------------------//
 
 	//InputLayout
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
@@ -449,10 +454,48 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	inputLayoutDesc.pInputElementDescs = inputElementDescs;
 	inputLayoutDesc.NumElements = _countof (inputElementDescs);
 
-	//BlendStateの設定
-	D3D12_BLEND_DESC blendDesc{};
+	//BlendStateの設定(何個か作る)
+	const int kBlendDescNum = 6;
+	D3D12_BLEND_DESC blendDesc[kBlendDescNum]{};
 	//すべての色の要素を書き込む
-	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc[0].RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+	//共通設定なのでfor文で回す
+	for (int i = 1; i < kBlendDescNum; i++) {
+		blendDesc[i].RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		blendDesc[i].RenderTarget[0].BlendEnable = TRUE;
+		blendDesc[i].RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc[i].RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc[i].RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+	}
+
+	//---個別の設定---//
+	//アルファブレンド
+	blendDesc[1].RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc[1].RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	blendDesc[1].RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+
+	//加算合成
+	blendDesc[2].RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc[2].RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	blendDesc[2].RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+
+	//減算合成
+	blendDesc[3].RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc[3].RenderTarget[0].BlendOp = D3D12_BLEND_OP_SUBTRACT;
+	blendDesc[3].RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+
+	//乗算合成
+	blendDesc[4].RenderTarget[0].SrcBlend = D3D12_BLEND_ZERO;
+	blendDesc[4].RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	blendDesc[4].RenderTarget[0].DestBlend = D3D12_BLEND_SRC_COLOR;
+
+	//スクリーン合成
+	blendDesc[5].RenderTarget[0].SrcBlend = D3D12_BLEND_INV_DEST_COLOR;
+	blendDesc[5].RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	blendDesc[5].RenderTarget[0].DestBlend = D3D12_BLEND_ONE;
+	//--------------//
+
 
 	//Samplerの設定
 	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
@@ -464,13 +507,13 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;	//ありったけのmipmapを使う
 	staticSamplers[0].ShaderRegister = 0;	//レジスタ番号0を使う
 	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
-	descriptionRootSignature.pStaticSamplers = staticSamplers;
-	descriptionRootSignature.NumStaticSamplers = _countof (staticSamplers);
+	descriptionRootSignatureModel.pStaticSamplers = staticSamplers;
+	descriptionRootSignatureModel.NumStaticSamplers = _countof (staticSamplers);
 
 	//シリアライズしてバイナリにする
 	ComPtr<ID3DBlob> signatureBlob = nullptr;
 	ComPtr<ID3DBlob> errorBlob = nullptr;
-	hr = D3D12SerializeRootSignature (&descriptionRootSignature,
+	hr = D3D12SerializeRootSignature (&descriptionRootSignatureModel,
 									  D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
 	if (FAILED (hr)) {
 		Log (logStream, reinterpret_cast<char*>(errorBlob->GetBufferPointer ()));
@@ -523,13 +566,13 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//PSOを生成する
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPieplineStateDesc{};
-	graphicsPieplineStateDesc.pRootSignature = rootSignature.Get ();		//RootSignature
+	graphicsPieplineStateDesc.pRootSignature = rootSignature.Get ();//RootSignature
 	graphicsPieplineStateDesc.InputLayout = inputLayoutDesc;		//InputLayout
 	graphicsPieplineStateDesc.VS = { vertexShaderBlob->GetBufferPointer (),
 	vertexShaderBlob->GetBufferSize () };							//VertexShader
 	graphicsPieplineStateDesc.PS = { pixelShaderBlob->GetBufferPointer (),
-	pixelShaderBlob->GetBufferSize () };								//PixelShader
-	graphicsPieplineStateDesc.BlendState = blendDesc;				//BlendState
+	pixelShaderBlob->GetBufferSize () };							//PixelShader
+	graphicsPieplineStateDesc.BlendState = blendDesc[1];			//BlendState
 	graphicsPieplineStateDesc.RasterizerState = rasterizerDesc;		//RastarizerState
 
 	//書き込むRTVの情報
@@ -574,39 +617,11 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion
 
 #pragma region Teapot
-	//モデル読み込み	ティーポッド
-	ModelData teapot = LoadObjFile ("Resources/teapot", "teapot", true);
-	ComPtr<ID3D12Resource> vertexBufferTeapot = CreateBufferResource (device.Get (), sizeof (VertexData) * teapot.vertices.size ());
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewTeapot{};
-	vertexBufferViewTeapot.BufferLocation = vertexBufferTeapot->GetGPUVirtualAddress ();
-	vertexBufferViewTeapot.SizeInBytes = UINT (sizeof (VertexData) * teapot.vertices.size ());
-	vertexBufferViewTeapot.StrideInBytes = sizeof (VertexData);
-	VertexData* vertexDataTeapot = nullptr;
-	vertexBufferTeapot->Map (0, nullptr, reinterpret_cast<void**>(&vertexDataTeapot));
-	std::memcpy (vertexDataTeapot, teapot.vertices.data (), sizeof (VertexData)* teapot.vertices.size ());
+	Model* teapot = new Model (device.Get (), "Resources/teapot", "teapot", false);
+#pragma endregion
 
-	//マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-	ComPtr<ID3D12Resource> materialBufferTeapot = CreateBufferResource (device.Get (), sizeof (Material));
-	//マテリアルにデータを書き込む
-	Material* materialDataTeapot = nullptr;
-	//書き込むためのアドレスを取得
-	materialBufferTeapot->Map (0, nullptr, reinterpret_cast<void**>(&materialDataTeapot));
-	//とりあえず白を書き込んでみる
-	materialDataTeapot->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	//Lightingを有効にする
-	materialDataTeapot->enableLighting = true;
-	//UVtransformの初期化
-	materialDataTeapot->uvTranform = MakeIdentity4x4 ();
-
-	//WVP用のリソースを作る。Matrix4x4　1つ分のサイズを用意する
-	ComPtr<ID3D12Resource> wvpBufferTeapot = CreateBufferResource (device.Get (), sizeof (TransformationMatrix));
-	//データを書き込む
-	TransformationMatrix* wvpDataTeapot = nullptr;
-	//書き込むためのアドレスを取得
-	wvpBufferTeapot->Map (0, nullptr, reinterpret_cast<void**>(&wvpDataTeapot));
-	//単位行列を書き込んでおく
-	wvpDataTeapot->World = MakeIdentity4x4 ();
-	wvpDataTeapot->WVP = MakeIdentity4x4 ();
+#pragma region Fence
+	Model* Fence = new Model (device.Get (), "Resources/fence", "fence", true);
 #pragma endregion
 
 	//平行光源のResourceを作成してデフォルト値を書き込む
@@ -657,7 +672,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	const uint32_t descriptorSizeDSV = device->GetDescriptorHandleIncrementSize (D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
 	//Textureを呼んで転送する
-	DirectX::ScratchImage mipImages[4];
+	DirectX::ScratchImage mipImages[5];
 	mipImages[0] = LoadTexture ("Resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata0 = mipImages[0].GetMetadata ();
 	ComPtr<ID3D12Resource> textureResource0 = CreateTextureResource (device.Get (), metadata0);
@@ -694,7 +709,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	srvDescBunny.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	srvDescBunny.Texture2D.MipLevels = UINT (metadata2.mipLevels);
 
-	mipImages[3] = LoadTexture (teapot.material.textureFilePath);
+	mipImages[3] = LoadTexture (teapot->GetModelData().material.textureFilePath);
 	const DirectX::TexMetadata& metadata3 = mipImages[3].GetMetadata ();
 	ComPtr<ID3D12Resource> textureResource3 = CreateTextureResource (device.Get (), metadata3);
 	ComPtr<ID3D12Resource> intermediateResource3 = UploadTextureData (textureResource3, mipImages[3], device.Get (), commandList);
@@ -706,9 +721,21 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	srvDescTeapot.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	srvDescTeapot.Texture2D.MipLevels = UINT (metadata3.mipLevels);
 
+	mipImages[4] = LoadTexture (Fence->GetModelData().material.textureFilePath);
+	const DirectX::TexMetadata& metadata4 = mipImages[4].GetMetadata ();
+	ComPtr<ID3D12Resource> textureResource4 = CreateTextureResource (device.Get (), metadata4);
+	ComPtr<ID3D12Resource> intermediateResource4 = UploadTextureData (textureResource4, mipImages[4], device.Get (), commandList);
+
+	//metaDataを基にSRVの設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDescFence{};
+	srvDescFence.Format = metadata4.format;
+	srvDescFence.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDescFence.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+	srvDescFence.Texture2D.MipLevels = UINT (metadata4.mipLevels);
+
 	//SRVを作成するDescriptorHeapの場所を決める
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU[4];
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU[4];
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU[5];
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU[5];
 	textureSrvHandleCPU[0] = GetCPUDescriptorHandle (srvDescriptorHeap.Get (), descriptorSizeSRV, 1);
 	textureSrvHandleGPU[0] = GetGPUDescriptorHandle (srvDescriptorHeap.Get (), descriptorSizeSRV, 1);
 
@@ -720,11 +747,15 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	textureSrvHandleCPU[3] = GetCPUDescriptorHandle (srvDescriptorHeap.Get (), descriptorSizeSRV, 4);
 	textureSrvHandleGPU[3] = GetGPUDescriptorHandle (srvDescriptorHeap.Get (), descriptorSizeSRV, 4);
+
+	textureSrvHandleCPU[4] = GetCPUDescriptorHandle (srvDescriptorHeap.Get (), descriptorSizeSRV, 5);
+	textureSrvHandleGPU[4] = GetGPUDescriptorHandle (srvDescriptorHeap.Get (), descriptorSizeSRV, 5);
 	//SRVの生成
 	device->CreateShaderResourceView (textureResource0.Get (), &srvDescSphere, textureSrvHandleCPU[0]);
 	device->CreateShaderResourceView (textureResource1.Get (), &srvDescPlane, textureSrvHandleCPU[1]);
 	device->CreateShaderResourceView (textureResource2.Get (), &srvDescBunny, textureSrvHandleCPU[2]);
 	device->CreateShaderResourceView (textureResource3.Get (), &srvDescTeapot, textureSrvHandleCPU[3]);
+	device->CreateShaderResourceView (textureResource4.Get (), &srvDescFence, textureSrvHandleCPU[4]);
 
 	//BGM再生
 	SoundPlayWave (xAudio2.Get (), soundData1);
@@ -757,6 +788,8 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	plane->Initialize ();
 	bunny->Initialize ();
+	teapot->Initialize ();
+	Fence->Initialize ();
 
 	//カメラ用
 	Matrix4x4 cameraMatrix = {};
@@ -781,6 +814,9 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	bool useModel = false;
 	//てぃーぽっと
 	bool useTeapot = false;
+
+	//ライティング用の変数
+	float colorLight[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	/*********************************/
 
@@ -885,20 +921,16 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			//オブジェクト
-			/*wvpData->World = MakeAffineMatrix (transform.scale, transform.rotate, transform.translate);
-			wvpData->WVP = Multiply(wvpData->World, Multiply (viewMatrix, projectionMatrix));;
-			wvpData->WorldInverseTranspose = Transpose (Inverse (wvpData->World));*/
 			plane->Update (&viewMatrix, &projectionMatrix);
 
 			bunny->Update (&viewMatrix, &projectionMatrix);
 
-			wvpDataTeapot->World = MakeAffineMatrix (transformTeapot.scale, transformTeapot.rotate, transformTeapot.translate);
-			wvpDataTeapot->WVP = Multiply (wvpDataTeapot->World, Multiply (viewMatrix, projectionMatrix));
-			wvpDataTeapot->WorldInverseTranspose = Transpose (Inverse (wvpDataTeapot->World));
+			teapot->Update (&viewMatrix, &projectionMatrix);
 
 			sprite->Update ();
 			sphere->Update (&viewMatrix, &projectionMatrix);
-
+			Fence->Update (&viewMatrix, &projectionMatrix);
+			
 			//光源のdirectionの正規化
 			directionalLightData->direction = Normalize (directionalLightData->direction);
 
@@ -934,20 +966,6 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 			if (ImGui::CollapsingHeader ("plane")) {
 				ImGui::Checkbox ("Draw##plane", &usePlane);
-				//float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-				//if (ImGui::ColorEdit4 ("Color##plane", color)) {
-				//	// 色が変更されたらmaterialDataに反映
-				//	materialData->color.x = color[0];
-				//	materialData->color.y = color[1];
-				//	materialData->color.z = color[2];
-				//	materialData->color.w = color[3];
-				//}
-				//ImGui::DragFloat3 ("scale##plane", &transform.scale.x, 0.01f);
-				//ImGui::DragFloat3 ("rotate##plane", &transform.rotate.x, 0.01f);
-				//ImGui::DragFloat3 ("translate##plane", &transform.translate.x, 0.01f);
-				//ImGui::RadioButton ("none##plane", &materialData->enableLighting, 0);
-				//ImGui::RadioButton ("lambert##plane", &materialData->enableLighting, 1);
-				//ImGui::RadioButton ("halfLambert##plane", &materialData->enableLighting, 2);
 				plane->ImGui ();
 			}
 			if (ImGui::CollapsingHeader ("Model")) {
@@ -956,36 +974,25 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 			if (ImGui::CollapsingHeader ("teapod")) {
 				ImGui::Checkbox ("Draw##teapod", &useTeapot);
-				float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-				if (ImGui::ColorEdit4 ("Color##teapod", color)) {
-					// 色が変更されたらmaterialDataに反映
-					materialDataTeapot->color.x = color[0];
-					materialDataTeapot->color.y = color[1];
-					materialDataTeapot->color.z = color[2];
-					materialDataTeapot->color.w = color[3];
-				}
-				ImGui::DragFloat3 ("scale##teapod", &transformTeapot.scale.x, 0.01f);
-				ImGui::DragFloat3 ("rotate##teapod", &transformTeapot.rotate.x, 0.01f);
-				ImGui::DragFloat3 ("translate##teapod", &transformTeapot.translate.x, 0.01f);
-				ImGui::RadioButton ("none##teapod", &materialDataTeapot->enableLighting, 0);
-				ImGui::RadioButton ("lambert##teapod", &materialDataTeapot->enableLighting, 1);
-				ImGui::RadioButton ("halfLambert##teapod", &materialDataTeapot->enableLighting, 2);
+				teapot->ImGui ();
 			}
 			if (ImGui::CollapsingHeader ("Sprite")) {
 				ImGui::Checkbox ("Draw##useSprite", &useSprite);
 				sprite->ShowImGuiEditor ();
 			}
 			if (ImGui::CollapsingHeader ("light")) {
-				float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-				if (ImGui::ColorEdit4 ("color", color)) {
+				if (ImGui::ColorEdit4 ("color", colorLight)) {
 					// 色が変更されたらmaterialDataに反映
-					directionalLightData->color.x = color[0];
-					directionalLightData->color.y = color[1];
-					directionalLightData->color.z = color[2];
-					directionalLightData->color.w = color[3];
+					directionalLightData->color.x = colorLight[0];
+					directionalLightData->color.y = colorLight[1];
+					directionalLightData->color.z = colorLight[2];
+					directionalLightData->color.w = colorLight[3];
 				}
 				ImGui::DragFloat3 ("lightDirection", &directionalLightData->direction.x, 0.01f);
 				ImGui::DragFloat ("intensity", &directionalLightData->intensity, 0.01f);
+			}
+			if (ImGui::CollapsingHeader ("fence")) {
+				Fence->ImGui ();
 			}
 			ImGui::End ();
 			/*ImGui::DragFloat2("UVTranslate", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
@@ -1032,6 +1039,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			commandList->SetGraphicsRootSignature (rootSignature.Get ());
 			commandList->SetPipelineState (graphicsPipelineState.Get ());		//PSOを設定
 			//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
+			Fence->Draw (commandList.Get (), textureSrvHandleGPU[4], dierctionalLightResource.Get ());
 			if (useSphere) {
 				sphere->Draw (commandList.Get (), textureSrvHandleGPU[0], dierctionalLightResource.Get ());
 			}
@@ -1042,11 +1050,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 				bunny->Draw (commandList.Get (), textureSrvHandleGPU[2], dierctionalLightResource.Get ());
 			}
 			if (useTeapot) {
-				commandList->IASetVertexBuffers (0, 1, &vertexBufferViewTeapot);	//VBVを設定
-				commandList->SetGraphicsRootConstantBufferView (0, wvpBufferTeapot->GetGPUVirtualAddress ());
-				commandList->SetGraphicsRootConstantBufferView (1, materialBufferTeapot->GetGPUVirtualAddress ());
-				commandList->SetGraphicsRootDescriptorTable (2, textureSrvHandleGPU[3]);
-				commandList->DrawInstanced (static_cast<UINT>(teapot.vertices.size ()), 1, 0, 0);
+				teapot->Draw (commandList.Get (), textureSrvHandleGPU[3], dierctionalLightResource.Get ());
 			}
 			if (useSprite) {
 				sprite->Draw (commandList.Get(), textureSrvHandleGPU[0]);

@@ -40,6 +40,10 @@ SphereModel::SphereModel (ID3D12Device* device, int subdivision) {
 	transformationMatrix_.World = MakeIdentity4x4 ();
 	transformationMatrix_.WVP = MakeIdentity4x4 ();
 	radius_ = 1.0f;
+
+	for (int i = 0; i < 4; i++) {
+		color_[i] = 1.0f;
+	}
 }
 
 SphereModel::~SphereModel () {
@@ -181,13 +185,12 @@ void SphereModel::Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR
 }
 
 void SphereModel::ShowImGuiEditor () {
-	float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	if (ImGui::ColorEdit4 ("Color##sphere", color)) {
+	if (ImGui::ColorEdit4 ("Color##sphere", color_)) {
 		// 色が変更されたらmaterialDataに反映
-		materialData_->color.x = color[0];
-		materialData_->color.y = color[1];
-		materialData_->color.z = color[2];
-		materialData_->color.w = color[3];
+		materialData_->color.x = color_[0];
+		materialData_->color.y = color_[1];
+		materialData_->color.z = color_[2];
+		materialData_->color.w = color_[3];
 	}
 	ImGui::DragFloat3 ("scale##sphere", &transform_.scale.x, 0.01f);
 	ImGui::DragFloat3 ("rotate##sphere", &transform_.rotate.x, 0.01f);

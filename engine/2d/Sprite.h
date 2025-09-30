@@ -23,6 +23,9 @@ private:	//メンバ変数
 	D3D12_VERTEX_BUFFER_VIEW vbView_{};  
 	D3D12_INDEX_BUFFER_VIEW ibView_{};  
 
+	//ImGuiで色をいじる
+	float color_[4];
+
 public:		//メンバ関数  
 	Sprite (ID3D12Device* device);  
 	~Sprite ();  

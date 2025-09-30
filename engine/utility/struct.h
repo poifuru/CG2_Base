@@ -133,7 +133,7 @@ struct VertexData {
 	Vector4 position;
 	Vector2 texcoord;
 	Vector3 normal;
-	float padding1;
+	//float padding1;
 };
 
 //マテリアルの構造体

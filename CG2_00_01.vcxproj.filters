@@ -141,6 +141,9 @@
     <ClInclude Include="engine\3d\SphereModel.h">
       <Filter>ソース ファイル\3Dobj</Filter>
     </ClInclude>
+    <ClInclude Include="engine\utility\ComPtr.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">

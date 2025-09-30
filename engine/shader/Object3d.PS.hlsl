@@ -30,14 +30,6 @@ PixelShaderOutput main(VertexShaderOutput input)
 {
     PixelShaderOutput output;
     
-    // ■ デバッグ用法線表示：ここに入れて早期リターンする
-    //{
-    //    float3 n = normalize(input.normal);
-    //    float3 normalColor = n * 0.5f + 0.5f; // [-1,1] -> [0,1]
-    //    output.color = float4(normalColor, 1.0f);
-    //    return output; // これで法線だけ見れる
-    //}
-    
     float32_t4 textureColor = gTexture.Sample(gSampler, input.texcoord);
     output.color = gMaterial.color * textureColor;
     
@@ -48,7 +40,9 @@ PixelShaderOutput main(VertexShaderOutput input)
     if (gMaterial.enableLighting == 1)  //Lightingする場合
     {
         float cos = saturate(dot(normalize(input.normal), -gDirectionalLight.direction));
-        output.color = gMaterial.color * textureColor * gDirectionalLight.color * cos * gDirectionalLight.intensity;
+        output.color.rgb = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
+        //output.color.a = gMaterial.color.a * textureColor.a;
+
     }
     else if (gMaterial.enableLighting == 2)
     {

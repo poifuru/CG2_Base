@@ -39,6 +39,10 @@ Model::Model (ID3D12Device* device, const std::string& directoryPath, const std:
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = true;
 	materialData_->uvTranform = MakeIdentity4x4 ();
+
+	for (int i = 0; i < 4; i++) {
+		color_[i] = 1.0f;
+	}
 }
 
 void Model::Initialize (Vector3 scale, Vector3 rotate, Vector3 position) {
@@ -86,13 +90,12 @@ void Model::Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDL
 
 void Model::ImGui () {
 	std::string label = "##" + id_;
-	float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	if (ImGui::ColorEdit4 (("Color" + label).c_str(), color)) {
+	if (ImGui::ColorEdit4 (("Color" + label).c_str(), color_)) {
 		// 色が変更されたらmaterialDataに反映
-		materialData_->color.x = color[0];
-		materialData_->color.y = color[1];
-		materialData_->color.z = color[2];
-		materialData_->color.w = color[3];
+		materialData_->color.x = color_[0];
+		materialData_->color.y = color_[1];
+		materialData_->color.z = color_[2];
+		materialData_->color.w = color_[3];
 	}
 	ImGui::DragFloat3 (("scale" + label).c_str(), &transform_.scale.x, 0.01f);
 	ImGui::DragFloat3 (("rotate" + label).c_str(), &transform_.rotate.x, 0.01f);

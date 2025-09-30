@@ -73,4 +73,7 @@ private:		//メンバ変数
 
 	//ImGui用のラベル名
 	std::string id_;
+
+	//ImGuiで色をいじる変数
+	float color_[4];
 };
