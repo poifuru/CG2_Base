@@ -84,7 +84,7 @@ void Sprite::Initialize (Vector3 position, Vector2 size) {
 void Sprite::Update () {
 	Matrix4x4 world = MakeAffineMatrix (sprite_.transform.scale, sprite_.transform.rotate, sprite_.transform.translate);
 	Matrix4x4 view = MakeIdentity4x4 ();
-	Matrix4x4 proj = MakeOrthographicMatrix (0, 0, (float)kClientWidth, (float)kClientHeight, 0, 100.0f);
+	Matrix4x4 proj = MakeOrthographicMatrix (0, 0, (float)1280, (float)720, 0, 100.0f);
 	sprite_.wvpMatrix = Multiply (world, Multiply (view, proj));
 	*matrixData_ = sprite_.wvpMatrix;
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "../utility/struct.h"
+#include "../../header/struct.h"
 #include <Windows.h>
 #include <d3d12.h>
 #include <d3d12sdklayers.h>

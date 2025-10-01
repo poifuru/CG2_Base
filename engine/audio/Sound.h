@@ -1,14 +1,21 @@
 #pragma once
+#include "../../header/ComPtr.h"
+#include "../../header/struct.h"
 #include <xaudio2.h>
 #pragma comment(lib, "xaudio2.h")
-#include <fstream>
-#include "../utility/ComPtr.h"
+
 
 class Sound{
 public: //メンバ関数
-	void 
+	Sound (IXAudio2* xAudio2, SoundData* data);
+	~Sound ();
+
+	void Play (bool loop = false);
+	void Stop ();
+	void SetVolume (float vol);
 
 private://メンバ変数
-	ComPtr<IXAudio2> xAudio2_;
-	IXAudio2MasteringVoice* masterVoice_;
+	ComPtr<IXAudio2> xAudio2_ = nullptr;
+	std::unique_ptr<IXAudio2SourceVoice> sourceVoice_;
+	std::unique_ptr<SoundData> data_;
 };

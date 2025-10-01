@@ -78,22 +78,22 @@
     <ClCompile Include="engine\2d\Sprite.cpp">
       <Filter>ソース ファイル\2Dobj</Filter>
     </ClCompile>
-    <ClCompile Include="engine\audio\SoundData.cpp">
+    <ClCompile Include="engine\audio\SoundManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="engine\audio\SoundManager.cpp">
+    <ClCompile Include="engine\EngineCore\DxCommon.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="engine\shader\Object3d.VS.hlsl" />
-    <FxCompile Include="engine\shader\Object3d.PS.hlsl" />
+    <FxCompile Include="Resources\shader\Object3d.VS.hlsl" />
+    <FxCompile Include="Resources\shader\Object3d.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\utility\Math.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="engine\utility\struct.h">
+    <ClInclude Include="header\struct.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -150,9 +150,6 @@
     <ClInclude Include="header\ComPtr.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="engine\audio\SoundData.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="engine\audio\SoundManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -186,6 +183,9 @@
     <ClInclude Include="header\DX12\dxgi.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="engine\EngineCore\DxCommon.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
@@ -193,6 +193,6 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="engine\shader\Object3d.hlsli" />
+    <None Include="Resources\shader\Object3d.hlsli" />
   </ItemGroup>
 </Project>

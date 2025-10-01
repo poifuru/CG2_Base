@@ -23,7 +23,7 @@ void DebugCamera::Initialize() {
 	};
 	worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	viewMatrix_ = Inverse(worldMatrix_);
-	projectionMatrix_ = MakePerspectiveFOVMatrix(0.45f, float(kClientWidth) / float(kClientHeight), 0.1f, 100.0f);
+	projectionMatrix_ = MakePerspectiveFOVMatrix(0.45f, float(1280) / float(720), 0.1f, 100.0f);
 
 	speed_ = 0.1f;
 }
@@ -89,8 +89,8 @@ void DebugCamera::Updata(HWND hwnd, HRESULT hr, ComPtr<IDirectInputDevice8W> key
 	if (mouseInput->left) {
 		// 画面中央に戻す
 		POINT center;
-		center.x = kClientWidth / 2;
-		center.y = kClientHeight / 2;
+		center.x = 1280 / 2;
+		center.y = 720 / 2;
 		ClientToScreen(hwnd, &center); // hwndは自分のウィンドウハンドル
 		SetCursorPos(center.x, center.y);
 

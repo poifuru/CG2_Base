@@ -1,11 +1,25 @@
 #pragma once
-#include "../utility/struct.h"
+#include "../../header/struct.h"
 #include <vector>
 #include <d3d12.h>
 #include <wrl.h>
 using namespace Microsoft::WRL;
 
 class SphereModel {
+public:		//メンバ関数
+	SphereModel (ID3D12Device* device, int subdivision);
+	~SphereModel ();
+
+	void Initialize (Vector3 position, float radius);
+	void Update (Matrix4x4* view, Matrix4x4* proj);
+	void Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light);
+
+	void ShowImGuiEditor ();
+
+	//アクセッサ
+	std::vector<VertexData> GetVertexData () { return vertexData_; }
+	Matrix4x4 GetWorld () { return transformationMatrix_.World; }
+
 private:	//メンバ変数
 	ComPtr<ID3D12Resource> vertexBuffer_;
 	//ComPtr<ID3D12Resource> indexBuffer_;
@@ -29,25 +43,12 @@ private:	//メンバ変数
 
 	//球の半径
 	float radius_;
-	
+
 	//球の縦横の分割数
 	int kSubdivision_;
 
 	//ImGuiで色を変える
 	float color_[4];
 
-public:		//メンバ関数
-	SphereModel (ID3D12Device* device, int subdivision);
-	~SphereModel ();
-
-	void Initialize (Vector3 position, float radius);
-	void Update (Matrix4x4* view, Matrix4x4* proj);
-	void Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light);
-
-	void ShowImGuiEditor ();
-
-	//アクセッサ
-	std::vector<VertexData> GetVertexData () { return vertexData_; }
-	Matrix4x4 GetWorld () { return transformationMatrix_.World; }
 };
 

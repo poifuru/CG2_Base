@@ -36,12 +36,18 @@ PixelShaderOutput main(VertexShaderOutput input)
     float4 transformedUV = mul(float32_t4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
     textureColor = gTexture.Sample(gSampler, transformedUV.xy);
     
+    //テクスチャーや色のアルファ値が一定以下ならPixelを棄却
+    if (textureColor.a <= 0.5f || output.color.a <= 0.5f)
+    {
+        discard;
+    }
+    
     //Lighttingの計算	
     if (gMaterial.enableLighting == 1)  //Lightingする場合
     {
         float cos = saturate(dot(normalize(input.normal), -gDirectionalLight.direction));
         output.color.rgb = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
-        //output.color.a = gMaterial.color.a * textureColor.a;
+        output.color.a = gMaterial.color.a * textureColor.a;
 
     }
     else if (gMaterial.enableLighting == 2)

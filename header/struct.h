@@ -204,17 +204,28 @@ struct RiffHeader {
 //FMTチャンク
 struct FormatChunk {
 	ChunkHeader chunk;	//"fmt"
-	WAVEFORMATEX fmt;		//波形フォーマット
+	WAVEFORMATEX fmt;	//波形フォーマット
 };
 
 //サウンドデータ構造体
 struct SoundData {
+	//音データ識別用の名前
+	std::string name;
 	//波形フォーマット
 	WAVEFORMATEX wfex;
+	//実際に再生するためのバッファ
+	//XAUDIO2_BUFFER buffer;
 	//バッファの先頭アドレス
 	BYTE* pBuffer;
 	//バッファのサイズ
 	unsigned int bufferSize;
+
+	void Unload () {
+		if (pBuffer) {
+			delete[] pBuffer;
+			pBuffer = nullptr;
+		}
+	}
 };
 
 //マウス構造体

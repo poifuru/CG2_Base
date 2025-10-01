@@ -10,12 +10,12 @@
 //***ユーティリティライブラリ***//
 //#include <cstdint>// 固定幅整数型 (uint32_t, int64_t など)
 //#include <string>// std::string
-#include <format>// C++20のformat() 文字列整形
+//#include <format>// C++20のformat() 文字列整形
 //#include <cassert>// assert() デバッグ用
 //#include <filesystem>	//ファイルやディレクトリに関する操作を行うためのライブラリ
 //#include <fstream>	//ファイルに書いたり読んだりするライブラリ
-#include <chrono>	//時間を扱うライブラリ
-#include <sstream>// stringstream
+//#include <chrono>	//時間を扱うライブラリ
+//#include <sstream>// stringstream
 //#include <vector>// 可変長配列
 //#define _USE_MATH_DEFINES
 //#include <math.h>// sin, cos, M_PI 定義など

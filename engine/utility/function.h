@@ -5,7 +5,7 @@
 #include "../../header/DX12/directX12.h"
 #include "../../header/file.h"
 #include "../../externals.h"
-#include "struct.h"
+#include "../../header/struct.h"
 
 //ウィンドウプロシージャ
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
