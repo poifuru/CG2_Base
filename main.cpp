@@ -1,5 +1,7 @@
 #include <Windows.h>
 #include "engine/EngineCore/DxCommon.h"
+#include "Utility/Shape/Shape.h"
+#include "header/struct.h"
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -7,6 +9,10 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	DxCommon dxCommon;
 	dxCommon.Initialize ();
+
+	//三角形のリソース
+	ShapeData triangle{};
+
 	/*メインループ！！！！！！！！！*/
 	//ウィンドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
@@ -18,7 +24,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		dxCommon.BeginFrame ();
 
-		dxCommon.DrawTriangle ();
+		dxCommon.shape.DrawTriangle ();
 
 		dxCommon.EndFrame ();
 	}

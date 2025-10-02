@@ -10,8 +10,6 @@ void DxCommon::Initialize () {
 	//main関数が始まってすぐに登録すると良い
 	SetUnhandledExceptionFilter (ExportDump);
 
-
-
 	std::ofstream logStream = Logtext ();
 
 	WNDCLASS wc{};
@@ -187,20 +185,17 @@ void DxCommon::Initialize () {
 	hr = device->CreateCommandQueue (&commandQueueDesc, IID_PPV_ARGS (&commandQueue));
 	//コマンドキューの生成がうまくいかなかったので起動できない
 	assert (SUCCEEDED (hr));
-
 	
 	hr = device->CreateCommandAllocator (D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS (&commandAllocator));
 	//コマンドアロケータの生成がうまくいかなかったので起動できない
 	assert (SUCCEEDED (hr));
-
 	
 	hr = device->CreateCommandList (0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator.Get (), nullptr,
-									IID_PPV_ARGS (&commandList));
+	IID_PPV_ARGS (&commandList));
 	//コマンドリストの生成がうまくいかなかったので起動できない
 	assert (SUCCEEDED (hr));
 
 	//スワップチェーンを生成する
-	
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 	swapChainDesc.Width = kClientWidth;		//画面の幅,ウィンドウのクライアント領域を同じものにしておく
 	swapChainDesc.Height = kClientHeight;	//画面の高さ,ウィンドウのクライアント領域を同じものにしておく
@@ -236,8 +231,6 @@ void DxCommon::Initialize () {
 	rtvHandles[1].ptr = rtvHandles[0].ptr + device->GetDescriptorHandleIncrementSize (D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	//2つ目を作る
 	device->CreateRenderTargetView (swapChainResources[1].Get (), &rtvDesc, rtvHandles[1]);
-
-	
 
 	MSG msg{};
 
@@ -283,10 +276,6 @@ void DxCommon::Initialize () {
 	rootParameter[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	rootParameter[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	rootParameter[3].Descriptor.ShaderRegister = 3;
-
-	//***スプライト用***//
-
-
 	//-----------------------------------------------------//
 
 	//InputLayout
@@ -444,21 +433,21 @@ void DxCommon::Initialize () {
 											  IID_PPV_ARGS (&graphicsPipelineState));
 	assert (SUCCEEDED (hr));
 
-	////サウンドの導入
-	//ComPtr<IXAudio2> xAudio2;
-	//IXAudio2MasteringVoice* masterVoice;
+	//ビューポート
+	//クライアント領域のサイズと一緒にして画面全体に表示
+	viewport.Width = static_cast<float>(kClientWidth);
+	viewport.Height = static_cast<float>(kClientHeight);
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
 
-	//hr = XAudio2Create (&xAudio2, 0, XAUDIO2_DEFAULT_PROCESSOR);
-	//assert (SUCCEEDED (hr));
-
-	////マスターボイスを生成
-	//hr = xAudio2->CreateMasteringVoice (&masterVoice);
-
-	////音声の読み込み
-	//SoundData soundData1 = SoundLoadWave ("Resources/Sounds/Alarm01.wav");
-
-	//PSOを生成する
-	//PSO->Generate(device, hr);
+	//シザー矩形
+	//基本的にビューポートと同じ矩形が構成されるようにする
+	scissorRect.left = 0;
+	scissorRect.right = kClientWidth;
+	scissorRect.top = 0;
+	scissorRect.bottom = kClientHeight;
 
 #pragma region Plane
 	Model* plane = new Model (device.Get (), "Resources/plane", "plane", true);
@@ -475,10 +464,6 @@ void DxCommon::Initialize () {
 #pragma region Fence
 	Model* Fence = new Model (device.Get (), "Resources/fence", "fence", true);
 #pragma endregion
-
-	
-
-	
 
 	//DescriptorSizeを取得しておく
 	const uint32_t descriptorSizeSRV = device->GetDescriptorHandleIncrementSize (D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -534,24 +519,6 @@ void DxCommon::BeginFrame () {
 	ImGui_ImplWin32_NewFrame ();
 	ImGui::NewFrame ();
 
-	//ビューポート
-	D3D12_VIEWPORT viewport{};
-	//クライアント領域のサイズと一緒にして画面全体に表示
-	viewport.Width = static_cast<float>(kClientWidth);
-	viewport.Height = static_cast<float>(kClientHeight);
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-
-	//シザー矩形
-	D3D12_RECT scissorRect{};
-	//基本的にビューポートと同じ矩形が構成されるようにする
-	scissorRect.left = 0;
-	scissorRect.right = kClientWidth;
-	scissorRect.top = 0;
-	scissorRect.bottom = kClientHeight;
-
 	//これから書きこむバックバッファのインデックスを取得
 	UINT backBufferIndex = swapChain->GetCurrentBackBufferIndex ();
 	//TransitionBarrierの設定
@@ -586,7 +553,7 @@ void DxCommon::BeginFrame () {
 	commandList->RSSetScissorRects (1, &scissorRect);			//Scissorを設定
 	//RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	commandList->SetGraphicsRootSignature (rootSignature.Get ());
-	commandList->SetPipelineState (graphicsPipelineState.Get ());		//PSOを設定
+	commandList->SetPipelineState (graphicsPipelineState.Get ());	//PSOを設定
 }
 
 void DxCommon::EndFrame () {
@@ -673,13 +640,6 @@ void DxCommon::DrawTriangle () {
 	vbView_.BufferLocation = vertexBuffer_->GetGPUVirtualAddress ();
 	vbView_.SizeInBytes = UINT (sizeof (VertexData) * vertexData_.size ());
 	vbView_.StrideInBytes = sizeof (VertexData);
-
-	//お前は今じゃない、また今度な！
-	//indexBuffer_ = CreateBufferResource (device, sizeof (uint32_t) * (kSubdivision_ * kSubdivision_) * 6);
-	//indexBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&indexData_));
-	//ibView_.BufferLocation = indexBuffer_->GetGPUVirtualAddress ();
-	//ibView_.SizeInBytes = UINT (sizeof (uint32_t) * (kSubdivision_ * kSubdivision_) * 6);
-	//ibView_.Format = DXGI_FORMAT_R32_UINT;
 
 	//行列データ
 	matrixBuffer_ = CreateBufferResource (device, sizeof (TransformationMatrix));

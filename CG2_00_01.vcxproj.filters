@@ -66,9 +66,6 @@
     <ClCompile Include="engine\camera\DebugCamera.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="engine\utility\globalVariables.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="engine\3d\SphereModel.cpp">
       <Filter>ソース ファイル\3Dobj</Filter>
     </ClCompile>
@@ -84,7 +81,10 @@
     <ClCompile Include="engine\EngineCore\DxCommon.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Tiangle.cpp">
+    <ClCompile Include="Utility\Shape\Triangle.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\Shape\Shape.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -138,9 +138,6 @@
     <ClInclude Include="engine\camera\DebugCamera.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="engine\utility\globalVariables.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="engine\2d\Sprite.h">
       <Filter>ソース ファイル\2Dobj</Filter>
     </ClInclude>
@@ -189,7 +186,10 @@
     <ClInclude Include="engine\EngineCore\DxCommon.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Tiangle.h">
+    <ClInclude Include="Utility\Shape\Triangle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\Shape\Shape.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

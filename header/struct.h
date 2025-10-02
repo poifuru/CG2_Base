@@ -265,3 +265,10 @@ struct MouseInput {
 		return !mid && prevMid;
 	}
 };
+
+//*****shape描画に必要なデータたちの構造体*****//
+struct ShapeData {
+	std::vector<VertexData> vertexData;
+	Matrix4x4 matrixData;
+	Material materialData;
+};

@@ -4,11 +4,11 @@
 #include "../camera/DebugCamera.h"
 #include "../2d/Sprite.h"
 #include "../3d/sphereModel.h"
-#include "../utility/globalVariables.h"
 #include "../../header/struct.h"
 #include "../utility/Math.h"
 #include "../3d/Model.h"
 #include "../../externals.h"
+#include "../../Utility/Shape/Shape.h"
 #include <xaudio2.h>
 #pragma comment(lib,"xaudio2.lib")
 #include <Xinput.h>
@@ -37,7 +37,11 @@ public:
 
 	void Finalize ();
 
-	void DrawTriangle ();
+	Shape shape;
+
+	ComPtr<ID3D12Device> GetDevice () { return device; }
+	ComPtr<ID3D12GraphicsCommandList> GetCommandList () { return commandList; }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureHandle () { return textureSrvHandleGPU; }
 
 private:
 	D3DResourceLeakChecker leakCheck;
@@ -97,8 +101,8 @@ private:
 	HANDLE fenceEvent;
 	//ウィンドウを生成
 	HWND hwnd;
-
-
+	D3D12_VIEWPORT viewport{};
+	D3D12_RECT scissorRect{};
 
 
 
