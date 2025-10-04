@@ -26,7 +26,7 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vbView_{};
 	ComPtr<ID3D12Resource> matrixBuffer_;
 	ComPtr<ID3D12Resource> materialBuffer_;
-	ComPtr<ID3D12Resource> lightBuffer_;
+	//ComPtr<ID3D12Resource> lightBuffer_;
 
 	ShapeData* shapeData_ = nullptr;
 };

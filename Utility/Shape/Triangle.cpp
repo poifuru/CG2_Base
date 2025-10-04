@@ -16,8 +16,8 @@ void Triangle::Initialize (ID3D12Device* device) {
     materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&shapeData_->materialData));
 
     // ライト作成
-    lightBuffer_ = CreateBufferResource (device, sizeof (DirectionalLight));
-    lightBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&shapeData_->lightData));
+   /* lightBuffer_ = CreateBufferResource (device, sizeof (DirectionalLight));
+    lightBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&shapeData_->lightData));*/
 }
 
 void Triangle::Update (ShapeData* shapeData) {
@@ -35,7 +35,7 @@ void Triangle::Command (ID3D12GraphicsCommandList* commandList, D3D12_GPU_DESCRI
     //テクスチャのSRVを設定
     commandList->SetGraphicsRootDescriptorTable (2, *textureSrvHandleGPU);
     //ライティングの設定
-    commandList->SetGraphicsRootConstantBufferView (3, lightBuffer_->GetGPUVirtualAddress ());
+    //commandList->SetGraphicsRootConstantBufferView (3, lightBuffer_->GetGPUVirtualAddress ());
     //実際に描画する
     commandList->DrawInstanced (3, 1, 0, 0);
 }

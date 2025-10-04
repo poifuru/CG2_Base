@@ -12,6 +12,9 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//三角形のリソース
 	ShapeData triangle{};
+	triangle.vertexData = {
+
+	};
 
 	/*メインループ！！！！！！！！！*/
 	//ウィンドウの×ボタンが押されるまでループ

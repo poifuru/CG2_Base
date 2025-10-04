@@ -37,11 +37,12 @@ public:
 
 	void Finalize ();
 
-	Shape shape;
-
 	ComPtr<ID3D12Device> GetDevice () { return device; }
 	ComPtr<ID3D12GraphicsCommandList> GetCommandList () { return commandList; }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureHandle () { return textureSrvHandleGPU; }
+
+	//図形描画セット
+	Shape shape;
 
 private:
 	D3DResourceLeakChecker leakCheck;

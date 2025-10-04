@@ -511,6 +511,9 @@ void DxCommon::Initialize () {
 						 srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart (),
 						 srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart ()
 	);
+
+	//Shapeの初期化
+	shape.Initialize (device.Get (), commandList.Get ());
 }
 
 void DxCommon::BeginFrame () {
@@ -626,56 +629,4 @@ void DxCommon::Finalize () {
 	// ================================
 	// ウィンドウ
 	DestroyWindow (hwnd); // ← CloseWindow より DestroyWindow の方が自然（WM_DESTROY 発生）
-}
-
-void DxCommon::DrawTriangle () {
-	//===リソースの初期化===//
-	//頂点データ
-	vertexData_.resize (3);
-	vertexBuffer_ = CreateBufferResource (device, sizeof (VertexData) * 3);
-	vertexBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&vertexDataPtr_));
-	vertexDataPtr_[0].position = { 0.0f, 1.0f, 0.0f, 1.0f };
-	vertexDataPtr_[1].position = { 1.0f, -1.0f, 0.0f, 1.0f };
-	vertexDataPtr_[2].position = { -1.0f, -1.0f, 0.0f, 1.0f };
-	vbView_.BufferLocation = vertexBuffer_->GetGPUVirtualAddress ();
-	vbView_.SizeInBytes = UINT (sizeof (VertexData) * vertexData_.size ());
-	vbView_.StrideInBytes = sizeof (VertexData);
-
-	//行列データ
-	matrixBuffer_ = CreateBufferResource (device, sizeof (TransformationMatrix));
-	matrixBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&matrixData_));
-	matrixData_->World = MakeIdentity4x4 ();
-	matrixData_->WVP = MakeIdentity4x4 ();
-	matrixData_->WorldInverseTranspose = MakeIdentity4x4 ();
-	transform_ = {};
-	uvTransform_ = {};
-	transformationMatrix_.World = MakeIdentity4x4 ();
-	transformationMatrix_.WVP = MakeIdentity4x4 ();
-	transformationMatrix_.WorldInverseTranspose = MakeIdentity4x4 ();
-
-	//マテリアルデータ
-	materialBuffer_ = CreateBufferResource (device, sizeof (Material));
-	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&materialData_));
-	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	materialData_->enableLighting = false;
-	materialData_->uvTranform = MakeIdentity4x4 ();
-
-	//light
-	dierctionalLightResource = CreateBufferResource (device, sizeof (DirectionalLight));
-	dierctionalLightResource->Map (0, nullptr, reinterpret_cast<void**>(&lightData));
-	*lightData = {};
-
-	//どんな形状で描画するのか
-	commandList->IASetPrimitiveTopology (D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//頂点バッファをセットする
-	commandList->IASetVertexBuffers (0, 1, &vbView_);	//VBVを設定
-	//定数バッファのルートパラメータを設定する	
-	commandList->SetGraphicsRootConstantBufferView (0, matrixBuffer_->GetGPUVirtualAddress ());
-	commandList->SetGraphicsRootConstantBufferView (1, materialBuffer_->GetGPUVirtualAddress ());
-	//テクスチャのSRVを設定
-	commandList->SetGraphicsRootDescriptorTable (2, textureSrvHandleGPU);
-	//ライティングの設定
-	commandList->SetGraphicsRootConstantBufferView (3, dierctionalLightResource->GetGPUVirtualAddress ());
-	//実際に描画する(後々Index描画に変える)
-	commandList->DrawInstanced (3, 1, 0, 0);
 }
