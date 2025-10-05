@@ -24,9 +24,15 @@ private:
 	//GPUリソース  
 	ComPtr<ID3D12Resource> vertexBuffer_;
 	D3D12_VERTEX_BUFFER_VIEW vbView_{};
-	ComPtr<ID3D12Resource> matrixBuffer_;
-	ComPtr<ID3D12Resource> materialBuffer_;
-	//ComPtr<ID3D12Resource> lightBuffer_;
+	VertexData* vertexData_[3] = { nullptr };
 
-	ShapeData* shapeData_ = nullptr;
+	ComPtr<ID3D12Resource> matrixBuffer_;
+	Matrix4x4* matrixData_ = nullptr;
+
+	ComPtr<ID3D12Resource> materialBuffer_;
+	Material* materialData_ = nullptr;
+
+	////ライトは三角形自体が持つものではないので外部から借りてくる(データを入れる場所だけ確保する)
+	//ComPtr<ID3D12Resource> lightBuffer_;
+	//DirectionalLight* lightData_ = nullptr;
 };

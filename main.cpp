@@ -10,27 +10,69 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	DxCommon dxCommon;
 	dxCommon.Initialize ();
 
-	//三角形のリソース
-	ShapeData triangle{};
-	triangle.vertexData = {
-
+	//頂点データ
+	VertexData* vertexData[3] = {};
+	*vertexData[0] = {
+		{0.0f, 0.5f, 0.0f, 1.0f },
+		{0.0f, 0.0f},
+		{0.0f, 0.0f, -1.0f},
+	};
+	*vertexData[1] = {
+		{0.5f, -0.5f, 0.0f, 1.0f },
+		{0.0f, 0.0f},
+		{0.0f, 0.0f, -1.0f},
+	};
+	*vertexData[2] = {
+		{-0.5f, -0.5f, 0.0f, 1.0f },
+		{0.0f, 0.0f},
+		{0.0f, 0.0f, -1.0f},
 	};
 
-	/*メインループ！！！！！！！！！*/
-	//ウィンドウの×ボタンが押されるまでループ
-	while (msg.message != WM_QUIT) {
-		//Windowにメッセージが来てたら最優先で処理させる
-		if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) {
-			TranslateMessage (&msg);
-			DispatchMessage (&msg);
-		}
+	//マテリアルデータ
+	Material * materialData{};
+	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	materialData->enableLighting = true;
+	materialData->uvTranform = MakeIdentity4x4 ();
 
-		dxCommon.BeginFrame ();
+	//トランスフォーム
+	Transform transformTriangle = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+	//UVトランスフォーム
+	Transform uvTransform = { { 1.0f, 1.0f, 1.0f },{ 0.0f, 0.0f, 0.0f },{ 0.0f, 0.0f, 0.0f } };
 
-		dxCommon.shape.DrawTriangle ();
+	//カメラ
+	Transform cameraTransform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -10.0f} };
+	Matrix4x4 cameraMatrix = {};
+	Matrix4x4 viewMatrix = {};
+	Matrix4x4 projectionMatrix = {};
 
-		dxCommon.EndFrame ();
+	//三角形のリソース
+	ShapeData triangle{};
+	for (int i = 0; i < 3; i++) {
+		triangle.vertexData.push_back (*vertexData[i]);
 	}
+	triangle.materialData = *materialData;
+	triangle.matrixData
+
+		/*メインループ！！！！！！！！！*/
+		//ウィンドウの×ボタンが押されるまでループ
+		while (msg.message != WM_QUIT) {
+			//Windowにメッセージが来てたら最優先で処理させる
+			if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) {
+				TranslateMessage (&msg);
+				DispatchMessage (&msg);
+			}
+
+			dxCommon.BeginFrame ();
+
+			//カメラ
+			cameraMatrix = MakeAffineMatrix (cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
+			viewMatrix = Inverse (cameraMatrix);
+			projectionMatrix = MakePerspectiveFOVMatrix (0.45f, float (1280) / float (720), 0.1f, 100.0f);
+
+			dxCommon.shape.DrawTriangle (&triangle, &dxCommon.GetTextureHandle ());
+
+			dxCommon.EndFrame ();
+		}
 	dxCommon.Finalize ();
 	return 0;
 };

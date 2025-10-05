@@ -266,9 +266,10 @@ struct MouseInput {
 	}
 };
 
-//*****shape描画に必要なデータたちの構造体*****//
+//*****shape描画に必要なデータをまとめる箱*****//
 struct ShapeData {
 	std::vector<VertexData> vertexData;
 	Matrix4x4 matrixData;
 	Material materialData;
+	//DirectionalLight lightData;
 };

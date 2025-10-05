@@ -15,6 +15,8 @@ private:
 	ComPtr<ID3D12Device> device_;
 	ComPtr<ID3D12GraphicsCommandList> commandList_;
 
-	Triangle triangle_;
+	ShapeData* shapeData_ = nullptr;
+
+	Triangle* triangle_ = nullptr;
 };
 

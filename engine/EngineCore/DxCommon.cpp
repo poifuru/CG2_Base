@@ -449,6 +449,14 @@ void DxCommon::Initialize () {
 	scissorRect.top = 0;
 	scissorRect.bottom = kClientHeight;
 
+	//ライト
+	dierctionalLightResource = CreateBufferResource (device.Get (), sizeof (DirectionalLight));
+	DirectionalLight* directionalLightData = nullptr;
+	dierctionalLightResource.Get()->Map (0, nullptr, reinterpret_cast<void**>(&lightData));
+	lightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	lightData->direction = { 0.0f, 0.0f, -1.0f };
+	lightData->intensity = 1.0f;
+
 #pragma region Plane
 	Model* plane = new Model (device.Get (), "Resources/plane", "plane", true);
 #pragma endregion
@@ -557,6 +565,9 @@ void DxCommon::BeginFrame () {
 	//RootSignatureを設定。PSOに設定しているけど別途設定が必要
 	commandList->SetGraphicsRootSignature (rootSignature.Get ());
 	commandList->SetPipelineState (graphicsPipelineState.Get ());	//PSOを設定
+
+	//ライティングの設定
+	commandList->SetGraphicsRootConstantBufferView (3, dierctionalLightResource.Get()->GetGPUVirtualAddress ());
 }
 
 void DxCommon::EndFrame () {
