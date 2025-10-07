@@ -11,7 +11,7 @@ public: // メンバ関数
     long GetMouseDeltaY() const { return mouseDeltaY_; }  
 
 private: // メンバ変数  
-    std::vector<bool> keyState_{ 256, false };
+    //std::vector<bool> keyState_{ 256, false };
     long mouseDeltaX_ = 0;
     long mouseDeltaY_ = 0;
 };

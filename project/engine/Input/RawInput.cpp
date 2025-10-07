@@ -37,7 +37,7 @@ void RawInput::Update (LPARAM lParam) {
         const RAWKEYBOARD& kb = raw->data.keyboard;
         USHORT key = kb.VKey;
         bool down = !(kb.Flags & RI_KEY_BREAK);
-        if (key < 256) keyState_[key] = down;
+       // if (key < 256) keyState_[key] = down;
     }
 
     // マウス入力
@@ -49,5 +49,5 @@ void RawInput::Update (LPARAM lParam) {
 }
 
 bool RawInput::IsKeyDown (unsigned short key) const {
-    return key < keyState_.size () ? keyState_[key] : false;
+   // return key < keyState_.size () ? keyState_[key] : false;
 }
