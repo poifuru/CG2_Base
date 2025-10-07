@@ -1,5 +1,8 @@
 #include "function.h"
 
+//インプットマネージャーのポインタを置いておく
+InputManager* g_inputManager = nullptr;
+
 //ウィンドウプロシージャ
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
@@ -8,6 +11,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 
 	//メッセージに応じてゲーム固有の処理を行う
 	switch (msg) {
+		//入力を検知した
+	case WM_INPUT:
+		if (g_inputManager) {
+			g_inputManager->Update (lparam);
+		}
+		break;
+
 		//ウィンドウが破棄された
 	case WM_DESTROY:
 		//OSに対して、アプリの終了を伝える

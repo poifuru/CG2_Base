@@ -1,5 +1,6 @@
 #pragma once
 #include "../../header/Engine.h"
+#include "../Input/InputManager.h"
 
 //クライアント領域のサイズ
 const int32_t kClientWidth = 1280;
@@ -20,9 +21,6 @@ struct D3DResourceLeakChecker {
 };
 
 class DxCommon {
-private://メンバ関数(このクラスで完結する、Initializeで使う)
-	void DeviceInit ();
-
 public:	//メンバ関数(mainで呼び出すよう)
 	void Initialize ();
 	void BeginFrame ();
@@ -66,6 +64,9 @@ private://メンバ変数
 	ComPtr<IDirectInputDevice8> keyboard = nullptr;
 	//マウスデバイス
 	ComPtr<IDirectInputDevice8> mouse = nullptr;
+
+	//インプットマネージャー
+	InputManager* inputManager = nullptr;
 	//================//
 
 	//デバイス

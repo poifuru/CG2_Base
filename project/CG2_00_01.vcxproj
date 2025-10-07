@@ -153,6 +153,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="engine\utility\function.cpp" />
     <ClCompile Include="engine\utility\globalVariables.cpp" />
+    <ClCompile Include="engine\Input\GamePad.cpp" />
+    <ClCompile Include="engine\Input\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\utility\Math.cpp" />
     <ClCompile Include="engine\audio\Sound.cpp">
@@ -177,6 +179,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="engine\Input\RawInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="engine\shader\Object3d.PS.hlsl">
@@ -199,6 +202,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClInclude Include="engine\EngineCore\DxCommon.h" />
     <ClInclude Include="engine\camera\DebugCamera.h" />
+    <ClInclude Include="engine\Input\GamePad.h" />
     <ClInclude Include="header\DirectInput.h" />
     <ClInclude Include="header\DX12\directX12.h" />
     <ClInclude Include="header\ComPtr.h" />
@@ -249,6 +253,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="engine\Input\InputManager.h" />
+    <ClInclude Include="engine\Input\RawInput.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

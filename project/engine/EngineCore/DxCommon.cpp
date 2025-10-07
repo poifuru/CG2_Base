@@ -1,10 +1,6 @@
 #include "DxCommon.h"
 #include "../utility/function.h"
 
-void DxCommon::DeviceInit () {
-
-}
-
 void DxCommon::Initialize () {
 	//ウィンドウサイズを表す構造体にクライアント領域を入れる
 	RECT wrc = { 0, 0, kClientWidth, kClientHeight };
@@ -50,6 +46,10 @@ void DxCommon::Initialize () {
 
 	//ウィンドウを表示
 	ShowWindow (hwnd, SW_SHOW);
+
+	//インプットマネージャー初期化
+	inputManager = new InputManager;
+	inputManager->Initialize (hwnd);
 
 	//dxgiFactory生成
 	//HRESULTはWindows系のエラーコードであり、

@@ -102,6 +102,15 @@
     <ClCompile Include="engine\utility\Math.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="engine\Input\GamePad.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Input\InputManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Input\RawInput.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="engine\shader\Object3d.VS.hlsl" />
@@ -206,6 +215,15 @@
     </ClInclude>
     <ClInclude Include="header\DX12\directX12.h">
       <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Input\GamePad.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Input\InputManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Input\RawInput.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

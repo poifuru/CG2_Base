@@ -5,6 +5,7 @@
 #include "../../header/DX12/directX12.h"
 #include "../../header/file.h"
 #include "../../externals.h"
+#include "../Input/InputManager.h"
 #include "struct.h"
 
 //ウィンドウプロシージャ
