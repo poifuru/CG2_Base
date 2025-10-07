@@ -42,7 +42,7 @@ public:		//メンバ関数
 
 	void Initialize (Vector3 position, float radius);
 	void Update (Matrix4x4* view, Matrix4x4* proj);
-	void Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light);
+	void Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
 
 	void ShowImGuiEditor ();
 

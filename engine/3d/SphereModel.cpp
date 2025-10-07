@@ -169,7 +169,7 @@ void SphereModel::Update (Matrix4x4* view, Matrix4x4* proj) {
 	materialData_->uvTranform = MakeAffineMatrix (uvTransform_.scale, uvTransform_.rotate, uvTransform_.translate);
 }
 
-void SphereModel::Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light) {
+void SphereModel::Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	//どんな形状で描画するのか
 	cmdList->IASetPrimitiveTopology (D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//頂点バッファをセットする
@@ -179,8 +179,6 @@ void SphereModel::Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR
 	cmdList->SetGraphicsRootConstantBufferView (1, materialBuffer_->GetGPUVirtualAddress ());
 	//テクスチャのSRVを設定
 	cmdList->SetGraphicsRootDescriptorTable (2, textureHandle);
-	//ライティングの設定
-	cmdList->SetGraphicsRootConstantBufferView (3, light->GetGPUVirtualAddress());
 	//実際に描画する(後々Index描画に変える)
 	cmdList->DrawInstanced ((kSubdivision_ * kSubdivision_ * 6), 1, 0, 0);
 }

@@ -161,18 +161,18 @@ struct SpriteData {
 	Matrix4x4 wvpMatrix;	//wvp行列ポインタ
 };
 
-//enum Light {
-//	none,
-//	lambert,
-//	halfLambert,
-//};
+enum Light {
+	none,
+	lambert,
+	halfLambert,
+};
 
 //平行光源構造体
 struct DirectionalLight {
 	Vector4 color;		//ライトの色
 	Vector3 direction;	//ライトの向き
 	float intensity;	//輝度
-	//Light mode;			//ライティングの設定
+	Light mode;			//ライティングの設定
 };
 
 //MaterialData構造体

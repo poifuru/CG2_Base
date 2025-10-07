@@ -72,7 +72,7 @@ void Model::Update (Matrix4x4* view, Matrix4x4* proj) {
 	materialData_->uvTranform = MakeAffineMatrix (uvTransform_.scale, uvTransform_.rotate, uvTransform_.translate);
 }
 
-void Model::Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light) {
+void Model::Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	//どんな形状で描画するのか
 	cmdList->IASetPrimitiveTopology (D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//頂点バッファをセットする
@@ -82,8 +82,6 @@ void Model::Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDL
 	cmdList->SetGraphicsRootConstantBufferView (1, materialBuffer_->GetGPUVirtualAddress ());
 	//テクスチャのSRVを設定
 	cmdList->SetGraphicsRootDescriptorTable (2, textureHandle);
-	//ライティングの設定
-	cmdList->SetGraphicsRootConstantBufferView (3, light->GetGPUVirtualAddress ());
 	//実際に描画する(後々Index描画に変える)
 	cmdList->DrawInstanced (static_cast<UINT>(model_.vertexCount), 1, 0, 0);
 }
@@ -103,5 +101,19 @@ void Model::ImGui () {
 	ImGui::DragFloat3 (("UVscale" + label).c_str (), &uvTransform_.scale.x, 0.01f);
 	ImGui::DragFloat3 (("UVrotate" + label).c_str (), &uvTransform_.rotate.x, 0.01f);
 	ImGui::DragFloat3 (("UVtranslate" + label).c_str (), &uvTransform_.translate.x, 0.01f);
+	//ライトの種類を選べるようにする
+	static int currentNum = 1;
+	const char* lights[] = { "None", "lambert", "halfLambert" };
+	if(ImGui::Combo ("ライティング", &currentNum, lights, IM_ARRAYSIZE (lights))) {
+		if (currentNum == 0) {
+			materialData_->enableLighting = Light::none;
+		}
+		else if (currentNum == 1) {
+			materialData_->enableLighting = Light::lambert;
+		}
+		else if (currentNum == 2) {
+			materialData_->enableLighting = Light::halfLambert;
+		}
+	}
 	ImGui::Separator ();
 }

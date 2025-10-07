@@ -153,7 +153,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion
 
 #pragma region Fence
-	Model* Fence = new Model (dxCommon->GetDevice (), "Resources/fence", "fence", true);
+	Model* Fence = new Model (dxCommon->GetDevice (), "Resources/fence", "fence", false);
 #pragma endregion
 
 	//平行光源のResourceを作成してデフォルト値を書き込む
@@ -165,6 +165,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	directionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	directionalLightData->direction = { 0.0f, -1.0f, 0.0f };
 	directionalLightData->intensity = 1.0f;
+	directionalLightData->mode = Light::halfLambert;
 
 	//Transform
 	Transform transform{ {1.0f, 1.0f, 1.0f}, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
@@ -498,20 +499,21 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			
 
 			//=======コマンド君達=======//
-			
+			//ライティングの設定
+			dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView (3, dierctionalLightResource->GetGPUVirtualAddress ());
 			//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
-			Fence->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[4], dierctionalLightResource.Get ());
+			Fence->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[4]);
 			if (useSphere) {
-				sphere->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[0], dierctionalLightResource.Get ());
+				sphere->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[0]);
 			}
 			if (usePlane) {
-				plane->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[1], dierctionalLightResource.Get ());
+				plane->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[1]);
 			}
 			if (useModel) {
-				bunny->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[2], dierctionalLightResource.Get ());
+				bunny->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[2]);
 			}
 			if (useTeapot) {
-				teapot->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[3], dierctionalLightResource.Get ());
+				teapot->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[3]);
 			}
 			if (useSprite) {
 				sprite->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[0]);
