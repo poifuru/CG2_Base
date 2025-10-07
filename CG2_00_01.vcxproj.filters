@@ -16,24 +16,36 @@
     <Filter Include="imgui">
       <UniqueIdentifier>{2ae7fe3c-d338-4c5d-bffa-4f2d593c3310}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\PSO関連_cpp">
+    <Filter Include="ソース ファイル\PSO">
       <UniqueIdentifier>{222bddf7-7625-4653-b03d-6d6cef2ffeb7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\PSO関連_cpp">
-      <UniqueIdentifier>{b7bb6969-6de0-4a8a-a0b1-65911f8b4c8c}</UniqueIdentifier>
+    <Filter Include="header">
+      <UniqueIdentifier>{b2bbd771-7f2e-488a-9834-7fa93dca6403}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\3Dobj">
+    <Filter Include="Utility">
+      <UniqueIdentifier>{55abf6c4-9d42-401d-99dc-7857b3fdc52f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application">
+      <UniqueIdentifier>{ebd6620b-69b1-4c6f-b4c8-3f05abb83dee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine">
+      <UniqueIdentifier>{9b769be6-3e43-44cd-98f5-67ad450f72cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\3d">
       <UniqueIdentifier>{01d6f405-b361-4eea-a119-8b18777e96f5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\2Dobj">
+    <Filter Include="engine\2d">
       <UniqueIdentifier>{4b0a51e9-9fac-40a7-b5df-c0609f39aece}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\engineCore">
+      <UniqueIdentifier>{ed7b6e0b-e0b1-4a65-9325-12fb2ae56dde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\audio">
+      <UniqueIdentifier>{7ca0ba22-cd3a-4a3c-9b40-0d8eb8fbb0bd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\utility\Math.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="externals\imgui\imgui.cpp">
@@ -57,32 +69,38 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="engine\utility\function.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\audio\Sound.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\camera\DebugCamera.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\utility\globalVariables.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="engine\3d\SphereModel.cpp">
-      <Filter>ソース ファイル\3Dobj</Filter>
+      <Filter>engine\3d</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Model.cpp">
-      <Filter>ソース ファイル\3Dobj</Filter>
+      <Filter>engine\3d</Filter>
     </ClCompile>
     <ClCompile Include="engine\2d\Sprite.cpp">
-      <Filter>ソース ファイル\2Dobj</Filter>
+      <Filter>engine\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\audio\Sound.cpp">
+      <Filter>engine\audio</Filter>
     </ClCompile>
     <ClCompile Include="engine\audio\SoundData.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>engine\audio</Filter>
     </ClCompile>
     <ClCompile Include="engine\audio\SoundManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>engine\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\EngineCore\DxCommon.cpp">
+      <Filter>engine\engineCore</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\utility\globalVariables.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\utility\function.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\camera\DebugCamera.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\utility\Math.cpp">
+      <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -90,12 +108,6 @@
     <FxCompile Include="engine\shader\Object3d.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\utility\Math.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\utility\struct.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="externals\imgui\imconfig.h">
       <Filter>imgui</Filter>
     </ClInclude>
@@ -126,65 +138,74 @@
     <ClInclude Include="externals.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="engine\utility\function.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\audio\Sound.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\camera\DebugCamera.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="engine\utility\globalVariables.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="engine\2d\Sprite.h">
-      <Filter>ソース ファイル\2Dobj</Filter>
+      <Filter>engine\2d</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\Model.h">
-      <Filter>ソース ファイル\3Dobj</Filter>
+      <Filter>engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="engine\3d\SphereModel.h">
-      <Filter>ソース ファイル\3Dobj</Filter>
+      <Filter>engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="header\ComPtr.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\audio\Sound.h">
+      <Filter>engine\audio</Filter>
     </ClInclude>
     <ClInclude Include="engine\audio\SoundData.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>engine\audio</Filter>
     </ClInclude>
     <ClInclude Include="engine\audio\SoundManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>engine\audio</Filter>
     </ClInclude>
-    <ClInclude Include="header\file.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="header\DX12\directX12.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="header\WinSupport.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="header\ComPtr.h">
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="header\DirectInput.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="header\Engine.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="header\pch.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="header\DX12\sdkLayers.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="header\DX12\dxgiDebug.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="header\DX12\dxcapi.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="header\DX12\dxgi.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="header\DX12\dxgiDebug.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="header\Engine.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="header\file.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="header\DX12\sdkLayers.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="header\WinSupport.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\EngineCore\DxCommon.h">
+      <Filter>engine\engineCore</Filter>
+    </ClInclude>
+    <ClInclude Include="header\pch.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\camera\DebugCamera.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\utility\Math.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\utility\struct.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\utility\function.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="header\DX12\directX12.h">
+      <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
