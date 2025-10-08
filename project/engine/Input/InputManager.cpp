@@ -7,3 +7,7 @@ void InputManager::Initialize (HWND hwnd) {
 void InputManager::Update (LPARAM lparam) {
 	rawInput_.Update (lparam);
 }
+
+void InputManager::EndFrame () {
+	rawInput_.EndFrame ();
+}

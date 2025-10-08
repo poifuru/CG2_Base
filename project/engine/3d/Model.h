@@ -45,6 +45,7 @@ public:	//メンバ関数
 
 	//アクセッサ
 	ModelData GetModelData () { return model_; }
+	void SetPositon (Vector3 pos) { transform_.translate = pos; }
 
 private:		//メンバ変数
 	//モデルデータ

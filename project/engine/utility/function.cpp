@@ -5,9 +5,7 @@ InputManager* g_inputManager = nullptr;
 
 //ウィンドウプロシージャ
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
-		return true;
-	}
+	ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam);
 
 	//メッセージに応じてゲーム固有の処理を行う
 	switch (msg) {
@@ -24,7 +22,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		PostQuitMessage(0);
 		return 0;
 	}
-
 	//標準のメッセージ処理を行う
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }

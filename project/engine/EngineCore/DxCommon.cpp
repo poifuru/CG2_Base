@@ -47,10 +47,6 @@ void DxCommon::Initialize () {
 	//ウィンドウを表示
 	ShowWindow (hwnd, SW_SHOW);
 
-	//インプットマネージャー初期化
-	inputManager = new InputManager;
-	inputManager->Initialize (hwnd);
-
 	//dxgiFactory生成
 	//HRESULTはWindows系のエラーコードであり、
 	//関数が成功したかどうかをSUCCEDEDマクロで判定できる
@@ -152,36 +148,6 @@ void DxCommon::Initialize () {
 		infoQueue->Release ();
 	}
 #endif // _DEBUG
-
-	/*入力デバイスの初期化処理*/
-	//DirectInput生成
-	hr = DirectInput8Create (wc.hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr);
-	assert (SUCCEEDED (hr));
-
-	//キーボード生成
-	hr = directInput->CreateDevice (GUID_SysKeyboard, &keyboard, NULL);
-	assert (SUCCEEDED (hr));
-
-	//入力データ形式のセット
-	hr = keyboard->SetDataFormat (&c_dfDIKeyboard);	//標準形式
-	assert (SUCCEEDED (hr));
-
-	//排他制御レベルのセット
-	hr = keyboard->SetCooperativeLevel (hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
-	assert (SUCCEEDED (hr));
-
-	//マウスの生成
-	hr = directInput->CreateDevice (GUID_SysMouse, &mouse, NULL);
-	assert (SUCCEEDED (hr));
-
-	//入力データ形式のセット
-	hr = mouse->SetDataFormat (&c_dfDIMouse);
-	assert (SUCCEEDED (hr));
-
-	//排他制御レベルのセット
-	hr = mouse->SetCooperativeLevel (hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-	assert (SUCCEEDED (hr));
-	/***********************/
 
 	//コマンドキュー生成
 	hr = device->CreateCommandQueue (&commandQueueDesc, IID_PPV_ARGS (&commandQueue));
@@ -550,10 +516,6 @@ void DxCommon::Finalize () {
 	ImGui_ImplDX12_Shutdown ();
 	ImGui_ImplWin32_Shutdown ();
 	ImGui::DestroyContext ();
-
-	keyboard.Reset ();
-	mouse.Reset ();
-	directInput.Reset ();
 
 	CloseHandle (fenceEvent);
 

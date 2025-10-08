@@ -18,7 +18,10 @@ void RawInput::Initialize (HWND hwnd) {
     rid[1].hwndTarget = hwnd;
 
     if (!RegisterRawInputDevices (rid, 2, sizeof (rid[0]))) {
-        MessageBoxA (hwnd, "Raw Inputの登録に失敗しました", "Error", MB_OK);
+        MessageBoxA (hwnd, "RawInput 登録失敗", "Error", MB_OK);
+    }
+    else {
+        OutputDebugStringA ("RawInput 登録成功\n");
     }
 }
 
@@ -37,7 +40,7 @@ void RawInput::Update (LPARAM lParam) {
         const RAWKEYBOARD& kb = raw->data.keyboard;
         USHORT key = kb.VKey;
         bool down = !(kb.Flags & RI_KEY_BREAK);
-       // if (key < 256) keyState_[key] = down;
+        if (key < 256) keys_[key] = down;
     }
 
     // マウス入力
@@ -48,6 +51,22 @@ void RawInput::Update (LPARAM lParam) {
     }
 }
 
-bool RawInput::IsKeyDown (unsigned short key) const {
-   // return key < keyState_.size () ? keyState_[key] : false;
+bool RawInput::Push (unsigned short key) const {
+    return keys_[key];
+}
+
+bool RawInput::Trigger (unsigned short key) const {
+    return (keys_[key] && !preKeys_[key]);
+}
+
+bool RawInput::Release (unsigned short key) const {
+    return (!keys_[key] && preKeys_[key]);
+}
+
+void RawInput::EndFrame () {
+    //preKeysの状態を更新
+    preKeys_ = keys_;
+
+    mouseDeltaX_ = 0;
+    mouseDeltaY_ = 0;
 }

@@ -13,6 +13,7 @@
 #include "engine/3d/SphereModel.h"
 #include "engine/2d/Sprite.h"
 #include "engine/camera/DebugCamera.h"
+#include "engine/Input/InputManager.h"
 
 //サウンドデータの読み込み関数
 SoundData SoundLoadWave (const char* filename) {
@@ -111,17 +112,19 @@ void SoundPlayWave (IXAudio2* xAudio2, const SoundData& soundData) {
 	result = pSourceVoice->Start ();
 }
 
-
-
-/*コメントスペース*/
-//05_03の16ページからスタート
-
-
+// function.cppで宣言されている外部変数（ポインタ）
+extern InputManager* g_inputManager;
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	DxCommon* dxCommon = new DxCommon;
 	dxCommon->Initialize ();
+
+	//インプットマネージャー
+	InputManager* inputManager = new InputManager;
+	inputManager->Initialize (*dxCommon->GetHWND ());
+
+	g_inputManager = inputManager; // グローバルポインタに生成したインスタンスをセット
 
 	MSG msg{};
 
@@ -157,7 +160,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion
 
 	//平行光源のResourceを作成してデフォルト値を書き込む
-	ComPtr<ID3D12Resource> dierctionalLightResource = CreateBufferResource (dxCommon->GetDevice(), sizeof (DirectionalLight));
+	ComPtr<ID3D12Resource> dierctionalLightResource = CreateBufferResource (dxCommon->GetDevice (), sizeof (DirectionalLight));
 	DirectionalLight* directionalLightData = nullptr;
 	//書き込むためのアドレス取得
 	dierctionalLightResource->Map (0, nullptr, reinterpret_cast<void**>(&directionalLightData));
@@ -191,7 +194,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	mipImages[0] = LoadTexture ("Resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata0 = mipImages[0].GetMetadata ();
 	ComPtr<ID3D12Resource> textureResource0 = CreateTextureResource (dxCommon->GetDevice (), metadata0);
-	ComPtr<ID3D12Resource> intermediateResource0 = UploadTextureData (textureResource0, mipImages[0], dxCommon->GetDevice (), dxCommon->GetCommandList());
+	ComPtr<ID3D12Resource> intermediateResource0 = UploadTextureData (textureResource0, mipImages[0], dxCommon->GetDevice (), dxCommon->GetCommandList ());
 
 	//metaDataを基にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDescSphere{};
@@ -200,7 +203,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	srvDescSphere.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	srvDescSphere.Texture2D.MipLevels = UINT (metadata0.mipLevels);
 
-	mipImages[1] = LoadTexture (plane->GetModelData().material.textureFilePath);
+	mipImages[1] = LoadTexture (plane->GetModelData ().material.textureFilePath);
 	const DirectX::TexMetadata& metadata1 = mipImages[1].GetMetadata ();
 	ComPtr<ID3D12Resource> textureResource1 = CreateTextureResource (dxCommon->GetDevice (), metadata1);
 	ComPtr<ID3D12Resource> intermediateResource1 = UploadTextureData (textureResource1, mipImages[1], dxCommon->GetDevice (), dxCommon->GetCommandList ());
@@ -212,7 +215,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	srvDescPlane.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	srvDescPlane.Texture2D.MipLevels = UINT (metadata1.mipLevels);
 
-	mipImages[2] = LoadTexture (bunny->GetModelData().material.textureFilePath);
+	mipImages[2] = LoadTexture (bunny->GetModelData ().material.textureFilePath);
 	const DirectX::TexMetadata& metadata2 = mipImages[2].GetMetadata ();
 	ComPtr<ID3D12Resource> textureResource2 = CreateTextureResource (dxCommon->GetDevice (), metadata2);
 	ComPtr<ID3D12Resource> intermediateResource2 = UploadTextureData (textureResource2, mipImages[2], dxCommon->GetDevice (), dxCommon->GetCommandList ());
@@ -224,7 +227,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	srvDescBunny.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	srvDescBunny.Texture2D.MipLevels = UINT (metadata2.mipLevels);
 
-	mipImages[3] = LoadTexture (teapot->GetModelData().material.textureFilePath);
+	mipImages[3] = LoadTexture (teapot->GetModelData ().material.textureFilePath);
 	const DirectX::TexMetadata& metadata3 = mipImages[3].GetMetadata ();
 	ComPtr<ID3D12Resource> textureResource3 = CreateTextureResource (dxCommon->GetDevice (), metadata3);
 	ComPtr<ID3D12Resource> intermediateResource3 = UploadTextureData (textureResource3, mipImages[3], dxCommon->GetDevice (), dxCommon->GetCommandList ());
@@ -236,7 +239,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	srvDescTeapot.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	srvDescTeapot.Texture2D.MipLevels = UINT (metadata3.mipLevels);
 
-	mipImages[4] = LoadTexture (Fence->GetModelData().material.textureFilePath);
+	mipImages[4] = LoadTexture (Fence->GetModelData ().material.textureFilePath);
 	const DirectX::TexMetadata& metadata4 = mipImages[4].GetMetadata ();
 	ComPtr<ID3D12Resource> textureResource4 = CreateTextureResource (dxCommon->GetDevice (), metadata4);
 	ComPtr<ID3D12Resource> intermediateResource4 = UploadTextureData (textureResource4, mipImages[4], dxCommon->GetDevice (), dxCommon->GetCommandList ());
@@ -251,7 +254,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	//SRVを作成するDescriptorHeapの場所を決める
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU[5];
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU[5];
-	textureSrvHandleCPU[0] = GetCPUDescriptorHandle (dxCommon->GetsrvDescriptorHeap(), descriptorSizeSRV, 1);
+	textureSrvHandleCPU[0] = GetCPUDescriptorHandle (dxCommon->GetsrvDescriptorHeap (), descriptorSizeSRV, 1);
 	textureSrvHandleGPU[0] = GetGPUDescriptorHandle (dxCommon->GetsrvDescriptorHeap (), descriptorSizeSRV, 1);
 
 	textureSrvHandleCPU[1] = GetCPUDescriptorHandle (dxCommon->GetsrvDescriptorHeap (), descriptorSizeSRV, 2);
@@ -266,7 +269,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	textureSrvHandleCPU[4] = GetCPUDescriptorHandle (dxCommon->GetsrvDescriptorHeap (), descriptorSizeSRV, 5);
 	textureSrvHandleGPU[4] = GetGPUDescriptorHandle (dxCommon->GetsrvDescriptorHeap (), descriptorSizeSRV, 5);
 	//SRVの生成
-	dxCommon->GetDevice()->CreateShaderResourceView (textureResource0.Get (), &srvDescSphere, textureSrvHandleCPU[0]);
+	dxCommon->GetDevice ()->CreateShaderResourceView (textureResource0.Get (), &srvDescSphere, textureSrvHandleCPU[0]);
 	dxCommon->GetDevice ()->CreateShaderResourceView (textureResource1.Get (), &srvDescPlane, textureSrvHandleCPU[1]);
 	dxCommon->GetDevice ()->CreateShaderResourceView (textureResource2.Get (), &srvDescBunny, textureSrvHandleCPU[2]);
 	dxCommon->GetDevice ()->CreateShaderResourceView (textureResource3.Get (), &srvDescTeapot, textureSrvHandleCPU[3]);
@@ -275,27 +278,8 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	//BGM再生
 	SoundPlayWave (xAudio2.Get (), soundData1);
 
-	/********入力デバイス組********/
-	//キーボード情報の取得開始
-	dxCommon->GetKeyboard ()->Acquire ();
-	//全キーの入力状態を取得する
-	BYTE key[256] = {};
-
-	//マウス
-	dxCommon->GetMouse ()->Acquire ();
-	/****************************/
-
-	/*mainループで使いたい変数を入れるとこ*/
-	MouseInput mouseInput{
-		0, 0, 0,
-		false, false,
-		false, false,
-		false, false,
-	};
-	DIMOUSESTATE mouseState = {};
-
 	//スプライト
-	Sprite* sprite = new Sprite (dxCommon->GetDevice());
+	Sprite* sprite = new Sprite (dxCommon->GetDevice ());
 	sprite->Initialize ({ 0.0f, 0.0f, 0.0f }, { 640.0f, 360.0f });
 
 	SphereModel* sphere = new SphereModel (dxCommon->GetDevice (), 16);
@@ -310,7 +294,6 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	Matrix4x4 cameraMatrix = {};
 	Matrix4x4 viewMatrix = {};
 	Matrix4x4 projectionMatrix = {};
-	//Matrix4x4 worldViewProjectionMatrix = {};
 
 	//デバッグカメラ
 	DebugCamera* debugCamera = new DebugCamera ();
@@ -324,7 +307,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	//球の切り替え
 	bool useSphere = false;
 	//ぷれーん
-	bool usePlane = false;
+	bool usePlane = true;
 	//うさぎ
 	bool useModel = false;
 	//てぃーぽっと
@@ -333,9 +316,12 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ライティング用の変数
 	float colorLight[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
+	//お試し
+	Vector3 pos{};
+
 	/*********************************/
 
-	
+
 
 	/*メインループ！！！！！！！！！*/
 	//ウィンドウの×ボタンが押されるまでループ
@@ -346,49 +332,14 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			DispatchMessage (&msg);
 		}
 		else {
+
 			//フレーム開始
 			dxCommon->BeginFrame ();
-
-			//入力デバイスの状態を取得
-			//キーボード
-			hr = dxCommon->GetKeyboard ()->GetDeviceState (sizeof (key), key);
-			if (FAILED (hr)) {
-				if (hr == DIERR_INPUTLOST || hr == DIERR_NOTACQUIRED) {
-					dxCommon->GetKeyboard ()->Acquire ();
-				}
-			}
-
-			//前フレームの状態を保存
-			bool isTabDown = (key[DIK_TAB] & 0x80);
-			static bool wasTabDown = false;
-
-			//マウス
-			hr = dxCommon->GetMouse ()->GetDeviceState (sizeof (DIMOUSESTATE), &mouseState);
-			if (FAILED (hr)) {
-				if (hr == DIERR_INPUTLOST || hr == DIERR_NOTACQUIRED) {
-					dxCommon->GetMouse ()->Acquire ();
-				}
-			}
-
-			// 前フレームの状態を保存
-			mouseInput.prevLeft = mouseInput.left;
-			mouseInput.prevRight = mouseInput.right;
-			mouseInput.prevMid = mouseInput.mid;
-
-			mouseInput.x = static_cast<float>(mouseState.lX);
-			mouseInput.y = static_cast<float>(mouseState.lY);
-			mouseInput.z = static_cast<float>(mouseState.lZ);
-
-			mouseInput.left = (mouseState.rgbButtons[0] & 0x80);
-			mouseInput.right = (mouseState.rgbButtons[1] & 0x80);
-			mouseInput.mid = (mouseState.rgbButtons[2] & 0x80);
-
-			
 
 			//実際のキー入力処理はここ！
 			if (!ImGui::GetIO ().WantCaptureKeyboard) {
 				// 押した瞬間だけトグル
-				if (isTabDown && !wasTabDown) {
+				if (inputManager->GetRawInput ()->Trigger (VK_TAB)) {
 					if (!debugMode) {
 						debugMode = true;
 					}
@@ -397,7 +348,11 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 					}
 				}
 			}
-			wasTabDown = isTabDown;
+
+			if (inputManager->GetRawInput ()->Push ('D')/*key[DIK_D]*/) {
+				pos.x += 0.01f;
+			}
+			ImGui::Text ("pos.x:%f", pos.x);
 
 			//ゲームの処理//
 			//=======オブジェクトの更新処理=======//
@@ -410,15 +365,15 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 			if (!ImGui::GetIO ().WantCaptureMouse) {
 				if (debugMode) {
-					debugCamera->Updata (dxCommon->GetHWND(), hr, dxCommon->GetKeyboard (), key, dxCommon->GetMouse (), &mouseInput);
-					//worldViewProjectionMatrix = Multiply (debugCamera->GetProjectionMatrix(), Multiply (debugCamera->GetViewMatrix (), debugCamera->GetProjectionMatrix ()));
-					viewMatrix = debugCamera->GetViewMatrix();
+					//debugCamera->Updata (*dxCommon->GetHWND (), hr, dxCommon->GetKeyboard (), key, dxCommon->GetMouse (), &mouseInput);
+					viewMatrix = debugCamera->GetViewMatrix ();
 					projectionMatrix = debugCamera->GetProjectionMatrix ();
 				}
 			}
 
 			//オブジェクト
 			plane->Update (&viewMatrix, &projectionMatrix);
+			plane->SetPositon (pos);
 
 			bunny->Update (&viewMatrix, &projectionMatrix);
 
@@ -427,7 +382,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			sprite->Update ();
 			sphere->Update (&viewMatrix, &projectionMatrix);
 			Fence->Update (&viewMatrix, &projectionMatrix);
-			
+
 			//光源のdirectionの正規化
 			directionalLightData->direction = Normalize (directionalLightData->direction);
 
@@ -496,13 +451,13 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
 			ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);*/
 
-			
+
 
 			//=======コマンド君達=======//
 			//ライティングの設定
-			dxCommon->GetCommandList()->SetGraphicsRootConstantBufferView (3, dierctionalLightResource->GetGPUVirtualAddress ());
+			dxCommon->GetCommandList ()->SetGraphicsRootConstantBufferView (3, dierctionalLightResource->GetGPUVirtualAddress ());
 			//描画！(DrawCall/ドローコール)。3頂点で1つのインスタンス。インスタンスについては今後
-			Fence->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[4]);
+			//Fence->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[4]);
 			if (useSphere) {
 				sphere->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[0]);
 			}
@@ -518,7 +473,9 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (useSprite) {
 				sprite->Draw (dxCommon->GetCommandList (), textureSrvHandleGPU[0]);
 			}
+
 			//フレーム終了
+			inputManager->EndFrame ();
 			dxCommon->EndFrame ();
 		}
 	}

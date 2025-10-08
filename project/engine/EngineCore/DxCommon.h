@@ -28,13 +28,12 @@ public:	//メンバ関数(mainで呼び出すよう)
 	void Finalize ();
 
 	//アクセッサ
-	HWND GetHWND () { return hwnd; }
+	HWND* GetHWND () { return &hwnd; }
 	ID3D12Device* GetDevice () { return device.Get(); }
 	ID3D12GraphicsCommandList* GetCommandList () { return commandList.Get (); }
-	IDirectInputDevice8* GetKeyboard () { return keyboard.Get (); }
-	IDirectInputDevice8* GetMouse () { return mouse.Get (); }
+	/*IDirectInputDevice8* GetKeyboard () { return keyboard.Get (); }
+	IDirectInputDevice8* GetMouse () { return mouse.Get (); }*/
 	ID3D12DescriptorHeap* GetsrvDescriptorHeap () { return srvDescriptorHeap.Get(); }
-
 
 private://メンバ変数
 	D3DResourceLeakChecker leakCheck{};
@@ -56,18 +55,6 @@ private://メンバ変数
 
 	//後のincludeに対応するための設定
 	ComPtr<IDxcIncludeHandler> includeHandler = nullptr;
-
-	//===入力デバイス===//
-	//DirectInput
-	ComPtr<IDirectInput8> directInput = nullptr;
-	//キーボード
-	ComPtr<IDirectInputDevice8> keyboard = nullptr;
-	//マウスデバイス
-	ComPtr<IDirectInputDevice8> mouse = nullptr;
-
-	//インプットマネージャー
-	InputManager* inputManager = nullptr;
-	//================//
 
 	//デバイス
 	ComPtr<ID3D12Device> device = nullptr;

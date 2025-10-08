@@ -9,6 +9,8 @@ public:	//メンバ関数
 
 	void Initialize (HWND hwnd);
 	void Update (LPARAM lparam);
+	//preKeys更新用
+	void EndFrame ();
 
 	RawInput* GetRawInput () { return &rawInput_; }
 
