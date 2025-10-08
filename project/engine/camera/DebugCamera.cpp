@@ -96,9 +96,9 @@ void DebugCamera::Updata(HWND hwnd, HRESULT hr, InputManager* inputManager) {
 		ClipCursor (&clientRect);
 	}
 	if (inputManager->GetRawInput ()->ReleaseMouse (MouseButton::LEFT)) {
-		ShowCursor(TRUE);
 		// カーソルの制限を解除（NULLを指定）
 		ClipCursor (NULL);
+		ShowCursor (TRUE);
 	}
 
 	if (inputManager->GetRawInput ()->PushMouse (MouseButton::LEFT)) {

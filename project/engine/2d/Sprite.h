@@ -5,6 +5,17 @@
 using namespace Microsoft::WRL;  
 
 class Sprite {  
+	public:		//メンバ関数  
+	Sprite (ID3D12Device* device);  
+	~Sprite ();  
+
+	void Initialize (Vector3 position, Vector2 size);  
+	void Update ();  
+	void Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);  
+
+	// ImGuiで編集する用  
+	void ShowImGuiEditor ();  
+
 private:	//メンバ変数  
 	//スプライトのデータ  
 	SpriteData sprite_;  
@@ -25,15 +36,4 @@ private:	//メンバ変数
 
 	//ImGuiで色をいじる
 	float color_[4];
-
-public:		//メンバ関数  
-	Sprite (ID3D12Device* device);  
-	~Sprite ();  
-
-	void Initialize (Vector3 position, Vector2 size);  
-	void Update ();  
-	void Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);  
-
-	// ImGuiで編集する用  
-	void ShowImGuiEditor ();  
 };

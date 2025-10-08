@@ -31,8 +31,6 @@ public:	//メンバ関数(mainで呼び出すよう)
 	HWND* GetHWND () { return &hwnd; }
 	ID3D12Device* GetDevice () { return device.Get(); }
 	ID3D12GraphicsCommandList* GetCommandList () { return commandList.Get (); }
-	/*IDirectInputDevice8* GetKeyboard () { return keyboard.Get (); }
-	IDirectInputDevice8* GetMouse () { return mouse.Get (); }*/
 	ID3D12DescriptorHeap* GetsrvDescriptorHeap () { return srvDescriptorHeap.Get(); }
 
 private://メンバ変数
@@ -146,7 +144,4 @@ private://メンバ変数
 
 	//シザー矩形
 	D3D12_RECT scissorRect{};
-
-
 };
-

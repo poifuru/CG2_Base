@@ -15,6 +15,8 @@ public:	//メンバ関数
 	/// <param name="filename">読み込む3Dモデルのファイル名。</param>
 	Model (ID3D12Device* device, const std::string& directoryPath, const std::string& filename, bool inversion = false);
 
+	~Model ();
+
 	/// <summary>
 	/// モデルのSRT
 	/// </summary>
@@ -54,7 +56,7 @@ private:		//メンバ変数
 	//頂点データ
 	ComPtr<ID3D12Resource> vertexBuffer_;
 	std::vector<VertexData> vertexData_;
-	std::unique_ptr<VertexData> vertexDataPtr_;
+	std::unique_ptr<VertexData[]> vertexDataPtr_;
 	D3D12_VERTEX_BUFFER_VIEW vbView_{};
 
 	//インデックスデータ
@@ -63,14 +65,14 @@ private:		//メンバ変数
 
 	//行列データ
 	ComPtr<ID3D12Resource> materialBuffer_;
-	std::unique_ptr<TransformationMatrix> matrixData_;
+	TransformationMatrix* matrixData_;
 	Transform transform_;	//ローカル座標
 	Transform uvTransform_;	//uvTranform用のローカル座標
 	TransformationMatrix transformationMatrix_; //ワールド座標と、カメラからwvp行列をもらって格納する
 
 	//マテリアルデータ
 	ComPtr<ID3D12Resource> matrixBuffer_;
-	std::unique_ptr<Material> materialData_;
+	Material* materialData_;
 
 	//ImGui用のラベル名
 	std::string id_;

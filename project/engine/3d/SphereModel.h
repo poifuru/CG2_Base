@@ -6,6 +6,20 @@
 using namespace Microsoft::WRL;
 
 class SphereModel {
+public:		//メンバ関数
+	SphereModel (ID3D12Device* device, int subdivision);
+	~SphereModel ();
+
+	void Initialize (Vector3 position, float radius);
+	void Update (Matrix4x4* view, Matrix4x4* proj);
+	void Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
+
+	void ShowImGuiEditor ();
+
+	//アクセッサ
+	std::vector<VertexData> GetVertexData () { return vertexData_; }
+	Matrix4x4 GetWorld () { return transformationMatrix_.World; }
+
 private:	//メンバ変数
 	ComPtr<ID3D12Resource> vertexBuffer_;
 	//ComPtr<ID3D12Resource> indexBuffer_;
@@ -13,7 +27,7 @@ private:	//メンバ変数
 	ComPtr<ID3D12Resource> materialBuffer_;
 
 	std::vector<VertexData> vertexData_;
-	VertexData* vertexDataPtr_ = nullptr;    // GPU側への書き込みポインタ
+	std::unique_ptr<VertexData[]> vertexDataPtr_;    // GPU側への書き込みポインタ
 	//std::vector<uint32_t> indexData_;
 	TransformationMatrix* matrixData_ = nullptr;
 	Material* materialData_ = nullptr;
@@ -35,19 +49,5 @@ private:	//メンバ変数
 
 	//ImGuiで色を変える
 	float color_[4];
-
-public:		//メンバ関数
-	SphereModel (ID3D12Device* device, int subdivision);
-	~SphereModel ();
-
-	void Initialize (Vector3 position, float radius);
-	void Update (Matrix4x4* view, Matrix4x4* proj);
-	void Draw (ID3D12GraphicsCommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
-
-	void ShowImGuiEditor ();
-
-	//アクセッサ
-	std::vector<VertexData> GetVertexData () { return vertexData_; }
-	Matrix4x4 GetWorld () { return transformationMatrix_.World; }
 };
 

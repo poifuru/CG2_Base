@@ -50,7 +50,7 @@ void DxCommon::Initialize () {
 	//dxgiFactory生成
 	//HRESULTはWindows系のエラーコードであり、
 	//関数が成功したかどうかをSUCCEDEDマクロで判定できる
-	HRESULT hr = CreateDXGIFactory (IID_PPV_ARGS (&dxgiFactory));
+	HRESULT hr = CreateDXGIFactory (IID_PPV_ARGS (dxgiFactory.GetAddressOf()));
 	//初期化の根本的な部分でエラーが出た場合はプログラムが間違っているか、
 	//どうにもできない場合が多いのでassertにしておく
 	assert (SUCCEEDED (hr));
@@ -58,7 +58,7 @@ void DxCommon::Initialize () {
 	//アダプタ生成
 	//良い順にアダプタを頼む
 	for (UINT i = 0; dxgiFactory->EnumAdapterByGpuPreference (i,
-		 DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS (&useAdapter)) !=
+		 DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS (useAdapter.GetAddressOf())) !=
 		 DXGI_ERROR_NOT_FOUND; ++i) {
 		//アダプターの情報を取得する
 		DXGI_ADAPTER_DESC3 adapterDesc{};
@@ -76,19 +76,19 @@ void DxCommon::Initialize () {
 	assert (useAdapter != nullptr);
 
 	//dxcCompilerの生成
-	hr = DxcCreateInstance (CLSID_DxcUtils, IID_PPV_ARGS (&dxcUtils));
+	hr = DxcCreateInstance (CLSID_DxcUtils, IID_PPV_ARGS (dxcUtils.GetAddressOf()));
 	assert (SUCCEEDED (hr));
-	hr = DxcCreateInstance (CLSID_DxcCompiler, IID_PPV_ARGS (&dxcCompiler));
+	hr = DxcCreateInstance (CLSID_DxcCompiler, IID_PPV_ARGS (dxcCompiler.GetAddressOf()));
 	assert (SUCCEEDED (hr));
 
 	//後のインクルードに対応する設定
-	hr = dxcUtils->CreateDefaultIncludeHandler (&includeHandler);
+	hr = dxcUtils->CreateDefaultIncludeHandler (includeHandler.GetAddressOf());
 	assert (SUCCEEDED (hr));
 
 	//デバイス生成の前にデバッグレイヤーを有効化する
 #ifdef _DEBUG
 	ComPtr<ID3D12Debug1> debugController = nullptr;
-	if (SUCCEEDED (D3D12GetDebugInterface (IID_PPV_ARGS (&debugController)))) {
+	if (SUCCEEDED (D3D12GetDebugInterface (IID_PPV_ARGS (debugController.GetAddressOf())))) {
 		//デバッグレイヤーを有効化する
 		debugController->EnableDebugLayer ();
 		//さらにGPU側でもチェックを行うようにする
@@ -104,7 +104,7 @@ void DxCommon::Initialize () {
 	const char* featureLevelString[] = { "12.2", "12.1", "12.0" };
 	//高い順に生成できるか試していく
 	for (size_t i = 0; i < _countof (featureLevels); ++i) {
-		hr = D3D12CreateDevice (useAdapter.Get (), featureLevels[i], IID_PPV_ARGS (&device));
+		hr = D3D12CreateDevice (useAdapter.Get (), featureLevels[i], IID_PPV_ARGS (device.GetAddressOf()));
 		//指定した機能レベルでデバイスが生成できたかを確認
 		if (SUCCEEDED (hr)) {
 			//生成できたのでログ出力を行ってループを抜ける
@@ -120,7 +120,7 @@ void DxCommon::Initialize () {
 	//警告とかエラーとかが出たら出力ログに出してくれるらしい
 #ifdef _DEBUG
 	ComPtr<ID3D12InfoQueue> infoQueue = nullptr;
-	if (SUCCEEDED (device->QueryInterface (IID_PPV_ARGS (&infoQueue)))) {
+	if (SUCCEEDED (device->QueryInterface (IID_PPV_ARGS (infoQueue.GetAddressOf())))) {
 		//ヤバいエラー時に止まる
 		infoQueue->SetBreakOnSeverity (D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
 		//エラー時に止まる
@@ -150,17 +150,17 @@ void DxCommon::Initialize () {
 #endif // _DEBUG
 
 	//コマンドキュー生成
-	hr = device->CreateCommandQueue (&commandQueueDesc, IID_PPV_ARGS (&commandQueue));
+	hr = device->CreateCommandQueue (&commandQueueDesc, IID_PPV_ARGS (commandQueue.GetAddressOf()));
 	//コマンドキューの生成がうまくいかなかったので起動できない
 	assert (SUCCEEDED (hr));
 
 	//コマンドアロケータ生成
-	hr = device->CreateCommandAllocator (D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS (&commandAllocator));
+	hr = device->CreateCommandAllocator (D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS (commandAllocator.GetAddressOf()));
 	//コマンドアロケータの生成がうまくいかなかったので起動できない
 	assert (SUCCEEDED (hr));
 
 	//コマンドリスト生成
-	hr = device->CreateCommandList (0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator.Get (), nullptr, IID_PPV_ARGS (&commandList));
+	hr = device->CreateCommandList (0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator.Get (), nullptr, IID_PPV_ARGS (commandList.GetAddressOf()));
 	//コマンドリストの生成がうまくいかなかったので起動できない
 	assert (SUCCEEDED (hr));
 
@@ -203,7 +203,7 @@ void DxCommon::Initialize () {
 	srvDescriptorHeap = CreateDescriptorHeap (device.Get (), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 
 	//フェンス生成
-	hr = device->CreateFence (fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS (&fence));
+	hr = device->CreateFence (fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS (fence.GetAddressOf()));
 	assert (SUCCEEDED (hr));
 
 	//イベント作成
@@ -323,7 +323,7 @@ void DxCommon::Initialize () {
 
 	//作ったバイナリを元にGPU側にRootSignatureを作成
 	hr = device->CreateRootSignature (0, signatureBlob->GetBufferPointer (),
-									  signatureBlob->GetBufferSize (), IID_PPV_ARGS (&rootSignature));
+									  signatureBlob->GetBufferSize (), IID_PPV_ARGS (rootSignature.GetAddressOf()));
 	assert (SUCCEEDED (hr));
 
 	//RasterizerStateの設定
@@ -383,7 +383,7 @@ void DxCommon::Initialize () {
 	graphicsPieplineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	
 	hr = device->CreateGraphicsPipelineState (&graphicsPieplineStateDesc,
-											  IID_PPV_ARGS (&graphicsPipelineState));
+											  IID_PPV_ARGS (graphicsPipelineState.GetAddressOf()));
 	assert (SUCCEEDED (hr));
 	//***************************//
 
@@ -457,8 +457,8 @@ void DxCommon::BeginFrame () {
 	//指定した深度で画面全体をクリアする
 	commandList->ClearDepthStencilView (dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	//ImGui描画用のDescriptorHeapの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap.Get () };
-	commandList->SetDescriptorHeaps (1, descriptorHeaps);
+	ComPtr<ID3D12DescriptorHeap> descriptorHeaps[] = { srvDescriptorHeap.Get () };
+	commandList->SetDescriptorHeaps (1, descriptorHeaps->GetAddressOf());
 	/*三角形描画！*/
 	commandList->RSSetViewports (1, &viewport);					//Viewportを設定
 	commandList->RSSetScissorRects (1, &scissorRect);			//Scissorを設定
@@ -488,8 +488,8 @@ void DxCommon::EndFrame () {
 	assert (SUCCEEDED (hr));
 
 	//GPUにコマンドリストの実行を行わせる
-	ID3D12CommandList* commandLists[] = { commandList.Get () };
-	commandQueue->ExecuteCommandLists (1, commandLists);
+	ComPtr<ID3D12CommandList> commandLists[] = { commandList.Get () };
+	commandQueue->ExecuteCommandLists (1, commandLists->GetAddressOf());
 	//GPUとOSに画面の交換を行うように通知する
 	swapChain->Present (1, 0);
 	//Fenceの値を更新する

@@ -5,11 +5,13 @@
 Model::Model (ID3D12Device* device, const std::string& directoryPath, const std::string& filename, bool inversion) {
 	model_ = LoadObjFile (directoryPath, filename, inversion);
 
+	vertexDataPtr_ = std::make_unique<VertexData[]> (model_.vertexCount);
+
 	//===リソースの初期化===//
 	//頂点データ
 	vertexData_.resize (model_.vertexCount);
 	vertexBuffer_ = CreateBufferResource (device, sizeof (VertexData) * model_.vertexCount);
-	vertexBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&vertexDataPtr_));
+	vertexBuffer_->Map (0, nullptr, reinterpret_cast<void**>(vertexDataPtr_.get()));
 	vbView_.BufferLocation = vertexBuffer_->GetGPUVirtualAddress ();
 	vbView_.SizeInBytes = UINT (sizeof (VertexData) * vertexData_.size ());
 	vbView_.StrideInBytes = sizeof (VertexData);
@@ -43,6 +45,11 @@ Model::Model (ID3D12Device* device, const std::string& directoryPath, const std:
 	for (int i = 0; i < 4; i++) {
 		color_[i] = 1.0f;
 	}
+}
+
+Model::~Model () {
+	delete matrixData_;
+	delete materialData_;
 }
 
 void Model::Initialize (Vector3 scale, Vector3 rotate, Vector3 position) {
