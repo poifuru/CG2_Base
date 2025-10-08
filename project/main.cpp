@@ -337,7 +337,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			dxCommon->BeginFrame ();
 
 			//実際のキー入力処理はここ！
-			if (!ImGui::GetIO ().WantCaptureKeyboard) {
+			/*if (!ImGui::GetIO ().WantCaptureKeyboard) {*/
 				// 押した瞬間だけトグル
 				if (inputManager->GetRawInput ()->Trigger (VK_TAB)) {
 					if (!debugMode) {
@@ -347,7 +347,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 						debugMode = false;
 					}
 				}
-			}
+			/*}*/
 
 			if (inputManager->GetRawInput ()->Push ('D')/*key[DIK_D]*/) {
 				pos.x += 0.01f;
@@ -365,7 +365,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 			if (!ImGui::GetIO ().WantCaptureMouse) {
 				if (debugMode) {
-					//debugCamera->Updata (*dxCommon->GetHWND (), hr, dxCommon->GetKeyboard (), key, dxCommon->GetMouse (), &mouseInput);
+					debugCamera->Updata (*dxCommon->GetHWND (), hr, inputManager);
 					viewMatrix = debugCamera->GetViewMatrix ();
 					projectionMatrix = debugCamera->GetProjectionMatrix ();
 				}

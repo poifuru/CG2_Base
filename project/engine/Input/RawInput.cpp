@@ -46,8 +46,23 @@ void RawInput::Update (LPARAM lParam) {
     // マウス入力
     if (raw->header.dwType == RIM_TYPEMOUSE) {
         const RAWMOUSE& ms = raw->data.mouse;
-        mouseDeltaX_ = ms.lLastX;
-        mouseDeltaY_ = ms.lLastY;
+        mouseDeltaX_ += ms.lLastX;
+        mouseDeltaY_ += ms.lLastY;
+
+        // マウスボタンの状態を更新
+        USHORT buttonFlags = ms.usButtonFlags;
+
+        // 左ボタン
+        if (buttonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) mouseButtons_[LEFT] = true;
+        if (buttonFlags & RI_MOUSE_LEFT_BUTTON_UP) mouseButtons_[LEFT] = false;
+
+        // 右ボタン
+        if (buttonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN) mouseButtons_[RIGHT] = true;
+        if (buttonFlags & RI_MOUSE_RIGHT_BUTTON_UP) mouseButtons_[RIGHT] = false;
+
+        // 中ボタン
+        if (buttonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN) mouseButtons_[MIDDLE] = true;
+        if (buttonFlags & RI_MOUSE_MIDDLE_BUTTON_UP) mouseButtons_[MIDDLE] = false;
     }
 }
 
@@ -63,9 +78,36 @@ bool RawInput::Release (unsigned short key) const {
     return (!keys_[key] && preKeys_[key]);
 }
 
+bool RawInput::PushMouse (int button) const {
+    if (button >= 0 && button < (int)mouseButtons_.size ()) {
+        return mouseButtons_[button];
+    }
+
+    return false;
+}
+
+bool RawInput::TriggerMouse (int button) const {
+    if (button >= 0 && button < (int)mouseButtons_.size ()) {
+        return (mouseButtons_[button] && !preMouseButtons_[button]);
+    }
+
+    return false;
+}
+
+bool RawInput::ReleaseMouse (int button) const {
+    if (button >= 0 && button < (int)mouseButtons_.size ()) {
+        return (!mouseButtons_[button] && preMouseButtons_[button]);
+    }
+
+    return false;
+}
+
 void RawInput::EndFrame () {
     //preKeysの状態を更新
     preKeys_ = keys_;
+
+    // preMouseButtonsの状態を更新するでやんす！
+    preMouseButtons_ = mouseButtons_;
 
     mouseDeltaX_ = 0;
     mouseDeltaY_ = 0;

@@ -14,6 +14,7 @@ using namespace Microsoft::WRL;
 #pragma	comment(lib, "dxguid.lib")
 #include "../utility/Math.h"
 #include "../utility/globalVariables.h"
+#include "../Input/InputManager.h"
 
 class DebugCamera{
 private:	//メンバ変数
@@ -47,7 +48,7 @@ public:	//メンバ関数
 	void Initialize();
 
 	//更新
-	void Updata(HWND hwnd, HRESULT hr, ComPtr<IDirectInputDevice8W> keyboard, BYTE key[], ComPtr<IDirectInputDevice8W> mouse, MouseInput* mouseInput);
+	void Updata(HWND hwnd, HRESULT hr, InputManager* inputManager);
 
 	//ゲッター
 	Matrix4x4 GetWorldMatrix () { return worldMatrix_; }

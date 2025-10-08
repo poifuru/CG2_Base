@@ -28,14 +28,7 @@ void DebugCamera::Initialize() {
 	speed_ = 0.1f;
 }
 
-void DebugCamera::Updata(HWND hwnd, HRESULT hr, ComPtr<IDirectInputDevice8W> keyboard, BYTE key[], ComPtr<IDirectInputDevice8W> mouse, MouseInput* mouseInput) {
-	//=======入力処理の準備=======//
-	//キーボードの状態を取得
-	keyboard->GetDeviceState(sizeof(key), key);
-	//マウスの状態を取得
-	DIMOUSESTATE mouseState = {};
-	hr = mouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseState);
-
+void DebugCamera::Updata(HWND hwnd, HRESULT hr, InputManager* inputManager) {
 	//=======更新処理=======//
 	//カメラの前後左右の移動
 	forward_ = {
@@ -54,48 +47,63 @@ void DebugCamera::Updata(HWND hwnd, HRESULT hr, ComPtr<IDirectInputDevice8W> key
 
 	move_ = { 0.0f, 0.0f, 0.0f };
 
-	if (key[DIK_W]) {
+	if (inputManager->GetRawInput()->Push('W')) {
 		move_ += forward_ * speed_;
 	}
-	if (key[DIK_S]) {
+	if (inputManager->GetRawInput ()->Push ('S')) {
 		move_ -= forward_ * speed_;
 	}
-	if (key[DIK_D]) {
+	if (inputManager->GetRawInput ()->Push ('D')) {
 		move_ += right_ * speed_;
 	}
-	if (key[DIK_A]) {
+	if (inputManager->GetRawInput ()->Push ('A')) {
 		move_ -= right_ * speed_;
 	}
 
 	transform_.translate += move_;
 
-	if (key[DIK_SPACE]) {
+	if (inputManager->GetRawInput ()->Push (VK_SPACE)) {
 		transform_.translate.y += speed_;
 	}
-	if (key[DIK_LSHIFT]) {
+	if (inputManager->GetRawInput ()->Push (VK_SHIFT)) {
 		transform_.translate.y -= speed_;
 	}
 
 	//マウスで視点移動
 	//回転処理(左クリックしながらドラッグ)
 	// カーソル非表示
-	if (mouseInput->IsLeftTriggered()) {
+	if (inputManager->GetRawInput ()->TriggerMouse(MouseButton::LEFT)) {
 		ShowCursor(FALSE);
+
+		// クライアント領域の矩形を取得
+		RECT clientRect;
+		GetClientRect (hwnd, &clientRect);
+
+		// クライアント領域の座標をスクリーン座標に変換するでやんす
+		// ClipCursorはスクリーン座標を要求するからでやんす
+		POINT pt = { clientRect.left, clientRect.top };
+		ClientToScreen (hwnd, &pt);
+		clientRect.left = pt.x;
+		clientRect.top = pt.y;
+
+		pt.x = clientRect.right;
+		pt.y = clientRect.bottom;
+		ClientToScreen (hwnd, &pt);
+		clientRect.right = pt.x;
+		clientRect.bottom = pt.y;
+
+		// カーソルをウィンドウのクライアント領域に制限するでやんす！
+		ClipCursor (&clientRect);
 	}
-	if (mouseInput->IsLeftReleased()) {
+	if (inputManager->GetRawInput ()->ReleaseMouse (MouseButton::LEFT)) {
 		ShowCursor(TRUE);
+		// カーソルの制限を解除（NULLを指定）
+		ClipCursor (NULL);
 	}
 
-	if (mouseInput->left) {
-		// 画面中央に戻す
-		POINT center;
-		center.x = kClientWidth / 2;
-		center.y = kClientHeight / 2;
-		ClientToScreen(hwnd, &center); // hwndは自分のウィンドウハンドル
-		SetCursorPos(center.x, center.y);
-
-		transform_.rotate.y += mouseInput->x * sensitivity_;
-		transform_.rotate.x += mouseInput->y * sensitivity_;
+	if (inputManager->GetRawInput ()->PushMouse (MouseButton::LEFT)) {
+		transform_.rotate.y += inputManager->GetRawInput ()->GetMouseDeltaX() * sensitivity_;
+		transform_.rotate.x += inputManager->GetRawInput ()->GetMouseDeltaY () * sensitivity_;
 
 		if (transform_.rotate.x > pitchOver_) {
 			transform_.rotate.x = pitchOver_;
