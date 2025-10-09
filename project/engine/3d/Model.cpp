@@ -5,13 +5,11 @@
 Model::Model (ID3D12Device* device, const std::string& directoryPath, const std::string& filename, bool inversion) {
 	model_ = LoadObjFile (directoryPath, filename, inversion);
 
-	vertexDataPtr_ = std::make_unique<VertexData[]> (model_.vertexCount);
-
 	//===リソースの初期化===//
 	//頂点データ
 	vertexData_.resize (model_.vertexCount);
 	vertexBuffer_ = CreateBufferResource (device, sizeof (VertexData) * model_.vertexCount);
-	vertexBuffer_->Map (0, nullptr, reinterpret_cast<void**>(vertexDataPtr_.get()));
+	vertexBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&vertexDataPtr_));
 	vbView_.BufferLocation = vertexBuffer_->GetGPUVirtualAddress ();
 	vbView_.SizeInBytes = UINT (sizeof (VertexData) * vertexData_.size ());
 	vbView_.StrideInBytes = sizeof (VertexData);
@@ -48,8 +46,15 @@ Model::Model (ID3D12Device* device, const std::string& directoryPath, const std:
 }
 
 Model::~Model () {
-	delete matrixData_;
-	delete materialData_;
+	if (vertexBuffer_) {
+		vertexBuffer_->Unmap (0, nullptr);
+	}
+	if (matrixBuffer_) {
+		matrixBuffer_->Unmap (0, nullptr);
+	}
+	if (materialBuffer_) {
+		materialBuffer_->Unmap (0, nullptr);
+	}
 }
 
 void Model::Initialize (Vector3 scale, Vector3 rotate, Vector3 position) {
@@ -64,7 +69,7 @@ void Model::Initialize (Vector3 scale, Vector3 rotate, Vector3 position) {
 		{ 0.0f, 0.0f, 0.0f }
 	};
 	vertexData_ = model_.vertices;
-	memcpy (vertexDataPtr_.get(), vertexData_.data (), sizeof (VertexData) * model_.vertexCount);
+	memcpy (vertexDataPtr_, vertexData_.data (), sizeof (VertexData) * model_.vertexCount);
 }
 
 void Model::Update (Matrix4x4* view, Matrix4x4* proj) {

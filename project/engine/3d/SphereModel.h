@@ -27,7 +27,7 @@ private:	//メンバ変数
 	ComPtr<ID3D12Resource> materialBuffer_;
 
 	std::vector<VertexData> vertexData_;
-	std::unique_ptr<VertexData[]> vertexDataPtr_;    // GPU側への書き込みポインタ
+	VertexData* vertexDataPtr_;    // GPU側への書き込みポインタ
 	//std::vector<uint32_t> indexData_;
 	TransformationMatrix* matrixData_ = nullptr;
 	Material* materialData_ = nullptr;

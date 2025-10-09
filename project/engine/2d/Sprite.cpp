@@ -41,10 +41,25 @@ Sprite::Sprite (ID3D12Device* device) {
 }
 
 Sprite::~Sprite () {
-	delete vertexData_;
-	delete indexData_;
-	delete matrixData_;
-	delete materialData_;
+	// vertexBuffer_ の Unmap
+	if (vertexBuffer_) {
+		vertexBuffer_->Unmap (0, nullptr);
+	}
+
+	// indexBuffer_ の Unmap
+	if (indexBuffer_) {
+		indexBuffer_->Unmap (0, nullptr);
+	}
+
+	// matrixBuffer_ の Unmap
+	if (matrixBuffer_) {
+		matrixBuffer_->Unmap (0, nullptr);
+	}
+
+	// materialBuffer_ の Unmap
+	if (materialBuffer_) {
+		materialBuffer_->Unmap (0, nullptr);
+	}
 }
 
 void Sprite::Initialize (Vector3 position, Vector2 size) {

@@ -1,7 +1,5 @@
 #include "function.h"
-
-//インプットマネージャーのポインタを置いておく
-InputManager* g_inputManager = nullptr;
+#include "../Input/InputManager.h"
 
 //ウィンドウプロシージャ
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {

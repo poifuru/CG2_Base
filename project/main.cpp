@@ -113,19 +113,15 @@ void SoundPlayWave (IXAudio2* xAudio2, const SoundData& soundData) {
 	result = pSourceVoice->Start ();
 }
 
-// function.cppで宣言されている外部変数（ポインタ）
-extern InputManager* g_inputManager;
+std::unique_ptr<InputManager> g_inputManager = nullptr;
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::unique_ptr<DxCommon> dxCommon = std::make_unique<DxCommon> ();
 	dxCommon->Initialize ();
 
-	//インプットマネージャー
-	std::unique_ptr<InputManager> inputManager = std::make_unique<InputManager> ();
-	inputManager->Initialize (*dxCommon->GetHWND ());
-
-	g_inputManager = inputManager.get (); // グローバルポインタに生成したインスタンスをセット
+	g_inputManager = std::make_unique<InputManager> ();
+	g_inputManager->Initialize (*dxCommon->GetHWND ());
 
 	MSG msg{};
 
@@ -162,7 +158,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//平行光源のResourceを作成してデフォルト値を書き込む
 	ComPtr<ID3D12Resource> dierctionalLightResource = CreateBufferResource (dxCommon->GetDevice (), sizeof (DirectionalLight));
-	std::unique_ptr<DirectionalLight> directionalLightData = nullptr;
+	DirectionalLight* directionalLightData = nullptr;
 	//書き込むためのアドレス取得
 	dierctionalLightResource->Map (0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 	//実際に書き込み
@@ -340,7 +336,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			//実際のキー入力処理はここ！
 			/*if (!ImGui::GetIO ().WantCaptureKeyboard) {*/
 				// 押した瞬間だけトグル
-			if (inputManager->GetRawInput ()->Trigger (VK_TAB)) {
+			if (g_inputManager->GetRawInput ()->Trigger (VK_TAB)) {
 				if (!debugMode) {
 					debugMode = true;
 				}
@@ -350,7 +346,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 			/*}*/
 
-			if (inputManager->GetRawInput ()->Push ('D')/*key[DIK_D]*/) {
+			if (g_inputManager->GetRawInput ()->Push ('D')/*key[DIK_D]*/) {
 				pos.x += 0.01f;
 			}
 			ImGui::Text ("pos.x:%f", pos.x);
@@ -366,7 +362,7 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 			if (!ImGui::GetIO ().WantCaptureMouse) {
 				if (debugMode) {
-					debugCamera->Updata (*dxCommon->GetHWND (), hr, inputManager.get ());
+					debugCamera->Updata (*dxCommon->GetHWND (), hr, g_inputManager.get ());
 					viewMatrix = debugCamera->GetViewMatrix ();
 					projectionMatrix = debugCamera->GetProjectionMatrix ();
 				}
@@ -476,13 +472,14 @@ int WINAPI WinMain (HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			//フレーム終了
-			inputManager->EndFrame ();
+			g_inputManager->EndFrame ();
 			dxCommon->EndFrame ();
 		}
 	}
 
-	dxCommon->Finalize ();
 	xAudio2.Reset ();
 	SoundUnload (&soundData1);  // バッファ解放
+	dierctionalLightResource->Unmap (0, nullptr);
+	dxCommon->Finalize ();
 	return 0;
 };

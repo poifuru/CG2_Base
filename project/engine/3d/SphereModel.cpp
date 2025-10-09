@@ -10,8 +10,6 @@ SphereModel::SphereModel (ID3D12Device* device, int subdivision) {
 	const int vertexCount = kSubdivision_ * kSubdivision_ * 6;
 	vertexData_.resize (vertexCount); // ★ これ重要！
 
-	vertexDataPtr_ = std::make_unique<VertexData[]> (vertexCount);
-
 	//それぞれのバッファを作成してMapする、頂点バッファ・インデックスバッファのビューも設定しておく
 	vertexBuffer_ = CreateBufferResource (device, sizeof (VertexData) * vertexCount);
 	vertexBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&vertexDataPtr_));
@@ -50,8 +48,12 @@ SphereModel::SphereModel (ID3D12Device* device, int subdivision) {
 }
 
 SphereModel::~SphereModel () {
-	delete matrixData_;
-	delete materialData_;
+	if (matrixBuffer_) {
+		matrixBuffer_->Unmap (0, nullptr);
+	}
+	if (materialBuffer_) {
+		materialBuffer_->Unmap (0, nullptr);
+	}
 }
 
 void SphereModel::Initialize (Vector3 position, float radius) {
@@ -156,7 +158,7 @@ void SphereModel::Initialize (Vector3 position, float radius) {
 		OutputDebugStringA (buffer);
 	}*/
 	//GPUに渡すために手動でコピーする
-	memcpy (vertexDataPtr_.get(), vertexData_.data (), sizeof (VertexData)* vertexCount);
+	memcpy (vertexDataPtr_, vertexData_.data (), sizeof (VertexData)* vertexCount);
 }
 
 void SphereModel::Update (Matrix4x4* view, Matrix4x4* proj) {

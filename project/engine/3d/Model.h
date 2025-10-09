@@ -56,7 +56,7 @@ private:		//メンバ変数
 	//頂点データ
 	ComPtr<ID3D12Resource> vertexBuffer_;
 	std::vector<VertexData> vertexData_;
-	std::unique_ptr<VertexData[]> vertexDataPtr_;
+	VertexData* vertexDataPtr_ = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW vbView_{};
 
 	//インデックスデータ
@@ -64,14 +64,14 @@ private:		//メンバ変数
 	D3D12_INDEX_BUFFER_VIEW ibView_{};
 
 	//行列データ
-	ComPtr<ID3D12Resource> materialBuffer_;
+	ComPtr<ID3D12Resource> matrixBuffer_;
 	TransformationMatrix* matrixData_;
 	Transform transform_;	//ローカル座標
 	Transform uvTransform_;	//uvTranform用のローカル座標
 	TransformationMatrix transformationMatrix_; //ワールド座標と、カメラからwvp行列をもらって格納する
 
 	//マテリアルデータ
-	ComPtr<ID3D12Resource> matrixBuffer_;
+	ComPtr<ID3D12Resource> materialBuffer_;
 	Material* materialData_;
 
 	//ImGui用のラベル名

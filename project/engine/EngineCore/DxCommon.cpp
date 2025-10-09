@@ -143,9 +143,6 @@ void DxCommon::Initialize () {
 		filter.DenyList.pSeverityList = severities;
 		//指定したメッセージの表示を抑制する
 		infoQueue->PushStorageFilter (&filter);
-
-		//解放
-		infoQueue->Release ();
 	}
 #endif // _DEBUG
 
@@ -512,19 +509,57 @@ void DxCommon::EndFrame () {
 }
 
 void DxCommon::Finalize () {
-	//ImGuiの終了処理
+	if (commandList) {
+		commandList->Close ();
+	}
+
+	// GPUのコマンド完了を確実に待つ
+	if (commandQueue && fence) {
+		UINT64 currentFenceValue = ++fenceValue;
+		commandQueue->Signal (fence.Get (), currentFenceValue);
+		if (fence->GetCompletedValue () < currentFenceValue) {
+			fence->SetEventOnCompletion (currentFenceValue, fenceEvent);
+			WaitForSingleObject (fenceEvent, INFINITE);
+		}
+	}
+
+	// ImGui終了処理
 	ImGui_ImplDX12_Shutdown ();
 	ImGui_ImplWin32_Shutdown ();
 	ImGui::DestroyContext ();
 
-	CloseHandle (fenceEvent);
+	//明示的にReset(作成時と逆順に)
+	graphicsPipelineState.Reset ();
+	dsvDescriptorHeap.Reset ();
+	depthStencilResource.Reset ();
+	pixelShaderBlob.Reset ();
+	vertexShaderBlob.Reset ();
+	rootSignature.Reset ();
+	errorBlob.Reset ();
+	signatureBlob.Reset ();
+	fence.Reset ();
+	srvDescriptorHeap.Reset ();
+	rtvDescriptorHeap.Reset ();
+	for (int i = 0; i < 2; i++) swapChainResources[i].Reset ();
+	swapChain.Reset ();
+	commandList.Reset ();
+	commandAllocator.Reset ();
+	commandQueue.Reset ();
+	includeHandler.Reset ();
+	dxcCompiler.Reset ();
+	dxcUtils.Reset ();
+	useAdapter.Reset ();
+	dxgiFactory.Reset ();
 
+	CloseHandle (fenceEvent);
 	CoUninitialize ();
 
 #ifdef _DEBUG
 	ComPtr<ID3D12DebugDevice> debugDevice;
-	device.As (&debugDevice); // 変換
-	debugDevice->ReportLiveDeviceObjects (D3D12_RLDO_SUMMARY | D3D12_RLDO_DETAIL);
+	if (SUCCEEDED (device.As (&debugDevice))) {
+		debugDevice->ReportLiveDeviceObjects (D3D12_RLDO_SUMMARY | D3D12_RLDO_DETAIL);
+	}
 #endif
-	DestroyWindow (hwnd); // ← CloseWindow より DestroyWindow の方が自然（WM_DESTROY 発生）
+	device.Reset ();
+	DestroyWindow (hwnd);
 }
