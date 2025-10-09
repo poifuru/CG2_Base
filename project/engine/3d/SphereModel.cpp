@@ -48,11 +48,17 @@ SphereModel::SphereModel (ID3D12Device* device, int subdivision) {
 }
 
 SphereModel::~SphereModel () {
+	if (vertexBuffer_) {
+		vertexBuffer_->Unmap (0, nullptr);
+		vertexBuffer_.Reset ();
+	}
 	if (matrixBuffer_) {
 		matrixBuffer_->Unmap (0, nullptr);
+		matrixBuffer_.Reset ();
 	}
 	if (materialBuffer_) {
 		materialBuffer_->Unmap (0, nullptr);
+		materialBuffer_.Reset ();
 	}
 }
 

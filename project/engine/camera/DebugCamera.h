@@ -17,6 +17,21 @@ using namespace Microsoft::WRL;
 #include "../Input/InputManager.h"
 
 class DebugCamera{
+public:	//メンバ関数
+	//コンストラクタ
+	DebugCamera ();
+
+	//初期化
+	void Initialize ();
+
+	//更新
+	void Updata (HWND hwnd, HRESULT hr, InputManager* inputManager);
+
+	//ゲッター
+	Matrix4x4 GetWorldMatrix () { return worldMatrix_; }
+	Matrix4x4 GetViewMatrix () { return viewMatrix_; }
+	Matrix4x4 GetProjectionMatrix () { return projectionMatrix_; }
+
 private:	//メンバ変数
 	Transform transform_;
 
@@ -39,20 +54,5 @@ private:	//メンバ変数
 	//ドラッグで視点を変える
 	float sensitivity_;	//ドラッグの感度
 	float pitchOver_;	//上を向きすぎるのを防止する
-
-public:	//メンバ関数
-	//コンストラクタ
-	DebugCamera();
-
-	//初期化
-	void Initialize();
-
-	//更新
-	void Updata(HWND hwnd, HRESULT hr, InputManager* inputManager);
-
-	//ゲッター
-	Matrix4x4 GetWorldMatrix () { return worldMatrix_; }
-	Matrix4x4 GetViewMatrix() { return viewMatrix_; }
-	Matrix4x4 GetProjectionMatrix() { return projectionMatrix_; }
 };
 

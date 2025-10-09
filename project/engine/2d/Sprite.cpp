@@ -44,21 +44,25 @@ Sprite::~Sprite () {
 	// vertexBuffer_ の Unmap
 	if (vertexBuffer_) {
 		vertexBuffer_->Unmap (0, nullptr);
+		vertexBuffer_.Reset ();
 	}
 
 	// indexBuffer_ の Unmap
 	if (indexBuffer_) {
 		indexBuffer_->Unmap (0, nullptr);
+		indexBuffer_.Reset ();
 	}
 
 	// matrixBuffer_ の Unmap
 	if (matrixBuffer_) {
 		matrixBuffer_->Unmap (0, nullptr);
+		matrixBuffer_.Reset ();
 	}
 
 	// materialBuffer_ の Unmap
 	if (materialBuffer_) {
 		materialBuffer_->Unmap (0, nullptr);
+		materialBuffer_.Reset ();
 	}
 }
 
