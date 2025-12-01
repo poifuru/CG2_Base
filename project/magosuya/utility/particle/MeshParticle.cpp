@@ -9,7 +9,12 @@ const float kDeltaTime = 1.0f / 60.0f;
 MeshParticle::MeshParticle () {
 	//乱数エンジンのインスタンスを作成してrdの結果で初期化する
 	randomEngine_.seed (rd ());
-	emitter_.count =3;
+	emitter_.transform = {
+		{1.0f, 1.0f, 1.0f},
+		{},
+		{}
+	};
+	emitter_.count = 10;
 	emitter_.frequency = 0.3f;
 	emitter_.frequencyTime = 0.0f;
 }
@@ -24,6 +29,11 @@ void MeshParticle::Initialize () {
 void MeshParticle::Update (Matrix4x4* vp) {
 	//Emitter更新
 	EmitterUpdate ();
+	//emitter_.frequencyTime += kDeltaTime;	//発生時刻を進める
+	//if (emitter_.frequency <= emitter_.frequencyTime) {		//頻度より大きいなら
+	//	particles_.splice (particles_.end (), Emit (emitter_, randomEngine_));	//particle発生
+	//	emitter_.frequencyTime -= emitter_.frequency;	//進めた時間を戻す
+	//}
 
 	vp_ = vp;
 
@@ -95,12 +105,13 @@ MeshParticleData MeshParticle::MakeNewParticle (std::mt19937 randomEngine, const
 	randSize_ = std::uniform_real_distribution<float> (0.01f, 0.1f);
 	randVelocity_ = std::uniform_real_distribution<float> (-5.0f, 5.0f);
 	randColor_ = std::uniform_real_distribution<float> (0.0f, 1.0f);
-	randTime_ = std::uniform_real_distribution<float> (10.0f, 20.0f);
+	randTime_ = std::uniform_real_distribution<float> (3.0f, 5.0f);
 
 	//パーティクル情報の初期化
-	data.cube.transform.scale = { randSize_(randomEngine), randSize_ (randomEngine), randSize_ (randomEngine) };
+	data.cube.transform.scale = { 0.1f, 0.1f, 0.1f };
 	data.cube.transform.rotate = { 0.0f, 0.0f, 0.0f };
 	data.cube.transform.translate = { pos_x (randomEngine), pos_y (randomEngine), pos_z (randomEngine) };
+	data.cube.size = 1.0f;
 	data.velocity = { randVelocity_ (randomEngine), randVelocity_ (randomEngine), randVelocity_ (randomEngine) };
 	for (uint32_t i = 0; i < 8; ++i) {
 		data.cube.color[i] = {randColor_ (randomEngine), randColor_ (randomEngine), randColor_ (randomEngine), 1.0f};

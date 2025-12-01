@@ -15,7 +15,7 @@ Particle::Particle (DxCommon* dxCommon) {
 	uvTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 	//乱数エンジンのインスタンスを作成してrdの結果で初期化する
 	randomEngine_.seed (rd ());
-	emitter_.count = 20;
+	emitter_.count = 10;
 	emitter_.frequency = 0.3f;
 	emitter_.frequencyTime = 0.0f;
 }
