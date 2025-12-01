@@ -108,7 +108,7 @@ MeshParticleData MeshParticle::MakeNewParticle (std::mt19937 randomEngine, const
 	randTime_ = std::uniform_real_distribution<float> (3.0f, 5.0f);
 
 	//パーティクル情報の初期化
-	data.cube.transform.scale = { 0.1f, 0.1f, 0.1f };
+	data.cube.transform.scale = { 0.25f, 0.25f, 0.25f };
 	data.cube.transform.rotate = { 0.0f, 0.0f, 0.0f };
 	data.cube.transform.translate = { pos_x (randomEngine), pos_y (randomEngine), pos_z (randomEngine) };
 	data.cube.size = 1.0f;
