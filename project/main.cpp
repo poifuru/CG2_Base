@@ -24,6 +24,8 @@
 #include "Sprite.h"
 #include "DebugCamera.h"
 #include "Particle.h"
+#include "Mesh.h"
+#include "MeshParticle.h"
 
 //サウンドデータの読み込み関数
 SoundData SoundLoadWave (const char* filename) {
@@ -150,7 +152,7 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	ModelManager::GetInstance ()->LoadModelData ("Resources/skydome", "skydome");
 
 	//平行光源のResourceを作成してデフォルト値を書き込む
-	ComPtr<ID3D12Resource> dierctionalLightResource = DxCommon::GetInstance()->CreateBufferResource (sizeof (DirectionalLight));
+	ComPtr<ID3D12Resource> dierctionalLightResource = DxCommon::GetInstance ()->CreateBufferResource (sizeof (DirectionalLight));
 	DirectionalLight* directionalLightData = nullptr;
 	//書き込むためのアドレス取得
 	dierctionalLightResource->Map (0, nullptr, reinterpret_cast<void**>(&directionalLightData));
@@ -170,8 +172,7 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	skydome->SetModelData ("skydome");
 	skydome->Initialize ();
 
-	std::unique_ptr<Particle> particle = std::make_unique<Particle> (DxCommon::GetInstance());
-	particle->SetTexHandle (TextureManager::GetInstance()->GetTextureHandle ("circle"));
+	std::unique_ptr<MeshParticle> particle = std::make_unique<MeshParticle> ();
 	particle->Initialize ();
 
 	//カメラ用
@@ -185,6 +186,22 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	std::unique_ptr<DebugCamera> debugCamera = std::make_unique<DebugCamera> ();
 	debugCamera->Initialize ();
 	bool debugMode = false;
+
+	CubeData cube = {};
+	cube.transform = { 
+		{1.0f, 1.0f, 1.0f},
+		{0.0f, 0.0f, 0.0f},
+		{0.0f, 0.0f, 0.0f},
+	};
+	cube.size = 1.0f;
+	cube.color[0] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	cube.color[1] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	cube.color[2] = { 0.0f, 1.0f, 0.0f, 1.0f };
+	cube.color[3] = { 0.0f, 0.0f, 1.0f, 1.0f };
+	cube.color[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
+	cube.color[5] = { 0.0f, 1.0f, 1.0f, 1.0f };
+	cube.color[6] = { 1.0f, 0.0f, 1.0f, 1.0f };
+	cube.color[7] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	/*********************************/
 
 	/*メインループ！！！！！！！！！*/
@@ -197,7 +214,6 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 		//フレーム開始
 		magosuya->BeginFrame ();
-#ifdef USEIMGUI
 		//FPS表示
 		ImGui::Begin ("Debug Window");
 		ImGui::Text ("FPS: %.1f", ImGui::GetIO ().Framerate);
@@ -244,11 +260,10 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		}
 		ImGui::End ();
 		particle->ImGui ();
-#endif
 
 		//実際のキー入力処理はここ！
 		// 押した瞬間だけトグル
-		if (InputManager::GetInstance()->GetRawInput ()->Trigger (VK_TAB)) {
+		if (InputManager::GetInstance ()->GetRawInput ()->Trigger (VK_TAB)) {
 			if (!debugMode) {
 				debugMode = true;
 			}
@@ -264,17 +279,17 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		viewMatrix = Inverse (cameraMatrix);
 		projectionMatrix = MakePerspectiveFOVMatrix (0.45f, float (WindowsAPI::GetInstance ()->kClientWidth) / float (WindowsAPI::GetInstance ()->kClientHeight), 0.1f, 1000.0f);
 
-		if (debugMode && !debugCamera->GetTatchImGui ()) {
+		if (debugMode) {
 			debugCamera->Updata (WindowsAPI::GetInstance ()->GetHwnd (), hr, InputManager::GetInstance ());
-			viewMatrix = debugCamera->GetViewMatrix ();
-			projectionMatrix = debugCamera->GetProjectionMatrix ();
+			viewMatrix = Inverse (debugCamera->GetWorldMatrix());
+			projectionMatrix = MakePerspectiveFOVMatrix (0.45f, float (WindowsAPI::GetInstance ()->kClientWidth) / float (WindowsAPI::GetInstance ()->kClientHeight), 0.1f, 1000.0f);
 		}
 
 		//vp行列作成
 		Matrix4x4 vp = Multiply (viewMatrix, projectionMatrix);
 
 		skydome->Update (&vp);
-		particle->Update (&cameraMatrix, &vp);
+		particle->Update (&vp);
 
 		//光源のdirectionの正規化
 		directionalLightData->direction = Normalize (directionalLightData->direction);
@@ -282,7 +297,7 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		//ImGuiと変数を結び付ける
 		// 色変更用のUI
 		static float color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };  // 初期値：白
-	
+
 		//RootSignatureをセット
 		ID3D12RootSignature* standardRootSig = RootSignatureManager::GetInstance ()->GetRootSignature (
 			RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::Standard3D)
@@ -290,10 +305,11 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 		DxCommon::GetInstance ()->GetCommandList ()->SetGraphicsRootSignature (standardRootSig);
 		//ライティングの設定
-		DxCommon::GetInstance()->GetCommandList ()->SetGraphicsRootConstantBufferView (3, dierctionalLightResource->GetGPUVirtualAddress ());
+		DxCommon::GetInstance ()->GetCommandList ()->SetGraphicsRootConstantBufferView (3, dierctionalLightResource->GetGPUVirtualAddress ());
 		//===描画===//
 		skydome->Draw ();
 		particle->Draw ();
+		//Mesh::DrawCube (&cube, vp);
 
 		//フレーム終了
 		magosuya->EndFrame ();

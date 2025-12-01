@@ -5,6 +5,9 @@
 #include "ImGuiManager.h"
 #include "ModelManager.h"
 #include "PSOManager.h"
+#include "LineRenderer.h"
+#include "CubeRenderer.h"
+#include "Mesh.h"
 
 MagosuyaEngine::~MagosuyaEngine () {
 	dxCommon_->Finalize ();
@@ -25,6 +28,10 @@ void MagosuyaEngine::Initialize () {
 	modelManager_->Initialize (dxCommon_, texManager_);
 	psoManager_ = PSOManager::GetInstance ();
 	psoManager_->Initialize (dxCommon_);
+	lineRenderer_ = LineRenderer::GetInstance ();
+	lineRenderer_->Initialize (dxCommon_);
+	cubeRenderer_ = CubeRenderer::GetInstance ();
+	cubeRenderer_->Initialize (dxCommon_);
 }
 
 void MagosuyaEngine::BeginFrame () {
@@ -32,6 +39,7 @@ void MagosuyaEngine::BeginFrame () {
 	dxCommon_->BeginFrame ();
 }
 void MagosuyaEngine::EndFrame () {
+	Mesh::AllDrawing ();
 	imguiManager_->Draw ();
 	inputManager_->EndFrame ();
 	dxCommon_->EndFrame ();

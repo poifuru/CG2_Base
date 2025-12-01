@@ -10,6 +10,8 @@ class InputManager;
 class TextureManager;
 class ModelManager;
 class PSOManager;
+class LineRenderer;
+class CubeRenderer;
 
 class MagosuyaEngine {
 public:		//メンバ関数
@@ -41,4 +43,6 @@ private:
 	TextureManager* texManager_ = nullptr;
 	ModelManager* modelManager_ = nullptr;
 	PSOManager* psoManager_ = nullptr;
+	LineRenderer* lineRenderer_ = nullptr;
+	CubeRenderer* cubeRenderer_ = nullptr;
 };

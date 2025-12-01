@@ -12,6 +12,8 @@ class DxCommon;
 enum class RootSigType : uint32_t {
 	Standard3D,			// あなたが定義したCBV x 3 + DescriptorTable x 1 の構成
 	Particle,			//パーティクル用
+	LineMesh,
+	CubeMesh,			//メッシュ描画用
 	PostProcess,		// ポストエフェクト用（SRV中心）(未実装)
 	UI,					// UI描画用（2D行列とテクスチャ）(未実装)
 	Count
@@ -33,6 +35,8 @@ public:		// メンバ関数
 
 	//IDをもとにID3D12RootSignature*を返す
 	ID3D12RootSignature* GetRootSignature (uint32_t rootSigID) const;
+
+	void SetRootSignature (uint32_t rootSigID);
 
 private:
 	//コンストラクタを禁止
@@ -59,6 +63,12 @@ private:	// メンバ変数
 	D3D12_DESCRIPTOR_RANGE textureDescriptorRanges[1] = {};
 	D3D12_ROOT_PARAMETER particleRootParameters[3] = {};
 	D3D12_STATIC_SAMPLER_DESC particleStaticSamplers[1] = {};
+	//Line
+	D3D12_DESCRIPTOR_RANGE lineMeshDescriptorRanges[2] = {};
+	D3D12_ROOT_PARAMETER lineMeshRootParameters[2] = {};
+	//Cube
+	D3D12_DESCRIPTOR_RANGE cubeMeshDescriptorRanges[2] = {};
+	D3D12_ROOT_PARAMETER cubeMeshRootParameters[2] = {};
 	//***ルートシグネチャの種類を増やしたいときに適宜追加***//
 
 	//ハッシュ値とIDのマップ(逆引き兼キャッシュチェック用)
@@ -72,4 +82,5 @@ private:	// メンバ変数
 
 	//ポインタを借りる
 	ID3D12Device* device_ = nullptr;
+	ID3D12GraphicsCommandList* commandList_ = nullptr;
 };

@@ -32,8 +32,6 @@ private:
 
 	//PSO
 	PSODescriptor desc_ = {};
-	ID3D12RootSignature* rootsignature_ = nullptr;
-	ID3D12PipelineState* pipelineState_ = nullptr;
 
 	//GPUリソース
 	ComPtr<ID3D12Resource> matrixBuffer_;
@@ -44,7 +42,7 @@ private:
 	Material* materialData_ = nullptr;
 
 	//ImGui用のラベル名
-	std::string tag_;
+	std::string tag_;	//skydome
 
 	//ImGuiで色をいじる変数
 	float color_[4];

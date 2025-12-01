@@ -57,6 +57,8 @@ public:		//メンバ関数
 	//PSODesctiptorを受けとってID3D12PipelineState*を返す
 	ID3D12PipelineState* GetOrCreratePSO (const PSODescriptor& desc);
 
+	void SetPSO (const PSODescriptor& desc);
+
 private:
 	//コンストラクタを禁止
 	PSOManager () = default;
@@ -77,6 +79,7 @@ private:	//メンバ変数
 
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;
+	ID3D12GraphicsCommandList* commandList_ = nullptr;
 	ShaderManager* shaderManager_ = nullptr;
 	RootSignatureManager* rootSigManager_ = nullptr;
 	BlendModeManager* blendModeManager_ = nullptr;

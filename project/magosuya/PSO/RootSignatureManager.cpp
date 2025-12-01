@@ -6,6 +6,7 @@
 
 void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	device_ = dxCommon->GetDevice ();
+	commandList_ = dxCommon->GetCommandList ();
 
 	//===RootSigTypeごとの定義===///
 	//***standard3D***//
@@ -44,7 +45,7 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	standard3DStaticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;	//ありったけのmipmapを使う
 	standard3DStaticSamplers[0].ShaderRegister = 0;	//レジスタ番号0を使う
 	standard3DStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
-	//******//
+	//*******//
 
 	//***Particle***//
 	//DescriptorRange(VSで使うt0レジスタ用)
@@ -86,7 +87,59 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	particleStaticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;							//ありったけのmipmapを使う
 	particleStaticSamplers[0].ShaderRegister = 0;									//s0を指定
 	particleStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
-	//******//
+	//*******//
+
+	//***LineMesh***//
+	//DescriptorRange
+	//行列データのインスタンシング用(VSで使うt0レジスタ用)
+	lineMeshDescriptorRanges[0].BaseShaderRegister = 0;	//0から始まる
+	lineMeshDescriptorRanges[0].NumDescriptors = 1;		//数は1つ
+	lineMeshDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	//SRVを使う
+	lineMeshDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	//Offsetを自動計算
+
+	//頂点データのインスタンシング用(VSで使うt1レジスタ用)
+	lineMeshDescriptorRanges[1].BaseShaderRegister = 1;	// t1
+	lineMeshDescriptorRanges[1].NumDescriptors = 1;
+	lineMeshDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	lineMeshDescriptorRanges[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+	
+	//CBV(b0)用のrootParametor
+	lineMeshRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;			//CBVを使う
+	lineMeshRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;		//Vertex Shaderを使う
+	lineMeshRootParameters[0].Descriptor.ShaderRegister = 0;							//b0番を使う(CBV)
+	
+	//StructuedBuffer(VSのt0)用のDescriptorTable
+	lineMeshRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;					//DescriptorTableを使う
+	lineMeshRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;							//VertexShaderで使う
+	lineMeshRootParameters[1].DescriptorTable.pDescriptorRanges = lineMeshDescriptorRanges;						//t0(SRV)を指定
+	lineMeshRootParameters[1].DescriptorTable.NumDescriptorRanges = _countof (lineMeshDescriptorRanges);		//Tableで利用する数
+	//*******//
+
+	//***CubeMesh***//
+	//DescriptorRange
+	//行列データのインスタンシング用(VSで使うt0レジスタ用)
+	cubeMeshDescriptorRanges[0].BaseShaderRegister = 0;	//0から始まる
+	cubeMeshDescriptorRanges[0].NumDescriptors = 1;		//数は1つ
+	cubeMeshDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	//SRVを使う
+	cubeMeshDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	//Offsetを自動計算
+
+	//頂点データのインスタンシング用(VSで使うt1レジスタ用)
+	cubeMeshDescriptorRanges[1].BaseShaderRegister = 1;	// t1
+	cubeMeshDescriptorRanges[1].NumDescriptors = 1;
+	cubeMeshDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	cubeMeshDescriptorRanges[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	//CBV(b0)用のrootParametor
+	cubeMeshRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;			//CBVを使う
+	cubeMeshRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;		//Vertex Shaderを使う
+	cubeMeshRootParameters[0].Descriptor.ShaderRegister = 0;							//b0番を使う(CBV)
+
+	//StructuedBuffer(VSのt0)用のDescriptorTable
+	cubeMeshRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;					//DescriptorTableを使う
+	cubeMeshRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;							//VertexShaderで使う
+	cubeMeshRootParameters[1].DescriptorTable.pDescriptorRanges = cubeMeshDescriptorRanges;						//t0(SRV)を指定
+	cubeMeshRootParameters[1].DescriptorTable.NumDescriptorRanges = _countof (cubeMeshDescriptorRanges);		//Tableで利用する数
+	//*******//
 }
 
 uint32_t RootSignatureManager::GetOrCreateRootSignature (RootSigType type) {
@@ -154,6 +207,11 @@ ID3D12RootSignature* RootSignatureManager::GetRootSignature (uint32_t rootSigID)
 	// 見つからなかったらassertでnullptrを返す
 	assert (false && "RootSignature ID not found in cache!");
 	return nullptr;
+}
+
+void RootSignatureManager::SetRootSignature (uint32_t rootSigID) {
+	auto rootSig = GetRootSignature (rootSigID);
+	commandList_->SetGraphicsRootSignature (rootSig);
 }
 
 uint64_t RootSignatureManager::ComputeHash (const D3D12_ROOT_SIGNATURE_DESC& desc) const {
@@ -244,6 +302,32 @@ D3D12_ROOT_SIGNATURE_DESC RootSignatureManager::CreateRootSigDesc (RootSigType t
 		//Sampler
 		desc.pStaticSamplers = particleStaticSamplers;
 		desc.NumStaticSamplers = _countof (particleStaticSamplers);
+		break;
+
+	case RootSigType::LineMesh:
+		//RootSignature
+		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+		//RootParametor
+		desc.pParameters = lineMeshRootParameters;
+		desc.NumParameters = _countof (lineMeshRootParameters);
+
+		//Sampler
+		desc.pStaticSamplers = nullptr;
+		desc.NumStaticSamplers = 0;
+		break;
+
+	case RootSigType::CubeMesh:
+		//RootSignature
+		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+		//RootParametor
+		desc.pParameters = cubeMeshRootParameters;
+		desc.NumParameters = _countof (cubeMeshRootParameters);
+
+		//Sampler
+		desc.pStaticSamplers = nullptr;
+		desc.NumStaticSamplers = 0;
 		break;
 	}
 
