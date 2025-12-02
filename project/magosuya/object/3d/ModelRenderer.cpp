@@ -10,6 +10,7 @@ ModelRenderer::ModelRenderer (MagosuyaEngine* magosuya) {
 	for (int i = 0; i < 4; ++i) {
 		color_[i] = 1.0f;
 	}
+	modelNumber_++;
 }
 
 ModelRenderer::~ModelRenderer () {
@@ -66,7 +67,8 @@ void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 }
 
 void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform) {
-	std::string label = "##" + tag_;
+	std::string num = std::to_string (modelNumber_);
+	std::string label = "##" + tag_ + num;
 	if (ImGui::ColorEdit4 (("Color" + label).c_str (), color_)) {
 		// 色が変更されたらmaterialDataに反映
 		materialData_->color.x = color_[0];
