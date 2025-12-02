@@ -2,15 +2,16 @@
 #include "MathFunction.h"
 #include "imgui.h"
 
-Player::~Player() {
+Player::~Player () {
 	delete state_;
 }
 
 void Player::Initialize()
 {
+	engine_->LoadModelData ("Resources/zako", "zako");
 	obj_ = std::make_unique<Model>(engine_);
-	obj_->SetModelData("teapot");
-	obj_->SetTexture("teapot");
+	obj_->SetModelData("zako");
+	obj_->SetTexture("zako");
 	obj_->Initialize();
 
 	// 始まりのState
