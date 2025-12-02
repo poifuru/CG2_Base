@@ -43,6 +43,7 @@ private:
 
 	//ImGui用のラベル名
 	std::string tag_;
+	static inline int modelNumber_ = 0;
 
 	//ImGuiで色をいじる変数
 	float color_[4];
