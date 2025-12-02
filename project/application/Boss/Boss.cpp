@@ -45,11 +45,7 @@ void Boss::Draw() {
 
 void Boss::ImGuiControl() {
 #ifdef _DEBUG
-	ImGui::Begin("Boss");
-	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.1f);
-	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.1f);
-	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.1f);
-	ImGui::End();
+	model_->ImGui ("boss");
 
 	centerStomp_->ImGuiControl();
 #endif

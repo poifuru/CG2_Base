@@ -28,8 +28,8 @@ void Model::Draw () {
 	renderer_->Draw (texture_);
 }
 
-void Model::ImGui () {
-	renderer_->ImGui (transform_, uvTransform_);
+void Model::ImGui (const std::string& windowName) {
+	renderer_->ImGui (transform_, uvTransform_, windowName);
 }
 
 void Model::SetModelData (const std::string& ID) {

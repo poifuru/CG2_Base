@@ -46,7 +46,7 @@ public:	//メンバ関数
 	/// <summary>
 	/// ImGuiで編集できるよ
 	/// </summary>
-	void ImGui ();
+	void ImGui (const std::string& windowName);
 
 	/// <summary>
 	/// どのモデルを使うのか

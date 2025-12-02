@@ -4,13 +4,15 @@
 #include "MagosuyaEngine.h"
 
 ModelRenderer::ModelRenderer (MagosuyaEngine* magosuya) {
+	modelCount_++;
+	//その時のカウントをinstanceIDにコピー
+	instanceID_ = modelCount_;
 	magosuya_ = magosuya;
 	rootSignature_ = magosuya_->GetDxCommon ()->GetRootSignature ();
 	pipelineState_ = magosuya_->GetDxCommon ()->GetPipelineState ();
 	for (int i = 0; i < 4; ++i) {
 		color_[i] = 1.0f;
 	}
-	modelNumber_++;
 }
 
 ModelRenderer::~ModelRenderer () {
@@ -29,7 +31,7 @@ void ModelRenderer::Initialize () {
 	materialBuffer_ = magosuya_->GetDxCommon ()->CreateBufferResource (sizeof (Material));
 	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	materialData_->enableLighting = true;
+	materialData_->enableLighting = false;
 	materialData_->uvTranform = MakeIdentity4x4 ();
 }
 
@@ -66,9 +68,10 @@ void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	magosuya_->GetDxCommon ()->GetCommandList ()->DrawIndexedInstanced (static_cast<UINT>(data->indexCount), 1, 0, 0, 0);
 }
 
-void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform) {
-	std::string num = std::to_string (modelNumber_);
+void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform, const std::string& windowName) {
+	std::string num = std::to_string (instanceID_);
 	std::string label = "##" + tag_ + num;
+	ImGui::Text (("obj : " + windowName).c_str ());
 	if (ImGui::ColorEdit4 (("Color" + label).c_str (), color_)) {
 		// 色が変更されたらmaterialDataに反映
 		materialData_->color.x = color_[0];
@@ -83,17 +86,20 @@ void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform) {
 	ImGui::DragFloat3 (("UVrotate" + label).c_str (), &uvTransform.rotate.x, 0.01f);
 	ImGui::DragFloat3 (("UVtranslate" + label).c_str (), &uvTransform.translate.x, 0.01f);
 	//ライトの種類を選べるようにする
-	static int currentNum = 1;
+	int currentNum = 0;
 	const char* lights[] = { "None", "lambert", "halfLambert" };
-	if (ImGui::Combo ("ライティング", &currentNum, lights, IM_ARRAYSIZE (lights))) {
+	if (ImGui::Combo (("ライティング" + label).c_str(), &currentNum, lights, IM_ARRAYSIZE (lights))) {
 		if (currentNum == 0) {
 			materialData_->enableLighting = Light::none;
+			currentNum = 0;
 		}
 		else if (currentNum == 1) {
 			materialData_->enableLighting = Light::lambert;
+			currentNum = 1;
 		}
 		else if (currentNum == 2) {
 			materialData_->enableLighting = Light::halfLambert;
+			currentNum = 2;
 		}
 	}
 	ImGui::Separator ();
