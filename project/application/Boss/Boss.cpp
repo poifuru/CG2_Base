@@ -19,9 +19,6 @@ void Boss::Initialize() {
 
 	centerStomp_ = std::make_unique<CenterStomp>(magosuya_, this);
 	centerStomp_->Initialize();
-
-	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
-	speed_ = { 0.1f,0.1f,0.1f };
 }
 
 void Boss::Update(Matrix4x4* m) {
@@ -55,6 +52,6 @@ void Boss::UpdateMove() {
 	if (centerStomp_->IsAttacking()) {
 		return;
 	}
-	transform_.translate.x += static_cast<float>(rand() % 3 - 1) * 0.1f;
-	transform_.translate.z += static_cast<float>(rand() % 3 - 1) * 0.1f;
+	transform_.translate.x += static_cast<float>(rand() % 3 - 1) * speed_.x;
+	transform_.translate.z += static_cast<float>(rand() % 3 - 1) * speed_.z;
 }
