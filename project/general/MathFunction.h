@@ -144,6 +144,9 @@ bool IsCollision(const AABB& aabb1, const AABB& aabb2);
 //AABBの描画
 //void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
+//AABBと点の当たり判定
+bool IsCollision (const AABB& aabb, const Vector3& point);
+
 //AABBと球の当たり判定
 bool IsCollision(const AABB& aabb, const Sphere& sphere);
 

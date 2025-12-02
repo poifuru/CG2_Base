@@ -13,6 +13,12 @@ struct MeshParticleData {
 	float currentTime;
 };
 
+struct AccelerationField {
+	Transform transform;
+	Vector3 acceleration;
+	AABB aabb;
+};
+
 class MeshParticle {
 public:
 	MeshParticle ();
@@ -29,6 +35,11 @@ private:	//内部関数
 	MeshParticleData MakeNewParticle (std::mt19937 randomEngine, const Emitter& emitter_);
 	std::list<MeshParticleData> Emit (const Emitter& emitter, std::mt19937& randomEngine);
 	void EmitterUpdate ();
+	void EmitterLinePosUpdate ();
+	void EmitterLineDraw ();
+	void FieldUpdate ();
+	void FieldLinePosUpdate();
+	void FieldLineDraw ();
 
 public:
 	const uint32_t kMaxParticleNum_ = 5000;
@@ -38,6 +49,14 @@ public:
 	std::list<MeshParticleData> particles_;
 	std::list<MeshParticleData>::iterator particleIterator_;
 	Emitter emitter_ = {};
+	Vector3 linePos[8] = {};
+
+	//場
+	bool isActiveField_ = true;
+	AccelerationField field_ = {};
+	Vector3 fieldPos[8] = {};
+
+	LineVertexData lineData_[2] = {};
 
 	//vp行列
 	Matrix4x4* vp_ = {};

@@ -695,6 +695,13 @@ bool IsCollision(const AABB& aabb1, const AABB& aabb2) {
 //	Novice::DrawLine(int(screenVertex[3].x), int(screenVertex[3].y), int(screenVertex[7].x), int(screenVertex[7].y), color);
 //}
 
+bool IsCollision (const AABB& aabb, const Vector3& point) {
+	return
+		(aabb.min.x <= point.x && aabb.max.x >= point.x) &&
+		(aabb.min.y <= point.y && aabb.max.y >= point.y) &&
+		(aabb.min.z <= point.z && aabb.max.z >= point.z);
+}
+
 bool IsCollision(const AABB& aabb, const Sphere& sphere) {
 	//最近接点を求める
 	Vector3 closestPoint{

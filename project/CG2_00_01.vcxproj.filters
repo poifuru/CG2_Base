@@ -102,6 +102,7 @@
     <ClCompile Include="magosuya\mesh\Mesh.cpp" />
     <ClCompile Include="magosuya\mesh\cube\CubeRenderer.cpp" />
     <ClCompile Include="magosuya\utility\particle\MeshParticle.cpp" />
+    <ClCompile Include="magosuya\utility\camera\CameraComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="general\ChangeString.h">
@@ -206,6 +207,7 @@
     <ClInclude Include="magosuya\mesh\cube\CubeRenderData.h" />
     <ClInclude Include="magosuya\mesh\cube\CubeRenderer.h" />
     <ClInclude Include="magosuya\utility\particle\MeshParticle.h" />
+    <ClInclude Include="magosuya\utility\camera\CameraComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">

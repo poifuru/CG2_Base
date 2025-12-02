@@ -186,22 +186,6 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	std::unique_ptr<DebugCamera> debugCamera = std::make_unique<DebugCamera> ();
 	debugCamera->Initialize ();
 	bool debugMode = false;
-
-	CubeData cube = {};
-	cube.transform = { 
-		{1.0f, 1.0f, 1.0f},
-		{0.0f, 0.0f, 0.0f},
-		{0.0f, 0.0f, 0.0f},
-	};
-	cube.size = 1.0f;
-	cube.color[0] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	cube.color[1] = { 1.0f, 0.0f, 0.0f, 1.0f };
-	cube.color[2] = { 0.0f, 1.0f, 0.0f, 1.0f };
-	cube.color[3] = { 0.0f, 0.0f, 1.0f, 1.0f };
-	cube.color[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
-	cube.color[5] = { 0.0f, 1.0f, 1.0f, 1.0f };
-	cube.color[6] = { 1.0f, 0.0f, 1.0f, 1.0f };
-	cube.color[7] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	/*********************************/
 
 	/*メインループ！！！！！！！！！*/
@@ -309,7 +293,6 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		//===描画===//
 		skydome->Draw ();
 		particle->Draw ();
-		//Mesh::DrawCube (&cube, vp);
 
 		//フレーム終了
 		magosuya->EndFrame ();
