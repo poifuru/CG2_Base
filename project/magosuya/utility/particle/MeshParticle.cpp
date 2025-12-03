@@ -66,7 +66,7 @@ void MeshParticle::Update (Matrix4x4* vp) {
 
 		if (dstIndex < kMaxParticleNum_) {
 			//fieldの範囲内で加速度を適用する
-			if (IsCollision (field_.aabb, particleIterator_->cube.transform.translate)) {
+			if (Math::IsCollision (field_.aabb, particleIterator_->cube.transform.translate)) {
 				particleIterator_->velocity += field_.acceleration * kDeltaTime;
 			}
 

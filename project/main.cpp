@@ -259,24 +259,24 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		//ゲームの処理//
 		//=======オブジェクトの更新処理=======//
 		//カメラ
-		cameraMatrix = MakeAffineMatrix (cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
-		viewMatrix = Inverse (cameraMatrix);
-		projectionMatrix = MakePerspectiveFOVMatrix (0.45f, float (WindowsAPI::GetInstance ()->kClientWidth) / float (WindowsAPI::GetInstance ()->kClientHeight), 0.1f, 1000.0f);
+		cameraMatrix = Math::MakeAffineMatrix (cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
+		viewMatrix = Math::Inverse (cameraMatrix);
+		projectionMatrix = Math::MakePerspectiveFOVMatrix (0.45f, float (WindowsAPI::GetInstance ()->kClientWidth) / float (WindowsAPI::GetInstance ()->kClientHeight), 0.1f, 1000.0f);
 
 		if (debugMode) {
 			debugCamera->Update ();
-			viewMatrix = Inverse (debugCamera->GetWorldMat());
-			projectionMatrix = MakePerspectiveFOVMatrix (0.45f, float (WindowsAPI::GetInstance ()->kClientWidth) / float (WindowsAPI::GetInstance ()->kClientHeight), 0.1f, 1000.0f);
+			viewMatrix = Math::Inverse (debugCamera->GetWorldMat());
+			projectionMatrix = Math::MakePerspectiveFOVMatrix (0.45f, float (WindowsAPI::GetInstance ()->kClientWidth) / float (WindowsAPI::GetInstance ()->kClientHeight), 0.1f, 1000.0f);
 		}
 
 		//vp行列作成
-		Matrix4x4 vp = Multiply (viewMatrix, projectionMatrix);
+		Matrix4x4 vp = Math::Multiply (viewMatrix, projectionMatrix);
 
 		skydome->Update (&vp);
 		particle->Update (&vp);
 
 		//光源のdirectionの正規化
-		directionalLightData->direction = Normalize (directionalLightData->direction);
+		directionalLightData->direction = Math::Normalize (directionalLightData->direction);
 
 		//ImGuiと変数を結び付ける
 		// 色変更用のUI

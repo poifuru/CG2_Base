@@ -21,7 +21,7 @@ void Model::Initialize (Vector3 scale, Vector3 rotate, Vector3 position) {
 }
 
 void Model::Update (Matrix4x4* vp) {
-	Matrix4x4 world = MakeAffineMatrix (transform_.scale, transform_.rotate, transform_.translate);
+	Matrix4x4 world = Math::MakeAffineMatrix (transform_.scale, transform_.rotate, transform_.translate);
 
 	renderer_->Update (world, *vp, uvTransform_);
 }

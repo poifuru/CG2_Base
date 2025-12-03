@@ -25,8 +25,8 @@ void LineRenderer::Initialize (DxCommon* dxCommon) {
 	instancingBuffer_ = dxCommon_->CreateBufferResource (sizeof (LineForGPU) * MaxMeshNum::Line);
 	instancingBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&instancingData_));
 	for (uint32_t i = 0; i < MaxMeshNum::Line; ++i) {
-		instancingData_[i].World = MakeIdentity4x4 ();
-		instancingData_[i].WVP = MakeIdentity4x4 ();
+		instancingData_[i].World = Math::MakeIdentity4x4 ();
+		instancingData_[i].WVP = Math::MakeIdentity4x4 ();
 	}
 
 	//instancing用にSRVを作成(t0にバインド)

@@ -17,8 +17,8 @@ void Mesh::DrawLine (LineVertexData* data, const Matrix4x4& vp) {
 
 	//実際にlineForGPUに中身を入れる
 	LineForGPU lineForGPU;
-	lineForGPU.World = MakeIdentity4x4();
-	lineForGPU.WVP = Multiply (lineForGPU.World, vp);
+	lineForGPU.World = Math::MakeIdentity4x4();
+	lineForGPU.WVP = Math::Multiply (lineForGPU.World, vp);
 	//作ったデータを送信(1インスタンス分)
 	renderer_->TransferData (lineForGPU);
 }
@@ -37,8 +37,8 @@ void Mesh::DrawCube (CubeData* data, const Matrix4x4& vp) {
 	//実際にlineForGPUに中身を入れる
 	CubeForGPU cubeForGPU;
 	//ワールド座標作成用のローカル変数を宣言
-	cubeForGPU.World = MakeAffineMatrix (data->transform.scale, data->transform.rotate, data->transform.translate);
-	cubeForGPU.WVP = Multiply (cubeForGPU.World, vp);
+	cubeForGPU.World = Math::MakeAffineMatrix (data->transform.scale, data->transform.rotate, data->transform.translate);
+	cubeForGPU.WVP = Math::Multiply (cubeForGPU.World, vp);
 	//作ったデータを送信(1インスタンス分)
 	renderer_->TransferData (cubeForGPU);
 }

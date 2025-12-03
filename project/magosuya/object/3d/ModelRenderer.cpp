@@ -19,16 +19,16 @@ void ModelRenderer::Initialize () {
 	//行列データ
 	matrixBuffer_ = dxCommon_->CreateBufferResource (sizeof (TransformationMatrix));
 	matrixBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&matrixData_));
-	matrixData_->World = MakeIdentity4x4 ();
-	matrixData_->WVP = MakeIdentity4x4 ();
-	matrixData_->WorldInverseTranspose = MakeIdentity4x4 ();
+	matrixData_->World = Math::MakeIdentity4x4 ();
+	matrixData_->WVP = Math::MakeIdentity4x4 ();
+	matrixData_->WorldInverseTranspose = Math::MakeIdentity4x4 ();
 
 	//マテリアルデータ
 	materialBuffer_ = dxCommon_->CreateBufferResource (sizeof (Material));
 	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = true;
-	materialData_->uvTranform = MakeIdentity4x4 ();
+	materialData_->uvTranform = Math::MakeIdentity4x4 ();
 
 	//PSO設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::Standard3D);
@@ -40,11 +40,11 @@ void ModelRenderer::Initialize () {
 
 void ModelRenderer::Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform) {
 	matrixData_->World = world;
-	matrixData_->WVP = Multiply(matrixData_->World, vp);
-	matrixData_->WorldInverseTranspose = Transpose (Inverse (matrixData_->World));
+	matrixData_->WVP = Math::Multiply(matrixData_->World, vp);
+	matrixData_->WorldInverseTranspose = Math::Transpose (Math::Inverse (matrixData_->World));
 
 	//uvTranform更新
-	materialData_->uvTranform = MakeAffineMatrix (uvTransform.scale, uvTransform.rotate, uvTransform.translate);
+	materialData_->uvTranform = Math::MakeAffineMatrix (uvTransform.scale, uvTransform.rotate, uvTransform.translate);
 }
 
 void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {

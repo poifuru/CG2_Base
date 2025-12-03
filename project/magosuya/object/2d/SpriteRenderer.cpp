@@ -37,13 +37,13 @@ void SpriteRenderer::Initialize () {
 	//初期設定まで済ませる
 	matrixBuffer_ = dxCommon_->CreateBufferResource ((sizeof (Matrix4x4) + 255) & ~255);
 	matrixBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&matrixData_));
-	*matrixData_ = MakeIdentity4x4 ();
+	*matrixData_ = Math::MakeIdentity4x4 ();
 
 	materialBuffer_ = dxCommon_->CreateBufferResource (sizeof (Material));
 	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };	//初期カラーは白
 	materialData_->enableLighting = false;
-	materialData_->uvTranform = MakeIdentity4x4 ();
+	materialData_->uvTranform = Math::MakeIdentity4x4 ();
 
 	//indexData_に書き込み
 	indexData_[0] = 0;
@@ -96,7 +96,7 @@ void SpriteRenderer::Update (Matrix4x4 wvpData, Transform uvTransform, Vector2 a
 
 	*matrixData_ = wvpData;
 	// UVTransform更新
-	materialData_->uvTranform = MakeAffineMatrix (uvTransform.scale, uvTransform.rotate, uvTransform.translate);
+	materialData_->uvTranform = Math::MakeAffineMatrix (uvTransform.scale, uvTransform.rotate, uvTransform.translate);
 }
 
 void SpriteRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {

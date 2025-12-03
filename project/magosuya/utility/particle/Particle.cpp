@@ -46,12 +46,12 @@ void Particle::Initialize () {
 	materialBuffer_ = dxCommon_->CreateBufferResource (sizeof (Material) * kMaxParticleNum_);
 	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**> (&materialData_));
 	for (uint32_t i = 0; i < kMaxParticleNum_; ++i) {
-		instancingData_[i].WVP = MakeIdentity4x4 ();
-		instancingData_[i].World = MakeIdentity4x4 ();
+		instancingData_[i].WVP = Math::MakeIdentity4x4 ();
+		instancingData_[i].World = Math::MakeIdentity4x4 ();
 		instancingData_[i].color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		materialData_[i].color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		materialData_[i].enableLighting = false;
-		materialData_[i].uvTranform = MakeIdentity4x4 ();
+		materialData_[i].uvTranform = Math::MakeIdentity4x4 ();
 	}
 
 	//vertexData_に書き込み
@@ -98,7 +98,7 @@ void Particle::Initialize () {
 	);
 	device_->CreateShaderResourceView (instancingBuffer_.Get (), &particleSrvDesc, particleSrvHandleCPU);
 
-	billBoardMatrix_ = MakeIdentity4x4 ();
+	billBoardMatrix_ = Math::MakeIdentity4x4 ();
 
 	descriptorIndex_++;
 }
@@ -121,7 +121,7 @@ void Particle::Update (Matrix4x4* cameraMatrix, Matrix4x4* vp) {
 			//速度を反映させる
 			particleIterator_->transform.translate += particleIterator_->velocity * kDeltaTime;
 			particleIterator_->currentTime += kDeltaTime;
-			instancingData_[dstIndex].World = MakeAffineMatrix (
+			instancingData_[dstIndex].World = Math::MakeAffineMatrix (
 				particleIterator_->transform.scale,
 				particleIterator_->transform.rotate,
 				particleIterator_->transform.translate
@@ -136,11 +136,11 @@ void Particle::Update (Matrix4x4* cameraMatrix, Matrix4x4* vp) {
 				billBoardMatrix_.m[3][2] = 0.0f;
 				billBoardMatrix_.m[3][3] = 1.0f;
 
-				instancingData_[dstIndex].World = Multiply (instancingData_[dstIndex].World, billBoardMatrix_);
-				instancingData_[dstIndex].WVP = Multiply (instancingData_[dstIndex].World, *vp);
+				instancingData_[dstIndex].World = Math::Multiply (instancingData_[dstIndex].World, billBoardMatrix_);
+				instancingData_[dstIndex].WVP = Math::Multiply (instancingData_[dstIndex].World, *vp);
 			}
 			else {
-				instancingData_[dstIndex].WVP = Multiply (instancingData_[dstIndex].World, *vp);
+				instancingData_[dstIndex].WVP = Math::Multiply (instancingData_[dstIndex].World, *vp);
 			}
 			instancingData_[dstIndex].color = particleIterator_->color;
 			//徐々に透明度を下げて消えるように
@@ -148,7 +148,7 @@ void Particle::Update (Matrix4x4* cameraMatrix, Matrix4x4* vp) {
 			instancingData_[dstIndex].color.w = alpha;
 
 			//uvTranform更新
-			materialData_[dstIndex].uvTranform = MakeAffineMatrix (
+			materialData_[dstIndex].uvTranform = Math::MakeAffineMatrix (
 				uvTransform_.scale,
 				uvTransform_.rotate,
 				uvTransform_.translate);
