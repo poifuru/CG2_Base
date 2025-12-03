@@ -2,6 +2,7 @@
 #include "MagosuyaEngine.h"
 #include "object/3d/Model.h"
 #include "Attack/CenterStomp/CenterStomp.h"
+#include "Attack/FullScreenAttack/FullScreenAttack.h"
 
 class Boss {
 public:
@@ -12,6 +13,8 @@ public:
 	void Update(Matrix4x4* m);
 	void Draw();
 	void ImGuiControl();
+
+	bool IsAnyAttackActive() const;
 
 	// Getter
 	Transform& GetTransform() { return transform_; }
@@ -28,6 +31,8 @@ private:
 	std::unique_ptr<Model> model_ = nullptr;
 	// 中央範囲攻撃
 	std::unique_ptr <CenterStomp> centerStomp_ = nullptr;
+	// 全画面攻撃
+	std::unique_ptr <FullScreenAttack> fullScreenAttack_ = nullptr;
 
 	Transform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
 	Vector3 speed_ = { 0.1f,0.1f,0.1f };
