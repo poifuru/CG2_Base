@@ -1,0 +1,1 @@
+#include "CameraOrganizer.h"

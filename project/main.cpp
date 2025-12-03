@@ -184,7 +184,7 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	//デバッグカメラ
 	std::unique_ptr<DebugCamera> debugCamera = std::make_unique<DebugCamera> ();
-	debugCamera->Initialize ();
+	debugCamera->Initialize ({ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -30.0f } });
 	bool debugMode = false;
 	/*********************************/
 
@@ -264,8 +264,8 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		projectionMatrix = MakePerspectiveFOVMatrix (0.45f, float (WindowsAPI::GetInstance ()->kClientWidth) / float (WindowsAPI::GetInstance ()->kClientHeight), 0.1f, 1000.0f);
 
 		if (debugMode) {
-			debugCamera->Updata (WindowsAPI::GetInstance ()->GetHwnd (), hr, InputManager::GetInstance ());
-			viewMatrix = Inverse (debugCamera->GetWorldMatrix());
+			debugCamera->Update ();
+			viewMatrix = Inverse (debugCamera->GetWorldMat());
 			projectionMatrix = MakePerspectiveFOVMatrix (0.45f, float (WindowsAPI::GetInstance ()->kClientWidth) / float (WindowsAPI::GetInstance ()->kClientHeight), 0.1f, 1000.0f);
 		}
 
