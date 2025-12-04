@@ -72,6 +72,12 @@ void Player::Update(Matrix4x4* m)
 	obj_->Update(m);
 	attackColliderObj_->Update(m);
 #ifdef _DEBUG
+	ImGui::Begin("Player");
+	ImGui::SliderFloat3("Direction", &direction_.x,0.0f,0.0f);
+	ImGui::DragFloat3("pos", &pos.x);
+	ImGui::DragFloat("HP", &hp_);
+	ImGui::End();
+	obj_->ImGui();
 	obj_->ImGui("player");
 #endif//_DEBUG
 }

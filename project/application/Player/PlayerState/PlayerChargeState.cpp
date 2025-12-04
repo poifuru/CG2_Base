@@ -1,11 +1,14 @@
 #include "PlayerState.h"
 #include "../Player.h"
+#include "imgui.h"
 
 void PlayerChargeState::Initialize() {
     if (!player_) return;
 
     // チャージしているときはスタミナを回復させるかどうか迷う
 
+    // 移動速度
+    player_->SetSpeedMultiplier(0.35f);
 
     // チャージタイマーリセット
     chargeTimer_ = 0.0f;
@@ -16,6 +19,21 @@ void PlayerChargeState::Initialize() {
 }
 
 void PlayerChargeState::Update() {
+
+    auto& move = player_->Move();
+    if (player_->engine_->GetRawInput()->Push('W')){
+        move.z = 1.0f;
+    }
+    if (player_->engine_->GetRawInput()->Push('S')){
+        move.z = -1.0f;
+    }
+    if (player_->engine_->GetRawInput()->Push('A')){
+        move.x = -1.0f;
+    }
+    if (player_->engine_->GetRawInput()->Push('D')){
+        move.x = 1.0f;
+    }
+
     const float deltaTime = 1.0f / 60.0f;
 
     // 1. 入力チェック: ボタンが離されたか？
@@ -60,10 +78,19 @@ void PlayerChargeState::Update() {
         回避のStateに遷移させる
         return;
     }*/
+
+#ifdef _DEBUG
+    ImGui::Begin("Player");
+    ImGui::DragInt("ChargeLevel", &currentChargeLevel_);
+    ImGui::End();
+#endif//_DEBUG
 }
 
 void PlayerChargeState::Exit() {
     if (!player_) return;
+
+    // 移動速度 [ 元に戻す ]
+    player_->SetSpeedMultiplier(1.0f);
 
     // スタミナ回復ブロックの解除
     //player_->UnblockStaminaRecovery();
