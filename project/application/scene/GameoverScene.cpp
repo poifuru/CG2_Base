@@ -2,8 +2,9 @@
 #include "MagosuyaEngine.h"
 #include "InputManager.h"
 
-GameoverScene::GameoverScene (MagosuyaEngine* magosuya) {
-	magosuya_ = magosuya;
+GameoverScene::GameoverScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
+	camera_ = camera;
+	input_ = inputManager;
 }
 
 GameoverScene::~GameoverScene () {

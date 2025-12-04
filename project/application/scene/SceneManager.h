@@ -9,7 +9,7 @@
 
 class SceneManager {
 public:		//メンバ関数
-	SceneManager (MagosuyaEngine* magosuya);
+	SceneManager (CameraOrganizer* camera, InputManager* input, DxCommon* dxCommon);
 	~SceneManager ();
 
 	void Initialize (SceneLabel scene);
@@ -27,7 +27,4 @@ private:	//メンバ変数
 	SceneLabel scene_;
 	//処理を共通化するためのポインタ
 	Scene* currentScene_;
-
-	//ポインタ貸し出し
-	MagosuyaEngine* magosuya_ = nullptr;
 };

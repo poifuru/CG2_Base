@@ -6,7 +6,7 @@
 
 class GameoverScene : public Scene {
 public:		//メンバ関数
-	GameoverScene (MagosuyaEngine* magosuya);
+	GameoverScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon);
 	~GameoverScene () override;
 
 	void Initialize () override;

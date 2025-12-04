@@ -3,10 +3,13 @@
 #include <memory>
 #include "Sprite.h"
 #include "Model.h"
+#include "player.h"
+#include "Boss.h"
+#include "DxCommon.h"
 
 class PlayScene : public Scene {
 public:		//メンバ関数
-	PlayScene (MagosuyaEngine* magosuya);
+	PlayScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon);
 	~PlayScene () override;
 
 	void Initialize () override;
@@ -14,7 +17,6 @@ public:		//メンバ関数
 	void Draw () override;
 
 private:	//メンバ変数
-	std::unique_ptr<CameraData> camera_ = nullptr;
 	std::unique_ptr<Player>player_ = nullptr;
 	std::unique_ptr<Boss> boss_ = nullptr;
 };

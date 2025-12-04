@@ -42,7 +42,4 @@ public:
 
 protected:
 	CameraData camera_ = {};
-
-	//ポインタを借りる
-	WindowsAPI* winAPI_ = nullptr;
 };

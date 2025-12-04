@@ -9,9 +9,6 @@ FixedPointCamera::FixedPointCamera () {
 	camera_.view = Math::MakeIdentity4x4 ();
 	camera_.proj = Math::MakeIdentity4x4 ();
 
-	inputManager_ = InputManager::GetInstance ();
-	winAPI_ = WindowsAPI::GetInstance ();
-
 	instanceNum_++;
 }
 
@@ -21,7 +18,7 @@ FixedPointCamera::~FixedPointCamera () {
 
 void FixedPointCamera::Initialize (const Transform& transform) {
 	camera_.transform = transform;
-	camera_.proj = Math::MakePerspectiveFOVMatrix (0.45f, (float)winAPI_->kClientWidth / (float)winAPI_->kClientHeight, 0.1f, 1000.0f);
+	camera_.proj = Math::MakePerspectiveFOVMatrix (0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, 0.1f, 1000.0f);
 }
 
 void FixedPointCamera::Update () {

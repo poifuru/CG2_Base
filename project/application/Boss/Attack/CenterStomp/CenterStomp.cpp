@@ -1,16 +1,17 @@
 #include "CenterStomp.h"
-#include "MathFunction.h"
-#include "../../Boss.h"
 #include <imgui.h>
 #include <algorithm>
+#include "MathFunction.h"
+#include "Boss.h"
+#include "DxCommon.h"
+#include "ModelManager.h"
 
-CenterStomp::CenterStomp(MagosuyaEngine* magosuya, Boss* boss) {
-	magosuya_ = magosuya;
+CenterStomp::CenterStomp(Boss* boss) {
 	boss_ = boss;
 
 	// 攻撃範囲表示用のモデル作成
-	model_ = std::make_unique<Model>(magosuya);
-	magosuya_->LoadModelData("Resources/teapot", "teapot");
+	model_ = std::make_unique<Model>(DxCommon::GetInstance());
+	ModelManager::GetInstance()->LoadModelData ("Resources/teapot", "teapot");
 }
 
 CenterStomp::~CenterStomp() {
@@ -90,7 +91,7 @@ void CenterStomp::UpdateRise() {
 	// ■ 線形補間 (Lerp) の実行
 	// startPos_ から targetPos_ へ、t の割合だけ進んだ位置を計算
 	// これにより瞬間移動ではなく、スムーズに移動します
-	Vector3 currentPos = Lerp(startPos_, targetPos_, t);
+	Vector3 currentPos = Math::Lerp(startPos_, targetPos_, t);
 
 	// 計算した位置をボスに反映
 	boss_->SetPosition(currentPos);
@@ -133,7 +134,7 @@ void CenterStomp::UpdateFall() {
 	if (t > 1.0f) t = 1.0f;
 
 	// 急降下 (EaseInQuad: t*t)
-	Vector3 currentPos = Lerp(startPos_, targetPos_, t * t);
+	Vector3 currentPos = Math::Lerp(startPos_, targetPos_, t * t);
 
 	boss_->SetPosition(currentPos);
 

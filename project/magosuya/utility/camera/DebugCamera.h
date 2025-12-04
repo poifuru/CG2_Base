@@ -13,7 +13,7 @@ using namespace Microsoft::WRL;
 class DebugCamera : public CameraComponent{
 public:	//メンバ関数
 	//コンストラクタ
-	DebugCamera ();
+	DebugCamera (InputManager* inputManager);
 	~DebugCamera () override;
 
 	//初期化
@@ -46,6 +46,6 @@ private:	//メンバ変数
 	static inline int instanceNum_ = 0;
 
 	//ポインタを借りる
-	InputManager* inputManager_ = nullptr;
+	InputManager* input_ = nullptr;
 };
 

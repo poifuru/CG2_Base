@@ -1,18 +1,13 @@
 #include "ModelRenderer.h"
 #include <imgui.h>
 #include "mathFunction.h"
-#include "DxCommon.h"
 
 ModelRenderer::ModelRenderer (DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 	commandList_ = dxCommon->GetCommandList ();
-ModelRenderer::ModelRenderer (MagosuyaEngine* magosuya) {
 	modelCount_++;
 	//その時のカウントをinstanceIDにコピー
 	instanceID_ = modelCount_;
-	magosuya_ = magosuya;
-	rootSignature_ = magosuya_->GetDxCommon ()->GetRootSignature ();
-	pipelineState_ = magosuya_->GetDxCommon ()->GetPipelineState ();
 	for (int i = 0; i < 4; ++i) {
 		color_[i] = 1.0f;
 	}
@@ -100,15 +95,15 @@ void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform, const s
 	const char* lights[] = { "None", "lambert", "halfLambert" };
 	if (ImGui::Combo (("ライティング" + label).c_str(), &currentNum, lights, IM_ARRAYSIZE (lights))) {
 		if (currentNum == 0) {
-			materialData_->enableLighting = Light::none;
+			materialData_->enableLighting = LightReflectionModel::none;
 			currentNum = 0;
 		}
 		else if (currentNum == 1) {
-			materialData_->enableLighting = Light::lambert;
+			materialData_->enableLighting = LightReflectionModel::lambert;
 			currentNum = 1;
 		}
 		else if (currentNum == 2) {
-			materialData_->enableLighting = Light::halfLambert;
+			materialData_->enableLighting = LightReflectionModel::halfLambert;
 			currentNum = 2;
 		}
 	}

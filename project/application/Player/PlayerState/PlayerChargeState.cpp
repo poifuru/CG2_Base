@@ -1,5 +1,5 @@
 #include "PlayerState.h"
-#include "../Player.h"
+#include "Player.h"
 
 void PlayerChargeState::Initialize() {
     if (!player_) return;
@@ -19,7 +19,7 @@ void PlayerChargeState::Update() {
     const float deltaTime = 1.0f / 60.0f;
 
     // 1. 入力チェック: ボタンが離されたか？
-    if (player_->engine_->GetRawInput()->Push('J') == false) {
+    if (player_->input_->GetRawInput()->Push('J') == false) {
         // ボタンが離されたら、チャージ解放状態へ遷移
         player_->ChangeState(new PlayerChargeReleaseState(currentChargeLevel_));
         return;

@@ -6,7 +6,7 @@
 
 class ClearScene : public Scene {
 public:		//メンバ関数
-	ClearScene (MagosuyaEngine* magosuya);
+	ClearScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon);
 	~ClearScene () override;
 
 	void Initialize () override;

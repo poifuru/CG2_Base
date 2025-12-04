@@ -774,8 +774,8 @@ namespace Math {
 	//	wasMousePressed = isMousePressed;
 	//}
 
-Vector3 Lerp(const Vector3& start, const Vector3& end, float t) {
-	Vector3 v;
+	Vector3 Lerp (const Vector3& v1, const Vector3& v2, float t) {
+		Vector3 v;
 
 		v.x = t * v1.x + (v2.x - v1.x) * t;
 		v.y = t * v1.y + (v2.y - v1.y) * t;
@@ -819,11 +819,25 @@ Vector3 Lerp(const Vector3& start, const Vector3& end, float t) {
 
 		float dot = Dot (input, normal);
 
-	reflect = input - normal * (2.0f * dot);
-	return reflect;
+		reflect = input - normal * (2.0f * dot);
+		return reflect;
+	}
+
+	float Deg2Rad (float deg) {
+		float ret = static_cast<float>(deg) * (3.14159265358979323846f / 180.0f);
+		return ret;
+	}
 }
 
-float Deg2Rad(float deg) {
-	float ret = static_cast<float>(deg) * (3.14159265358979323846f / 180.0f);
-	return ret;
-}
+//演算子オーバーロード
+Vector3 operator+(const Vector3& v1, const Vector3& v2) { return Math::Add (v1, v2); }
+Vector3 operator-(const Vector3& v1, const Vector3& v2) { return Math::Subtract (v1, v2); }
+Vector3 operator*(float s, const Vector3& v) { return Math::Multiply (s, v); }
+Vector3 operator*(const Vector3& v, float s) { return s * v; }
+Vector3 operator/(const Vector3& v, float s) { return Math::Multiply (1.0f / s, v); }
+Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Add (m1, m2); }
+Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Subtract (m1, m2); }
+Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Multiply (m1, m2); }
+/*単項演算子*/
+Vector3 operator+(const Vector3& v) { return { -v.x, -v.y, -v.z }; }
+Vector3 operator-(const Vector3& v) { return v; }

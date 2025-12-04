@@ -8,8 +8,8 @@ CameraOrganizer::~CameraOrganizer () {
 	cameras_.clear ();
 }
 
-void CameraOrganizer::Initialize () {
-	inputManager_ = InputManager::GetInstance ();
+void CameraOrganizer::Initialize (InputManager* inputManager) {
+	input_ = inputManager;
 	vpMatrix_ = Math::MakeIdentity4x4 ();
 
 	//テスト用 DebugCameraを生成＆登録
@@ -43,7 +43,7 @@ void CameraOrganizer::AddCamera (const std::string& name, CameraType type, const
 	}
 
 	case::CameraType::DebugCamera: {
-		DebugCamera* debugCam = new DebugCamera ();
+		DebugCamera* debugCam = new DebugCamera (input_);
 		camera = debugCam;
 		break;
 	}
@@ -82,7 +82,7 @@ void CameraOrganizer::SetActiveCamera (const std::string& cameraName) {
 
 void CameraOrganizer::Update () {
 	//デバッグカメラ切り替え
-	if (inputManager_->GetRawInput ()->Trigger (VK_TAB)) {
+	if (input_->GetRawInput ()->Trigger (VK_TAB)) {
 		//現在のカメラがデバッグカメラであるかをチェック
 		if (activeCamera_ && dynamic_cast<DebugCamera*>(activeCamera_)) {
 			//デバッグカメラなら前回使用していたカメラをセット
@@ -104,4 +104,21 @@ void CameraOrganizer::ImGui () {
 	ImGui::Separator ();
 	activeCamera_->ImGui ();
 	ImGui::End ();
+}
+
+void CameraOrganizer::SetFollowTarget (const std::string& cameraName, const Transform& target) {
+	auto it = cameras_.find (cameraName);
+	if (it == cameras_.end ()) {
+		return;
+	}
+
+	CameraComponent* camera = it->second;
+
+	// 2. FollowCamera型にダウンキャストする
+	FollowCamera* followCamera = dynamic_cast<FollowCamera*>(camera);
+
+	if (followCamera) {
+		// 3. ダウンキャストに成功したら、SetTarget() を呼び出す！
+		followCamera->SetTarget (&target);
+	}
 }

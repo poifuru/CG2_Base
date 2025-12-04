@@ -7,8 +7,7 @@ using namespace Microsoft::WRL;
 #include <string>
 #include "struct.h"
 #include "PSOManager.h"
-
-class DxCommon;
+#include "DxCommon.h"
 
 class ModelRenderer {
 public:

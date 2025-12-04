@@ -1,5 +1,5 @@
 #include "PlayerState.h"
-#include "../Player.h"
+#include "Player.h"
 
 void PlayerChargeReleaseState::Initialize() {
     if (!player_) return;

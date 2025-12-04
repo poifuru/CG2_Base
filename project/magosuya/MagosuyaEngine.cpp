@@ -1,14 +1,4 @@
 #include "MagosuyaEngine.h"
-#include "Windows.h"
-#include "DxCommon.h"
-#include "TextureManager.h"
-#include "ImGuiManager.h"
-#include "ModelManager.h"
-#include "PSOManager.h"
-#include "LineRenderer.h"
-#include "CubeRenderer.h"
-#include "Mesh.h"
-#include "CameraOrganizer.h"
 
 MagosuyaEngine::~MagosuyaEngine () {
 	dxCommon_->Finalize ();
@@ -34,7 +24,7 @@ void MagosuyaEngine::Initialize () {
 	cubeRenderer_ = CubeRenderer::GetInstance ();
 	cubeRenderer_->Initialize (dxCommon_);
 	cameraOrganizer_ = CameraOrganizer::GetInstance ();
-	cameraOrganizer_->Initialize ();
+	cameraOrganizer_->Initialize (inputManager_);
 }
 
 void MagosuyaEngine::BeginFrame () {

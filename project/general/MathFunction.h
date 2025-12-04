@@ -158,6 +158,8 @@ namespace Math {
 
 	//反射ベクトルを求める関数
 	Vector3 Reflect (const Vector3& input, Vector3& normal);
+
+	float Deg2Rad (float deg);
 }
 
 //演算子オーバーロード

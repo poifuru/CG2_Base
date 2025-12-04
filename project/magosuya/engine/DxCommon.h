@@ -12,7 +12,6 @@ using namespace Microsoft::WRL;
 #include <DirectXTex.h>
 #include "WindowsAPI.h"
 #include "LeakChecker.h"
-#include "InputManager.h"
 
 class DxCommon {
 public:		//メンバ関数(mainで呼び出すよう)
@@ -22,7 +21,7 @@ public:		//メンバ関数(mainで呼び出すよう)
 		return &instance;
 	}
 
-	void Initialize (InputManager* inputManager);
+	void Initialize ();
 	void BeginFrame ();
 	void EndFrame ();
 	void Finalize ();

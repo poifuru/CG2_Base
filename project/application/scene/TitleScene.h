@@ -6,7 +6,7 @@
 
 class TitleScene : public Scene {
 public:		//メンバ関数
-	TitleScene (MagosuyaEngine* magosuya);
+	TitleScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon);
 	~TitleScene () override;
 
 	void Initialize () override;
@@ -14,6 +14,5 @@ public:		//メンバ関数
 	void Draw () override;
 
 private:	//メンバ変数
-	std::unique_ptr<CameraData> camera_ = nullptr;
 	std::unique_ptr<Model> model_ = nullptr;
 };

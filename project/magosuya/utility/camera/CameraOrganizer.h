@@ -25,7 +25,7 @@ public:
 	~CameraOrganizer ();
 
 	//初期化関数
-	void Initialize ();
+	void Initialize (InputManager* inputManager);
 
 	//カメラを登録する関数
 	void AddCamera (const std::string& name, CameraType type, const Transform& transform);
@@ -38,6 +38,9 @@ public:
 
 	//ImGui
 	void ImGui ();
+
+	//追従カメラの設定をいじるためにコンテナからカメラを取得
+	void SetFollowTarget (const std::string& cameraName, const Transform& target);
 
 	//描画用のvp行列取得関数
 	Matrix4x4* GetVPMatrix () { return &vpMatrix_; }
@@ -68,5 +71,5 @@ private:
 	std::string activeCameraName_;
 
 	//ポインタを借りる
-	InputManager* inputManager_ = nullptr;
+	InputManager* input_ = nullptr;
 };

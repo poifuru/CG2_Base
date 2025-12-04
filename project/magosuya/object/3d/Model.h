@@ -8,10 +8,6 @@ using namespace Microsoft::WRL;
 #include "struct.h"
 #include "ModelRenderer.h"
 
-class DxCommon;
-class TextureManager;
-class ModelManager;
-
 class Model {
 public:	//メンバ関数
 	//コンストラクタ
@@ -20,7 +16,7 @@ public:	//メンバ関数
 	/// </summary>
 	/// <param name="directoryPath">3Dモデルファイルが存在するディレクトリのパス。</param>
 	/// <param name="filename">読み込む3Dモデルのファイル名。</param>
-	Model (DxCommon* dxCommon, TextureManager* texManager, ModelManager* modelManager);
+	Model (DxCommon* dxCommon);
 
 	~Model ();
 
@@ -61,7 +57,7 @@ public:	//メンバ関数
 	//アクセッサ
 	Vector3 GetPosition () { return transform_.translate; }
 	void SetPosition (const Vector3& position) { transform_.translate = position; }
-	Transform GetTransform () { return transform_; }
+	const Transform& GetTransform () { return transform_; }
 	void SetTransform (Transform transform) { transform_ = transform; }
 	Transform GetUVTransform () { return uvTransform_; }
 	void SetUVTransform (Transform transform) { uvTransform_ = transform; }
@@ -78,8 +74,4 @@ private:		//メンバ変数
 
 	//レンダラークラス
 	std::unique_ptr<ModelRenderer> renderer_ = nullptr;
-
-	//ポインタを借りる
-	TextureManager* texManager_ = nullptr;
-	ModelManager* modelManager_ = nullptr;
 };

@@ -1,11 +1,11 @@
 #pragma once
 #include "MagosuyaEngine.h"
-#include "object/3d/Model.h"
-#include "Attack/CenterStomp/CenterStomp.h"
+#include "Model.h"
+#include "CenterStomp.h"
 
 class Boss {
 public:
-	Boss(MagosuyaEngine* magosuya);
+	Boss();
 	~Boss();
 
 	void Initialize();
@@ -23,11 +23,13 @@ public:
 private:
 	void UpdateMove();
 private:
-	MagosuyaEngine* magosuya_ = nullptr;
 	std::unique_ptr<Model> model_ = nullptr;
 	
 	std::unique_ptr <CenterStomp> centerStomp_ = nullptr;
 
 	Transform transform_;
 	Vector3 speed_;
+
+	//デバッグ用
+	InputManager* input_ = nullptr;
 };

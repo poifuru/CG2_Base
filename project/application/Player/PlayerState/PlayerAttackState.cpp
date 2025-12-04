@@ -1,5 +1,5 @@
 #include "PlayerState.h"
-#include "../Player.h"
+#include "Player.h"
 #include "MathFunction.h"
 
 void PlayerAttackState::Initialize(){
@@ -25,7 +25,7 @@ void PlayerAttackState::Update(){
     const float CHARGE_WINDOW_DURATION = 0.15f;
 
     if (attackTimer_ < CHARGE_WINDOW_DURATION) {
-        if (player_->engine_->GetRawInput()->Push('J') == false) {
+        if (player_->input_->GetRawInput()->Push('J') == false) {
             isAttackHeld_ = false;
         }
     }

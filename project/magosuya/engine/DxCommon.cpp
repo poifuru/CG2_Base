@@ -14,7 +14,7 @@
 #include "function.h"
 #include "Logger.h"
 #include "ChangeString.h"
-#include "Windows.h"
+#include "InputManager.h"
 
 void DxCommon::Initialize () {
 	HRESULT hr;

@@ -1,5 +1,5 @@
 #include "PlayerState.h"
-#include "../Player.h"
+#include "Player.h"
 
 void PlayerStopState::Initialize() {
 
@@ -8,10 +8,10 @@ void PlayerStopState::Initialize() {
 void PlayerStopState::Update() {
 
 	bool isMove = false;
-	if (player_->engine_->GetRawInput()->Push('W')) { isMove = true; }
-	else if (player_->engine_->GetRawInput()->Push('S')) { isMove = true; }
-	else if (player_->engine_->GetRawInput()->Push('A')) { isMove = true; }
-	else if (player_->engine_->GetRawInput()->Push('D')) { isMove = true; }
+	if (player_->input_->GetRawInput()->Push('W')) { isMove = true; }
+	else if (player_->input_->GetRawInput()->Push('S')) { isMove = true; }
+	else if (player_->input_->GetRawInput()->Push('A')) { isMove = true; }
+	else if (player_->input_->GetRawInput()->Push('D')) { isMove = true; }
 
 	bool has_stamina = player_->GetStamina() > 0.0f;
 
@@ -32,7 +32,7 @@ void PlayerStopState::Update() {
 	//	return;
 	//}
 
-	if (player_->engine_->GetRawInput()->Push('J')) {
+	if (player_->input_->GetRawInput()->Push('J')) {
 		// 攻撃
 		player_->ChangeState(new PlayerAttackState());
 		return;

@@ -17,7 +17,4 @@ private:
 
 	//ImGui識別用変数
 	static inline int instanceNum_ = 0;
-
-	//ポインタを借りる
-	InputManager* inputManager_ = nullptr;
 };

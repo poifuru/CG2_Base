@@ -244,6 +244,7 @@
     <ClInclude Include="magosuya\utility\camera\FixedPointCamera.h" />
     <ClInclude Include="magosuya\utility\camera\CameraOrganizer.h" />
     <ClInclude Include="magosuya\utility\camera\FollowCamera.h" />
+    <ClInclude Include="magosuya\light\LightStructure.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">

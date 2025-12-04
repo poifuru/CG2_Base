@@ -1,5 +1,6 @@
 #include "FollowCamera.h"
 #include <imgui.h>
+#include "WindowsAPI.h"
 
 FollowCamera::FollowCamera () {
 	camera_.transform = {};
@@ -10,8 +11,6 @@ FollowCamera::FollowCamera () {
 	offset_ = { 0.0f, 2.0f, -5.0f };
 	smoothness_ = 0.1f;
 
-	winAPI_ = WindowsAPI::GetInstance ();
-
 	instanceNum_++;
 }
 
@@ -21,7 +20,7 @@ FollowCamera::~FollowCamera () {
 
 void FollowCamera::Initialize (const Transform& transform) {
 	camera_.transform = transform;
-	camera_.proj = Math::MakePerspectiveFOVMatrix (0.45f, (float)winAPI_->kClientWidth / (float)winAPI_->kClientHeight, 0.1f, 1000.0f);
+	camera_.proj = Math::MakePerspectiveFOVMatrix (0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, 0.1f, 1000.0f);
 }
 
 void FollowCamera::SetTarget (const Transform* target) {

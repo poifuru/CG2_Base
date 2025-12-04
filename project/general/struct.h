@@ -132,14 +132,6 @@ struct Transform {
 	Vector3 translate;
 };
 
-//カメラデータ構造体
-struct CameraData {
-	Transform transform;
-	Matrix4x4 world;
-	Matrix4x4 view;
-	Matrix4x4 proj;
-};
-
 // SpriteRendererが参照する最小限の情報構造体
 struct TransformData {
 	Transform transform;
@@ -193,7 +185,7 @@ struct SpriteData {
 	Matrix4x4 wvpMatrix;	//wvp行列ポインタ
 };
 
-enum Light {
+enum LightReflectionModel {
 	none,
 	lambert,
 	halfLambert,
@@ -201,10 +193,10 @@ enum Light {
 
 //平行光源構造体
 struct DirectionalLight {
-	Vector4 color;		//ライトの色
-	Vector3 direction;	//ライトの向き
-	float intensity;	//輝度
-	Light mode;			//ライティングの設定
+	Vector4 color;				//ライトの色
+	Vector3 direction;			//ライトの向き
+	float intensity;			//輝度
+	LightReflectionModel mode;	//ライティングの設定
 };
 
 //MaterialData構造体

@@ -1,6 +1,8 @@
 #include "Player.h"
 #include "MathFunction.h"
 #include "imgui.h"
+#include "ModelManager.h"
+#include "DxCommon.h"
 
 Player::~Player () {
 	delete state_;
@@ -8,8 +10,8 @@ Player::~Player () {
 
 void Player::Initialize()
 {
-	engine_->LoadModelData ("Resources/zako", "zako");
-	obj_ = std::make_unique<Model>(engine_);
+	ModelManager::GetInstance()->LoadModelData ("Resources/zako", "zako");
+	obj_ = std::make_unique<Model>(DxCommon::GetInstance());
 	obj_->SetModelData("zako");
 	obj_->SetTexture("zako");
 	obj_->Initialize();
@@ -18,7 +20,7 @@ void Player::Initialize()
 	state_ = new PlayerStopState();
 	state_->SetPlayer(this);
 
-	attackColliderObj_ = std::make_unique<Model>(engine_);
+	attackColliderObj_ = std::make_unique<Model>(DxCommon::GetInstance());
 	attackColliderObj_->SetModelData("teapot");
 	attackColliderObj_->SetTexture("teapot");
 	attackColliderObj_->Initialize();
@@ -50,7 +52,7 @@ void Player::Update(Matrix4x4* m)
 	//move_ = move_.z * CameraSystem::GetInstance()->GetActiveCamera()->zAxis_ + move_.x * CameraSystem::GetInstance()->GetActiveCamera()->xAxis_;
 	// = Normalize(move_);
 	if (move_.x != 0.0f || move_.y != 0.0f || move_.z != 0.0f) {
-		move_ = Normalize(move_);
+		move_ = Math::Normalize(move_);
 		direction_.x = move_.x;
 		direction_.z = move_.z;
 	}
@@ -104,8 +106,8 @@ void Player::ChangeState(PlayerState* newState) {
 void Player::EnableHitBox(bool enable, const Vector3& worldPos) {
 	if (enable) {
 		// 攻撃判定の位置を更新
-		Matrix4x4 w = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, worldPos);
-		Matrix4x4 pW = MakeAffineMatrix({ obj_->GetTransform().scale }, { obj_->GetTransform().rotate }, { obj_->GetTransform().translate });
+		Matrix4x4 w = Math::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, worldPos);
+		Matrix4x4 pW = Math::MakeAffineMatrix({ obj_->GetTransform().scale }, { obj_->GetTransform().rotate }, { obj_->GetTransform().translate });
 		w = w * pW;
 
 		attackCollider_->SetWorldPosition({w.m[3][0],w.m[3][1] ,w.m[3][2] });
@@ -176,13 +178,13 @@ void Player::RotateToMoveDirection() {
 
 	float targetAngle = std::atan2(move_.x, move_.z);
 
-	targetAngle = std::fmod(targetAngle, Deg2Rad(360));
+	targetAngle = std::fmod(targetAngle, Math::Deg2Rad(360));
 
-	if (targetAngle >= Deg2Rad(180)) {
-		targetAngle -= Deg2Rad(360);
+	if (targetAngle >= Math::Deg2Rad(180)) {
+		targetAngle -= Math::Deg2Rad(360);
 	}
-	else if (targetAngle <= Deg2Rad(-180)) {
-		targetAngle += Deg2Rad(360);
+	else if (targetAngle <= Math::Deg2Rad(-180)) {
+		targetAngle += Math::Deg2Rad(360);
 	}
 
 

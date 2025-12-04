@@ -1,15 +1,16 @@
 #pragma once
 #include "MagosuyaEngine.h"
-#include "PlayerState/PlayerState.h"
-#include "object/3d/Model.h"
-#include "../Collider/Collider.h"
-#include "../Collider/AttackCollider.h"
-#include "../Collider/PlayerBodyCollider.h"
+#include "PlayerState.h"
+#include "Model.h"
+#include "Collider.h"
+#include "AttackCollider.h"
+#include "PlayerBodyCollider.h"
+#include "InputManager.h"
 
 class Player
 {
 public:
-	Player(MagosuyaEngine* engine) :engine_(engine) {};
+	Player (InputManager* inputManager) : input_ (inputManager) {};
 	~Player();
 public:
 	void Initialize();
@@ -47,6 +48,7 @@ public:
 	PlayerBodyCollider& GetPlayerBodyCollider() { return *playerCollider_.get(); }
 
 	// 位置の取得
+	const Transform& GetTransform () { return obj_->GetTransform (); }
 	Vector3 GetPosition() { return obj_->GetTransform().translate; }
 	void TakeDamage(float damage);
 	Vector3 GetForwardVector();
@@ -64,7 +66,7 @@ private:
 	// スタミナ回復処理
 	void UpdateStaminaRecovery();
 public:
-	MagosuyaEngine* engine_ = nullptr;
+	InputManager* input_ = nullptr;
 private:
 	std::unique_ptr<Model>obj_;
 	PlayerState* state_ = nullptr;
