@@ -152,6 +152,9 @@ bool IsCollision(const AABB& aabb, const Segment& segment);
 //オブジェクトの回転を操作する関数
 //void objectRotation(Vector3& rotate);
 
+// floatLerp関数
+float Lerp(const float& start, const float& end, float t);
+
 //Vector3Lerp関数
 Vector3 Lerp(const Vector3& start, const Vector3& end, float t);
 

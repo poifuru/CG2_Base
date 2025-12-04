@@ -16,10 +16,11 @@ public:
 	void Initialize ();
 	void Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform);
 	void Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
-	void ImGui (Transform& transform, Transform& uvTransform);
+	void ImGui (Transform& transform, Transform& uvTransform, const std::string& windowName);
 
 	//アクセッサ
 	Material* GetMaterial () { return materialData_; }
+	void IsLighting (const bool& flag) { materialData_->enableLighting = flag; }
 	void SetColor (const Vector4& color) { materialData_->color = color; }
 	void SetImGuiID (const std::string& id) { tag_ = id; }
 	void SetModelData (const std::weak_ptr<ModelData>& data){ modelData_ = data; }
@@ -42,6 +43,8 @@ private:
 
 	//ImGui用のラベル名
 	std::string tag_;
+	int instanceID_ = 0;
+	static inline int modelCount_ = 0;
 
 	//ImGuiで色をいじる変数
 	float color_[4];

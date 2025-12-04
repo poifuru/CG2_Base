@@ -41,8 +41,7 @@ void CenterStomp::StartAttack() {
 	// 「今の場所」から「中央上空」までの移動ルートをここで確定させます
 	startPos_ = boss_->GetPosition();     // スタート地点：今のボスの位置
 	targetPos_ = kCenterPoint_;           // ゴール地点X,Z：中央(0,0)
-	targetPos_.y = kHoverHeight_;         // ゴール地点Y：上空(10.0)
-}
+	}
 
 void CenterStomp::Update(Matrix4x4* m) {
 	// 状態遷移マシンの実行
@@ -120,8 +119,7 @@ void CenterStomp::UpdateHover() {
 		// boss_->GetPosition()を使うと微細なズレを引き継ぐ可能性があるので
 		// 論理的な座標を指定する方が安全です
 		startPos_ = kCenterPoint_;
-		startPos_.y = kHoverHeight_; // (0, 10, 0) から
-
+		
 		targetPos_ = kCenterPoint_;  // (0, 0, 0) へ
 		targetPos_.y = 0.0f;         // 念のためYを0に明示
 	}

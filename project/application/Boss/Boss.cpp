@@ -20,8 +20,8 @@ void Boss::Initialize() {
 	centerStomp_ = std::make_unique<CenterStomp>(magosuya_, this);
 	centerStomp_->Initialize();
 
-	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
-	speed_ = { 0.1f,0.1f,0.1f };
+	fullScreenAttack_ = std::make_unique<FullScreenAttack>(magosuya_, this);
+	fullScreenAttack_->Initialize();
 }
 
 void Boss::Update(Matrix4x4* m) {
@@ -31,9 +31,13 @@ void Boss::Update(Matrix4x4* m) {
 	if (magosuya_->GetRawInput()->Trigger('1')) {
 		centerStomp_->StartAttack();
 	}
+	if (magosuya_->GetRawInput()->Trigger('2')) {
+		fullScreenAttack_->StartAttack();
+	}
 
 	model_->Update(m);
 	centerStomp_->Update(m);
+	fullScreenAttack_->Update(m);
 
 	model_->SetTransform(transform_);
 }
@@ -41,24 +45,26 @@ void Boss::Update(Matrix4x4* m) {
 void Boss::Draw() {
 	model_->Draw();
 	centerStomp_->Draw();
+	fullScreenAttack_->Draw();
 }
 
 void Boss::ImGuiControl() {
 #ifdef _DEBUG
-	ImGui::Begin("Boss");
-	ImGui::DragFloat3("Scale", &transform_.scale.x, 0.1f);
-	ImGui::DragFloat3("Rotate", &transform_.rotate.x, 0.1f);
-	ImGui::DragFloat3("Translate", &transform_.translate.x, 0.1f);
-	ImGui::End();
+	model_->ImGui ("boss");
 
 	centerStomp_->ImGuiControl();
+	fullScreenAttack_->ImGuiControl();
 #endif
 }
 
+bool Boss::IsAnyAttackActive() const {
+	return centerStomp_->IsAttacking() || fullScreenAttack_->IsAttacking();
+}
+
 void Boss::UpdateMove() {
-	if (centerStomp_->IsAttacking()) {
+	if (IsAnyAttackActive()) {
 		return;
 	}
-	transform_.translate.x += static_cast<float>(rand() % 3 - 1) * 0.1f;
-	transform_.translate.z += static_cast<float>(rand() % 3 - 1) * 0.1f;
+	transform_.translate.x += static_cast<float>(rand() % 3 - 1) * speed_.x;
+	transform_.translate.z += static_cast<float>(rand() % 3 - 1) * speed_.z;
 }

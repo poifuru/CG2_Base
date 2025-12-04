@@ -122,6 +122,7 @@
     <ClCompile Include="application\Collider\EnemyBodyCollider.cpp" />
     <ClCompile Include="application\Collider\CollisionManager.cpp" />
     <ClCompile Include="application\Boss\Attack\CenterStomp\CenterStomp.cpp" />
+    <ClCompile Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="general\ChangeString.h">
@@ -225,6 +226,7 @@
     <ClInclude Include="application\Enemy\EnemyState\EnemyState.h" />
     <ClInclude Include="application\Collider\EnemyBodyCollider.h" />
     <ClInclude Include="application\Collider\CollisionManager.h" />
+    <ClInclude Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">
