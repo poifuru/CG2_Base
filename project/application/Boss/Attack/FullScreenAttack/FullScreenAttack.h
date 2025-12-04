@@ -1,17 +1,11 @@
 #pragma once
 #include "MagosuyaEngine.h"
 #include "object/3d/Model.h"
+#include "../AttackPhase.h"
 #include <vector>
 #include <memory> // std::unique_ptrのため
 
 class Boss;
-
-enum class AttackPhase {
-	None,       // 何もしていない
-	Charge,     // 予兆・溜め
-	Shoot,      // 弾発射
-	Cooldown    // 硬直
-};
 
 // 発射する弾の情報を持つ構造体
 struct Projectile {

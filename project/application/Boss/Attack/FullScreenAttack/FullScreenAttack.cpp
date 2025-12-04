@@ -26,7 +26,7 @@ void FullScreenAttack::Initialize() {
 	for (int i = 0; i < kNumProjectiles; ++i) {
 		projectiles_[i].isActive = false;
 		projectiles_[i].lifeTime = 0.0f;
-		projectiles_[i].transform = { {0.1f,0.1f,0.1f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} }; // サイズを小さく設定
+		projectiles_[i].transform = { {0.3f,0.3f,0.3f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} }; // サイズを小さく設定
 
 		// ★ 弾ごとに新しいModelオブジェクトを生成・初期化する
 		projectiles_[i].model = std::make_unique<Model>(magosuya_);
@@ -139,9 +139,9 @@ void FullScreenAttack::EmitProjectiles() {
 // 弾一つ一つの移動・寿命の更新
 void FullScreenAttack::UpdateProjectiles() {
 	// 最大初期スケール
-	const float kStartScale = 0.1f;
-	// 最大最終スケール (例: 10.0fまで大きくなるように設定)
-	const float kEndScale = 10.0f;
+	const float kStartScale = 0.3f;
+	// 最大最終スケール (例: 9.0fまで大きくなるように設定)
+	const float kEndScale = 9.0f;
 
 	for (int i = 0; i < kNumProjectiles; ++i) {
 		if (projectiles_[i].isActive) {

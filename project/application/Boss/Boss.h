@@ -3,6 +3,7 @@
 #include "object/3d/Model.h"
 #include "Attack/CenterStomp/CenterStomp.h"
 #include "Attack/FullScreenAttack/FullScreenAttack.h"
+#include "Attack/ThrowMinion/ThrowMinion.h"
 
 class Boss {
 public:
@@ -33,6 +34,8 @@ private:
 	std::unique_ptr <CenterStomp> centerStomp_ = nullptr;
 	// 全画面攻撃
 	std::unique_ptr <FullScreenAttack> fullScreenAttack_ = nullptr;
+	// カーブする球の攻撃
+	std::unique_ptr <ThrowMinion> throwMinion_ = nullptr;
 
 	Transform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
 	Vector3 speed_ = { 0.1f,0.1f,0.1f };

@@ -111,6 +111,7 @@
     <ClCompile Include="application\Boss\Boss.cpp" />
     <ClCompile Include="application\Boss\Attack\CenterStomp\CenterStomp.cpp" />
     <ClCompile Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.cpp" />
+    <ClCompile Include="application\Boss\Attack\ThrowMinion\ThrowMinion.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="general\ChangeString.h">
@@ -210,6 +211,8 @@
     <ClInclude Include="application\Boss\Boss.h" />
     <ClInclude Include="application\Boss\Attack\CenterStomp\CenterStomp.h" />
     <ClInclude Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.h" />
+    <ClInclude Include="application\Boss\Attack\ThrowMinion\ThrowMinion.h" />
+    <ClInclude Include="application\Boss\Attack\AttackPhase.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">

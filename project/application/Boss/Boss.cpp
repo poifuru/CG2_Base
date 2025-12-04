@@ -22,6 +22,9 @@ void Boss::Initialize() {
 
 	fullScreenAttack_ = std::make_unique<FullScreenAttack>(magosuya_, this);
 	fullScreenAttack_->Initialize();
+
+	throwMinion_ = std::make_unique<ThrowMinion>(magosuya_, this);
+	throwMinion_->Initialize();
 }
 
 void Boss::Update(Matrix4x4* m) {
@@ -34,10 +37,14 @@ void Boss::Update(Matrix4x4* m) {
 	if (magosuya_->GetRawInput()->Trigger('2')) {
 		fullScreenAttack_->StartAttack();
 	}
+	if (magosuya_->GetRawInput()->Trigger('3')) {
+		throwMinion_->StartAttack(Vector3(0.0f,0.0f,-2.0f), 3, 0.5f);
+	}
 
 	model_->Update(m);
 	centerStomp_->Update(m);
 	fullScreenAttack_->Update(m);
+	throwMinion_->Update(m);
 
 	model_->SetTransform(transform_);
 }
@@ -46,6 +53,7 @@ void Boss::Draw() {
 	model_->Draw();
 	centerStomp_->Draw();
 	fullScreenAttack_->Draw();
+	throwMinion_->Draw();
 }
 
 void Boss::ImGuiControl() {
@@ -54,11 +62,12 @@ void Boss::ImGuiControl() {
 
 	centerStomp_->ImGuiControl();
 	fullScreenAttack_->ImGuiControl();
+	throwMinion_->ImGuiControl();
 #endif
 }
 
 bool Boss::IsAnyAttackActive() const {
-	return centerStomp_->IsAttacking() || fullScreenAttack_->IsAttacking();
+	return centerStomp_->IsAttacking() || fullScreenAttack_->IsAttacking() || throwMinion_->IsAttacking();
 }
 
 void Boss::UpdateMove() {
