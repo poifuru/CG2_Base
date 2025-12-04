@@ -77,7 +77,6 @@ void Player::Update(Matrix4x4* m)
 	ImGui::DragFloat3("pos", &pos.x);
 	ImGui::DragFloat("HP", &hp_);
 	ImGui::End();
-	obj_->ImGui();
 	obj_->ImGui("player");
 #endif//_DEBUG
 }

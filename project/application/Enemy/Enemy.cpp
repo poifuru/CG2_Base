@@ -85,7 +85,7 @@ void Enemy::Update(Matrix4x4* m) {
 	ImGui::DragFloat3("pos", &newPos.x);
 	ImGui::DragFloat3("moveAmount", &moveAmount_.x);
 	ImGui::End();
-	obj_->ImGui();
+	obj_->ImGui("Enemy");
 #endif//_DEBUG
 }
 
