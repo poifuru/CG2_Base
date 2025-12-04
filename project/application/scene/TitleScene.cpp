@@ -1,8 +1,6 @@
 #include "TitleScene.h"
 #include "MagosuyaEngine.h"
 #include "utility/input/InputManager.h"
-#include "MathFunction.h"
-#include <imgui.h>
 
 TitleScene::TitleScene (MagosuyaEngine* magosuya) {
 	magosuya_ = magosuya;

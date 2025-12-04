@@ -104,7 +104,7 @@ void SoundPlayWave (IXAudio2* xAudio2, const SoundData& soundData) {
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow) {
-	std::unique_ptr<MagosuyaEngine> magosuya = std::make_unique<MagosuyaEngine> ();
+	MagosuyaEngine* magosuya = MagosuyaEngine::GetInstance ();
 	magosuya->Initialize ();
 
 	std::unique_ptr<SceneManager> sceneManager = std::make_unique<SceneManager> (magosuya.get ());
@@ -130,7 +130,7 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	//ウィンドウの×ボタンが押されるまでループ
 	while (true) {
 
-		if (magosuya->GetDxCommon ()->GetWinAPI ()->ProcessMessage ()) {
+		if (WindowsAPI::GetInstance ()->ProcessMessage ()) {
 			break;
 		}
 
@@ -150,9 +150,7 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		//フレーム終了
 		magosuya->EndFrame ();
 	}
-
 	xAudio2.Reset ();
 	SoundUnload (&soundData1);  // バッファ解放
-	magosuya->Finalize ();
 	return 0;
 };

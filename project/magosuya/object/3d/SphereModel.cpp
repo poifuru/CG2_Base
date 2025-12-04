@@ -30,20 +30,20 @@ SphereModel::SphereModel (DxCommon* dxCommon, int subdivision) {
 
 	matrixBuffer_ = dxCommon_->CreateBufferResource (sizeof (TransformationMatrix));
 	matrixBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&matrixData_));
-	matrixData_->World = MakeIdentity4x4 ();
-	matrixData_->WVP = MakeIdentity4x4 ();
-	matrixData_->WorldInverseTranspose = MakeIdentity4x4 ();
+	matrixData_->World = Math::MakeIdentity4x4 ();
+	matrixData_->WVP = Math::MakeIdentity4x4 ();
+	matrixData_->WorldInverseTranspose = Math::MakeIdentity4x4 ();
 
 	materialBuffer_ = dxCommon_->CreateBufferResource (sizeof (Material));
 	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = true;
-	materialData_->uvTranform = MakeIdentity4x4 ();
+	materialData_->uvTranform = Math::MakeIdentity4x4 ();
 
 	transform_ = {};
 	uvTransform_ = {};
-	transformationMatrix_.World = MakeIdentity4x4 ();
-	transformationMatrix_.WVP = MakeIdentity4x4 ();
+	transformationMatrix_.World = Math::MakeIdentity4x4 ();
+	transformationMatrix_.WVP = Math::MakeIdentity4x4 ();
 	radius_ = 1.0f;
 
 	for (int i = 0; i < 4; i++) {
@@ -124,38 +124,38 @@ void SphereModel::Initialize (Vector3 position, float radius) {
 
 			// 三角形1: a, b, d
 			vertexData_[index].position = Vector4 (a.x, a.y, a.z, 1.0f);
-			vertexData_[index].normal = Normalize (a);
+			vertexData_[index].normal = Math::Normalize (a);
 			vertexData_[index].texcoord = { u, v };
 			//indexData_[index] = index;
 			index++;
 
 			vertexData_[index].position = Vector4 (b.x, b.y, b.z, 1.0f);
-			vertexData_[index].normal = Normalize (b);
+			vertexData_[index].normal = Math::Normalize (b);
 			vertexData_[index].texcoord = { u, vNext };
 			//indexData_[index] = index;
 			index++;
 
 			vertexData_[index].position = Vector4 (d.x, d.y, d.z, 1.0f);
-			vertexData_[index].normal = Normalize (d);
+			vertexData_[index].normal = Math::Normalize (d);
 			vertexData_[index].texcoord = { uNext, vNext };
 			//indexData_[index] = index;
 			index++;
 
 			// 三角形2: a, d, c
 			vertexData_[index].position = Vector4 (a.x, a.y, a.z, 1.0f);
-			vertexData_[index].normal = Normalize (a);
+			vertexData_[index].normal = Math::Normalize (a);
 			vertexData_[index].texcoord = { u, v };
 			//indexData_[index] = index;
 			index++;
 
 			vertexData_[index].position = Vector4 (d.x, d.y, d.z, 1.0f);
-			vertexData_[index].normal = Normalize (d);
+			vertexData_[index].normal = Math::Normalize (d);
 			vertexData_[index].texcoord = { uNext, vNext };
 			//indexData_[index] = index;
 			index++;
 
 			vertexData_[index].position = Vector4 (c.x, c.y, c.z, 1.0f);
-			vertexData_[index].normal = Normalize (c);
+			vertexData_[index].normal = Math::Normalize (c);
 			vertexData_[index].texcoord = { uNext, v };
 			//indexData_[index] = index;
 			index++;
@@ -172,15 +172,15 @@ void SphereModel::Initialize (Vector3 position, float radius) {
 }
 
 void SphereModel::Update (Matrix4x4* view, Matrix4x4* proj) {
-	transformationMatrix_.World = MakeAffineMatrix (transform_.scale, transform_.rotate, transform_.translate);
-	transformationMatrix_.WVP = Multiply (transformationMatrix_.World, Multiply (*view, *proj));
+	transformationMatrix_.World = Math::MakeAffineMatrix (transform_.scale, transform_.rotate, transform_.translate);
+	transformationMatrix_.WVP = Math::Multiply (transformationMatrix_.World, Math::Multiply (*view, *proj));
 
 	matrixData_->World = transformationMatrix_.World;
 	matrixData_->WVP = transformationMatrix_.WVP;
-	matrixData_->WorldInverseTranspose = Transpose (Inverse (matrixData_->World));
+	matrixData_->WorldInverseTranspose = Math::Transpose (Math::Inverse (matrixData_->World));
 
 	//uvTranform更新
-	materialData_->uvTranform = MakeAffineMatrix (uvTransform_.scale, uvTransform_.rotate, uvTransform_.translate);
+	materialData_->uvTranform = Math::MakeAffineMatrix (uvTransform_.scale, uvTransform_.rotate, uvTransform_.translate);
 }
 
 void SphereModel::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {

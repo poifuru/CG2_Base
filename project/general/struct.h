@@ -152,7 +152,6 @@ struct VertexData {
 	Vector4 position;
 	Vector2 texcoord;
 	Vector3 normal;
-	//float padding1;
 };
 
 //マテリアルの構造体
@@ -232,6 +231,30 @@ struct ModelData {
 	//インデックスバッファ
 	ComPtr<ID3D12Resource> indexBuffer;
 	D3D12_INDEX_BUFFER_VIEW ibView{};
+};
+
+//パーティクル構造体
+struct ParticleData {
+	Transform transform;
+	Vector3 velocity;
+	Vector4 color;
+	float lifeTime;
+	float currentTime;
+};
+
+//GPUに送るParticleのデータ
+struct ParticleForGPU {
+	Matrix4x4 WVP;
+	Matrix4x4 World;
+	Vector4 color;
+};
+
+//エミッター構造体
+struct Emitter {
+	Transform transform;	//transform
+	uint32_t count;			//発生数
+	float frequency;		//発生頻度
+	float frequencyTime;	//頻度用時刻
 };
 
 //チャンクヘッダ
