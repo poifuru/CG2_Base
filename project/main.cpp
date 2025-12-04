@@ -26,6 +26,7 @@
 #include "Particle.h"
 #include "Mesh.h"
 #include "MeshParticle.h"
+#include "CameraOrganizer.h"
 
 //サウンドデータの読み込み関数
 SoundData SoundLoadWave (const char* filename) {
@@ -175,17 +176,9 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	std::unique_ptr<MeshParticle> particle = std::make_unique<MeshParticle> ();
 	particle->Initialize ();
 
-	//カメラ用
-	//Transform
-	Transform cameraTransform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -30.0f} };
-	Matrix4x4 cameraMatrix = {};
-	Matrix4x4 viewMatrix = {};
-	Matrix4x4 projectionMatrix = {};
-
-	//デバッグカメラ
-	std::unique_ptr<DebugCamera> debugCamera = std::make_unique<DebugCamera> ();
-	debugCamera->Initialize ({ { 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -30.0f } });
-	bool debugMode = false;
+	Transform cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -30.0f} };
+	CameraOrganizer::GetInstance ()->AddCamera ("mainCamera", CameraType::FixedPontCamera, cameraTransform);
+	CameraOrganizer::GetInstance ()->SetActiveCamera ("mainCamera");
 	/*********************************/
 
 	/*メインループ！！！！！！！！！*/
@@ -203,34 +196,7 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		ImGui::Text ("FPS: %.1f", ImGui::GetIO ().Framerate);
 		ImGui::End ();
 
-		ImGui::Begin ("カメラモード:TAB");
-		if (debugMode) {
-			ImGui::TextColored (ImVec4 (1, 1, 0, 1), "Current Camera: Debug");
-		}
-		else if (!debugMode) {
-			ImGui::TextColored (ImVec4 (0, 1, 0, 1), "Current Camera: Scene");
-		}
-		ImGui::End ();
-		if (!ImGui::GetIO ().WantCaptureMouse) {
-			debugCamera->SetTatchImGui (false);
-		}
-		else {
-			debugCamera->SetTatchImGui (true);
-		}
-
 		ImGui::Begin ("setting");
-		if (ImGui::CollapsingHeader ("SceneCamera")) {
-			if (ImGui::Button ("Reset")) {
-				cameraTransform = {
-					{1.0f, 1.0f, 1.0f},
-					{0.0f, 0.0f, 0.0f},
-					{0.0f, 0.0f, -30.0f},
-				};
-			}
-			ImGui::DragFloat3 ("cameraScale", &cameraTransform.scale.x, 0.01f);
-			ImGui::DragFloat3 ("cameraRotate", &cameraTransform.rotate.x, 0.01f);
-			ImGui::DragFloat3 ("cameraTranslate", &cameraTransform.translate.x, 0.01f);
-		}
 		if (ImGui::CollapsingHeader ("light")) {
 			if (ImGui::ColorEdit4 ("color", colorLight)) {
 				// 色が変更されたらmaterialDataに反映
@@ -243,37 +209,15 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 			ImGui::DragFloat ("intensity", &directionalLightData->intensity, 0.01f);
 		}
 		ImGui::End ();
+		CameraOrganizer::GetInstance ()->ImGui ();
 		particle->ImGui ();
-
-		//実際のキー入力処理はここ！
-		// 押した瞬間だけトグル
-		if (InputManager::GetInstance ()->GetRawInput ()->Trigger (VK_TAB)) {
-			if (!debugMode) {
-				debugMode = true;
-			}
-			else {
-				debugMode = false;
-			}
-		}
 
 		//ゲームの処理//
 		//=======オブジェクトの更新処理=======//
-		//カメラ
-		cameraMatrix = Math::MakeAffineMatrix (cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
-		viewMatrix = Math::Inverse (cameraMatrix);
-		projectionMatrix = Math::MakePerspectiveFOVMatrix (0.45f, float (WindowsAPI::GetInstance ()->kClientWidth) / float (WindowsAPI::GetInstance ()->kClientHeight), 0.1f, 1000.0f);
+		CameraOrganizer::GetInstance ()->Update ();
 
-		if (debugMode) {
-			debugCamera->Update ();
-			viewMatrix = Math::Inverse (debugCamera->GetWorldMat());
-			projectionMatrix = Math::MakePerspectiveFOVMatrix (0.45f, float (WindowsAPI::GetInstance ()->kClientWidth) / float (WindowsAPI::GetInstance ()->kClientHeight), 0.1f, 1000.0f);
-		}
-
-		//vp行列作成
-		Matrix4x4 vp = Math::Multiply (viewMatrix, projectionMatrix);
-
-		skydome->Update (&vp);
-		particle->Update (&vp);
+		skydome->Update (CameraOrganizer::GetInstance ()->GetVPMatrix());
+		particle->Update (CameraOrganizer::GetInstance ()->GetVPMatrix ());
 
 		//光源のdirectionの正規化
 		directionalLightData->direction = Math::Normalize (directionalLightData->direction);

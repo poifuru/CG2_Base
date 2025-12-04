@@ -8,6 +8,7 @@ struct CameraData {
 	Matrix4x4 world;
 	Matrix4x4 view;
 	Matrix4x4 proj;
+	Matrix4x4 vp;
 };
 
 class CameraComponent {
@@ -23,24 +24,24 @@ public:
 	virtual void ImGui () = 0;
 
 	//transform取得
-	const Transform& GetTransform () { return camera_->transform; }
+	const Transform& GetTransform () { return camera_.transform; }
 	//scale設定
-	void SetScale (const Vector3& scale) { camera_->transform.scale = scale; }
+	void SetScale (const Vector3& scale) { camera_.transform.scale = scale; }
 	//rotate設定
-	void SetRotate (const Vector3& rotate) { camera_->transform.rotate = rotate; }
+	void SetRotate (const Vector3& rotate) { camera_.transform.rotate = rotate; }
 	//translate設定
-	void SetTranslate (const Vector3& translate) { camera_->transform.translate = translate; }
+	void SetTranslate (const Vector3& translate) { camera_.transform.translate = translate; }
 	//world行列取得
-	const Matrix4x4& GetWorldMat () { return camera_->world; }
+	const Matrix4x4& GetWorldMat () { return camera_.world; }
 	//view行列取得
-	const Matrix4x4& GetViewMat () { return camera_->view; };
+	const Matrix4x4& GetViewMat () { return camera_.view; };
 	//projection行列取得
-	const Matrix4x4& GetProjMat () { return camera_->proj; }
+	const Matrix4x4& GetProjMat () { return camera_.proj; }
 	//vp行列取得
-	const Matrix4x4& GetVPMat () { return Math::Multiply (camera_->view, camera_->proj); }
+	const Matrix4x4& GetVPMat () { return camera_.vp; }
 
 protected:
-	CameraData* camera_;
+	CameraData camera_ = {};
 
 	//ポインタを借りる
 	WindowsAPI* winAPI_ = nullptr;

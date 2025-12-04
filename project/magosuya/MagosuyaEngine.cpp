@@ -8,6 +8,7 @@
 #include "LineRenderer.h"
 #include "CubeRenderer.h"
 #include "Mesh.h"
+#include "CameraOrganizer.h"
 
 MagosuyaEngine::~MagosuyaEngine () {
 	dxCommon_->Finalize ();
@@ -32,6 +33,8 @@ void MagosuyaEngine::Initialize () {
 	lineRenderer_->Initialize (dxCommon_);
 	cubeRenderer_ = CubeRenderer::GetInstance ();
 	cubeRenderer_->Initialize (dxCommon_);
+	cameraOrganizer_ = CameraOrganizer::GetInstance ();
+	cameraOrganizer_->Initialize ();
 }
 
 void MagosuyaEngine::BeginFrame () {

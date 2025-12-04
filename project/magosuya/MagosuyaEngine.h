@@ -12,6 +12,7 @@ class ModelManager;
 class PSOManager;
 class LineRenderer;
 class CubeRenderer;
+class CameraOrganizer;
 
 class MagosuyaEngine {
 public:		//メンバ関数
@@ -45,4 +46,5 @@ private:
 	PSOManager* psoManager_ = nullptr;
 	LineRenderer* lineRenderer_ = nullptr;
 	CubeRenderer* cubeRenderer_ = nullptr;
+	CameraOrganizer* cameraOrganizer_ = nullptr;
 };

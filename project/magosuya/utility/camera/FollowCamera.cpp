@@ -2,10 +2,10 @@
 #include <imgui.h>
 
 FollowCamera::FollowCamera () {
-	camera_->transform = {};
-	camera_->world = Math::MakeIdentity4x4 ();
-	camera_->view = Math::MakeIdentity4x4 ();
-	camera_->proj = Math::MakeIdentity4x4 ();
+	camera_.transform = {};
+	camera_.world = Math::MakeIdentity4x4 ();
+	camera_.view = Math::MakeIdentity4x4 ();
+	camera_.proj = Math::MakeIdentity4x4 ();
 
 	offset_ = { 0.0f, 2.0f, -5.0f };
 	smoothness_ = 0.1f;
@@ -20,8 +20,8 @@ FollowCamera::~FollowCamera () {
 }
 
 void FollowCamera::Initialize (const Transform& transform) {
-	camera_->transform = transform;
-	camera_->proj = Math::MakePerspectiveFOVMatrix (0.45f, winAPI_->kClientWidth / winAPI_->kClientHeight, 0.1f, 1000.0f);
+	camera_.transform = transform;
+	camera_.proj = Math::MakePerspectiveFOVMatrix (0.45f, (float)winAPI_->kClientWidth / (float)winAPI_->kClientHeight, 0.1f, 1000.0f);
 }
 
 void FollowCamera::SetTarget (const Transform* target) {
@@ -46,18 +46,17 @@ void FollowCamera::Update () {
 
 	// 理想のカメラ位置は、ターゲットの位置 + 回転したオフセット
 	Vector3 cameraPos = target_->translate + rotatedOffset;
-	camera_->transform.translate = Math::Lerp (camera_->transform.translate, cameraPos, smoothness_);
+	camera_.transform.translate = Math::Lerp (camera_.transform.translate, cameraPos, smoothness_);
 
 	//行列の計算
-	camera_->world = Math::MakeAffineMatrix (camera_->transform.scale, camera_->transform.rotate, camera_->transform.translate);
-	camera_->view = Math::Inverse (camera_->world);
-
+	camera_.world = Math::MakeAffineMatrix (camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);
+	camera_.view = Math::Inverse (camera_.world);
+	camera_.vp = Math::Multiply (camera_.view, camera_.proj);
 }
 
 void FollowCamera::ImGui () {
 	std::string ID = std::to_string (instanceNum_);
 	std::string label = "FollowCamera" + ID;
 
-	ImGui::Text (label.c_str ());
 	ImGui::DragFloat (("smoothness##" + label).c_str(), &smoothness_, 0.01f, 0.0f, 1.0f);
 }
