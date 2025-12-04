@@ -16,7 +16,7 @@ PlayerBodyCollider::PlayerBodyCollider(Player* player) : player_(player)
 void PlayerBodyCollider::OnCollision(Collider* other)
 {
 	if (!player_) return;
-
+	float damage = 0.0f;
 	// 1. **衝突相手が敵の攻撃であるかチェック**
 	// 衝突相手が COL_Enemy_Attack 属性を持っているか確認
 	if (other->GetMyType() & COL_Enemy_Attack)
@@ -25,8 +25,26 @@ void PlayerBodyCollider::OnCollision(Collider* other)
 		// if (player_->IsDead() || player_->IsInvulnerable()) { return; }
 
 		// 2. **ダメージ値を決定**
-		// 💡 今回はシンプルに固定値で処理
-		float damage = BASE_DAMAGE_TAKEN;
+		// Enemyなら攻撃力を取得、もしくはRadiusから計算other->GetRadius()
+
+		// [ Enemyの爆発の場合 ]
+		if (other->GetMyType() & COL_Enemy_Attack_Level0) {
+			damage = 20.0f;
+		}
+		if (other->GetMyType() & COL_Enemy_Attack_Level1) {
+			damage = 30.0f;
+		}
+		if (other->GetMyType() & COL_Enemy_Attack_Level2) {
+			damage = 45.0f;
+		}
+		if (other->GetMyType() & COL_Enemy_Attack_Level3) {
+			damage = 60.0f;
+		}
+
+		// [ Enemyが死んだ際に出すスリップダメージの場合 ]
+		if (other->GetMyType() & COL_Enemy_SlipDamage) {
+			damage = 2.0f;
+		}
 
 		// 3. **Player3D 本体にダメージを通知**
 		// Player3D に TakeDamage(float) メソッドが必要です
