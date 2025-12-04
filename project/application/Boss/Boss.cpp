@@ -38,7 +38,7 @@ void Boss::Update(Matrix4x4* m) {
 		fullScreenAttack_->StartAttack();
 	}
 	if (magosuya_->GetRawInput()->Trigger('3')) {
-		throwMinion_->StartAttack(Vector3(0.0f,0.0f,-2.0f), 3, 0.5f);
+		throwMinion_->StartAttack(Vector3(0.0f,0.0f,-14.0f), 3, 0.5f);
 	}
 
 	model_->Update(m);
@@ -74,6 +74,6 @@ void Boss::UpdateMove() {
 	if (IsAnyAttackActive()) {
 		return;
 	}
-	transform_.translate.x += static_cast<float>(rand() % 3 - 1) * speed_.x;
-	transform_.translate.z += static_cast<float>(rand() % 3 - 1) * speed_.z;
+	//transform_.translate.x += static_cast<float>(rand() % 3 - 1) * speed_.x;
+	//transform_.translate.z += static_cast<float>(rand() % 3 - 1) * speed_.z;
 }

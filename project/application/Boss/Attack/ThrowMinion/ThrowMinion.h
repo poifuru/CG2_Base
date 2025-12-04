@@ -14,6 +14,8 @@ struct MinionProjectile {
 	float lifeTime = 0.0f;
 	bool isActive = false;
 	std::unique_ptr<Model> model = nullptr;
+	float curveForce = 0.0f;    // その弾に適用するカーブ力
+	int currentCurveTimer = 0;  // その弾のカーブ開始タイマー
 };
 
 class ThrowMinion {
@@ -69,16 +71,16 @@ private:
 
 	// 弾のスピードとカーブの力
 	const float kProjectileSpeed_ = 0.5f;
-	const float kCurveForce_ = -0.015f; // 左に曲がる力 (カーブ)
-	const float kShootForce_ = 0.015f;  // 右に曲がる力 (シュート)
+	const float kCurveForce_ = -0.008f; // 左に曲がる力 (カーブ)
+	const float kShootForce_ = 0.008f;  // 右に曲がる力 (シュート)
 	const int kCurveDelay_ = 10; // カーブをかけ始めるまでの遅延フレーム
 
 	// 弾の発射オフセット (ボスの左右どちらから出すか)
 	const float kThrowOffset_ = 1.0f;
 
-	// 現在アクティブな弾に適用されている曲がる力を保持 (kNumProjectiles=1 の名残だが、ひとまず残す)
-	float currentCurveForce_ = 0.0f;
-	int curveTimer_ = 0; // カーブ開始タイマー
+	// ★ 修正点1: 弾ごとの変数に変更したため、これらの全体変数は削除する
+	// float currentCurveForce_ = 0.0f;
+	// int curveTimer_ = 0; // カーブ開始タイマー
 
 	Matrix4x4* vp_ = nullptr;
 };

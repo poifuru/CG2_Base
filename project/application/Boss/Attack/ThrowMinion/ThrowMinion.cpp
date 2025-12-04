@@ -36,6 +36,10 @@ void ThrowMinion::Initialize() {
         projectiles_[i].model->SetModelData("teapot");
         projectiles_[i].model->SetTexture("teapot");
         projectiles_[i].model->Initialize();
+
+        // ★ 修正点1: 個別変数の初期化
+        projectiles_[i].curveForce = 0.0f;
+        projectiles_[i].currentCurveTimer = 0;
     }
 
     // 連続攻撃用パラメータの初期化
@@ -44,8 +48,9 @@ void ThrowMinion::Initialize() {
     intervalFrames_ = 0;
     intervalTimer_ = 0;
     isCurving_ = false;
-    currentCurveForce_ = 0.0f;
-    curveTimer_ = 0;
+    // ★ 修正点1: 全体変数は削除
+    // currentCurveForce_ = 0.0f;
+    // curveTimer_ = 0;
 }
 
 // 攻撃開始
@@ -156,7 +161,7 @@ void ThrowMinion::UpdateCooldown() {
 void ThrowMinion::EmitProjectiles(float curveForce) {
     if (kNumProjectiles == 0) return;
 
-    // ★ 1. 非アクティブな弾を探す
+    // 1. 非アクティブな弾を探す
     MinionProjectile* newProjectile = nullptr;
     for (int i = 0; i < kNumProjectiles; ++i) {
         if (!projectiles_[i].isActive) {
@@ -180,9 +185,9 @@ void ThrowMinion::EmitProjectiles(float curveForce) {
 
     // ボスが -Z方向を向いていると仮定し、右方向を +X、左方向を -X とする
     if (curveForce < 0) { // kCurveForce_ (左に曲がる) の場合、右側から発射する (+X)
-        offset = { kThrowOffset_, 0.0f, 0.0f };
-    } else {              // kShootForce_ (右に曲がる) の場合、左側から発射する (-X)
         offset = { -kThrowOffset_, 0.0f, 0.0f };
+    } else {              // kShootForce_ (右に曲がる) の場合、左側から発射する (-X)
+        offset = { kThrowOffset_, 0.0f, 0.0f };
     }
 
     // Y軸はボスの中心より少し上から出す
@@ -218,24 +223,32 @@ void ThrowMinion::EmitProjectiles(float curveForce) {
         dirZ * kProjectileSpeed_
     };
 
-    // 4. 現在のカーブ力を設定
-    currentCurveForce_ = curveForce;
-    curveTimer_ = 0;
+    // ★ 修正点1: 弾ごとのカーブ力とタイマーを設定
+    p.curveForce = curveForce;
+    p.currentCurveTimer = 0;
 }
 
 // 弾一つ一つの移動・寿命の更新
 void ThrowMinion::UpdateProjectiles() {
 
-    // カーブタイマーはフェーズに関わらずここでインクリメント
-    // ただし、EmitProjectilesが呼ばれたとき(Charge/Shootフェーズ)に0にリセットされている
-    curveTimer_++;
+    // ★ 修正点1: 全体のカーブタイマーは使用しないため削除
+    // curveTimer_++;
 
     for (int i = 0; i < kNumProjectiles; ++i) {
         MinionProjectile& p = projectiles_[i];
         if (p.isActive) {
 
+            // 弾ごとのカーブタイマーをインクリメント
+            p.currentCurveTimer++;
+
+            // ★ 修正点2: ターゲットZ座標を越えたらカーブ力をゼロにする
+            // ボスはZ軸+側、ターゲットはZ軸-側(-14.0f)にあると仮定
+            if (p.transform.translate.z < targetPos_.z) {
+                p.curveForce = 0.0f; // ターゲットを超えたらカーブ力をゼロにする
+            }
+
             // 1. カーブの力を加える (カーブディレイ後)
-            if (curveTimer_ > kCurveDelay_) {
+            if (p.currentCurveTimer > kCurveDelay_) { // 弾ごとのタイマーを使用
 
                 Vector3& vel = p.velocity;
 
@@ -250,9 +263,9 @@ void ThrowMinion::UpdateProjectiles() {
                     perpZ /= perpLength;
                 }
 
-                // currentCurveForce_ を使用して速度を曲げる
-                vel.x += perpX * currentCurveForce_;
-                vel.z += perpZ * currentCurveForce_;
+                // 弾ごとの p.curveForce を使用して速度を曲げる
+                vel.x += perpX * p.curveForce; // 弾ごとのカーブ力を使用
+                vel.z += perpZ * p.curveForce; // 弾ごとのカーブ力を使用
 
                 // Y軸方向は軽く落下
                 vel.y -= 0.005f;
@@ -306,8 +319,8 @@ void ThrowMinion::ImGuiControl() {
     ImGui::InputFloat("Interval (sec)", &testInterval);
 
     if (ImGui::Button("Start Throw Minion Attack")) {
-        // プレイヤーの位置を仮のターゲット (例: (0, 0, 30)) として渡す
-        StartAttack({ 0.0f, 0.0f, 30.0f }, testThrows, testInterval);
+        // プレイヤーの位置を仮のターゲット (例: (0, 0, -14)) として渡す
+        StartAttack({ 0.0f, 0.0f, -14.0f }, testThrows, testInterval);
     }
 
     // 現在の状態表示
