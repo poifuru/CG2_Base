@@ -24,6 +24,7 @@ void PlayScene::Initialize () {
 	Transform transform = {};
 	camera_->AddCamera ("FollowCamera", CameraType::FollowCamera, transform);
 	camera_->SetActiveCamera ("FollowCamera");
+	camera_->SetFollowTarget ("FollowCamera", player_->GetTransform ());
 }
 
 void PlayScene::Update () {
@@ -36,7 +37,7 @@ void PlayScene::Update () {
 
 	player_->Update(camera_->GetVPMatrix());
 	boss_->Update(camera_->GetVPMatrix());
-	camera_->SetFollowTarget ("FollowCamera", player_->GetTransform ());
+	camera_->Update ();
 }
 
 void PlayScene::Draw () {

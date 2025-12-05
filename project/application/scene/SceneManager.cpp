@@ -37,7 +37,6 @@ void SceneManager::Initialize (SceneLabel scene) {
 }
 
 void SceneManager::Update () {
-	CameraOrganizer::GetInstance ()->Update ();
 	currentScene_->Update ();
 
 	if (currentScene_->GetIsFinish ()) {
