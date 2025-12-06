@@ -5,8 +5,8 @@
 PlayScene::PlayScene (MagosuyaEngine* magosuya) {
 	magosuya_ = magosuya;
 	camera_ = std::make_unique<CameraData>();
-	player_ = std::make_unique<Player>(magosuya);
-	boss_ = std::make_unique<Boss>(magosuya_);
+	player_ = std::make_unique<Player>(magosuya_);
+	boss_ = std::make_unique<Boss>(magosuya_, player_.get());
 }
 
 PlayScene::~PlayScene () {

@@ -14,14 +14,16 @@ struct MinionProjectile {
 	float lifeTime = 0.0f;
 	bool isActive = false;
 	std::unique_ptr<Model> model = nullptr;
-	float curveForce = 0.0f;    // その弾に適用するカーブ力
-	int currentCurveTimer = 0;  // その弾のカーブ開始タイマー
+	// カーブ関連のメンバーをすべて削除
+	float curveForce = 0.0f;
+	int currentCurveTimer = 0;
+	bool isCurvingZ = false;
 };
 
 class ThrowMinion {
 public:
-	// 弾の数を10個に増やし、連続攻撃に対応できるようにする
-	static const int kNumProjectiles = 10;
+	// 弾の数を調整 (例: 100個に増やし、連続攻撃に対応できるようにする)
+	static const int kNumProjectiles = 100;
 	// 弾の最大ライフタイム (例: 5秒 = 300フレーム)
 	static const int kMaxLifeTime = 300;
 
@@ -30,12 +32,12 @@ public:
 
 	void Initialize();
 	// ボスから受け取った親行列でモデルを更新
-	void Update(Matrix4x4* m);
+	void Update(Matrix4x4* m, Vector3 target);
 	void Draw();
 	void ImGuiControl();
 
 	// 連続攻撃の回数と間隔を引数に追加
-	void StartAttack(Vector3 target, int numThrows, float intervalSeconds);
+	void StartAttack(int numThrows, float intervalSeconds);
 	// AttackPhase::None が別途定義されている前提
 	bool IsAttacking() const { return phase_ != AttackPhase::None; }
 
@@ -47,8 +49,8 @@ private:
 
 	// 弾の更新処理
 	void UpdateProjectiles();
-	// 弾を発射する処理（曲げる力を引数で受け取る）
-	void EmitProjectiles(float curveForce);
+	// 弾を発射する処理
+	void EmitProjectiles();
 
 private:
 	MagosuyaEngine* magosuya_ = nullptr;
@@ -66,21 +68,11 @@ private:
 	int throwCount_ = 0;       // 現在投げた回数
 	int intervalFrames_ = 0;   // 投げる間隔 (フレーム数)
 	int intervalTimer_ = 0;    // 次に投げるまでのタイマー
-	bool isCurving_ = false;   // 次に投げる弾がカーブかどうかのフラグ
+	// bool isCurving_ = false;   // 削除
 	Vector3 targetPos_ = { 0.0f, 0.0f, 0.0f }; // ターゲット座標
 
 	// 弾のスピードとカーブの力
-	const float kProjectileSpeed_ = 0.5f;
-	const float kCurveForce_ = -0.008f; // 左に曲がる力 (カーブ)
-	const float kShootForce_ = 0.008f;  // 右に曲がる力 (シュート)
-	const int kCurveDelay_ = 10; // カーブをかけ始めるまでの遅延フレーム
-
-	// 弾の発射オフセット (ボスの左右どちらから出すか)
-	const float kThrowOffset_ = 1.0f;
-
-	// ★ 修正点1: 弾ごとの変数に変更したため、これらの全体変数は削除する
-	// float currentCurveForce_ = 0.0f;
-	// int curveTimer_ = 0; // カーブ開始タイマー
-
+	const float kProjectileSpeed_ = 0.3f;
+	
 	Matrix4x4* vp_ = nullptr;
 };
