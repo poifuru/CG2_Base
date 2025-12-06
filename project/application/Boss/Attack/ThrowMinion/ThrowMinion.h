@@ -23,7 +23,7 @@ struct MinionProjectile {
 class ThrowMinion {
 public:
 	// 弾の数を調整 (例: 100個に増やし、連続攻撃に対応できるようにする)
-	static const int kNumProjectiles = 100;
+	static const int kNumProjectiles = 1000;
 	// 弾の最大ライフタイム (例: 5秒 = 300フレーム)
 	static const int kMaxLifeTime = 300;
 

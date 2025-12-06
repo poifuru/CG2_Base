@@ -1,10 +1,10 @@
 #include "FullScreenAttack.h"
-#include "MathFunction.h" // Lerpなどを使うため
-#include "../../Boss.h" // Bossクラスへのアクセス
+#include "MathFunction.h"
+#include "../../Boss.h"
 #include <imgui.h>
 #define _USE_MATH_DEFINES
-#include <Math.h> // std::sin, std::cosのため
-#include <algorithm> // std::fillのため
+#include <Math.h>
+#include <algorithm>
 
 FullScreenAttack::FullScreenAttack(MagosuyaEngine* magosuya, Boss* boss) {
 	magosuya_ = magosuya;

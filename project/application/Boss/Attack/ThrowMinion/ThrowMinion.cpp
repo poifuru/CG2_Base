@@ -216,7 +216,7 @@ void ThrowMinion::Draw() {
 void ThrowMinion::ImGuiControl() {
 #ifdef _DEBUG
     ImGui::Begin("Throw Minion Attack");
-    static int testThrows = 100;
+    static int testThrows = 150;
     static float testInterval = 0.001f;
 
     ImGui::InputInt("Throws##num", &testThrows);

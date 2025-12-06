@@ -11,7 +11,7 @@ Boss::Boss(MagosuyaEngine* magosuya, Player* player) {
 }
 
 Boss::~Boss() {
-	
+
 }
 
 void Boss::Initialize() {
@@ -30,18 +30,10 @@ void Boss::Initialize() {
 }
 
 void Boss::Update(Matrix4x4* m) {
+	// 攻撃の更新
+	UpdateAttack();
 	// 行動の更新
 	UpdateMove();
-
-	if (magosuya_->GetRawInput()->Trigger('1')) {
-		centerStomp_->StartAttack();
-	}
-	if (magosuya_->GetRawInput()->Trigger('2')) {
-		fullScreenAttack_->StartAttack();
-	}
-	if (magosuya_->GetRawInput()->Trigger('3')) {
-		throwMinion_->StartAttack(100, 0.001f);
-	}
 
 	model_->Update(m);
 	centerStomp_->Update(m);
@@ -60,7 +52,7 @@ void Boss::Draw() {
 
 void Boss::ImGuiControl() {
 #ifdef _DEBUG
-	model_->ImGui ("boss");
+	model_->ImGui("boss");
 
 	centerStomp_->ImGuiControl();
 	fullScreenAttack_->ImGuiControl();
@@ -82,6 +74,18 @@ void Boss::UpdateMove() {
 
 	// 行動パターン
 	NormalMove();
+}
+
+void Boss::UpdateAttack() {
+	if (magosuya_->GetRawInput()->Trigger('1')) {
+		centerStomp_->StartAttack();
+	}
+	if (magosuya_->GetRawInput()->Trigger('2')) {
+		fullScreenAttack_->StartAttack();
+	}
+	if (magosuya_->GetRawInput()->Trigger('3')) {
+		throwMinion_->StartAttack(150, 0.001f);
+	}
 }
 
 void Boss::BreathMove() {
@@ -132,43 +136,37 @@ void Boss::NormalMove() {
 }
 
 void Boss::WanderMove() {
-	// 完全にランダムだと動きが不自然になるため、目標座標 (targetPos_) を設定し、そこへ向かうようにする
-	static Vector3 targetPos_ = { 0.0f, 0.0f, 0.0f };
-	static int updateCount = 0;
-	// 💡 0:マップ中央, 1:マップ端, 2:ローカルランダム
-	static int goalType = 0;
-
 	// 一定フレームごと、または目標に近づいたら新しい目標座標を設定
-	if (updateCount % 120 == 0 || Length(Subtract(targetPos_, transform_.translate)) < 1.0f) {
+	if (wanderUpdateCount_ % 120 == 0 || Length(Subtract(wanderTargetPos_, transform_.translate)) < 1.0f) {
 
-		// 💡 目標タイプをランダムに決定し、動きを読みにくくする
-		goalType = rand() % 3;
+		// 目標タイプをランダムに決定し、動きを読みにくくする
+		wanderGoalType_ = static_cast<WanderGoalType>(rand() % 3);
 
-		if (goalType == 0) {
+		if (wanderGoalType_ == WanderGoalType::Center) {
 			// マップ中央へ向かう
-			targetPos_ = { 0.0f, 0.0f, 0.0f };
-		} else if (goalType == 1) {
+			wanderTargetPos_ = { 0.0f, 0.0f, 0.0f };
+		} else if (wanderGoalType_ == WanderGoalType::MapEdge) {
 			// マップ端のランダムな位置へ向かう (例: X/Z -25から25の範囲をマップ端と仮定)
-			targetPos_.x = static_cast<float>(rand() % 51 - 25);
-			targetPos_.z = static_cast<float>(rand() % 51 - 25);
-		} else {
+			wanderTargetPos_.x = static_cast<float>(rand() % 51 - 25);
+			wanderTargetPos_.z = static_cast<float>(rand() % 51 - 25);
+		} else { // WanderGoalType::LocalRandom
 			// 現在地付近のランダムな位置へ向かう (例: 現在地から±5の範囲)
-			targetPos_.x = transform_.translate.x + static_cast<float>(rand() % 11 - 5);
-			targetPos_.z = transform_.translate.z + static_cast<float>(rand() % 11 - 5);
+			wanderTargetPos_.x = transform_.translate.x + static_cast<float>(rand() % 11 - 5);
+			wanderTargetPos_.z = transform_.translate.z + static_cast<float>(rand() % 11 - 5);
 		}
 
-		updateCount = 0;
+		wanderUpdateCount_ = 0;
 	}
 
-	Vector3 toTarget = Subtract(targetPos_, transform_.translate);
+	Vector3 toTarget = Subtract(wanderTargetPos_, transform_.translate);
 	float len = Length(toTarget);
 	if (len < 0.0001f) { return; }
 	Vector3 direction = Normalize(toTarget);
 
-	// 💡 目的のタイプによって速度に変化をつけても面白い (例: 端へ向かうときは少し速く)
-	float currentSpeed = speed_ * 0.75f;
-	if (goalType == 1) {
-		currentSpeed = speed_ * 1.25f;
+	// 目的のタイプによって速度に変化をつける
+	float currentSpeed = speed_ * wanderBaseSpeedFactor_;
+	if (wanderGoalType_ == WanderGoalType::MapEdge) {
+		currentSpeed = speed_ * wanderEdgeSpeedFactor_;
 	}
 
 	Vector3 moveAmount = Multiply(currentSpeed, direction);
@@ -176,7 +174,7 @@ void Boss::WanderMove() {
 	transform_.translate.x += moveAmount.x;
 	transform_.translate.z += moveAmount.z;
 
-	updateCount++;
+	wanderUpdateCount_++;
 }
 
 void Boss::FollowMove() {
@@ -231,17 +229,17 @@ void Boss::UpdateMoveState() {
 
 	switch (moveState_) {
 	case MoveState::Wander:
-		// プレイヤーが極端に遠すぎる/近すぎる場合は、緊急でステートを切り替えても良い
-		if (distance > followDistance_ * 2.0f) { // 遠すぎたら、一旦近づく
+		// プレイヤーが極端に遠すぎる/近すぎる場合は、緊急でステートを切り替える
+		if (distance > followDistance_ * emergencyFollowFactor_) { // 遠すぎたら、一旦近づく
 			moveState_ = MoveState::Follow;
 			moveTimer_ = 0;
-		} else if (distance < evadeDistance_ / 2.0f) { // 近すぎたら、一旦離脱する
+		} else if (distance < evadeDistance_ * emergencyEvadeFactor_) { // 近すぎたら、一旦離脱する
 			moveState_ = MoveState::Evade;
 			moveTimer_ = 0;
 		}
 
-		// 💡 自由徘徊時間が終了したら、戦術的移動に切り替える時間を大幅に延長 (maxMoveTime_ * 6 = 18秒)
-		else if (moveTimer_ > maxMoveTime_ * 6) {
+		// 自由徘徊時間が終了したら、戦術的移動に切り替える時間を大幅に延長
+		else if (moveTimer_ > maxMoveTime_ * wanderTimeFactor_) {
 			// 自由徘徊時間が終了したら、次は戦術的移動（Follow/Evade）にランダムで切り替える
 			if (rand() % 2 == 0) {
 				moveState_ = MoveState::Follow;
