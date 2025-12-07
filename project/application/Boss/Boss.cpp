@@ -6,7 +6,7 @@
 
 Boss::Boss() {
 	model_ = std::make_unique<Model>(DxCommon::GetInstance());
-	ModelManager::GetInstance()->LoadModelData ("Resources/teapot", "teapot");
+	ModelManager::GetInstance()->LoadModelData ("Resources/boss", "boss");
 
 	//デバッグ用
 	input_ = InputManager::GetInstance ();
@@ -17,8 +17,8 @@ Boss::~Boss() {
 }
 
 void Boss::Initialize() {
-	model_->SetModelData("teapot");
-	model_->SetTexture("teapot");
+	model_->SetModelData("boss");
+	model_->SetTexture("boss");
 	model_->Initialize();
 
 	centerStomp_ = std::make_unique<CenterStomp>(this);

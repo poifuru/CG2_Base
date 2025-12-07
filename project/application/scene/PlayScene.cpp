@@ -9,7 +9,7 @@ PlayScene::PlayScene (CameraOrganizer* camera, InputManager* inputManager, DxCom
 
 	//地面のモデル
 	ground_ = std::make_unique<Model> (dxCommon);
-	ModelManager::GetInstance ()->LoadModelData ("Resources/ground", "ground");
+	ModelManager::GetInstance ()->LoadModelData ("Resources/field/ground", "ground");
 
 	//火山
 	mountain_ = std::make_unique<Model> (dxCommon);
