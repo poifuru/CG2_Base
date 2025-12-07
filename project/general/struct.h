@@ -146,10 +146,17 @@ struct VertexData {
 	Vector3 normal;
 };
 
+//ライティングの反射モデル
+enum LightReflectionModel {
+	None,
+	Lambert,
+	HalfLambert,
+};
+
 //マテリアルの構造体
 struct Material {
 	Vector4 color;
-	int32_t enableLighting;
+	LightReflectionModel enableLighting;
 	float padding[3];
 	Matrix4x4 uvTranform;
 };
@@ -183,12 +190,6 @@ struct SpriteData {
 	Transform uvTransform;	//uvのSRT
 	Material* material;		//紐づけるマテリアルポインタ
 	Matrix4x4 wvpMatrix;	//wvp行列ポインタ
-};
-
-enum LightReflectionModel {
-	none,
-	lambert,
-	halfLambert,
 };
 
 //平行光源構造体

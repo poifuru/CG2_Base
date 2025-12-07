@@ -37,7 +37,7 @@ SphereModel::SphereModel (DxCommon* dxCommon, int subdivision) {
 	materialBuffer_ = dxCommon_->CreateBufferResource (sizeof (Material));
 	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	materialData_->enableLighting = true;
+	materialData_->enableLighting = LightReflectionModel::None;
 	materialData_->uvTranform = Math::MakeIdentity4x4 ();
 
 	transform_ = {};

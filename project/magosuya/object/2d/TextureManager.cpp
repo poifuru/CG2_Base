@@ -8,18 +8,20 @@ UINT TextureManager::nextDescriptorIndex_ = 1;
 
 void TextureManager::Initialize (DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
+	CreateDummyTexture ("__DummyTexture__");
 }
 
 TextureData* TextureManager::LoadTexture (const std::string& filePath, const std::string& ID) {
 	//そのパスの画像をすでに読み込んでいたら
-	if (textureMap_.count (filePath)) {
+	if (textureMap_.count (ID)) {
 		//既存データを取得
-		TextureData& existingData = textureMap_.at (filePath);
+		TextureData& existingData = textureMap_.at (ID);
 		//参照カウントを増やす
 		existingData.ref_count++;
 		//存在していたら既存のデータを返す
 		return &existingData;
 	}
+	
 
 	//returnするデータを詰める箱
 	TextureData newData{};
@@ -33,8 +35,20 @@ TextureData* TextureManager::LoadTexture (const std::string& filePath, const std
 	HRESULT hr = DirectX::LoadFromWICFile (filePathW.c_str (), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 	if (FAILED (hr)) {
 		std::wstringstream ss;
-		ss << L"[エラー] テクスチャ読み込み失敗！HRESULT: 0x" << std::hex << hr << std::endl;
+		ss << L"[エラー] テクスチャ読み込み失敗！ ダミーのテクスチャを返します HRESULT: 0x" << std::hex << hr << std::endl;
 		OutputDebugStringW (ss.str ().c_str ());
+		//ダミーテクスチャデータを取得
+		TextureData& dummyData = textureMap_.at ("__DummyTexture__");
+		//参照カウントを増やす
+		dummyData.ref_count++;
+		//元のIDでダミーテクスチャの情報を登録(そのIDが通らないので同じIDが来た時にすぐにダミーデータを返せるように)
+		TextureData failureCacheData = dummyData; // ダミーの情報をコピー
+		failureCacheData.ref_count = 1;           // このID自体の参照は1からスタート
+		//IDをキャッシュに登録
+		textureMap_[ID] = failureCacheData;
+
+		//新しく登録したキャッシュデータを返す
+		return &textureMap_.at (ID);
 	}
 	assert (SUCCEEDED (hr));
 
@@ -96,13 +110,13 @@ D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetTextureHandle (const std::string&
 	return textureMap_.at (ID).handle;
 }
 
-void TextureManager::UnloadTexture (const std::string& filePath) {
+void TextureManager::UnloadTexture (const std::string& ID) {
 	//参照カウントを減らす
-	if (!textureMap_.count (filePath)) { return; }
-	textureMap_.at (filePath).ref_count--;
+	if (!textureMap_.count (ID)) { return; }
+	textureMap_.at (ID).ref_count--;
 
 	// 参照を取得する
-	TextureData& data = textureMap_.at (filePath);
+	TextureData& data = textureMap_.at (ID);
 
 	//参照カウントがゼロになったらテクスチャ削除
 	if (data.ref_count <= 0) {
@@ -110,7 +124,7 @@ void TextureManager::UnloadTexture (const std::string& filePath) {
 		//使っていたインデックスを空きリストに戻す
 		freeIndexQueue_.push (data.descriptorIndex);
 		//キャッシュマップからデータを削除
-		textureMap_.erase (filePath);
+		textureMap_.erase (ID);
 	}
 }
 
@@ -169,4 +183,79 @@ ComPtr<ID3D12Resource> TextureManager::UploadTextureData (const ComPtr<ID3D12Res
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
 	dxCommon_->GetCommandList ()->ResourceBarrier (1, &barrier);
 	return intermediateResource;
+}
+
+TextureData* TextureManager::CreateDummyTexture (const std::string& ID) {
+	//returnするデータを詰める箱
+	TextureData newData{};
+	newData.ref_count = 1;
+
+	HRESULT hr;
+
+	//真っ白な1x1ピクセルのDirectX::ScratchImageを作る
+	DirectX::ScratchImage image{};
+
+	//テクスチャの初期化とデータの設定
+	//RGBA,8bit(32bit)フォーマットで1x1の画像として初期化
+	const size_t width = 1;
+	const size_t height = 1;
+	const DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM; //一般的なフォーマット
+
+	//画像を初期化
+	hr = image.Initialize2D (format, width, height, 1, 1);
+	assert (SUCCEEDED (hr));
+
+	//ピクセルデータポインタを取得
+	uint32_t* pixelData = reinterpret_cast<uint32_t*>(image.GetPixels ());
+	// 真っ白な色を設定
+	*pixelData = 0xFFFFFFFF;
+
+	//ミップマップの作成
+	DirectX::ScratchImage& mipImage = image;
+
+	//mipImageを使ってmetaDataを作る
+	newData.metadata = mipImage.GetMetadata ();
+	//作ったmetaDataをもとにテクスチャリソースを作成
+	newData.textureResource = CreateTextureResource (newData.metadata);
+	//実際にデータを転送
+	intermediateResource_.push_back (UploadTextureData (newData.textureResource, mipImage));
+
+	//metaDataをもとにSRVの設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = newData.metadata.format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+	srvDesc.Texture2D.MipLevels = UINT (newData.metadata.mipLevels);
+
+	//SRVを作成するDescriptorHeapの場所を決める
+	UINT newIndex;
+
+	//キューの空きリストをチェック
+	if (!freeIndexQueue_.empty ()) {
+		//空きがあればそこを使う
+		newIndex = freeIndexQueue_.front ();
+		freeIndexQueue_.pop ();	//キューから取り除く
+	}
+	else {
+		//空きがなかったら、次に割り当てるインデックスを使う
+		newIndex = nextDescriptorIndex_;
+		nextDescriptorIndex_++;
+	}
+
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
+	textureSrvHandleCPU = dxCommon_->GetSRVCPUDescriptorHandle (newIndex);
+	textureSrvHandleGPU = dxCommon_->GetSRVGPUDescriptorHandle (newIndex);
+
+	//実際にSRVを生成
+	dxCommon_->GetDevice ()->CreateShaderResourceView (newData.textureResource.Get (), &srvDesc, textureSrvHandleCPU);
+
+	//生成物をmapに渡すためにデータを詰める
+	newData.handle = textureSrvHandleGPU;
+	//どのインデックスを使ったかを保存しておくと解放時に便利
+	newData.descriptorIndex = newIndex;
+
+	//mapに登録
+	textureMap_[ID] = newData;
+	return &textureMap_.at (ID);
 }

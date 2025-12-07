@@ -135,9 +135,9 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	dierctionalLightResource->Map (0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 	//実際に書き込み
 	directionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	directionalLightData->direction = { 0.0f, 0.0f, 1.0f };
+	directionalLightData->direction = { 0.0f, -1.0f, 0.0f };
 	directionalLightData->intensity = 1.0f;
-	directionalLightData->mode = LightReflectionModel::halfLambert;
+	directionalLightData->mode = LightReflectionModel::HalfLambert;
 	//ライティング用の変数
 	float colorLight[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 

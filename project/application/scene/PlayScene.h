@@ -19,4 +19,8 @@ public:		//メンバ関数
 private:	//メンバ変数
 	std::unique_ptr<Player>player_ = nullptr;
 	std::unique_ptr<Boss> boss_ = nullptr;
+	std::unique_ptr<Model> ground_ = nullptr;
+	std::unique_ptr<Model> mountain_ = nullptr;
+	std::unique_ptr<Model> stone_ = nullptr;
+	std::unique_ptr<Model> skydome_ = nullptr;
 };

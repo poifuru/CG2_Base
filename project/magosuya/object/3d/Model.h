@@ -61,7 +61,8 @@ public:	//メンバ関数
 	void SetTransform (Transform transform) { transform_ = transform; }
 	Transform GetUVTransform () { return uvTransform_; }
 	void SetUVTransform (Transform transform) { uvTransform_ = transform; }
-	void IsLighting (const bool& flag) { renderer_->IsLighting (flag); }
+	void SetColor (const Vector4& color) { renderer_->SetColor (color); }
+	void IsLighting (const LightReflectionModel& lighting) { renderer_->IsLighting (lighting); }
 
 private:		//メンバ変数
 	//マネージャーから受け取るモデルデータ

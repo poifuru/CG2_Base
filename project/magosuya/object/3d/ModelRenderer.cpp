@@ -29,7 +29,7 @@ void ModelRenderer::Initialize () {
 	materialBuffer_ = dxCommon_->CreateBufferResource (sizeof (Material));
 	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	materialData_->enableLighting = true;
+	materialData_->enableLighting = LightReflectionModel::None;
 	materialData_->uvTranform = Math::MakeIdentity4x4 ();
 
 	//PSO設定
@@ -95,15 +95,15 @@ void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform, const s
 	const char* lights[] = { "None", "lambert", "halfLambert" };
 	if (ImGui::Combo (("ライティング" + label).c_str(), &currentNum, lights, IM_ARRAYSIZE (lights))) {
 		if (currentNum == 0) {
-			materialData_->enableLighting = LightReflectionModel::none;
+			materialData_->enableLighting = LightReflectionModel::None;
 			currentNum = 0;
 		}
 		else if (currentNum == 1) {
-			materialData_->enableLighting = LightReflectionModel::lambert;
+			materialData_->enableLighting = LightReflectionModel::Lambert;
 			currentNum = 1;
 		}
 		else if (currentNum == 2) {
-			materialData_->enableLighting = LightReflectionModel::halfLambert;
+			materialData_->enableLighting = LightReflectionModel::HalfLambert;
 			currentNum = 2;
 		}
 	}

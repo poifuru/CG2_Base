@@ -31,7 +31,7 @@ void TitleScene::Initialize () {
 
 void TitleScene::Update () {
 	// ゲーム終了
-	if (input_->GetRawInput()->Trigger(VK_SPACE)) {
+	if (input_->GetRawInput()->Trigger(VK_F1)) {
 		nextScene_ = SceneLabel::Play;
 		isFinish_ = true;
 	}

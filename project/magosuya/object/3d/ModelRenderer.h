@@ -21,7 +21,7 @@ public:
 
 	//アクセッサ
 	Material* GetMaterial () { return materialData_; }
-	void IsLighting (const bool& flag) { materialData_->enableLighting = flag; }
+	void IsLighting (const LightReflectionModel& lighting) { materialData_->enableLighting = lighting; }
 	void SetColor (const Vector4& color) { materialData_->color = color; }
 	void SetImGuiID (const std::string& id) { tag_ = id; }
 	void SetModelData (const std::weak_ptr<ModelData>& data){ modelData_ = data; }

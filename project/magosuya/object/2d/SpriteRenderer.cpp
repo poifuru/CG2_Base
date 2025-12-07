@@ -42,7 +42,7 @@ void SpriteRenderer::Initialize () {
 	materialBuffer_ = dxCommon_->CreateBufferResource (sizeof (Material));
 	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };	//初期カラーは白
-	materialData_->enableLighting = false;
+	materialData_->enableLighting = LightReflectionModel::None;
 	materialData_->uvTranform = Math::MakeIdentity4x4 ();
 
 	//indexData_に書き込み
