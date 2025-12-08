@@ -61,6 +61,18 @@ void EnemyHurtState::Update() {
 	if (boundCounter_ >= 3.0f) {
 		attackLevel_ = 3.0f;
 	}
+	if (attackLevel_ == 0.0f) {
+		enemy_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+	}
+	if (attackLevel_ == 1.0f) {
+		enemy_->SetColor({ 0.8f,0.5f,0.5f,1.0f });
+	}
+	if (attackLevel_ == 2.0f) {
+		enemy_->SetColor({ 0.8f,0.2f,0.2f,1.0f });
+	}
+	if (attackLevel_ == 3.0f) {
+		enemy_->SetColor({ 0.8f,0.0f,0.0f,1.0f });
+	}
 	// 攻撃の威力を設定してあげる
 	enemy_->SetAttackLevel(attackLevel_);
 

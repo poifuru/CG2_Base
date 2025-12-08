@@ -64,6 +64,11 @@ public:
 	void SetAriaSize(Vector2* size) { ariaSize_ = size; }
 	Vector2& GetAriaSize() { return *ariaSize_; }
 	Vector3& GetAriaLeftTop() { return *ariaLeftTop_; }
+	// [ エネミーがプレイヤーを向くかどうかのフラグ ]
+	void SetIsViewPlayerFlag(float flag) { isViewPlayerFlag_ = flag; }
+	// [ カラー関係 ]
+	void SetColor(const Vector4& color) { obj_->SetColor(color); }
+	void SetAlpha(float alpha) { obj_->SetColor({ 1.0f,1.0f,1.0f,alpha }); }
 private:
 	// 参照するもの(ポインタ型)
 	DxCommon* dxCommon_ = nullptr;
@@ -74,6 +79,8 @@ private:
 	EnemyState* state_ = nullptr;
 	Vector3 moveAmount_ = { 0.0f,0.0f,0.0f };
 	float moveSpeed_ = 1.0f;
+	// [ エネミーがプレイヤーを向くかどうかのフラグ ]
+	bool isViewPlayerFlag_ = true;
 	// [ 敵が死んだフラグ ]
 	bool isAlive_ = true;
 	// [ 敵をけしてもいいフラグ ]

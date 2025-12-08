@@ -18,7 +18,7 @@ void EnemyManager::Initialize(Player* player) {
 	// [ 生成する場所の設定 ]
 	spawnOffsetPos_ = { 0.0f,0.0,1.0f };// ｘとｙはズラさず、奥行きのみずらす
 	// [ 初期速度 ]
-	initialSpeed_ = 0.2f;
+	initialSpeed_ = 0.6f;
 	// [ Model ] 
 	obj_->SetModelData("teapot");
 	obj_->SetTexture("teapot");
