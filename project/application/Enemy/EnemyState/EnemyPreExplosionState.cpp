@@ -29,6 +29,8 @@ void EnemyPreExplosionState::Update() {
 	if (Length(toPlayer) > 0.01f) {
 		Vector3 direction = Normalize(toPlayer);
 		Vector3 moveAmount = direction * (chaseSpeedRate_ * deltaTime);
+		// ほぼ同じ位置なら移動しない
+		enemy_->SetMoveAmount(moveAmount);
 	}
 	else {
 		// ほぼ同じ位置なら移動しない

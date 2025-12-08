@@ -18,7 +18,7 @@ void EnemyManager::Initialize(Player* player) {
 	// [ 生成する場所の設定 ]
 	spawnOffsetPos_ = { 0.0f,0.0,1.0f };// ｘとｙはズラさず、奥行きのみずらす
 	// [ 初期速度 ]
-	initialSpeed_ = 2.0f;
+	initialSpeed_ = 0.2f;
 	// [ Model ] 
 	obj_->SetModelData("teapot");
 	obj_->SetTexture("teapot");
@@ -80,7 +80,9 @@ void EnemyManager::Spawn(Matrix4x4* m) {
 	// 生成
 	std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>(engine_);
 	// 初期化
-	newEnemy->Initialize(direction,direction * initialSpeed_,player_);
+	newEnemy->Initialize(direction,Normalize(direction) * -initialSpeed_,player_);
+	newEnemy->SetAriaLeftTop(&ariaLeftTop_);
+	newEnemy->SetAriaSize(&ariaSize_);
 	// 移行
 	enemies_.push_back(std::move(newEnemy));
 

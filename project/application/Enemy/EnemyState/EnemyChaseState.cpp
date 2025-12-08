@@ -33,6 +33,13 @@ void EnemyChaseState::Update() {
 		enemy_->ChangeState(new EnemyPreExplosionState());
 		return;
 	}
+
+	// [ 見失うこともある ]
+	if (distanceToPlayer >= 30.0f) {
+		// 設定した距離いないに入ったら爆発Stateに遷移
+		enemy_->ChangeState(new EnemyDecisionState());
+		return;
+	}
 #ifdef _DEBUG
 	ImGui::Begin("Enemy : Chase");
 	ImGui::End();

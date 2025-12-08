@@ -38,5 +38,8 @@ private:
 	std::unique_ptr<Model>obj_;
 	// 出現する場所
 	Vector3 spawnOffsetPos_;
+	// [ エリアのサイズ ]
+	Vector3 ariaLeftTop_ = {-20.0f,0.0f,10.0f};
+	Vector2 ariaSize_ = {40.0f,-20.0f};
 };
 

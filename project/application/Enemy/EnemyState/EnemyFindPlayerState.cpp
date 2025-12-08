@@ -1,6 +1,7 @@
 #include "EnemyState.h"
 #include "../Enemy.h"
 #include "imgui.h"
+#include "MathFunction.h"
 
 void EnemyFindPlayerState::Initialize() {
 	// 初期化処理
@@ -15,6 +16,11 @@ void EnemyFindPlayerState::Initialize() {
 void EnemyFindPlayerState::Update() {
 		// プレイヤーを見つけた時の処理
 	findTimer_ += 1.0f / 60.0f;
+
+	Vector3 rot = enemy_->GetRotation();
+	rot.y += Deg2Rad(360.0f / (60.0f / maxFindTime_));
+	enemy_->SetRotation(rot);
+
 	// 一定時間経過したら、Chase State に遷移
 	if (findTimer_ >= maxFindTime_) {
 		enemy_->ChangeState(new EnemyChaseState());

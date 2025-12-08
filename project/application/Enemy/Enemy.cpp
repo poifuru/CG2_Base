@@ -26,16 +26,16 @@ void Enemy::Initialize(const Vector3& pos, const Vector3& velocity, Player* play
 	attackColliderObj_->SetTexture("teapot");
 	attackColliderObj_->Initialize();
 
-	// [ 初期Stateの設定 ]
-	state_ = new EnemyDecisionState();// 考えるState
-	state_->SetEnemy(this);
-	state_->Initialize();
-
 	// [ Colliderの設定 ]
 	// -[ Body ]-
 	bodyCollider_ = std::make_unique<EnemyBodyCollider>(this);// コンストラクタで初期化している
 	// -[ Attack ]-
 	attackCollider_ = std::make_unique<AttackCollider>();
+
+	// [ 初期Stateの設定 ]
+	state_ = new EnemyDecisionState();// 考えるState
+	state_->SetEnemy(this);
+	state_->Initialize();
 
 	// [ 初期パラメータの設定 ]
 	isAlive_ = true;// 生きているかのフラグ
@@ -51,7 +51,7 @@ void Enemy::Initialize(const Vector3& pos, const Vector3& velocity, Player* play
 void Enemy::Update(Matrix4x4* m) {
 	// 毎フレームの初期化処理
 	// [ 移動量をリセット ]
-	moveAmount_ = { 0.0f,0.0f,0.0f };
+	//moveAmount_ = { 0.0f,0.0f,0.0f };
 
 	// Stateの更新処理
 	if (state_) {
@@ -60,7 +60,24 @@ void Enemy::Update(Matrix4x4* m) {
 
 	// 移動の適用
 	Vector3 newPos = obj_->GetTransform().translate + (moveAmount_ * moveSpeed_);
-	obj_->SetTransform({ obj_->GetTransform().scale,obj_->GetTransform().rotate,newPos });
+
+	// [ Levelによるサイズの変化 ]
+	Vector3 scale = obj_->GetTransform().scale;
+	scale = { 1.0f,1.0f,1.0f };
+	if (attackLevel_ == 0.0f) {
+		scale *= 1.0f;
+	}
+	if (attackLevel_ == 1.0f) {
+		scale *= 1.3f;
+	}
+	if (attackLevel_ == 2.0f) {
+		scale *= 1.8f;
+	}
+	if (attackLevel_ == 3.0f) {
+		scale *= 2.3f;
+	}
+
+	obj_->SetTransform({ scale,obj_->GetTransform().rotate,newPos });
 
 	obj_->Update(m);
 
@@ -134,6 +151,16 @@ void Enemy::TakeDamage(float damage) {
 
 	// 無敵時間を設定する (HurtState側でリセットする)
 	//SetInvulnerable(true);
+}
+
+void Enemy::TakeSlipDamage() {
+	if (!isAlive_ /*|| IsInvulnerable()*/) {
+		return;
+	}
+
+	// 3. 状態遷移の判定
+	// 被ダメージ State へ遷移
+	ChangeState(new EnemyPreExplosionState());
 }
 
 // --------------------------------

@@ -8,7 +8,17 @@ void EnemyHurtState::Initialize() {
 
 	// [ パラメータの初期化 ]
 	boundCounter_ = 0.0f;
-	attackLevel_ = 0.0f;
+	attackLevel_ = enemy_->GetAttackLevel();
+	// バウンドの回数によって変わる処理
+	if (attackLevel_ == 1.0f) {
+		boundCounter_ = 1.0f;
+	}
+	if (attackLevel_ == 2.0f) {
+		boundCounter_ = 2.0f;
+	}
+	if (attackLevel_ >= 3.0f) {
+		boundCounter_ = 3.0f;
+	}
 
 	moveAmount_ = enemy_->GetKnockBackDirection();
 }
@@ -26,12 +36,12 @@ void EnemyHurtState::Update() {
 	// 2, 壁との当たり判定処理
 	// 壁に当たると速度は少し低下して反転
 	// さらにAtaackの威力も増加する
-	if (enemy_->GetPosition().z >= 10.0f || enemy_->GetPosition().z <= -10.0f) {
+	if (enemy_->GetPosition().z >= enemy_->GetAriaLeftTop().z || enemy_->GetPosition().z <= enemy_->GetAriaLeftTop().z + enemy_->GetAriaSize().y) {
 		moveAmount_.z *= -1.0f;
 		moveSpeed *= e_;
 		boundCounter_++;
 	}
-	if (enemy_->GetPosition().x >= 20.0f || enemy_->GetPosition().x <= -20.0f) {
+	if (enemy_->GetPosition().x >= enemy_->GetAriaLeftTop().x + enemy_->GetAriaSize().x || enemy_->GetPosition().x <= enemy_->GetAriaLeftTop().x) {
 		moveAmount_.x *= -1.0f;
 		moveSpeed *= e_;
 		boundCounter_++;
@@ -51,6 +61,8 @@ void EnemyHurtState::Update() {
 	if (boundCounter_ >= 3.0f) {
 		attackLevel_ = 3.0f;
 	}
+	// 攻撃の威力を設定してあげる
+	enemy_->SetAttackLevel(attackLevel_);
 
 	// 3, 速度が一定以下になったらPreExplosionStateに移行
 	if (moveSpeed <= minSpeed_) {

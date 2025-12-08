@@ -42,16 +42,21 @@ public:
 	bool IsDead() const { return hp_ <= 0.0f; }
 	bool IsInvulnerable() const { return isInvulnerable_; } // 無敵時間のチェック
 	void SetInvulnerable(bool isInvulnerable) { isInvulnerable_ = isInvulnerable; }
-
+	// AttackCollider
+	// [ 取得 ]
 	AttackCollider& GetAttackCollider() { return *attackCollider_.get(); }
+	// [ Radius ]
+	void SetAttackColliderRadius(float radius) { attackCollider_->SetRadius(radius); }
+	// [ Typeの追加 ]
+	void AddAttackColliderType(uint32_t type);
+
+	// BodyCollider
 	PlayerBodyCollider& GetPlayerBodyCollider() { return *playerCollider_.get(); }
 
 	// 位置の取得
 	Vector3 GetPosition() { return obj_->GetTransform().translate; }
 	void TakeDamage(float damage);
 	Vector3 GetForwardVector();
-	// AttackColliderのRadiusの設定
-	void SetAttackColliderRadius(float radius) { attackCollider_->SetRadius(radius); }
 	//void SetAlpha(float alpha) { obj_->SetColor({ 1.0f,1.0f,1.0f,alpha }); }
 	// Quaternionの設定・取得
 	//void SetPlayerQuaternion(const Quaternion& q) { obj_->worldTransform_.set_.Quaternion(q); }
@@ -70,6 +75,7 @@ private:
 	PlayerState* state_ = nullptr;
 	// キャラのCollider
 	std::unique_ptr<PlayerBodyCollider>playerCollider_;
+	std::unique_ptr<Model>playerColliderObj_;
 
 	// 攻撃判定用のCollider
 	std::unique_ptr<AttackCollider>attackCollider_;
@@ -83,10 +89,15 @@ private:
 	float maxHP_ = 100.0f;
 	float hp_ = 100.0f;
 
+	// HPの可視化
+	/*Sprite(緑)*/
+
+	/*Sprite(赤)*/
+
 	Vector3 move_ = { 0,0,0 };
 	Vector3 direction_ = { 0.0f,0.0f,0.0f };
 	// 一旦これは元のスピード
-	float speed_ = 1.0f;
+	float speed_ = 0.7f;
 	// 移動速度倍率
 	float speedMultiplier_ = 1.0f;
 	// 旋回するスピード

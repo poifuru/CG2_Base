@@ -7,6 +7,8 @@ PlayScene::PlayScene (MagosuyaEngine* magosuya) {
 	camera_ = std::make_unique<CameraData>();
 	player_ = std::make_unique<Player>(magosuya);
 	boss_ = std::make_unique<Boss>(magosuya_);
+	enemies_ = std::make_unique<EnemyManager>(magosuya);
+	collisionManager_ = std::make_unique<CollisionManager>();
 }
 
 PlayScene::~PlayScene () {
@@ -25,6 +27,7 @@ void PlayScene::Initialize () {
 
 	player_->Initialize();
 	boss_->Initialize();
+	enemies_->Initialize(player_.get());
 }
 
 void PlayScene::Update () {
@@ -38,16 +41,28 @@ void PlayScene::Update () {
 	);
 	Matrix4x4 vp = Multiply(camera_->view, camera_->proj);
 
-	if (magosuya_->GetRawInput()->Trigger(VK_SPACE)) {
-		nextScene_ = SceneLabel::Title;
-		isFinish_ = true;
-	}
+	//if (magosuya_->GetRawInput()->Trigger(VK_SPACE)) {
+	//	nextScene_ = SceneLabel::Title;
+	//	isFinish_ = true;
+	//}
 
 	player_->Update(&vp);
 	boss_->Update(&vp);
+	enemies_->Update(&vp);
+
+	// [ 当たり判定 ]
+	collisionManager_->Begin();
+	collisionManager_->SetColliders(&player_->GetAttackCollider());
+	collisionManager_->SetColliders(&player_->GetPlayerBodyCollider());
+	for (const auto& enemy : enemies_->GetEnemies()) {
+		collisionManager_->SetColliders(&enemy->GetAttackCollider());
+		collisionManager_->SetColliders(&enemy->GetBodyCollider());
+	}
+	collisionManager_->CheckAllCollisions();
 }
 
 void PlayScene::Draw () {
 	player_->Draw();
 	boss_->Draw();
+	enemies_->Draw();
 }

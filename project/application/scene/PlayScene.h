@@ -5,6 +5,8 @@
 #include "object/3d/Model.h"
 #include "../Player/Player.h"
 #include "../Boss/Boss.h"
+#include "../Enemy/EnemyManager.h"
+#include "../Collider/CollisionManager.h"
 
 class PlayScene : public Scene {
 public:		//メンバ関数
@@ -19,4 +21,6 @@ private:	//メンバ変数
 	std::unique_ptr<CameraData> camera_ = nullptr;
 	std::unique_ptr<Player>player_ = nullptr;
 	std::unique_ptr<Boss> boss_ = nullptr;
+	std::unique_ptr<EnemyManager>enemies_ = nullptr;
+	std::unique_ptr<CollisionManager>collisionManager_ = nullptr;
 };
