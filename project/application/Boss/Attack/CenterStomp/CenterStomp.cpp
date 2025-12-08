@@ -11,19 +11,19 @@ CenterStomp::CenterStomp(Boss* boss) {
 
 	// 攻撃範囲表示用のモデル作成
 	model_ = std::make_unique<Model>(DxCommon::GetInstance());
-	ModelManager::GetInstance()->LoadModelData ("Resources/teapot", "teapot");
+	ModelManager::GetInstance()->LoadModelData ("Resources/boss/wave", "wave");
 }
 
 CenterStomp::~CenterStomp() {
 }
 
 void CenterStomp::Initialize() {
-	model_->SetModelData("teapot");
-	model_->SetTexture("teapot");
+	model_->SetModelData("wave");
+	model_->SetTexture("wave");
 	model_->Initialize();
 
 	// 初期位置リセット
-	transform_ = { {2.0f,2.0f,2.0f},{0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
+	transform_ = { {2.0f,2.0f,2.0f},{0.0f,0.0f,0.0f}, {0.0f,-1.0f,0.0f} };
 
 	phase_ = StompPhase::None;
 	isAliveWave_ = false;
@@ -173,6 +173,7 @@ void CenterStomp::UpdateCooldown() {
 
 	// スケールを適用
 	transform_.scale = { currentScale, currentScale, currentScale };
+	transform_.rotate.y += 0.05f;
 
 	if (timer_ >= duration_) {
 		// すべて終了、通常状態へ戻る
