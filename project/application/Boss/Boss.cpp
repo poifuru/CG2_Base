@@ -33,6 +33,11 @@ void Boss::Initialize() {
 	Breath_->Initialize();
 
 	bossBodyCollider_ = std::make_unique<BossBodyCollider>(this);
+	bodyColliderObj_ = std::make_unique<Model>(dxCommon_);
+	bodyColliderObj_->SetModelData("zako");
+	bodyColliderObj_->SetTexture("zako");
+	bodyColliderObj_->Initialize();
+	bodyColliderObj_->SetColor({0.0f,0.0f,0.0f,1.0f});
 }
 
 void Boss::Update(Matrix4x4* m) {
@@ -52,10 +57,18 @@ void Boss::Update(Matrix4x4* m) {
 	Breath_->Update(m, player_->GetPosition());
 
 	model_->SetTransform(transform_);
+
+	bodyColliderObj_->SetTransform({ {bossBodyCollider_->GetRadius(),0.1f,bossBodyCollider_->GetRadius()},{0.0f,0.0f,0.0f},
+		{bossBodyCollider_->GetWorldPosition().x,
+		bossBodyCollider_->GetWorldPosition().y - 0.0f,
+		bossBodyCollider_->GetWorldPosition().z} });
+
+	bodyColliderObj_->Update(m);
 }
 
 void Boss::Draw() {
 	model_->Draw();
+	bodyColliderObj_->Draw();
 	centerStomp_->Draw();
 	fullScreenAttack_->Draw();
 	Breath_->Draw();
@@ -421,6 +434,7 @@ std::vector<Collider*> Boss::GetAttackColliders() {
 	// 1. CenterStompのColliderを追加 (単一のCollider)
 	if (centerStomp_) {
 		Collider* c = centerStomp_->GetCollider();
+		colliders.push_back(c);
 	}
 
 	// 2. FullScreenAttackのColliderを追加 (複数の弾)

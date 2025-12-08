@@ -109,6 +109,7 @@ private:
 	float hp_ = 1000.0f;
 
 	std::unique_ptr<BossBodyCollider> bossBodyCollider_ = nullptr;
+	std::unique_ptr<Model>bodyColliderObj_ = nullptr;
 
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;

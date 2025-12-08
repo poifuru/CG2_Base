@@ -8,10 +8,10 @@ BossBodyCollider::BossBodyCollider(Boss* boss) : boss_(boss) {
 
 	// 衝突対象: プレイヤーの攻撃全て
 	// COL_Player_Attack は全てのプレイヤー攻撃の親属性としています
-	SetYourType(COL_Player_Attack | COL_Player_Attack_Level0 | COL_Player_Attack_Level1 | COL_Player_Attack_Level2 | COL_Player_Attack_Level3);
+	SetYourType(COL_Player_Attack);
 
 	// Bossの当たり判定半径を設定 (※モデルのサイズに合わせて調整してください)
-	SetRadius(2.0f);
+	SetRadius(10.0f);
 }
 
 // 自身のワールド座標を返す

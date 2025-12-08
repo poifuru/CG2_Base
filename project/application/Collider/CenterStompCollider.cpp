@@ -6,10 +6,10 @@
 CenterStompCollider::CenterStompCollider(CenterStomp* parentAttack, float damage)
 	: parentAttack_(parentAttack), damage_(damage) {
 	// 自身の属性: CenterStomp攻撃 (Boss_Attackフラグも立てる)
-	SetMyType(COL_Boss_Attack_CenterStomp | COL_Boss_Attack);
+	SetMyType(COL_None);
 
 	// 衝突対象: プレイヤー本体
-	SetYourType(COL_Player);
+	SetYourType(COL_None);
 
 	// 当たり判定の半径を設定
 	SetRadius(15.0f); // 攻撃範囲に合わせて大きめに設定
