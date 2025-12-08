@@ -1,13 +1,10 @@
 #include "Enemy.h"
 #include "MathFunction.h"
-#include "ModelManager.h"
 #include "imgui.h"
 
 void Enemy::Initialize(const Vector3& pos, const Vector3& velocity, Player* player) {
 
 	// 初期化処理
-	ModelManager::GetInstance ()->LoadModelData ("Resources/slipDamage", "slipDamage");
-
 	// [ ターゲットの設定 ]
 	target_ = player;
 	

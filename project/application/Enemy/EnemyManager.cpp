@@ -1,14 +1,18 @@
 #include "EnemyManager.h"
 #include "MathFunction.h"
+#include "ModelManager.h"
 #include <algorithm>
 #include "imgui.h"
 
 EnemyManager::EnemyManager(DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 	obj_ = std::make_unique<Model>(dxCommon);
+	ModelManager::GetInstance ()->LoadModelData ("Resources/zako", "zako");
+	ModelManager::GetInstance ()->LoadModelData ("Resources/slipDamage", "slipDamage");
 }
 
 void EnemyManager::Initialize(Player* player) {
+
 	// プレイヤーのアドレスを取得
 	player_ = player;
 	// 初期化処理

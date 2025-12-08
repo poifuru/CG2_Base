@@ -10,10 +10,10 @@ Player::~Player () {
 
 void Player::Initialize()
 {
-	ModelManager::GetInstance()->LoadModelData ("Resources/zako", "zako");
+	ModelManager::GetInstance()->LoadModelData ("Resources/player", "player");
 	obj_ = std::make_unique<Model>(DxCommon::GetInstance());
-	obj_->SetModelData("zako");
-	obj_->SetTexture("zako");
+	obj_->SetModelData("player");
+	obj_->SetTexture("player");
 	obj_->Initialize();
 
 	// 始まりのState
