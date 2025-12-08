@@ -4,7 +4,7 @@
 #include "InputManager.h"
 
 PlayScene::PlayScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
-	player_ = std::make_unique<Player>(inputManager);
+	player_ = std::make_unique<Player>(inputManager, dxCommon);
 	boss_ = std::make_unique<Boss>(dxCommon, player_.get());
 
 	//地面のモデル
@@ -25,8 +25,7 @@ PlayScene::PlayScene (CameraOrganizer* camera, InputManager* inputManager, DxCom
 
 	camera_ = camera;
 	input_ = inputManager;
-	boss_ = std::make_unique<Boss>(magosuya_);
-	enemies_ = std::make_unique<EnemyManager>(magosuya);
+	enemies_ = std::make_unique<EnemyManager>(dxCommon);
 	collisionManager_ = std::make_unique<CollisionManager>();
 }
 
@@ -99,6 +98,7 @@ void PlayScene::Update () {
 		collisionManager_->SetColliders(&enemy->GetBodyCollider());
 	}
 	collisionManager_->CheckAllCollisions();
+	camera_->Update ();
 }
 
 void PlayScene::Draw () {

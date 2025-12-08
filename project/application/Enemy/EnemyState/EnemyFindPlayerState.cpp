@@ -18,7 +18,7 @@ void EnemyFindPlayerState::Update() {
 	findTimer_ += 1.0f / 60.0f;
 
 	Vector3 rot = enemy_->GetRotation();
-	rot.y += Deg2Rad(360.0f / (60.0f / maxFindTime_));
+	rot.y += Math::Deg2Rad(360.0f / (60.0f / maxFindTime_));
 	enemy_->SetRotation(rot);
 
 	// 一定時間経過したら、Chase State に遷移

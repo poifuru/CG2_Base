@@ -28,18 +28,6 @@
     <ClCompile Include="application\Collider\Collider.cpp" />
     <ClCompile Include="application\Collider\AttackCollider.cpp" />
     <ClCompile Include="application\Boss\Boss.cpp" />
-    <ClCompile Include="application\Enemy\Enemy.cpp" />
-    <ClCompile Include="application\Enemy\EnemyManager.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemyDecisionState.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemySearchPlayerState.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemyFindPlayerState.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemyChaseState.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemyPreExplosionState.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemyExplosionState.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemyHurtState.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemyDeathState.cpp" />
-    <ClCompile Include="application\Collider\EnemyBodyCollider.cpp" />
-    <ClCompile Include="application\Collider\CollisionManager.cpp" />
     <ClCompile Include="application\Boss\Attack\CenterStomp\CenterStomp.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="externals\imgui\imgui_demo.cpp" />
@@ -91,6 +79,18 @@
     <ClCompile Include="magosuya\mesh\Mesh.cpp" />
     <ClCompile Include="magosuya\utility\particle\MeshParticle.cpp" />
     <ClCompile Include="application\Boss\Attack\ThrowMinion\ThrowMinion.cpp" />
+    <ClCompile Include="application\Enemy\Enemy.cpp" />
+    <ClCompile Include="application\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="application\Collider\CollisionManager.cpp" />
+    <ClCompile Include="application\Collider\EnemyBodyCollider.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyChaseState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyDeathState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyDecisionState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyExplosionState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyFindPlayerState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyHurtState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyPreExplosionState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemySearchPlayerState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Boss\Attack\AttackPhase.h" />
@@ -159,12 +159,12 @@
     <ClInclude Include="application\Collider\AttackCollider.h" />
     <ClInclude Include="application\Boss\Boss.h" />
     <ClInclude Include="application\Boss\Attack\CenterStomp\CenterStomp.h" />
+    <ClInclude Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.h" />
     <ClInclude Include="application\Enemy\Enemy.h" />
     <ClInclude Include="application\Enemy\EnemyManager.h" />
-    <ClInclude Include="application\Enemy\EnemyState\EnemyState.h" />
-    <ClInclude Include="application\Collider\EnemyBodyCollider.h" />
     <ClInclude Include="application\Collider\CollisionManager.h" />
-    <ClInclude Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.h" />
+    <ClInclude Include="application\Collider\EnemyBodyCollider.h" />
+    <ClInclude Include="application\Enemy\EnemyState\EnemyState.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">

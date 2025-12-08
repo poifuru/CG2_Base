@@ -11,17 +11,17 @@ void Enemy::Initialize(const Vector3& pos, const Vector3& velocity, Player* play
 	
 	// [ モデルの初期化 ]
 	// -[ Enemy本体 ]-
-	obj_ = std::make_unique<Model>(engine_);
+	obj_ = std::make_unique<Model>(dxCommon_);
 	obj_->SetModelData("teapot");
 	obj_->SetTexture("teapot");
 	obj_->Initialize();
 
-	bodyColliderObj_ = std::make_unique<Model>(engine_);
+	bodyColliderObj_ = std::make_unique<Model>(dxCommon_);
 	bodyColliderObj_->SetModelData("teapot");
 	bodyColliderObj_->SetTexture("teapot");
 	bodyColliderObj_->Initialize();
 
-	attackColliderObj_ = std::make_unique<Model>(engine_);
+	attackColliderObj_ = std::make_unique<Model>(dxCommon_);
 	attackColliderObj_->SetModelData("teapot");
 	attackColliderObj_->SetTexture("teapot");
 	attackColliderObj_->Initialize();

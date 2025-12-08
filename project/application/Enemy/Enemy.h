@@ -1,15 +1,15 @@
 #pragma once
-#include "MagosuyaEngine.h"
-#include "object/3d/Model.h"
-#include "../Player/Player.h"
-#include "../Enemy/EnemyState/EnemyState.h"
-#include "../Collider/AttackCollider.h"
-#include "../Collider/EnemyBodyCollider.h"
+#include "DxCommon.h"
+#include "Model.h"
+#include "Player.h"
+#include "EnemyState.h"
+#include "AttackCollider.h"
+#include "EnemyBodyCollider.h"
 
 class Enemy
 {
 public:
-	Enemy(MagosuyaEngine* engine) :engine_(engine) {};
+	Enemy(DxCommon* dxCommon) :dxCommon_(dxCommon) {};
 	~Enemy() { delete state_; }
 public:
 	void Initialize(const Vector3& pos,const Vector3& velocity,Player*player);
@@ -66,7 +66,7 @@ public:
 	Vector3& GetAriaLeftTop() { return *ariaLeftTop_; }
 private:
 	// 参照するもの(ポインタ型)
-	MagosuyaEngine* engine_ = nullptr;
+	DxCommon* dxCommon_ = nullptr;
 	Player* target_ = nullptr;
 
 	// 自身の持つパラメータ

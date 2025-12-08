@@ -1,5 +1,6 @@
 #include "PlayerState.h"
 #include "Player.h"
+#include <imgui.h>
 
 void PlayerChargeState::Initialize() {
     if (!player_) return;
@@ -20,16 +21,16 @@ void PlayerChargeState::Initialize() {
 void PlayerChargeState::Update() {
 
     auto& move = player_->Move();
-    if (player_->engine_->GetRawInput()->Push('W')){
+    if (player_->input_->GetRawInput()->Push('W')){
         move.z = 1.0f;
     }
-    if (player_->engine_->GetRawInput()->Push('S')){
+    if (player_->input_->GetRawInput()->Push('S')){
         move.z = -1.0f;
     }
-    if (player_->engine_->GetRawInput()->Push('A')){
+    if (player_->input_->GetRawInput()->Push('A')){
         move.x = -1.0f;
     }
-    if (player_->engine_->GetRawInput()->Push('D')){
+    if (player_->input_->GetRawInput()->Push('D')){
         move.x = 1.0f;
     }
 

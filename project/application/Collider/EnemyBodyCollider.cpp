@@ -29,7 +29,7 @@ void EnemyBodyCollider::OnCollision(Collider* other)
 	if (other->GetMyType() & COL_Player_Attack){
 		Vector3 playerPos = other->GetWorldPosition();
 		Vector3 playerToEnemy = (enemyPos - playerPos);
-		enemy_->SetKnockBackDirection(Normalize(playerToEnemy));
+		enemy_->SetKnockBackDirection(Math::Normalize(playerToEnemy));
 
 		// プレイヤーに新しく三つの属性を付与させるー＞その属性で攻撃をどのくらい溜めたのか判断する
 		// 通常攻撃
@@ -57,7 +57,7 @@ void EnemyBodyCollider::OnCollision(Collider* other)
 	else if (other->GetMyType() & COL_Enemy) {
 		Vector3 enemyEnemyPos = other->GetWorldPosition();
 		Vector3 enemyToEnemy = (enemyPos - enemyEnemyPos);
-		enemy_->SetKnockBackDirection(Normalize(enemyToEnemy));
+		enemy_->SetKnockBackDirection(Math::Normalize(enemyToEnemy));
 		damage = -0.1f;
 
 		enemy_->TakeDamage(damage);
@@ -78,7 +78,7 @@ void EnemyBodyCollider::OnCollision(Collider* other)
 		}
 		Vector3 enemyEnemyPos = other->GetWorldPosition();
 		Vector3 enemyToEnemy = (enemyPos - enemyEnemyPos);
-		enemy_->SetKnockBackDirection(Normalize(enemyToEnemy));
+		enemy_->SetKnockBackDirection(Math::Normalize(enemyToEnemy));
 
 		enemy_->TakeDamage(damage / 20.0f);
 		return;

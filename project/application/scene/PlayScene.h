@@ -6,8 +6,8 @@
 #include "player.h"
 #include "Boss.h"
 #include "DxCommon.h"
-#include "../Enemy/EnemyManager.h"
-#include "../Collider/CollisionManager.h"
+#include "EnemyManager.h"
+#include "CollisionManager.h"
 
 class PlayScene : public Scene {
 public:		//メンバ関数

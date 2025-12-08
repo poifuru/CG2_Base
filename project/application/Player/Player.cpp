@@ -25,7 +25,7 @@ void Player::Initialize()
 	attackColliderObj_->SetTexture("teapot");
 	attackColliderObj_->Initialize();
 
-	playerColliderObj_ = std::make_unique<Model>(engine_);
+	playerColliderObj_ = std::make_unique<Model>(dxCommon_);
 	playerColliderObj_->SetModelData("teapot");
 	playerColliderObj_->SetTexture("teapot");
 	playerColliderObj_->Initialize();

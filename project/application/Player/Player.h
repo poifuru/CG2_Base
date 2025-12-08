@@ -10,7 +10,7 @@
 class Player
 {
 public:
-	Player (InputManager* inputManager) : input_ (inputManager) {};
+	Player (InputManager* inputManager, DxCommon* dxCommon) : input_ (inputManager), dxCommon_(dxCommon) {};
 	~Player();
 public:
 	void Initialize();
@@ -72,6 +72,7 @@ private:
 	void UpdateStaminaRecovery();
 public:
 	InputManager* input_ = nullptr;
+	DxCommon* dxCommon_ = nullptr;
 private:
 	std::unique_ptr<Model>obj_;
 	PlayerState* state_ = nullptr;

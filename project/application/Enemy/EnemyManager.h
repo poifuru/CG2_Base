@@ -1,13 +1,13 @@
 #pragma once
 #include "Enemy.h"
-#include "../Player/Player.h"
-#include "object/3d/Model.h"
-#include "MagosuyaEngine.h"
+#include "Player.h"
+#include "Model.h"
+#include "DxCommon.h"
 
 class EnemyManager
 {
 public:
-	EnemyManager(MagosuyaEngine* engine);
+	EnemyManager(DxCommon* dxCommon);
 public:
 	void Initialize(Player* player);
 	void Update(Matrix4x4* m);
@@ -21,7 +21,7 @@ private:
 	void Delete();
 private:
 	// エンジン
-	MagosuyaEngine* engine_ = nullptr;
+	DxCommon* dxCommon_ = nullptr;
 	// プレイヤー
 	Player* player_ = nullptr;
 	// エネミー
