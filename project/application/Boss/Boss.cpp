@@ -33,10 +33,13 @@ void Boss::Initialize() {
 }
 
 void Boss::Update(Matrix4x4* m) {
+	// HPの更新
+	UpdateHp();
 	// 攻撃の更新
 	UpdateAttack();
 	// 行動の更新
 	UpdateMove();
+
 
 	model_->Update(m);
 	centerStomp_->Update(m);
@@ -56,10 +59,28 @@ void Boss::Draw() {
 void Boss::ImGuiControl() {
 #ifdef _DEBUG
 	model_->ImGui("boss");
-
 	centerStomp_->ImGuiControl();
 	fullScreenAttack_->ImGuiControl();
 	throwMinion_->ImGuiControl();
+
+	ImGui::Begin("Status");
+	if (ImGui::BeginTabBar("StatusTabBar")) {
+		if (ImGui::BeginTabItem("HP")) {
+			ImGui::Text("HP = %.0f/%.0f", hp_, maxHP_);
+			if (ImGui::Button("Reset[HP]")) {
+				hp_ = maxHP_;
+			}
+			if (ImGui::Button("damege-- [100]")) {
+				hp_ -= 100;
+			}
+			if (ImGui::Button("heal++   [100]")) {
+				hp_ += 100;
+			}
+			ImGui::EndTabItem();
+		}
+		ImGui::EndTabBar();
+	}
+	ImGui::End();
 #endif
 }
 
@@ -285,5 +306,19 @@ void Boss::UpdateMoveState() {
 		moveState_ = MoveState::Wander;
 		moveTimer_ = 0;
 		break;
+	}
+}
+
+void Boss::UpdateHp() {
+	// HPの max/min を超えないようにする
+	DefineTheHpRange();
+}
+
+void Boss::DefineTheHpRange() {
+	if (hp_ < 0.0f) {
+		hp_ = 0.0f;
+	}
+	if (hp_ > maxHP_) {
+		hp_ = maxHP_;
 	}
 }

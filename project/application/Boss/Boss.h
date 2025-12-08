@@ -35,15 +35,21 @@ private:
 		Attack,   // 攻撃中 (移動を停止するため)
 	};
 
-	void UpdateMoveState();
-	void UpdateMove();
+	// 攻撃系の関数
 	void UpdateAttack();
 
+	// 行動系の関数
+	void UpdateMove();
+	void UpdateMoveState();
 	void BreathMove();
 	void NormalMove();
 	void WanderMove();
 	void FollowMove();
 	void EvadeMove();
+
+	// Hp関係の関数
+	void UpdateHp();
+	void DefineTheHpRange();
 
 private:
 	std::unique_ptr<Model> model_ = nullptr;
@@ -85,8 +91,8 @@ private:
 	float speed_ = 0.1f;
 
 	// HP
-	float maxHP_ = 100.0f;
-	float hp_ = 100.0f;
+	float maxHP_ = 1000.0f;
+	float hp_ = 1000.0f;
 
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;
