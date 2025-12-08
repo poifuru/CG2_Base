@@ -33,6 +33,7 @@ private:
 	std::unique_ptr<Model> model_ = nullptr;
 
 	// ボス攻撃時の波
+	std::unique_ptr<Model> model_ = nullptr;
 	Transform transform_;
 	bool isAliveWave_ = false;
 
@@ -43,7 +44,6 @@ private:
 	int duration_ = 0;        // 目標時間
 	Vector3 startPos_;        // 移動開始地点
 	Vector3 targetPos_;       // 移動目標地点
-	const Vector3 kCenterPoint_ = {0.0f, 0.0f, 0.0f};
-	const float kHoverHeight_ = 10.0f;
+	const Vector3 kCenterPoint_ = {0.0f, 10.0f, 0.0f};
 };
 

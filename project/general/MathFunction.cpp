@@ -774,8 +774,12 @@ namespace Math {
 	//	wasMousePressed = isMousePressed;
 	//}
 
-	Vector3 Lerp (const Vector3& v1, const Vector3& v2, float t) {
-		Vector3 v;
+float Lerp(const float& start, const float& end, float t) {
+	return t * end + (1 - t) * start;
+}
+
+Vector3 Lerp(const Vector3& start, const Vector3& end, float t) {
+	Vector3 v;
 
 		v.x = t * v1.x + (v2.x - v1.x) * t;
 		v.y = t * v1.y + (v2.y - v1.y) * t;

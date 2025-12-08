@@ -42,8 +42,7 @@ void CenterStomp::StartAttack() {
 	// 「今の場所」から「中央上空」までの移動ルートをここで確定させます
 	startPos_ = boss_->GetPosition();     // スタート地点：今のボスの位置
 	targetPos_ = kCenterPoint_;           // ゴール地点X,Z：中央(0,0)
-	targetPos_.y = kHoverHeight_;         // ゴール地点Y：上空(10.0)
-}
+	}
 
 void CenterStomp::Update(Matrix4x4* m) {
 	// 状態遷移マシンの実行
@@ -121,8 +120,7 @@ void CenterStomp::UpdateHover() {
 		// boss_->GetPosition()を使うと微細なズレを引き継ぐ可能性があるので
 		// 論理的な座標を指定する方が安全です
 		startPos_ = kCenterPoint_;
-		startPos_.y = kHoverHeight_; // (0, 10, 0) から
-
+		
 		targetPos_ = kCenterPoint_;  // (0, 0, 0) へ
 		targetPos_.y = 0.0f;         // 念のためYを0に明示
 	}
@@ -146,17 +144,34 @@ void CenterStomp::UpdateFall() {
 		// ★ここでエフェクトの位置を更新（必要であれば）
 		transform_.translate = targetPos_;
 
+		// 1. スケールを初期値にリセット
+		transform_.scale = { 0.1f, 0.1f, 0.1f }; // 例: 非常に小さく開始
+
 		// ダメージ判定などをここに記述
 		// CheckCollision(); 
 
 		phase_ = StompPhase::Cooldown;
 		timer_ = 0;
-		duration_ = 30; // 硬直時間
+		duration_ = 60; // 硬直時間
 	}
 }
 
 void CenterStomp::UpdateCooldown() {
 	timer_++;
+
+	// 進行度 t (0.0 ～ 1.0) を計算
+	float t = static_cast<float>(timer_) / static_cast<float>(duration_);
+	if (t > 1.0f) t = 1.0f;
+
+	// 2. スケールの線形補間（Lerp）を実行
+	// 例: 0.1 から 3.0 のスケールまで拡大させる
+	const float startScale = 0.1f;
+	const float targetScale = 10.0f;
+	float currentScale = Lerp(startScale, targetScale, t);
+
+	// スケールを適用
+	transform_.scale = { currentScale, currentScale, currentScale };
+
 	if (timer_ >= duration_) {
 		// すべて終了、通常状態へ戻る
 		phase_ = StompPhase::None;

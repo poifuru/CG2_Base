@@ -185,11 +185,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="magosuya\utility\camera\CameraOrganizer.cpp" />
     <ClCompile Include="magosuya\utility\camera\FixedPointCamera.cpp" />
     <ClCompile Include="magosuya\mesh\cube\CubeRenderer.cpp" />
     <ClCompile Include="magosuya\mesh\line\LineRenderer.cpp" />
     <ClCompile Include="magosuya\PSO\BlendModeManager.cpp" />
+=======
+    <ClCompile Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.cpp" />
+>>>>>>> TD2_02_master
     <ClCompile Include="general\Logger.cpp" />
     <ClCompile Include="general\ChangeString.cpp" />
     <ClCompile Include="magosuya\PSO\InputLayoutManager.cpp" />
@@ -241,12 +245,16 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\TitleScene.cpp" />
     <ClCompile Include="application\scene\PlayScene.cpp" />
     <ClCompile Include="application\Player\Player.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="magosuya\utility\particle\Particle.cpp" />
     <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
     <ClCompile Include="magosuya\PSO\RootSignatureManager.cpp" />
     <ClCompile Include="magosuya\PSO\PSOManager.cpp" />
     <ClCompile Include="magosuya\mesh\Mesh.cpp" />
     <ClCompile Include="magosuya\utility\particle\MeshParticle.cpp" />
+=======
+    <ClCompile Include="application\Boss\Attack\ThrowMinion\ThrowMinion.cpp" />
+>>>>>>> TD2_02_master
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\Cube.PS.hlsl">
@@ -333,6 +341,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application\Boss\Attack\AttackPhase.h" />
     <ClInclude Include="application\Collider\AttackCollider.h" />
     <ClInclude Include="application\Collider\PlayerBodyCollider.h" />
     <ClInclude Include="application\Player\PlayerState\PlayerState.h" />
@@ -361,6 +370,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
+    <ClInclude Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.h" />
     <ClInclude Include="general\Logger.h" />
     <ClInclude Include="general\ChangeString.h" />
     <ClInclude Include="magosuya\PSO\InputLayoutManager.h" />
@@ -406,12 +416,16 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\TitleScene.h" />
     <ClInclude Include="application\scene\PlayScene.h" />
     <ClInclude Include="application\Player\Player.h" />
+<<<<<<< HEAD
     <ClInclude Include="magosuya\utility\particle\Particle.h" />
     <ClInclude Include="magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />
     <ClInclude Include="magosuya\PSO\PSOManager.h" />
     <ClInclude Include="magosuya\mesh\Mesh.h" />
     <ClInclude Include="magosuya\utility\particle\MeshParticle.h" />
+=======
+    <ClInclude Include="application\Boss\Attack\ThrowMinion\ThrowMinion.h" />
+>>>>>>> TD2_02_master
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Cube.hlsli" />

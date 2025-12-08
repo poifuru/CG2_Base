@@ -116,6 +116,7 @@
     <ClCompile Include="application\Player\PlayerState\PlayerChargeReleaseState.cpp" />
     <ClCompile Include="application\Boss\Boss.cpp" />
     <ClCompile Include="application\Boss\Attack\CenterStomp\CenterStomp.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="magosuya\utility\particle\Particle.cpp" />
     <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
     <ClCompile Include="magosuya\PSO\RootSignatureManager.cpp" />
@@ -129,6 +130,10 @@
     <ClCompile Include="magosuya\utility\camera\FixedPointCamera.cpp" />
     <ClCompile Include="magosuya\utility\camera\CameraOrganizer.cpp" />
     <ClCompile Include="magosuya\utility\camera\FollowCamera.cpp" />
+=======
+    <ClCompile Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.cpp" />
+    <ClCompile Include="application\Boss\Attack\ThrowMinion\ThrowMinion.cpp" />
+>>>>>>> TD2_02_master
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="general\ChangeString.h">
@@ -227,6 +232,7 @@
     <ClInclude Include="application\Collider\AttackCollider.h" />
     <ClInclude Include="application\Boss\Boss.h" />
     <ClInclude Include="application\Boss\Attack\CenterStomp\CenterStomp.h" />
+<<<<<<< HEAD
     <ClInclude Include="magosuya\utility\particle\Particle.h" />
     <ClInclude Include="magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />
@@ -245,6 +251,11 @@
     <ClInclude Include="magosuya\utility\camera\CameraOrganizer.h" />
     <ClInclude Include="magosuya\utility\camera\FollowCamera.h" />
     <ClInclude Include="magosuya\light\LightStructure.h" />
+=======
+    <ClInclude Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.h" />
+    <ClInclude Include="application\Boss\Attack\ThrowMinion\ThrowMinion.h" />
+    <ClInclude Include="application\Boss\Attack\AttackPhase.h" />
+>>>>>>> TD2_02_master
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">
