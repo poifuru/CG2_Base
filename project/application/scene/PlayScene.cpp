@@ -66,8 +66,7 @@ void PlayScene::Initialize () {
 	skydome_->Initialize ();
 	skydome_->IsLighting (LightReflectionModel::HalfLambert);
 
-	Transform transform = {};
-	camera_->AddCamera ("FollowCamera", CameraType::FollowCamera, transform);
+	camera_->AddCamera ("FollowCamera", CameraType::FollowCamera);
 	camera_->SetActiveCamera ("FollowCamera");
 	camera_->SetFollowTarget ("FollowCamera", player_->GetTransform ());
 	enemies_->Initialize(player_.get());

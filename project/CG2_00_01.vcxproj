@@ -197,6 +197,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="magosuya\utility\camera\LookAtCamera.cpp" />
     <ClCompile Include="magosuya\utility\camera\CameraOrganizer.cpp" />
     <ClCompile Include="magosuya\utility\camera\FixedPointCamera.cpp" />
     <ClCompile Include="magosuya\mesh\cube\CubeRenderer.cpp" />
@@ -361,6 +362,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Collider\Collider.h" />
     <ClInclude Include="application\Boss\Boss.h" />
     <ClInclude Include="application\Boss\Attack\CenterStomp\CenterStomp.h" />
+    <ClInclude Include="magosuya\utility\camera\LookAtCamera.h" />
     <ClInclude Include="magosuya\light\LightStructure.h" />
     <ClInclude Include="magosuya\utility\camera\CameraOrganizer.h" />
     <ClInclude Include="magosuya\utility\camera\FixedPointCamera.h" />

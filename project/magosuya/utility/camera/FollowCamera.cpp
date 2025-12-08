@@ -8,7 +8,7 @@ FollowCamera::FollowCamera () {
 	camera_.view = Math::MakeIdentity4x4 ();
 	camera_.proj = Math::MakeIdentity4x4 ();
 
-	offset_ = { 0.0f, 2.0f, -5.0f };
+	offset_ = { 0.0f, 4.0f, -15.0f };
 	smoothness_ = 0.1f;
 
 	instanceNum_++;
@@ -44,8 +44,11 @@ void FollowCamera::Update () {
 	Vector3 rotatedOffset = Math::Transform(offset_, rotateMat);
 
 	// 理想のカメラ位置は、ターゲットの位置 + 回転したオフセット
-	Vector3 cameraPos = target_->translate + rotatedOffset;
-	camera_.transform.translate = Math::Lerp (camera_.transform.translate, cameraPos, smoothness_);
+	Vector3 targetPos = target_->translate + offset_;
+	camera_.transform.translate = Math::Lerp (camera_.transform.translate, targetPos, smoothness_);
+
+	//カメラの回転もターゲットに合わせる
+	//camera_.transform.rotate = Math::Lerp (camera_.transform.rotate, target_->rotate, smoothness_);
 
 	//行列の計算
 	camera_.world = Math::MakeAffineMatrix (camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);
@@ -58,4 +61,7 @@ void FollowCamera::ImGui () {
 	std::string label = "FollowCamera" + ID;
 
 	ImGui::DragFloat (("smoothness##" + label).c_str(), &smoothness_, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat3 (("scale##" + label + ID).c_str (), &camera_.transform.scale.x, 0.01f);
+	ImGui::DragFloat3 (("rotate##" + label + ID).c_str (), &camera_.transform.rotate.x, 0.01f);
+	ImGui::DragFloat3 (("translate##" + label + ID).c_str (), &camera_.transform.translate.x, 0.01f);
 }

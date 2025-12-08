@@ -100,7 +100,7 @@ private:
 	Vector3 move_ = { 0,0,0 };
 	Vector3 direction_ = { 0.0f,0.0f,0.0f };
 	// 一旦これは元のスピード
-	float speed_ = 0.7f;
+	float speed_ = 0.3f;
 	// 移動速度倍率
 	float speedMultiplier_ = 1.0f;
 	// 旋回するスピード

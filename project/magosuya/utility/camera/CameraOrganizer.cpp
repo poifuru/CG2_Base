@@ -13,19 +13,24 @@ void CameraOrganizer::Initialize (InputManager* inputManager) {
 	vpMatrix_ = Math::MakeIdentity4x4 ();
 
 	//テスト用 DebugCameraを生成＆登録
-	Transform transform{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -30.0f} };
-	AddCamera ("Debug", CameraType::DebugCamera, transform);
+	AddCamera ("Debug", CameraType::DebugCamera);
 
 	//初期状態ではデバッグカメラをセット
 	SetActiveCamera ("Debug");
+	//positionとrotateをセット
+	SetPosition ({ 0.0f, 15.0f, -50.0f });
+	SetRotate ({ 0.3f, 0.0f, 0.0f });
 }
 
-void CameraOrganizer::AddCamera (const std::string& name, CameraType type, const Transform& transform) {
+void CameraOrganizer::AddCamera (const std::string& name, CameraType type) {
 	//同じ名前のカメラがあったら
 	if (cameras_.count (name)) {
 		//早期リターン
 		return;
 	}
+
+	//原点にカメラを生成
+	Transform transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 
 	CameraComponent* camera = nullptr;
 

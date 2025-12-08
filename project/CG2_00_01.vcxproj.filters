@@ -91,6 +91,7 @@
     <ClCompile Include="application\Enemy\EnemyState\EnemyHurtState.cpp" />
     <ClCompile Include="application\Enemy\EnemyState\EnemyPreExplosionState.cpp" />
     <ClCompile Include="application\Enemy\EnemyState\EnemySearchPlayerState.cpp" />
+    <ClCompile Include="magosuya\utility\camera\LookAtCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Boss\Attack\AttackPhase.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="application\Collider\CollisionManager.h" />
     <ClInclude Include="application\Collider\EnemyBodyCollider.h" />
     <ClInclude Include="application\Enemy\EnemyState\EnemyState.h" />
+    <ClInclude Include="magosuya\utility\camera\LookAtCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">
