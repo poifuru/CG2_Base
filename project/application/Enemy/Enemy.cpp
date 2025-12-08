@@ -1,10 +1,12 @@
 #include "Enemy.h"
 #include "MathFunction.h"
+#include "ModelManager.h"
 #include "imgui.h"
 
 void Enemy::Initialize(const Vector3& pos, const Vector3& velocity, Player* player) {
 
 	// 初期化処理
+	ModelManager::GetInstance ()->LoadModelData ("Resources/slipDamage", "slipDamage");
 
 	// [ ターゲットの設定 ]
 	target_ = player;
@@ -12,8 +14,8 @@ void Enemy::Initialize(const Vector3& pos, const Vector3& velocity, Player* play
 	// [ モデルの初期化 ]
 	// -[ Enemy本体 ]-
 	obj_ = std::make_unique<Model>(dxCommon_);
-	obj_->SetModelData("teapot");
-	obj_->SetTexture("teapot");
+	obj_->SetModelData("zako");
+	obj_->SetTexture("zako");
 	obj_->Initialize();
 
 	bodyColliderObj_ = std::make_unique<Model>(dxCommon_);
@@ -22,8 +24,8 @@ void Enemy::Initialize(const Vector3& pos, const Vector3& velocity, Player* play
 	bodyColliderObj_->Initialize();
 
 	attackColliderObj_ = std::make_unique<Model>(dxCommon_);
-	attackColliderObj_->SetModelData("teapot");
-	attackColliderObj_->SetTexture("teapot");
+	attackColliderObj_->SetModelData("slipDamage");
+	attackColliderObj_->SetTexture("slipDamage");
 	attackColliderObj_->Initialize();
 
 	// [ Colliderの設定 ]
