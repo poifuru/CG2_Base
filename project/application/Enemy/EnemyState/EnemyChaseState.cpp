@@ -23,6 +23,7 @@ void EnemyChaseState::Update() {
 	// 2, プレイヤーに向かって移動する
 	Vector3 direction = Math::Normalize(toPlayer);
 	Vector3 moveVector = direction * (chaseSpeedRate_ * deltaTime);
+	
 
 	// 3, 移動量を設定
 	enemy_->SetMoveAmount(moveVector);

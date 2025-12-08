@@ -16,9 +16,10 @@ void Enemy::Initialize(const Vector3& pos, const Vector3& velocity, Player* play
 	obj_->Initialize();
 
 	bodyColliderObj_ = std::make_unique<Model>(dxCommon_);
-	bodyColliderObj_->SetModelData("teapot");
-	bodyColliderObj_->SetTexture("teapot");
+	bodyColliderObj_->SetModelData("zako");
+	bodyColliderObj_->SetTexture("zako");
 	bodyColliderObj_->Initialize();
+	bodyColliderObj_->SetColor({0.0f,0.0f,0.0f,1.0f});
 
 	attackColliderObj_ = std::make_unique<Model>(dxCommon_);
 	attackColliderObj_->SetModelData("slipDamage");
@@ -52,6 +53,8 @@ void Enemy::Update(Matrix4x4* m) {
 	// [ 移動量をリセット ]
 	//moveAmount_ = { 0.0f,0.0f,0.0f };
 
+	
+
 	// Stateの更新処理
 	if (state_) {
 		state_->Update();
@@ -76,7 +79,13 @@ void Enemy::Update(Matrix4x4* m) {
 		scale *= 2.3f;
 	}
 
-	obj_->SetTransform({ scale,obj_->GetTransform().rotate,newPos });
+	Vector3 rotation = GetRotation();
+	if (isViewPlayerFlag_ == true) {
+		float toRotation = std::atan2(moveAmount_.x, moveAmount_.z);
+		rotation.y = toRotation;
+	}
+
+	obj_->SetTransform({ scale,rotation,newPos });
 
 	obj_->Update(m);
 
@@ -217,14 +226,18 @@ void Enemy::AddAttackHitType() {
 void Enemy::SetAttackRadiusForLevel() {
 	if (attackLevel_ == 0.0f) {
 		SetAttackRadius(3.0f);
+		obj_->SetColor({1.0f,1.0f,1.0f,1.0f});
 	}
 	if (attackLevel_ == 1.0f) {
 		SetAttackRadius(4.0f);
+		obj_->SetColor({ 0.8f,0.5f,0.5f,1.0f });
 	}
 	if (attackLevel_ == 2.0f) {
 		SetAttackRadius(5.5f);
+		obj_->SetColor({ 0.8f,0.2f,0.2f,1.0f });
 	}
 	if (attackLevel_ == 3.0f) {
 		SetAttackRadius(7.0f);
+		obj_->SetColor({ 0.8f,0.0f,0.0f,1.0f });
 	}
 }

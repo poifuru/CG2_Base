@@ -51,11 +51,11 @@ void PlayerHurtState::Update()
 	
 	if (blinkCount % 2 == 0){
 		// 偶数回 (例: 0.0～0.1, 0.2～0.3) は不透明 (α=1.0)
-		//player_->SetAlpha(1.0f);
+		player_->SetAlpha(1.0f);
 	}
 	else{
 		// 奇数回 (例: 0.1～0.2, 0.3～0.4) は透明 (α=0.0)
-		//player_->SetAlpha(0.0f);
+		player_->SetAlpha(0.0f);
 	}
 
 	// 2. **State 遷移ロジック (終了判定)**

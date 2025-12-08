@@ -31,7 +31,7 @@ public:
 private:
 	// 行動の評価基準となる定数
 	float decisionTimer_ = 0.0f;// 意思決定タイマー
-	float maxDecisionTime_ = 2.0f;// 意思決定終了の時間
+	float maxDecisionTime_ = 1.0f;// 意思決定終了の時間
 };
 
 // 2. Playerを探す State

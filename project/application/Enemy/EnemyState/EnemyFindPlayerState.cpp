@@ -9,6 +9,8 @@ void EnemyFindPlayerState::Initialize() {
 	findTimer_ = 0.0f;
 
 	// 何か見つけたときにアクションを起こす場合はここに書く
+	// [ 回転させたいので目線が追従しないようにする ]
+	enemy_->SetIsViewPlayerFlag(false);
 
 	// [ 移動量を設定？ ]
 }
@@ -34,5 +36,6 @@ void EnemyFindPlayerState::Update() {
 
 void EnemyFindPlayerState::Exit() {
 	// 終了処理
-
+	// [ 追従処理を再開する ]
+	enemy_->SetIsViewPlayerFlag(true);
 }
