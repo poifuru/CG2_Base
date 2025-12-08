@@ -774,16 +774,16 @@ namespace Math {
 	//	wasMousePressed = isMousePressed;
 	//}
 
-float Lerp(const float& f1, const float& f2, float t) {
-	return t * f1 + (f2 - f1) * t;
-}
+	float Lerp(const float& start, const float& end, float t) {
+		return t * end + (1 - t) * start;
+	}
 
-Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t) {
-	Vector3 v;
+	Vector3 Lerp(const Vector3& start, const Vector3& end, float t) {
+		Vector3 v;
 
-		v.x = t * v1.x + (v2.x - v1.x) * t;
-		v.y = t * v1.y + (v2.y - v1.y) * t;
-		v.z = t * v1.z + (v2.z - v1.z) * t;
+		v.x = t * end.x + (1 - t) * start.x;
+		v.y = t * end.y + (1 - t) * start.y;
+		v.z = t * end.z + (1 - t) * start.z;
 
 		return v;
 	}
