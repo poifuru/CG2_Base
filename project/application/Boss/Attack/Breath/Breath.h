@@ -4,6 +4,7 @@
 #include "../AttackPhase.h"
 #include <vector>
 #include <memory>
+#include "BossProjectileCollider.h"
 
 class Boss;
 
@@ -18,6 +19,7 @@ struct MinionProjectile {
 	float curveForce = 0.0f;
 	int currentCurveTimer = 0;
 	bool isCurvingZ = false;
+	std::unique_ptr<BossProjectileCollider> collider = nullptr;
 };
 
 class Breath {
@@ -40,6 +42,8 @@ public:
 	void StartAttack(int numThrows, float intervalSeconds);
 	// AttackPhase::None が別途定義されている前提
 	bool IsAttacking() const { return phase_ != AttackPhase::None; }
+
+	std::vector<Collider*> GetColliders();
 
 private:
 	// 各フェーズの処理

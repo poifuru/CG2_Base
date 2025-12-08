@@ -1,0 +1,52 @@
+#include "BossBodyCollider.h"
+// Bossクラスのヘッダーをインクルード
+#include "Boss.h" 
+
+BossBodyCollider::BossBodyCollider(Boss* boss) : boss_(boss) {
+	// 自身の属性: Boss本体
+	SetMyType(COL_Boss);
+
+	// 衝突対象: プレイヤーの攻撃全て
+	// COL_Player_Attack は全てのプレイヤー攻撃の親属性としています
+	SetYourType(COL_Player_Attack | COL_Player_Attack_Level0 | COL_Player_Attack_Level1 | COL_Player_Attack_Level2 | COL_Player_Attack_Level3);
+
+	// Bossの当たり判定半径を設定 (※モデルのサイズに合わせて調整してください)
+	SetRadius(2.0f);
+}
+
+// 自身のワールド座標を返す
+const Vector3 BossBodyCollider::GetWorldPosition() {
+	if (!boss_) return { 0.0f, 0.0f, 0.0f };
+	// BossクラスのGetPosition()を使用
+	return boss_->GetPosition();
+}
+
+void BossBodyCollider::OnCollision(Collider* other) {
+	if (!boss_) return;
+
+	float damage = 0.0f;
+
+	// 1. **衝突相手がプレイヤーの攻撃であるかチェック**
+	if (other->GetMyType() & COL_Player_Attack) {
+		// 2. **ダメージ値を決定**
+		// PlayerBodyCollider.cppの例を参考に、攻撃レベルに応じてダメージを設定します (暫定値)
+
+		if (other->GetMyType() & COL_Player_Attack_Level0) {
+			damage = 5.0f;
+		} else if (other->GetMyType() & COL_Player_Attack_Level1) {
+			damage = 10.0f;
+		} else if (other->GetMyType() & COL_Player_Attack_Level2) {
+			damage = 15.0f;
+		} else if (other->GetMyType() & COL_Player_Attack_Level3) {
+			damage = 20.0f;
+		} else {
+			// その他の攻撃、またはレベル未設定の攻撃
+			damage = 1.0f;
+		}
+
+		// 3. **Bossにダメージを適用**
+		if (damage > 0.0f) {
+			boss_->TakeDamage(damage);
+		}
+	}
+}

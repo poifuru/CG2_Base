@@ -7,7 +7,7 @@ PlayerBodyCollider::PlayerBodyCollider(Player* player) : player_(player)
 	SetMyType(COL_Player);
 
 	// 衝突対象: 敵の攻撃
-	SetYourType(COL_Enemy_Attack);
+	SetYourType(COL_Enemy_Attack | COL_Boss_Attack);
 
 	// デフォルトの当たり判定半径を設定
 	SetRadius(1.0f);
@@ -45,11 +45,22 @@ void PlayerBodyCollider::OnCollision(Collider* other)
 		if (other->GetMyType() & COL_Enemy_SlipDamage) {
 			damage = 2.0f;
 		}
-
-		// 3. **Player3D 本体にダメージを通知**
-		// Player3D に TakeDamage(float) メソッドが必要です
-		player_->TakeDamage(damage);
 	}
+	if (other->GetMyType() & COL_Boss_Attack) {
+		if (other->GetMyType() & COL_Boss_Attack_CenterStomp) {
+			damage = 50.0f;
+		}
+		if (other->GetMyType() & COL_Boss_Attack_FullScreenBullet) {
+			damage = 20.0f;
+		}
+		if (other->GetMyType() & COL_Boss_Attack_Breath) {
+			damage = 5.0f;
+		}
+	}
+
+	// 3. **Player3D 本体にダメージを通知**
+	// Player3D に TakeDamage(float) メソッドが必要です
+	player_->TakeDamage(damage);
 }
 
 const Vector3 PlayerBodyCollider::GetWorldPosition()

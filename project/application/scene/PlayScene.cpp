@@ -96,6 +96,7 @@ void PlayScene::Update () {
 		collisionManager_->SetColliders(&enemy->GetAttackCollider());
 		collisionManager_->SetColliders(&enemy->GetBodyCollider());
 	}
+	collisionManager_->SetColliders(boss_->GetBodyCollider());
 	collisionManager_->CheckAllCollisions();
 	camera_->Update ();
 }
