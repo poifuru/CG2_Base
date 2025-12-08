@@ -1,4 +1,4 @@
-#include "ThrowMinion.h"
+#include "Breath.h"
 #include "MathFunction.h" 
 #include "Boss.h" 
 #include "ModelManager.h"
@@ -8,7 +8,7 @@
 #include <algorithm> 
 
 // コンストラクタ
-ThrowMinion::ThrowMinion(DxCommon* dxCommon, Boss* boss) {
+Breath::Breath(DxCommon* dxCommon, Boss* boss) {
     dxCommon_ = dxCommon;
     boss_ = boss;
 
@@ -16,11 +16,11 @@ ThrowMinion::ThrowMinion(DxCommon* dxCommon, Boss* boss) {
 }
 
 // デストラクタ
-ThrowMinion::~ThrowMinion() {
+Breath::~Breath() {
 }
 
 // 初期化
-void ThrowMinion::Initialize() {
+void Breath::Initialize() {
     phase_ = AttackPhase::None;
     timer_ = 0;
     duration_ = 0;
@@ -50,7 +50,7 @@ void ThrowMinion::Initialize() {
 }
 
 // 攻撃開始
-void ThrowMinion::StartAttack(int numThrows, float intervalSeconds) {
+void Breath::StartAttack(int numThrows, float intervalSeconds) {
     if (phase_ != AttackPhase::None) return;
 
    totalThrows_ = numThrows;
@@ -66,7 +66,7 @@ void ThrowMinion::StartAttack(int numThrows, float intervalSeconds) {
 }
 
 // 更新処理
-void ThrowMinion::Update(Matrix4x4* m, Vector3 target) {
+void Breath::Update(Matrix4x4* m, Vector3 target) {
     vp_ = m;
     targetPos_ = target;
 
@@ -87,7 +87,7 @@ void ThrowMinion::Update(Matrix4x4* m, Vector3 target) {
 }
 
 // 溜めフェーズ
-void ThrowMinion::UpdateCharge() {
+void Breath::UpdateCharge() {
     timer_++;
     if (timer_ >= duration_) {
         phase_ = AttackPhase::Shoot;
@@ -98,7 +98,7 @@ void ThrowMinion::UpdateCharge() {
 }
 
 // 発射・連続投球管理フェーズ
-void ThrowMinion::UpdateShoot() {
+void Breath::UpdateShoot() {
     if (throwCount_ >= totalThrows_) {
         phase_ = AttackPhase::Cooldown;
         timer_ = 0;
@@ -117,7 +117,7 @@ void ThrowMinion::UpdateShoot() {
 }
 
 // 硬直フェーズ
-void ThrowMinion::UpdateCooldown() {
+void Breath::UpdateCooldown() {
     timer_++;
     if (timer_ >= duration_) {
         phase_ = AttackPhase::None;
@@ -125,7 +125,7 @@ void ThrowMinion::UpdateCooldown() {
 }
 
 // 弾の生成と初速の設定
-void ThrowMinion::EmitProjectiles() {
+void Breath::EmitProjectiles() {
     if (kNumProjectiles == 0) return;
 
     MinionProjectile* newProjectile = nullptr;
@@ -179,7 +179,7 @@ void ThrowMinion::EmitProjectiles() {
 }
 
 // 弾一つ一つの移動・寿命の更新 (純粋な直線移動のみ)
-void ThrowMinion::UpdateProjectiles() {
+void Breath::UpdateProjectiles() {
 
     for (int i = 0; i < kNumProjectiles; ++i) {
         MinionProjectile& p = projectiles_[i];
@@ -204,7 +204,7 @@ void ThrowMinion::UpdateProjectiles() {
 }
 
 // 描画処理
-void ThrowMinion::Draw() {
+void Breath::Draw() {
     for (int i = 0; i < kNumProjectiles; ++i) {
         if (projectiles_[i].isActive && projectiles_[i].model) {
             projectiles_[i].model->SetTransform(projectiles_[i].transform);
@@ -214,7 +214,7 @@ void ThrowMinion::Draw() {
 }
 
 // ImGuiコントロール
-void ThrowMinion::ImGuiControl() {
+void Breath::ImGuiControl() {
 #ifdef _DEBUG
     ImGui::Begin("Throw Minion Attack");
     static int testThrows = 150;

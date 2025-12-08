@@ -124,7 +124,7 @@ void CenterStomp::UpdateHover() {
 		startPos_ = kCenterPoint_;
 		
 		targetPos_ = kCenterPoint_;  // (0, 0, 0) へ
-		targetPos_.y = 0.0f;         // 念のためYを0に明示
+		targetPos_.y = -1.0f;         // 念のためYを-1.0fに明示
 	}
 }
 

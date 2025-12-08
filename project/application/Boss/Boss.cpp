@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "MathFunction.h"
 #include "ModelManager.h"
+#include <numbers>
 
 Boss::Boss (DxCommon* dxCommon, Player* player) {
 	model_ = std::make_unique<Model> (DxCommon::GetInstance ());
@@ -28,8 +29,8 @@ void Boss::Initialize() {
 	fullScreenAttack_ = std::make_unique<FullScreenAttack>(dxCommon_, this);
 	fullScreenAttack_->Initialize();
 
-	throwMinion_ = std::make_unique<ThrowMinion>(dxCommon_, this);
-	throwMinion_->Initialize();
+	Breath_ = std::make_unique<Breath>(dxCommon_, this);
+	Breath_->Initialize();
 }
 
 void Boss::Update(Matrix4x4* m) {
@@ -39,12 +40,14 @@ void Boss::Update(Matrix4x4* m) {
 	UpdateAttack();
 	// 行動の更新
 	UpdateMove();
-
+	// アニメーション
+	UpdateRotation();
+	UpdateAnimation();
 
 	model_->Update(m);
 	centerStomp_->Update(m);
 	fullScreenAttack_->Update(m);
-	throwMinion_->Update(m, player_->GetPosition());
+	Breath_->Update(m, player_->GetPosition());
 
 	model_->SetTransform(transform_);
 }
@@ -53,7 +56,7 @@ void Boss::Draw() {
 	model_->Draw();
 	centerStomp_->Draw();
 	fullScreenAttack_->Draw();
-	throwMinion_->Draw();
+	Breath_->Draw();
 }
 
 void Boss::ImGuiControl() {
@@ -61,7 +64,7 @@ void Boss::ImGuiControl() {
 	model_->ImGui("boss");
 	centerStomp_->ImGuiControl();
 	fullScreenAttack_->ImGuiControl();
-	throwMinion_->ImGuiControl();
+	Breath_->ImGuiControl();
 
 	ImGui::Begin("Status");
 	if (ImGui::BeginTabBar("StatusTabBar")) {
@@ -70,7 +73,7 @@ void Boss::ImGuiControl() {
 			if (ImGui::Button("Reset[HP]")) {
 				hp_ = maxHP_;
 			}
-			if (ImGui::Button("damege-- [100]")) {
+			if (ImGui::Button("damage-- [100]")) {
 				hp_ -= 100;
 			}
 			if (ImGui::Button("heal++   [100]")) {
@@ -108,12 +111,12 @@ void Boss::UpdateAttack() {
 		fullScreenAttack_->StartAttack();
 	}
 	if (input_->GetRawInput()->Trigger('3')) {
-		throwMinion_->StartAttack(150, 0.001f);
+		Breath_->StartAttack(150, 0.001f);
 	}
 }
 
 void Boss::BreathMove() {
-	if (throwMinion_->IsAttacking()) {
+	if (Breath_->IsAttacking()) {
 		// 1. プレイヤーの座標を取得する
 		Vector3 playerPosition = player_->GetPosition();
 		Vector3 bossPosition = transform_.translate;
@@ -142,7 +145,7 @@ void Boss::NormalMove() {
 	// 攻撃中でない場合、移動ステートを更新・実行
 	UpdateMoveState(); // ステートを切り替えるロジック
 
-	if (!throwMinion_->IsAttacking()) {
+	if (!Breath_->IsAttacking()) {
 		switch (moveState_) {
 		case MoveState::Wander:
 			WanderMove();
@@ -310,10 +313,10 @@ void Boss::UpdateMoveState() {
 }
 
 void Boss::UpdateHp() {
-	// HPの max/min を超えないようにする
 	DefineTheHpRange();
 }
 
+// HPの max/min を超えないようにする
 void Boss::DefineTheHpRange() {
 	if (hp_ < 0.0f) {
 		hp_ = 0.0f;
@@ -321,4 +324,91 @@ void Boss::DefineTheHpRange() {
 	if (hp_ > maxHP_) {
 		hp_ = maxHP_;
 	}
+}
+
+void Boss::TakeDamage(float damage) {
+	hp_ -= damage;
+	DefineTheHpRange();
+}
+
+void Boss::UpdateRotation() {
+	// 1. プレイヤーとボスの位置を取得
+	Vector3 playerPosition = player_->GetPosition();
+	Vector3 bossPosition = transform_.translate;
+
+	// 2. プレイヤーへの方向ベクトルを計算 (XZ平面のみを考慮)
+	Vector3 toPlayerVector = Math::Subtract(playerPosition, bossPosition);
+
+	float targetRadian = transform_.rotate.y; // デフォルトは現在の回転を維持
+
+	// ⭐️ 修正案: ブレス攻撃中かどうかのチェックを追加 ⭐️
+	if (Breath_->IsAttacking()) {
+		// ブレス攻撃中は強制的にプレイヤーの方向を向く (Followと同じロジック)
+		float radian = std::atan2(toPlayerVector.x, toPlayerVector.z);
+		// 180度反転させて正面を向かせる (モデルの向きの調整)
+		targetRadian = radian + static_cast<float>(std::numbers::pi);
+	} else {
+		// 通常の移動ステートに基づく回転
+		switch (moveState_) {
+		case MoveState::Follow:
+			// 追尾時: プレイヤーの方向を向く
+		{
+			// atan2(X成分, Z成分)で角度を求める
+			float radian = std::atan2(toPlayerVector.x, toPlayerVector.z);
+			// 180度反転させて正面を向かせる (前回の修正を適用)
+			targetRadian = radian + static_cast<float>(std::numbers::pi);
+		}
+		break;
+		// ... (Evade, Wander のロジックは省略) ...
+		case MoveState::Evade:
+			// 離脱時: プレイヤーに背を向ける
+		{
+			// プレイヤーから離れるベクトル (-toPlayerVector) を使う
+			float evadeRadian = std::atan2(-toPlayerVector.x, -toPlayerVector.z);
+			targetRadian = evadeRadian + static_cast<float>(std::numbers::pi);
+		}
+		break;
+
+		case MoveState::Wander:
+			// 徘徊時: 目標座標 (wanderTargetPos_) に向かう方向を向く
+		{
+			// 目標位置へのベクトル (wanderTargetPos_ - bossPosition)
+			Vector3 toWanderTarget = Math::Subtract(wanderTargetPos_, bossPosition);
+
+			// atan2(X成分, Z成分)で角度を求める
+			float radian = std::atan2(toWanderTarget.x, toWanderTarget.z);
+
+			// 180度反転させて正面を向かせる (モデルの向きの調整)
+			targetRadian = radian + static_cast<float>(std::numbers::pi);
+		}
+		break;
+
+		case MoveState::Attack:
+			// 攻撃時: 何もしない (現在の向きを維持)
+			targetRadian = transform_.rotate.y;
+			break;
+		}
+	} // ⭐️ if (Breath_->IsAttacking()) の終わり ⭐️
+
+
+	// 5. ボスのY軸回転を設定
+	// スムーズな回転が必要ならここに lerp 処理などを追加
+	transform_.rotate.y = targetRadian;
+}
+
+void Boss::UpdateAnimation() {
+	if (!centerStomp_->IsAttacking()) {
+		if (transform_.rotate.z >= 0.1f) {
+			rotate_ = Rotate::left;
+		}
+		if (transform_.rotate.z <= -0.1f) {
+			rotate_ = Rotate::right;
+		}
+		if (rotate_ == Rotate::left) {
+			transform_.rotate.z -= 0.015f;
+		}
+		if (rotate_ == Rotate::right) {
+			transform_.rotate.z += 0.015f;
+		}
+	} 
 }

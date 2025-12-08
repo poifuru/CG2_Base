@@ -78,7 +78,7 @@
     <ClCompile Include="magosuya\PSO\PSOManager.cpp" />
     <ClCompile Include="magosuya\mesh\Mesh.cpp" />
     <ClCompile Include="magosuya\utility\particle\MeshParticle.cpp" />
-    <ClCompile Include="application\Boss\Attack\ThrowMinion\ThrowMinion.cpp" />
+    <ClCompile Include="application\Boss\Attack\Breath\Breath.cpp" />
     <ClCompile Include="application\Enemy\Enemy.cpp" />
     <ClCompile Include="application\Enemy\EnemyManager.cpp" />
     <ClCompile Include="application\Collider\CollisionManager.cpp" />
@@ -251,7 +251,7 @@
     <ClInclude Include="magosuya\PSO\PSOManager.h" />
     <ClInclude Include="magosuya\mesh\Mesh.h" />
     <ClInclude Include="magosuya\utility\particle\MeshParticle.h" />
-    <ClInclude Include="application\Boss\Attack\ThrowMinion\ThrowMinion.h" />
+    <ClInclude Include="application\Boss\Attack\Breath\Breath.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Cube.hlsli" />

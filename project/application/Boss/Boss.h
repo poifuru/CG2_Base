@@ -2,7 +2,7 @@
 #include "Model.h"
 #include "CenterStomp.h"
 #include "FullScreenAttack.h"
-#include "ThrowMinion.h"
+#include "Breath.h"
 #include "DxCommon.h"
 #include "InputManager.h"
 
@@ -19,6 +19,7 @@ public:
 	void ImGuiControl();
 
 	bool IsAnyAttackActive() const;
+	void TakeDamage(float damage);
 
 	// Getter
 	Transform& GetTransform() { return transform_; }
@@ -33,6 +34,11 @@ private:
 		Follow,   // 追尾
 		Evade,    // 離脱
 		Attack,   // 攻撃中 (移動を停止するため)
+	};
+
+	enum class Rotate {
+		right,
+		left,
 	};
 
 	// 攻撃系の関数
@@ -51,6 +57,10 @@ private:
 	void UpdateHp();
 	void DefineTheHpRange();
 
+	// 歩くアニメーション
+	void UpdateRotation();
+	void UpdateAnimation();
+
 private:
 	std::unique_ptr<Model> model_ = nullptr;
 	// 中央範囲攻撃
@@ -58,7 +68,7 @@ private:
 	// 全画面攻撃
 	std::unique_ptr <FullScreenAttack> fullScreenAttack_ = nullptr;
 	// ブレス攻撃
-	std::unique_ptr <ThrowMinion> throwMinion_ = nullptr;
+	std::unique_ptr <Breath> Breath_ = nullptr;
 
 	// --- ステートパターンと移動制御 ---
 	MoveState moveState_ = MoveState::Wander;
@@ -87,7 +97,8 @@ private:
 	float emergencyEvadeFactor_ = 0.5f;  // 近すぎる場合に即座に離脱に切り替える距離係数
 	int wanderTimeFactor_ = 6;           // 自由徘徊の時間を基本移動時間の何倍にするか
 
-	Transform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
+	Transform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f}, {0.0f,-1.0f,0.0f} };
+	Rotate rotate_ = Rotate::left;
 	float speed_ = 0.1f;
 
 	// HP
