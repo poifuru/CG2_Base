@@ -82,15 +82,17 @@ void CenterStomp::Update(Matrix4x4* m) {
 // 毎フレーム呼ばれる上昇更新処理
 void CenterStomp::UpdateRise() {
 	timer_++;
-
-	// 進行度 t (0.0 ～ 1.0) を計算
 	float t = static_cast<float>(timer_) / static_cast<float>(duration_);
 	if (t > 1.0f) t = 1.0f;
 
-	// ■ 線形補間 (Lerp) の実行
-	// startPos_ から targetPos_ へ、t の割合だけ進んだ位置を計算
-	// これにより瞬間移動ではなく、スムーズに移動します
-	Vector3 currentPos = Math::Lerp(startPos_, targetPos_, t);
+	float t_easing;
+	if (t < 0.5f) {
+		t_easing = 2.0f * t * t;
+	} else {
+		t_easing = 1.0f - (float)pow(-2.0f * t + 2.0f, 2.0f) / 2.0f;
+	}
+
+	Vector3 currentPos = Math::Lerp(startPos_, targetPos_, t_easing); // t_easing を渡す
 
 	// 計算した位置をボスに反映
 	boss_->SetPosition(currentPos);
