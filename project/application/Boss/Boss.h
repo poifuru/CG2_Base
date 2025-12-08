@@ -1,17 +1,16 @@
 #pragma once
-#include "MagosuyaEngine.h"
 #include "Model.h"
 #include "CenterStomp.h"
-#include "object/3d/Model.h"
-#include "Attack/CenterStomp/CenterStomp.h"
-#include "Attack/FullScreenAttack/FullScreenAttack.h"
-#include "Attack/ThrowMinion/ThrowMinion.h"
+#include "FullScreenAttack.h"
+#include "ThrowMinion.h"
+#include "DxCommon.h"
+#include "InputManager.h"
 
 class Player;
 
 class Boss {
 public:
-	Boss();
+	Boss(DxCommon* dxCommon, Player* player);
 	~Boss();
 
 	void Initialize();
@@ -88,4 +87,9 @@ private:
 	// HP
 	float maxHP_ = 100.0f;
 	float hp_ = 100.0f;
+
+	//ポインタを借りる
+	DxCommon* dxCommon_ = nullptr;
+	Player* player_ = nullptr;
+	InputManager* input_ = nullptr;
 };

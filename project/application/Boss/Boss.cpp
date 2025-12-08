@@ -1,16 +1,15 @@
 #include "Boss.h"
-#include "../Player/Player.h"
-#include "MathFunction.h"
 #include <imgui.h>
+#include "Player.h"
 #include "MathFunction.h"
 #include "ModelManager.h"
-#include "DxCommon.h"
 
-Boss::Boss() {
-	model_ = std::make_unique<Model>(DxCommon::GetInstance());
-	ModelManager::GetInstance()->LoadModelData ("Resources/boss", "boss");
+Boss::Boss (DxCommon* dxCommon, Player* player) {
+	model_ = std::make_unique<Model> (DxCommon::GetInstance ());
+	ModelManager::GetInstance ()->LoadModelData ("Resources/boss", "boss");
 
-	//デバッグ用
+	dxCommon_ = dxCommon;
+	player_ = player;
 	input_ = InputManager::GetInstance ();
 }
 
@@ -26,10 +25,10 @@ void Boss::Initialize() {
 	centerStomp_ = std::make_unique<CenterStomp>(this);
 	centerStomp_->Initialize();
 
-	fullScreenAttack_ = std::make_unique<FullScreenAttack>(magosuya_, this);
+	fullScreenAttack_ = std::make_unique<FullScreenAttack>(dxCommon_, this);
 	fullScreenAttack_->Initialize();
 
-	throwMinion_ = std::make_unique<ThrowMinion>(magosuya_, this);
+	throwMinion_ = std::make_unique<ThrowMinion>(dxCommon_, this);
 	throwMinion_->Initialize();
 }
 
@@ -81,13 +80,13 @@ void Boss::UpdateMove() {
 }
 
 void Boss::UpdateAttack() {
-	if (magosuya_->GetRawInput()->Trigger('1')) {
+	if (input_->GetRawInput()->Trigger('1')) {
 		centerStomp_->StartAttack();
 	}
-	if (magosuya_->GetRawInput()->Trigger('2')) {
+	if (input_->GetRawInput()->Trigger('2')) {
 		fullScreenAttack_->StartAttack();
 	}
-	if (magosuya_->GetRawInput()->Trigger('3')) {
+	if (input_->GetRawInput()->Trigger('3')) {
 		throwMinion_->StartAttack(150, 0.001f);
 	}
 }
@@ -100,16 +99,16 @@ void Boss::BreathMove() {
 
 		// 2. プレイヤーへの方向ベクトルを計算する (プレイヤーの位置 - ボスの位置)
 		// MathFunction.h に Subtract 関数が定義されていると仮定
-		Vector3 toPlayerVector = Subtract(playerPosition, bossPosition);
+		Vector3 toPlayerVector = Math::Subtract(playerPosition, bossPosition);
 
 		// 3. 方向ベクトルを正規化する
-		float len = Length(toPlayerVector);
+		float len = Math::Length(toPlayerVector);
 		if (len < 0.0001f) { return; }
-		Vector3 direction = Normalize(toPlayerVector);
+		Vector3 direction = Math::Normalize(toPlayerVector);
 
 		// 4. 方向ベクトルに追尾速度を掛けて、今回のフレームの移動量を計算する
 		// MathFunction.h に Multiply 関数が定義されていると仮定
-		Vector3 moveAmount = Multiply(speed_, direction);
+		Vector3 moveAmount = Math::Multiply(speed_, direction);
 
 		// 5. ボスの位置を更新する
 		transform_.translate.x += moveAmount.x;
@@ -141,7 +140,7 @@ void Boss::NormalMove() {
 
 void Boss::WanderMove() {
 	// 一定フレームごと、または目標に近づいたら新しい目標座標を設定
-	if (wanderUpdateCount_ % 120 == 0 || Length(Subtract(wanderTargetPos_, transform_.translate)) < 1.0f) {
+	if (wanderUpdateCount_ % 120 == 0 || Math::Length(Math::Subtract(wanderTargetPos_, transform_.translate)) < 1.0f) {
 
 		// 目標タイプをランダムに決定し、動きを読みにくくする
 		wanderGoalType_ = static_cast<WanderGoalType>(rand() % 3);
@@ -162,10 +161,10 @@ void Boss::WanderMove() {
 		wanderUpdateCount_ = 0;
 	}
 
-	Vector3 toTarget = Subtract(wanderTargetPos_, transform_.translate);
-	float len = Length(toTarget);
+	Vector3 toTarget = Math::Subtract(wanderTargetPos_, transform_.translate);
+	float len = Math::Length(toTarget);
 	if (len < 0.0001f) { return; }
-	Vector3 direction = Normalize(toTarget);
+	Vector3 direction = Math::Normalize(toTarget);
 
 	// 目的のタイプによって速度に変化をつける
 	float currentSpeed = speed_ * wanderBaseSpeedFactor_;
@@ -173,7 +172,7 @@ void Boss::WanderMove() {
 		currentSpeed = speed_ * wanderEdgeSpeedFactor_;
 	}
 
-	Vector3 moveAmount = Multiply(currentSpeed, direction);
+	Vector3 moveAmount = Math::Multiply(currentSpeed, direction);
 
 	transform_.translate.x += moveAmount.x;
 	transform_.translate.z += moveAmount.z;
@@ -187,13 +186,13 @@ void Boss::FollowMove() {
 	Vector3 bossPosition = transform_.translate;
 
 	// 2. プレイヤーへの方向ベクトルを計算し、正規化する
-	Vector3 toPlayerVector = Subtract(playerPosition, bossPosition);
-	float len = Length(toPlayerVector);
+	Vector3 toPlayerVector = Math::Subtract(playerPosition, bossPosition);
+	float len = Math::Length(toPlayerVector);
 	if (len < 0.0001f) { return; }
-	Vector3 direction = Normalize(toPlayerVector);
+	Vector3 direction = Math::Normalize(toPlayerVector);
 
 	// 3. 方向ベクトルに追尾速度を掛けて、今回のフレームの移動量を計算する
-	Vector3 moveAmount = Multiply(speed_, direction);
+	Vector3 moveAmount = Math::Multiply(speed_, direction);
 
 	// 4. ボスの位置を更新する
 	transform_.translate.x += moveAmount.x;
@@ -206,16 +205,16 @@ void Boss::EvadeMove() {
 	Vector3 bossPosition = transform_.translate;
 
 	// 2. プレイヤーへの方向ベクトルを計算し、正規化する
-	Vector3 toPlayerVector = Subtract(playerPosition, bossPosition);
-	float len = Length(toPlayerVector);
+	Vector3 toPlayerVector = Math::Subtract(playerPosition, bossPosition);
+	float len = Math::Length(toPlayerVector);
 	if (len < 0.0001f) { return; }
-	Vector3 direction = Normalize(toPlayerVector); // プレイヤー方向
+	Vector3 direction = Math::Normalize(toPlayerVector); // プレイヤー方向
 
 	// 3. 離脱なので、プレイヤー方向と逆向きに移動する (-direction)
-	Vector3 awayDirection = Multiply(-1.0f, direction);
+	Vector3 awayDirection = Math::Multiply(-1.0f, direction);
 
 	// 4. 離脱速度を掛けて、今回のフレームの移動量を計算する
-	Vector3 moveAmount = Multiply(speed_, awayDirection);
+	Vector3 moveAmount = Math::Multiply(speed_, awayDirection);
 
 	// 5. ボスの位置を更新する
 	transform_.translate.x += moveAmount.x;
@@ -226,7 +225,7 @@ void Boss::UpdateMoveState() {
 	Vector3 bossPosition = transform_.translate;
 	Vector3 playerPosition = player_->GetPosition();
 	// プレイヤーとの距離
-	float distance = Length(Subtract(playerPosition, bossPosition));
+	float distance = Math::Length(Math::Subtract(playerPosition, bossPosition));
 	float distanceSq = distance * distance; // 距離の2乗
 
 	moveTimer_++;

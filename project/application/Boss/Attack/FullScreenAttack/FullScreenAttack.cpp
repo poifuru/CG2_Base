@@ -1,17 +1,18 @@
 #include "FullScreenAttack.h"
 #include "MathFunction.h"
-#include "../../Boss.h"
+#include "Boss.h"
+#include "ModelManager.h"
 #include <imgui.h>
 #define _USE_MATH_DEFINES
 #include <Math.h>
 #include <algorithm>
 
-FullScreenAttack::FullScreenAttack(MagosuyaEngine* magosuya, Boss* boss) {
-	magosuya_ = magosuya;
+FullScreenAttack::FullScreenAttack(DxCommon* dxCommon, Boss* boss) {
+	dxCommon_ = dxCommon;
 	boss_ = boss;
 
 	// ★ モデルデータ自体は一度だけロードする（モデルのインスタンスはInitializeで生成）
-	magosuya_->LoadModelData("Resources/teapot", "teapot");
+	ModelManager::GetInstance()->LoadModelData ("Resources/teapot", "teapot");
 }
 
 FullScreenAttack::~FullScreenAttack() {
@@ -29,7 +30,7 @@ void FullScreenAttack::Initialize() {
 		projectiles_[i].transform = { {0.3f,0.3f,0.3f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} }; // サイズを小さく設定
 
 		// ★ 弾ごとに新しいModelオブジェクトを生成・初期化する
-		projectiles_[i].model = std::make_unique<Model>(magosuya_);
+		projectiles_[i].model = std::make_unique<Model>(dxCommon_);
 		projectiles_[i].model->SetModelData("teapot");
 		projectiles_[i].model->SetTexture("teapot");
 		projectiles_[i].model->Initialize();
@@ -160,7 +161,7 @@ void FullScreenAttack::UpdateProjectiles() {
 			float t = 1.0f - (projectiles_[i].lifeTime / kMaxLifeTime);
 
 			// t を使ってスケールを線形補間 (Lerp)
-			float currentScale = Lerp(kStartScale, kEndScale, t);
+			float currentScale = Math::Lerp(kStartScale, kEndScale, t);
 
 			// Transformに適用
 			projectiles_[i].transform.scale = { currentScale, currentScale, currentScale };

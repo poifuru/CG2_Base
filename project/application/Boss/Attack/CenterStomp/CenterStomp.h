@@ -30,8 +30,6 @@ private:
 	void UpdateFall();   // 落下
 	void UpdateCooldown(); // 硬直
 private:
-	std::unique_ptr<Model> model_ = nullptr;
-
 	// ボス攻撃時の波
 	std::unique_ptr<Model> model_ = nullptr;
 	Transform transform_;

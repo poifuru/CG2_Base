@@ -27,7 +27,7 @@ public:
 	// 弾の最大ライフタイム (例: 5秒 = 300フレーム)
 	static const int kMaxLifeTime = 300;
 
-	ThrowMinion(MagosuyaEngine* magosuya, Boss* boss);
+	ThrowMinion(DxCommon* dxCommon, Boss* boss);
 	~ThrowMinion();
 
 	void Initialize();
@@ -53,7 +53,7 @@ private:
 	void EmitProjectiles();
 
 private:
-	MagosuyaEngine* magosuya_ = nullptr;
+	DxCommon* dxCommon_ = nullptr;
 	Boss* boss_ = nullptr;
 
 	// AttackPhase::None が別途定義されている前提

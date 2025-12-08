@@ -1,17 +1,18 @@
 #include "ThrowMinion.h"
 #include "MathFunction.h" 
-#include "../../Boss.h" 
+#include "Boss.h" 
+#include "ModelManager.h"
 #include <imgui.h>
 #define _USE_MATH_DEFINES
 #include <Math.h> 
 #include <algorithm> 
 
 // コンストラクタ
-ThrowMinion::ThrowMinion(MagosuyaEngine* magosuya, Boss* boss) {
-    magosuya_ = magosuya;
+ThrowMinion::ThrowMinion(DxCommon* dxCommon, Boss* boss) {
+    dxCommon_ = dxCommon;
     boss_ = boss;
 
-    magosuya_->LoadModelData("Resources/teapot", "teapot");
+    ModelManager::GetInstance()->LoadModelData ("Resources/teapot", "teapot");
 }
 
 // デストラクタ
@@ -30,7 +31,7 @@ void ThrowMinion::Initialize() {
         // スケールを0.3fで固定
         projectiles_[i].transform = { {0.3f,0.3f,0.3f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
 
-        projectiles_[i].model = std::make_unique<Model>(magosuya_);
+        projectiles_[i].model = std::make_unique<Model>(dxCommon_);
         projectiles_[i].model->SetModelData("teapot");
         projectiles_[i].model->SetTexture("teapot");
         projectiles_[i].model->Initialize();

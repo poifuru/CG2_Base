@@ -24,7 +24,7 @@ public:
 	// 弾の最大ライフタイム (例: 5秒 = 5 * 60フレーム)
 	static const int kMaxLifeTime = 300;
 
-	FullScreenAttack(MagosuyaEngine* magosuya, Boss* boss);
+	FullScreenAttack(DxCommon* dxCommon, Boss* boss);
 	~FullScreenAttack();
 
 	void Initialize();
@@ -48,7 +48,7 @@ private:
 	void EmitProjectiles();
 
 private:
-	MagosuyaEngine* magosuya_ = nullptr;
+	DxCommon* dxCommon_ = nullptr;
 	Boss* boss_ = nullptr;
 
 	AttackPhase phase_ = AttackPhase::None;

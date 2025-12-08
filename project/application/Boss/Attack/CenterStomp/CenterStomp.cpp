@@ -167,7 +167,7 @@ void CenterStomp::UpdateCooldown() {
 	// 例: 0.1 から 3.0 のスケールまで拡大させる
 	const float startScale = 0.1f;
 	const float targetScale = 10.0f;
-	float currentScale = Lerp(startScale, targetScale, t);
+	float currentScale = Math::Lerp(startScale, targetScale, t);
 
 	// スケールを適用
 	transform_.scale = { currentScale, currentScale, currentScale };

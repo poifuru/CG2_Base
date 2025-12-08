@@ -5,7 +5,7 @@
 
 PlayScene::PlayScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
 	player_ = std::make_unique<Player>(inputManager);
-	boss_ = std::make_unique<Boss>();
+	boss_ = std::make_unique<Boss>(dxCommon, player_.get());
 
 	//地面のモデル
 	ground_ = std::make_unique<Model> (dxCommon);
