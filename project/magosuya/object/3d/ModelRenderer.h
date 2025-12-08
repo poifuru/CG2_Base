@@ -1,16 +1,17 @@
 #pragma once
-#include <d3d12.h>
+#include <Windows.h>
 #include <Wrl.h>
 using namespace Microsoft::WRL;
+#include <d3d12.h>
 #include <vector>
 #include <string>
 #include "struct.h"
-
-class MagosuyaEngine;
+#include "PSOManager.h"
+#include "DxCommon.h"
 
 class ModelRenderer {
 public:
-	ModelRenderer (MagosuyaEngine* magosuya);
+	ModelRenderer (DxCommon* dxCommon);
 	~ModelRenderer ();
 
 	void Initialize ();
@@ -20,7 +21,7 @@ public:
 
 	//アクセッサ
 	Material* GetMaterial () { return materialData_; }
-	void IsLighting (const bool& flag) { materialData_->enableLighting = flag; }
+	void IsLighting (const LightReflectionModel& lighting) { materialData_->enableLighting = lighting; }
 	void SetColor (const Vector4& color) { materialData_->color = color; }
 	void SetImGuiID (const std::string& id) { tag_ = id; }
 	void SetModelData (const std::weak_ptr<ModelData>& data){ modelData_ = data; }
@@ -29,9 +30,8 @@ private:
 	//モデルデータ
 	std::weak_ptr<ModelData> modelData_;
 
-	//ルートシグネチャとパイプラインステート
-	ComPtr<ID3D12RootSignature> rootSignature_;
-	ComPtr<ID3D12PipelineState> pipelineState_;
+	//PSO
+	PSODescriptor desc_ = {};
 
 	//GPUリソース
 	ComPtr<ID3D12Resource> matrixBuffer_;
@@ -50,5 +50,6 @@ private:
 	float color_[4];
 
 	//ポインタを借りる
-	MagosuyaEngine* magosuya_ = nullptr;
+	DxCommon* dxCommon_ = nullptr;
+	ID3D12GraphicsCommandList* commandList_ = nullptr;
 };

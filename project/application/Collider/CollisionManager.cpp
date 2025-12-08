@@ -41,7 +41,7 @@ void CollisionManager::CheckCollisionPair(Collider* colliderA, Collider* collide
 
 	Vector3 posA = colliderA->GetWorldPosition();
 	Vector3 posB = colliderB->GetWorldPosition();
-	float length = Length(posA - posB);
+	float length = Math::Length(posA - posB);
 	if (colliderA->GetRadius() + colliderB->GetRadius() >= length) {
 		colliderA->OnCollision(colliderB);
 		colliderB->OnCollision(colliderA);

@@ -1,12 +1,12 @@
 #pragma once
 #include "Scene.h"
 #include <memory>
-#include "object/2d/Sprite.h"
-#include "object/3d/Model.h"
+#include "Sprite.h"
+#include "Model.h"
 
 class GameoverScene : public Scene {
 public:		//メンバ関数
-	GameoverScene (MagosuyaEngine* magosuya);
+	GameoverScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon);
 	~GameoverScene () override;
 
 	void Initialize () override;

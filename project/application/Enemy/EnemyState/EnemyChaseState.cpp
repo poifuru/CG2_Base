@@ -18,10 +18,10 @@ void EnemyChaseState::Update() {
 	Vector3 playerPos = enemy_->GetTarget()->GetPosition();
 
 	Vector3 toPlayer = playerPos - enemyPos;
-	float distanceToPlayer = Length(toPlayer);
+	float distanceToPlayer = Math::Length(toPlayer);
 
 	// 2, プレイヤーに向かって移動する
-	Vector3 direction = Normalize(toPlayer);
+	Vector3 direction = Math::Normalize(toPlayer);
 	Vector3 moveVector = direction * (chaseSpeedRate_ * deltaTime);
 
 	// 3, 移動量を設定
@@ -31,6 +31,13 @@ void EnemyChaseState::Update() {
 	if (distanceToPlayer <= startExplosionDist_) {
 		// 設定した距離いないに入ったら爆発Stateに遷移
 		enemy_->ChangeState(new EnemyPreExplosionState());
+		return;
+	}
+
+	// [ 見失うこともある ]
+	if (distanceToPlayer >= 30.0f) {
+		// 設定した距離いないに入ったら爆発Stateに遷移
+		enemy_->ChangeState(new EnemyDecisionState());
 		return;
 	}
 #ifdef _DEBUG

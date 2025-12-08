@@ -2,9 +2,56 @@
 #pragma comment (lib, "winmm.lib")
 #include "imgui_impl_win32.h"
 #include "function.h"
-#include "utility/Input/InputManager.h"
+#include "InputManager.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler (HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+void WindowsAPI::Initialize (InputManager* inputManager) {
+	//システムタイマーの分解能を上げる
+	timeBeginPeriod (1);
+
+	//ウィンドウプロシージャ
+	windowClass_.lpfnWndProc = WindowProc;
+	//ウィンドウクラス名
+	windowClass_.lpszClassName = L"LE2B_22_マスヤ_ゴウ";
+	//インスタンスハンドル
+	windowClass_.hInstance = GetModuleHandle (nullptr);
+	//カーソル
+	windowClass_.hCursor = LoadCursor (nullptr, IDC_ARROW);
+
+	//ウィンドウクラスを登録する
+	RegisterClass (&windowClass_);
+
+	//ウィンドウサイズを表す構造体にクライアント領域を入れる
+	RECT wrc = { 0, 0, kClientWidth, kClientHeight };
+
+	//クライアント領域を元に実際のサイズにwrcを変更してもらう
+	AdjustWindowRect (&wrc, WS_OVERLAPPEDWINDOW, false);
+
+	//ウィンドウを生成
+	hwnd_ = CreateWindow (
+		windowClass_.lpszClassName,	//利用するクラス名
+		L"LE2B_24_マスヤ_ゴウ",						//タイトルバーの文字
+		WS_OVERLAPPEDWINDOW,		//よく見るウィンドウスタイル
+		CW_USEDEFAULT,				//表示x座標(Windowsに任せる)
+		CW_USEDEFAULT,				//表示y座標(WindowsOSに任せる)
+		wrc.right - wrc.left,		//ウィンドウ横幅
+		wrc.bottom - wrc.top,		//ウィンドウ縦幅
+		nullptr,					//親ウィンドウハンドル
+		nullptr,					//メニューハンドル
+		windowClass_.hInstance,		//インスタンスハンドル
+		nullptr						//オプション
+	);
+
+	// ウィンドウに this ポインタを保存
+	SetWindowLongPtr (hwnd_, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+
+	//ウィンドウを表示
+	ShowWindow (hwnd_, SW_SHOW);
+
+	//インプットマネージャーのポインタ
+	inputManager_ = inputManager;
+}
 
 LRESULT WindowsAPI::WindowProc (HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	//メッセージに応じてゲーム固有の処理を行う
@@ -32,53 +79,6 @@ LRESULT WindowsAPI::WindowProc (HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	//標準のメッセージ処理を行う
 	return DefWindowProc (hwnd, msg, wparam, lparam);
-}
-
-void WindowsAPI::Initialize (InputManager* inputManager) {
-	//システムタイマーの分解能を上げる
-	timeBeginPeriod (1);
-
-	//ウィンドウプロシージャ
-	windowClass_.lpfnWndProc = WindowProc;
-	//ウィンドウクラス名
-	windowClass_.lpszClassName = L"LE2B_22_マスヤ_ゴウ";
-	//インスタンスハンドル
-	windowClass_.hInstance = GetModuleHandle (nullptr);
-	//カーソル
-	windowClass_.hCursor = LoadCursor (nullptr, IDC_ARROW);
-
-	//ウィンドウクラスを登録する
-	RegisterClass (&windowClass_);
-
-	//ウィンドウサイズを表す構造体にクライアント領域を入れる
-	RECT wrc = { 0, 0, kClientWidth, kClientHeight };
-
-	//クライアント領域を元に実際のサイズにwrcを変更してもらう
-	AdjustWindowRect (&wrc, WS_OVERLAPPEDWINDOW, false);
-
-	//ウィンドウを生成
-	hwnd_ = CreateWindow (
-		windowClass_.lpszClassName,	//利用するクラス名
-		L"CG2",						//タイトルバーの文字
-		WS_OVERLAPPEDWINDOW,		//よく見るウィンドウスタイル
-		CW_USEDEFAULT,				//表示x座標(Windowsに任せる)
-		CW_USEDEFAULT,				//表示y座標(WindowsOSに任せる)
-		wrc.right - wrc.left,		//ウィンドウ横幅
-		wrc.bottom - wrc.top,		//ウィンドウ縦幅
-		nullptr,					//親ウィンドウハンドル
-		nullptr,					//メニューハンドル
-		windowClass_.hInstance,		//インスタンスハンドル
-		nullptr						//オプション
-	);
-
-	// ウィンドウに this ポインタを保存
-	SetWindowLongPtr (hwnd_, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
-
-	//ウィンドウを表示
-	ShowWindow (hwnd_, SW_SHOW);
-
-	//インプットマネージャーの初期化
-	inputManager_ = inputManager;
 }
 
 bool WindowsAPI::ProcessMessage () {

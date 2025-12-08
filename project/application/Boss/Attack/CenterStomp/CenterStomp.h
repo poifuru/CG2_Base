@@ -1,6 +1,5 @@
 #pragma once
-#include "MagosuyaEngine.h"
-#include "object/3d/Model.h"
+#include "Model.h"
 
 class Boss;
 
@@ -14,7 +13,7 @@ enum class StompPhase {
 
 class CenterStomp {
 public:
-	CenterStomp(MagosuyaEngine* magosuya, Boss* boss);
+	CenterStomp(Boss* boss);
 	~CenterStomp();
 
 	void Initialize();
@@ -31,8 +30,6 @@ private:
 	void UpdateFall();   // 落下
 	void UpdateCooldown(); // 硬直
 private:
-	MagosuyaEngine* magosuya_ = nullptr;
-
 	// ボス攻撃時の波
 	std::unique_ptr<Model> model_ = nullptr;
 	Transform transform_;

@@ -1,15 +1,15 @@
 #pragma once
-#include "MagosuyaEngine.h"
-#include "object/3d/Model.h"
-#include "../Player/Player.h"
-#include "../Enemy/EnemyState/EnemyState.h"
-#include "../Collider/AttackCollider.h"
-#include "../Collider/EnemyBodyCollider.h"
+#include "DxCommon.h"
+#include "Model.h"
+#include "Player.h"
+#include "EnemyState.h"
+#include "AttackCollider.h"
+#include "EnemyBodyCollider.h"
 
 class Enemy
 {
 public:
-	Enemy(MagosuyaEngine* engine) :engine_(engine) {};
+	Enemy(DxCommon* dxCommon) :dxCommon_(dxCommon) {};
 	~Enemy() { delete state_; }
 public:
 	void Initialize(const Vector3& pos,const Vector3& velocity,Player*player);
@@ -21,6 +21,7 @@ public:
 	void ChangeState(EnemyState* newState);
 	// [ 攻撃を喰らった際の処理 ]
 	void TakeDamage(float damage);
+	void TakeSlipDamage();
 public:
 	// 設定や取得の関数
 	// [ 移動量 ]
@@ -40,6 +41,7 @@ public:
 	Vector3 GetPosition()const { return obj_->GetTransform().translate; }
 	// [ 回転 ]
 	Vector3 GetRotation()const { return obj_->GetTransform().rotate; }
+	void SetRotation(const Vector3& rot) { obj_->SetTransform({ obj_->GetTransform().scale,rot,obj_->GetTransform().translate }); }
 	// [ ターゲット ]
 	Player* GetTarget()const { return target_; }
 	// [ ノックバックの方向 ]
@@ -57,9 +59,14 @@ public:
 	void AddAttackHitType();
 	void SetAttackRadius(const float& radius) { attackCollider_->SetRadius(radius); }
 	void SetAttackRadiusForLevel();
+	// [ エリア ]
+	void SetAriaLeftTop(Vector3* ariaLeftTop) { ariaLeftTop_ = ariaLeftTop; }
+	void SetAriaSize(Vector2* size) { ariaSize_ = size; }
+	Vector2& GetAriaSize() { return *ariaSize_; }
+	Vector3& GetAriaLeftTop() { return *ariaLeftTop_; }
 private:
 	// 参照するもの(ポインタ型)
-	MagosuyaEngine* engine_ = nullptr;
+	DxCommon* dxCommon_ = nullptr;
 	Player* target_ = nullptr;
 
 	// 自身の持つパラメータ
@@ -85,5 +92,8 @@ private:
 	std::unique_ptr<AttackCollider>attackCollider_ = nullptr;
 	// 見た目
 	std::unique_ptr<Model>attackColliderObj_;
+	// [ エリアのサイズ ]
+	Vector3* ariaLeftTop_ = {};
+	Vector2* ariaSize_ = {};
 };
 

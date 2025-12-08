@@ -58,7 +58,7 @@ public:
 	void Exit()override;
 private:
 	float findTimer_ = 0.0f;
-	float maxFindTime_ = 2.0f;
+	float maxFindTime_ = 1.0f;
 };
 
 // 4. プレイヤーに近づく State
@@ -86,7 +86,7 @@ private:
 	float preExplosionTimer_ = 0.0f;// 爆発までのタイマー
 	float maxPreExplosionTime_ = 2.0f; // 爆発へ遷移する時間(逃がすために)
 	float warningRadius_ = 6.0f;// 爆発する警告範囲
-	float chaseSpeedRate_ = 0.7f;// プレイヤーを追いかける速度
+	float chaseSpeedRate_ = 1.7f;// プレイヤーを追いかける速度
 };
 
 // 6. 爆発の State
@@ -111,7 +111,7 @@ public:
 	void Update() override;
 	void Exit() override;
 private:
-	float initialSpeed_ = 10.0f;// ダメージを受けた際の初速度(攻撃の威力によって変更)
+	float initialSpeed_ = 1.0f;// ダメージを受けた際の初速度(攻撃の威力によって変更)
 	Vector3 moveAmount_;
 	float decelerationRate_ = 0.4f;// １秒あたりの減速速度
 	float minSpeed_ = 0.1f; // 速度がこれ以下になったらExplosionに移行

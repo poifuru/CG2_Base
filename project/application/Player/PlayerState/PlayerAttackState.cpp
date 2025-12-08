@@ -1,5 +1,5 @@
 #include "PlayerState.h"
-#include "../Player.h"
+#include "Player.h"
 #include "MathFunction.h"
 
 void PlayerAttackState::Initialize(){
@@ -25,7 +25,7 @@ void PlayerAttackState::Update(){
     const float CHARGE_WINDOW_DURATION = 0.15f;
 
     if (attackTimer_ < CHARGE_WINDOW_DURATION) {
-        if (player_->engine_->GetRawInput()->Push('J') == false) {
+        if (player_->input_->GetRawInput()->Push('J') == false) {
             isAttackHeld_ = false;
         }
     }
@@ -59,11 +59,12 @@ void PlayerAttackState::Update(){
             colliderRadius = 0.8f;
         }*/
         attackOffset.y = 0.0f;
-        attackOffset.z = 1.2f;
-        colliderRadius = 0.8f;
+        attackOffset.z = 1.8f;
+        colliderRadius = 1.8f;
         player_->SetAttackColliderRadius(colliderRadius);
         hitBoxWorldPos = attackOffset/*+ (Quaternion::RotateVector(attackOffset,player_->GetPlayerQuaternion()) * 2.0f)*/;
         player_->EnableHitBox(true, hitBoxWorldPos);
+        player_->AddAttackColliderType(COL_Player_Attack_Level0);
         player_->SetIsViewAttack(true);
     }
     else {

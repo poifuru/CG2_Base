@@ -3,7 +3,7 @@
 #pragma comment(lib,"xaudio2.lib")
 #include <imgui.h>
 #include "MagosuyaEngine.h"
-#include "application/scene/SceneManager.h"
+#include "SceneManager.h"
 
 //サウンドデータの読み込み関数
 SoundData SoundLoadWave (const char* filename) {
@@ -104,10 +104,13 @@ void SoundPlayWave (IXAudio2* xAudio2, const SoundData& soundData) {
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow) {
-	std::unique_ptr<MagosuyaEngine> magosuya = std::make_unique<MagosuyaEngine> ();
+	MagosuyaEngine* magosuya = MagosuyaEngine::GetInstance ();
 	magosuya->Initialize ();
 
-	std::unique_ptr<SceneManager> sceneManager = std::make_unique<SceneManager> (magosuya.get ());
+	std::unique_ptr<SceneManager> sceneManager;
+	sceneManager = std::make_unique<SceneManager> (
+	CameraOrganizer::GetInstance(), InputManager::GetInstance(), DxCommon::GetInstance()
+	);
 	sceneManager->Initialize (SceneLabel::Title);
 
 	HRESULT hr;
@@ -125,12 +128,24 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	//音声の読み込み
 	SoundData soundData1 = SoundLoadWave ("Resources/Sounds/Alarm01.wav");
 
+	//平行光源のResourceを作成してデフォルト値を書き込む
+	ComPtr<ID3D12Resource> dierctionalLightResource = DxCommon::GetInstance ()->CreateBufferResource (sizeof (DirectionalLight));
+	DirectionalLight* directionalLightData = nullptr;
+	//書き込むためのアドレス取得
+	dierctionalLightResource->Map (0, nullptr, reinterpret_cast<void**>(&directionalLightData));
+	//実際に書き込み
+	directionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	directionalLightData->direction = { 0.0f, -1.0f, 0.0f };
+	directionalLightData->intensity = 1.0f;
+	directionalLightData->mode = LightReflectionModel::HalfLambert;
+	//ライティング用の変数
+	float colorLight[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	/*メインループ！！！！！！！！！*/
 	//ウィンドウの×ボタンが押されるまでループ
 	while (true) {
 
-		if (magosuya->GetDxCommon ()->GetWinAPI ()->ProcessMessage ()) {
+		if (WindowsAPI::GetInstance ()->ProcessMessage ()) {
 			break;
 		}
 
@@ -141,7 +156,16 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		sceneManager->Update ();
 		//*************//
 
+		//光源のdirectionの正規化
+		directionalLightData->direction = Math::Normalize (directionalLightData->direction);
+		//RootSignatureをセット
+		ID3D12RootSignature* standardRootSig = RootSignatureManager::GetInstance ()->GetRootSignature (
+			RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::Standard3D)
+		);
 
+		DxCommon::GetInstance ()->GetCommandList ()->SetGraphicsRootSignature (standardRootSig);
+		//ライティングの設定
+		DxCommon::GetInstance ()->GetCommandList ()->SetGraphicsRootConstantBufferView (3, dierctionalLightResource->GetGPUVirtualAddress ());
 
 		//***描画処理***//
 		sceneManager->Draw ();
@@ -150,9 +174,7 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		//フレーム終了
 		magosuya->EndFrame ();
 	}
-
 	xAudio2.Reset ();
 	SoundUnload (&soundData1);  // バッファ解放
-	magosuya->Finalize ();
 	return 0;
 };

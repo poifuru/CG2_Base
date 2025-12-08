@@ -1,16 +1,17 @@
 #include "CenterStomp.h"
-#include "MathFunction.h"
-#include "../../Boss.h"
 #include <imgui.h>
 #include <algorithm>
+#include "MathFunction.h"
+#include "Boss.h"
+#include "DxCommon.h"
+#include "ModelManager.h"
 
-CenterStomp::CenterStomp(MagosuyaEngine* magosuya, Boss* boss) {
-	magosuya_ = magosuya;
+CenterStomp::CenterStomp(Boss* boss) {
 	boss_ = boss;
 
 	// 攻撃範囲表示用のモデル作成
-	model_ = std::make_unique<Model>(magosuya);
-	magosuya_->LoadModelData("Resources/teapot", "teapot");
+	model_ = std::make_unique<Model>(DxCommon::GetInstance());
+	ModelManager::GetInstance()->LoadModelData ("Resources/teapot", "teapot");
 }
 
 CenterStomp::~CenterStomp() {
@@ -81,15 +82,17 @@ void CenterStomp::Update(Matrix4x4* m) {
 // 毎フレーム呼ばれる上昇更新処理
 void CenterStomp::UpdateRise() {
 	timer_++;
-
-	// 進行度 t (0.0 ～ 1.0) を計算
 	float t = static_cast<float>(timer_) / static_cast<float>(duration_);
 	if (t > 1.0f) t = 1.0f;
 
-	// ■ 線形補間 (Lerp) の実行
-	// startPos_ から targetPos_ へ、t の割合だけ進んだ位置を計算
-	// これにより瞬間移動ではなく、スムーズに移動します
-	Vector3 currentPos = Lerp(startPos_, targetPos_, t);
+	float t_easing;
+	if (t < 0.5f) {
+		t_easing = 2.0f * t * t;
+	} else {
+		t_easing = 1.0f - (float)pow(-2.0f * t + 2.0f, 2.0f) / 2.0f;
+	}
+
+	Vector3 currentPos = Math::Lerp(startPos_, targetPos_, t_easing); // t_easing を渡す
 
 	// 計算した位置をボスに反映
 	boss_->SetPosition(currentPos);
@@ -131,7 +134,7 @@ void CenterStomp::UpdateFall() {
 	if (t > 1.0f) t = 1.0f;
 
 	// 急降下 (EaseInQuad: t*t)
-	Vector3 currentPos = Lerp(startPos_, targetPos_, t * t);
+	Vector3 currentPos = Math::Lerp(startPos_, targetPos_, t * t);
 
 	boss_->SetPosition(currentPos);
 
@@ -143,17 +146,34 @@ void CenterStomp::UpdateFall() {
 		// ★ここでエフェクトの位置を更新（必要であれば）
 		transform_.translate = targetPos_;
 
+		// 1. スケールを初期値にリセット
+		transform_.scale = { 0.1f, 0.1f, 0.1f }; // 例: 非常に小さく開始
+
 		// ダメージ判定などをここに記述
 		// CheckCollision(); 
 
 		phase_ = StompPhase::Cooldown;
 		timer_ = 0;
-		duration_ = 30; // 硬直時間
+		duration_ = 60; // 硬直時間
 	}
 }
 
 void CenterStomp::UpdateCooldown() {
 	timer_++;
+
+	// 進行度 t (0.0 ～ 1.0) を計算
+	float t = static_cast<float>(timer_) / static_cast<float>(duration_);
+	if (t > 1.0f) t = 1.0f;
+
+	// 2. スケールの線形補間（Lerp）を実行
+	// 例: 0.1 から 3.0 のスケールまで拡大させる
+	const float startScale = 0.1f;
+	const float targetScale = 10.0f;
+	float currentScale = Math::Lerp(startScale, targetScale, t);
+
+	// スケールを適用
+	transform_.scale = { currentScale, currentScale, currentScale };
+
 	if (timer_ >= duration_) {
 		// すべて終了、通常状態へ戻る
 		phase_ = StompPhase::None;

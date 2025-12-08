@@ -1,6 +1,8 @@
 #include "Player.h"
 #include "MathFunction.h"
 #include "imgui.h"
+#include "ModelManager.h"
+#include "DxCommon.h"
 
 Player::~Player () {
 	delete state_;
@@ -8,8 +10,8 @@ Player::~Player () {
 
 void Player::Initialize()
 {
-	engine_->LoadModelData ("Resources/zako", "zako");
-	obj_ = std::make_unique<Model>(engine_);
+	ModelManager::GetInstance()->LoadModelData ("Resources/zako", "zako");
+	obj_ = std::make_unique<Model>(DxCommon::GetInstance());
 	obj_->SetModelData("zako");
 	obj_->SetTexture("zako");
 	obj_->Initialize();
@@ -18,12 +20,17 @@ void Player::Initialize()
 	state_ = new PlayerStopState();
 	state_->SetPlayer(this);
 
-	attackColliderObj_ = std::make_unique<Model>(engine_);
+	attackColliderObj_ = std::make_unique<Model>(DxCommon::GetInstance());
 	attackColliderObj_->SetModelData("teapot");
 	attackColliderObj_->SetTexture("teapot");
 	attackColliderObj_->Initialize();
 
-	// Colliderの設定
+	playerColliderObj_ = std::make_unique<Model>(dxCommon_);
+	playerColliderObj_->SetModelData("teapot");
+	playerColliderObj_->SetTexture("teapot");
+	playerColliderObj_->Initialize();
+
+	// [ 設定 ]
 	// 1, Player
 	playerCollider_ = std::make_unique<PlayerBodyCollider>(this);
 	// 2, Attack
@@ -50,7 +57,7 @@ void Player::Update(Matrix4x4* m)
 	//move_ = move_.z * CameraSystem::GetInstance()->GetActiveCamera()->zAxis_ + move_.x * CameraSystem::GetInstance()->GetActiveCamera()->xAxis_;
 	// = Normalize(move_);
 	if (move_.x != 0.0f || move_.y != 0.0f || move_.z != 0.0f) {
-		move_ = Normalize(move_);
+		move_ = Math::Normalize(move_);
 		direction_.x = move_.x;
 		direction_.z = move_.z;
 	}
@@ -64,29 +71,39 @@ void Player::Update(Matrix4x4* m)
 	pos.z += move_.z * speed_ * speedMultiplier_;
 	obj_->SetTransform({ obj_->GetTransform().scale,obj_->GetTransform().rotate,pos});
 
+	playerColliderObj_->SetTransform({ {playerCollider_->GetRadius(),0.1f,playerCollider_->GetRadius()},{0.0f,0.0f,0.0f},
+		{playerCollider_->GetWorldPosition().x,
+		playerCollider_->GetWorldPosition().y - 0.5f,
+		playerCollider_->GetWorldPosition().z} });
+
 	attackColliderObj_->SetTransform({ {attackCollider_->GetRadius(),0.1f,attackCollider_->GetRadius()},{0.0f,0.0f,0.0f},
 		{attackCollider_->GetWorldPosition().x,
 		attackCollider_->GetWorldPosition().y - 0.5f,
 		attackCollider_->GetWorldPosition().z} });
 
 	obj_->Update(m);
+	playerColliderObj_->Update(m);
 	attackColliderObj_->Update(m);
 #ifdef _DEBUG
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("Direction", &direction_.x,0.0f,0.0f);
 	ImGui::DragFloat3("pos", &pos.x);
 	ImGui::DragFloat("HP", &hp_);
+	ImGui::DragFloat("Normal Speed", &speed_,0.01f);
 	ImGui::End();
-	obj_->ImGui();
 	obj_->ImGui("player");
 #endif//_DEBUG
 }
 
 void Player::Draw()
 {
+	// 描画処理
+	// [ キャラ ]
 	obj_->Draw();
-
+	// [ プレイヤー自身の当たり判定 ]
+	playerColliderObj_->Draw();
 	if (isAttackViewFlag_) {
+		// [ 攻撃の当たり判定 ]
 		attackColliderObj_->Draw();
 	}
 }
@@ -110,8 +127,8 @@ void Player::ChangeState(PlayerState* newState) {
 void Player::EnableHitBox(bool enable, const Vector3& worldPos) {
 	if (enable) {
 		// 攻撃判定の位置を更新
-		Matrix4x4 w = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, worldPos);
-		Matrix4x4 pW = MakeAffineMatrix({ obj_->GetTransform().scale }, { obj_->GetTransform().rotate }, { obj_->GetTransform().translate });
+		Matrix4x4 w = Math::MakeAffineMatrix({ 1.0f,1.0f,1.0f }, { 0.0f,0.0f,0.0f }, worldPos);
+		Matrix4x4 pW = Math::MakeAffineMatrix({ obj_->GetTransform().scale }, { obj_->GetTransform().rotate }, { obj_->GetTransform().translate });
 		w = w * pW;
 
 		attackCollider_->SetWorldPosition({w.m[3][0],w.m[3][1] ,w.m[3][2] });
@@ -182,13 +199,13 @@ void Player::RotateToMoveDirection() {
 
 	float targetAngle = std::atan2(move_.x, move_.z);
 
-	targetAngle = std::fmod(targetAngle, Deg2Rad(360));
+	targetAngle = std::fmod(targetAngle, Math::Deg2Rad(360));
 
-	if (targetAngle >= Deg2Rad(180)) {
-		targetAngle -= Deg2Rad(360);
+	if (targetAngle >= Math::Deg2Rad(180)) {
+		targetAngle -= Math::Deg2Rad(360);
 	}
-	else if (targetAngle <= Deg2Rad(-180)) {
-		targetAngle += Deg2Rad(360);
+	else if (targetAngle <= Math::Deg2Rad(-180)) {
+		targetAngle += Math::Deg2Rad(360);
 	}
 
 
@@ -241,4 +258,12 @@ void Player::TakeDamage(float damage) {
 		// 無敵時間を設定する (HurtState側でリセットする)
 		SetInvulnerable(true);
 	}
+}
+
+// --------------------------
+// Attack Collider
+// --------------------------
+
+void Player::AddAttackColliderType(uint32_t type) {
+	attackCollider_->SetMyType(attackCollider_->GetMyType() | type);
 }

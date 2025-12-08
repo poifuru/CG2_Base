@@ -1,14 +1,14 @@
 #include "TitleScene.h"
-#include "MagosuyaEngine.h"
-#include "utility/input/InputManager.h"
-#include "MathFunction.h"
-#include <imgui.h>
+#include "CameraOrganizer.h"
+#include "InputManager.h"
+#include "ModelManager.h"
+#include "TextureManager.h"
 
-TitleScene::TitleScene (MagosuyaEngine* magosuya) {
-	magosuya_ = magosuya;
-	camera_ = std::make_unique<CameraData> ();
-	model_ = std::make_unique<Model> (magosuya);
-	magosuya_->LoadModelData ("Resources/teapot", "teapot");
+TitleScene::TitleScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
+	camera_ = camera;
+	input_ = inputManager;
+	model_ = std::make_unique<Model> (dxCommon);
+	ModelManager::GetInstance()->LoadModelData ("Resources/teapot", "teapot");
 }
 
 TitleScene::~TitleScene () {
@@ -23,29 +23,20 @@ void TitleScene::Initialize () {
 	model_->SetTexture ("teapot");
 	model_->Initialize ();
 
-	camera_->transform = {
-		{1.0f, 1.0f, 1.0f},
-		{},
-		{0.0f, 0.0f, -50.0f},
-	};
+	//定点カメラ用のtransform
+	Transform transform = {{1.0f, 1.0f, 1.0f},{},{0.0f, 0.0f, -50.0f},};
+	camera_->AddCamera ("mainCamera1", CameraType::FixedPontCamera, transform);
+	camera_->SetActiveCamera ("mainCamera1");
 }
 
 void TitleScene::Update () {
-	//カメラ
-	camera_->world = MakeAffineMatrix (camera_->transform.scale, camera_->transform.rotate, camera_->transform.translate);
-	camera_->view = Inverse (camera_->world);
-	camera_->proj = MakePerspectiveFOVMatrix (
-		0.45f, float (magosuya_->GetDxCommon ()->GetWinAPI ()->kClientWidth) / float (magosuya_->GetDxCommon ()->GetWinAPI ()->kClientHeight), 0.1f, 100.0f
-	);
-	Matrix4x4 vp = Multiply (camera_->view, camera_->proj);
-
 	// ゲーム終了
-	if (magosuya_->GetRawInput()->Trigger(VK_SPACE)) {
+	if (input_->GetRawInput()->Trigger(VK_F1)) {
 		nextScene_ = SceneLabel::Play;
 		isFinish_ = true;
 	}
 
-	model_->Update (&vp);
+	model_->Update (camera_->GetVPMatrix());
 }
 
 void TitleScene::Draw () {

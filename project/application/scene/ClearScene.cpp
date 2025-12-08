@@ -1,8 +1,9 @@
 #include "ClearScene.h"
 #include "MagosuyaEngine.h"
 
-ClearScene::ClearScene (MagosuyaEngine* magosuya) {
-	magosuya_ = magosuya;
+ClearScene::ClearScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
+	camera_ = camera;
+	input_ = inputManager;
 }
 
 ClearScene::~ClearScene () {

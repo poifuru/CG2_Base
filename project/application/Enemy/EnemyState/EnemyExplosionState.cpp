@@ -12,6 +12,9 @@ void EnemyExplosionState::Initialize() {
 
 	// 当たり判定を設定
 	enemy_->EnableHitBox(true,enemy_->GetPosition());
+
+	// Enemyは死んだ
+	enemy_->SetIsAlive(false);
 }
 
 void EnemyExplosionState::Update() {
@@ -21,8 +24,7 @@ void EnemyExplosionState::Update() {
 
 	// [ 爆発の終了 ]
 	if (explosionTimer_ >= maxExplosionTime_) {
-		// Enemyは死んだ
-		enemy_->SetIsAlive(false);
+		
 		enemy_->ChangeState(new EnemyDeathState());
 		return;
 	}

@@ -1,6 +1,6 @@
 #pragma once
 #include "struct.h"
-#include "../magosuya/MagosuyaEngine.h"
+#include "InputManager.h"
 
 class Player;
 

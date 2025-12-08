@@ -2,11 +2,11 @@
 #include <imgui.h>
 #include "function.h"
 #include "MathFunction.h"
-#include "MagosuyaEngine.h"
+#include "ModelManager.h"
+#include "TextureManager.h"
 
-Model::Model (MagosuyaEngine* magosuya) {
-	magosuya_ = magosuya;
-	renderer_ = std::make_unique<ModelRenderer> (magosuya);
+Model::Model (DxCommon* dxCommon) {
+	renderer_ = std::make_unique<ModelRenderer> (dxCommon);
 }
 
 Model::~Model () {
@@ -19,7 +19,7 @@ void Model::Initialize (Vector3 scale, Vector3 rotate, Vector3 position) {
 }
 
 void Model::Update (Matrix4x4* vp) {
-	Matrix4x4 world = MakeAffineMatrix (transform_.scale, transform_.rotate, transform_.translate);
+	Matrix4x4 world = Math::MakeAffineMatrix (transform_.scale, transform_.rotate, transform_.translate);
 
 	renderer_->Update (world, *vp, uvTransform_);
 }
@@ -33,11 +33,11 @@ void Model::ImGui (const std::string& windowName) {
 }
 
 void Model::SetModelData (const std::string& ID) {
-	modelData_ = magosuya_->GetModelData (ID);
+	modelData_ = ModelManager::GetInstance()->GetModelData (ID);
 	renderer_->SetModelData (modelData_);
 	renderer_->SetImGuiID (ID); 
 }
 
 void Model::SetTexture (const std::string& ID) {
-	texture_ = magosuya_->GetTextureHandle (ID);
+	texture_ = TextureManager::GetInstance()->GetTextureHandle (ID);
 }

@@ -1,14 +1,17 @@
 #pragma once
 #include "Scene.h"
 #include <memory>
-#include "object/2d/Sprite.h"
-#include "object/3d/Model.h"
-#include "../Player/Player.h"
-#include "../Boss/Boss.h"
+#include "Sprite.h"
+#include "Model.h"
+#include "player.h"
+#include "Boss.h"
+#include "DxCommon.h"
+#include "EnemyManager.h"
+#include "CollisionManager.h"
 
 class PlayScene : public Scene {
 public:		//メンバ関数
-	PlayScene (MagosuyaEngine* magosuya);
+	PlayScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon);
 	~PlayScene () override;
 
 	void Initialize () override;
@@ -16,7 +19,12 @@ public:		//メンバ関数
 	void Draw () override;
 
 private:	//メンバ変数
-	std::unique_ptr<CameraData> camera_ = nullptr;
 	std::unique_ptr<Player>player_ = nullptr;
 	std::unique_ptr<Boss> boss_ = nullptr;
+	std::unique_ptr<Model> ground_ = nullptr;
+	std::unique_ptr<Model> mountain_ = nullptr;
+	std::unique_ptr<Model> stone_ = nullptr;
+	std::unique_ptr<Model> skydome_ = nullptr;
+	std::unique_ptr<EnemyManager>enemies_ = nullptr;
+	std::unique_ptr<CollisionManager>collisionManager_ = nullptr;
 };

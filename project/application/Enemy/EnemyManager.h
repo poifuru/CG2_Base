@@ -1,13 +1,13 @@
 #pragma once
 #include "Enemy.h"
-#include "../Player/Player.h"
-#include "object/3d/Model.h"
-#include "MagosuyaEngine.h"
+#include "Player.h"
+#include "Model.h"
+#include "DxCommon.h"
 
 class EnemyManager
 {
 public:
-	EnemyManager(MagosuyaEngine* engine);
+	EnemyManager(DxCommon* dxCommon);
 public:
 	void Initialize(Player* player);
 	void Update(Matrix4x4* m);
@@ -21,7 +21,7 @@ private:
 	void Delete();
 private:
 	// エンジン
-	MagosuyaEngine* engine_ = nullptr;
+	DxCommon* dxCommon_ = nullptr;
 	// プレイヤー
 	Player* player_ = nullptr;
 	// エネミー
@@ -38,5 +38,8 @@ private:
 	std::unique_ptr<Model>obj_;
 	// 出現する場所
 	Vector3 spawnOffsetPos_;
+	// [ エリアのサイズ ]
+	Vector3 ariaLeftTop_ = {-20.0f,0.0f,10.0f};
+	Vector2 ariaSize_ = {40.0f,-20.0f};
 };
 

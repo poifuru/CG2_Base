@@ -1,13 +1,12 @@
 #pragma once
+#include <Windows.h>
+#include <Wrl.h>
+using namespace Microsoft::WRL;
 #include <vector>
 #include <d3d12.h>
-#include <wrl.h>
-using namespace Microsoft::WRL;
 #include <memory>
 #include "struct.h"
 #include "ModelRenderer.h"
-
-class MagosuyaEngine;
 
 class Model {
 public:	//メンバ関数
@@ -17,7 +16,7 @@ public:	//メンバ関数
 	/// </summary>
 	/// <param name="directoryPath">3Dモデルファイルが存在するディレクトリのパス。</param>
 	/// <param name="filename">読み込む3Dモデルのファイル名。</param>
-	Model (MagosuyaEngine* magosuya);
+	Model (DxCommon* dxCommon);
 
 	~Model ();
 
@@ -58,11 +57,12 @@ public:	//メンバ関数
 	//アクセッサ
 	Vector3 GetPosition () { return transform_.translate; }
 	void SetPosition (const Vector3& position) { transform_.translate = position; }
-	Transform GetTransform () { return transform_; }
+	const Transform& GetTransform () { return transform_; }
 	void SetTransform (Transform transform) { transform_ = transform; }
 	Transform GetUVTransform () { return uvTransform_; }
 	void SetUVTransform (Transform transform) { uvTransform_ = transform; }
-	void IsLighting (const bool& flag) { renderer_->IsLighting (flag); }
+	void SetColor (const Vector4& color) { renderer_->SetColor (color); }
+	void IsLighting (const LightReflectionModel& lighting) { renderer_->IsLighting (lighting); }
 
 private:		//メンバ変数
 	//マネージャーから受け取るモデルデータ
@@ -75,7 +75,4 @@ private:		//メンバ変数
 
 	//レンダラークラス
 	std::unique_ptr<ModelRenderer> renderer_ = nullptr;
-
-	//ポインタを借りる
-	MagosuyaEngine* magosuya_ = nullptr;
 };

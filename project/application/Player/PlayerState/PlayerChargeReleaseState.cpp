@@ -1,5 +1,5 @@
 #include "PlayerState.h"
-#include "../Player.h"
+#include "Player.h"
 
 void PlayerChargeReleaseState::Initialize() {
     if (!player_) return;
@@ -30,26 +30,31 @@ void PlayerChargeReleaseState::Update() {
     if (releaseTimer_ >= 0.1f && releaseTimer_ <= maxReleaseDuration_ - 0.3f) {
         Vector3 attackOffset = {};
         float colliderRadius = 0.0f;
+        uint32_t attackType = 0;
 
         if (chargeLevel_ >= 3) {
             // Level 3 の場合
             attackOffset.z = 0.0f;
-            colliderRadius = 3.5f;
+            colliderRadius = 4.5f;
+            attackType = COL_Player_Attack_Level3;
         }
         else if (chargeLevel_ == 2) {
             // Level 2 の場合
             attackOffset.z = 0.0f;
-            colliderRadius = 2.0f;
+            colliderRadius = 3.0f;
+            attackType = COL_Player_Attack_Level2;
         }
         else if(chargeLevel_ <= 1){
             // Level 1 以下の通常チャージの場合
             attackOffset.z = 0.0f;
-            colliderRadius = 1.5f;
+            colliderRadius = 2.0f;
+            attackType = COL_Player_Attack_Level1;
         }
 
         // 攻撃判定を有効化
         player_->SetAttackColliderRadius(colliderRadius);
         player_->EnableHitBox(true, attackOffset);
+        player_->AddAttackColliderType(attackType);
         player_->SetIsViewAttack(true);
     }
     else {
