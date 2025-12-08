@@ -28,6 +28,18 @@
     <ClCompile Include="application\Collider\Collider.cpp" />
     <ClCompile Include="application\Collider\AttackCollider.cpp" />
     <ClCompile Include="application\Boss\Boss.cpp" />
+    <ClCompile Include="application\Enemy\Enemy.cpp" />
+    <ClCompile Include="application\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyDecisionState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemySearchPlayerState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyFindPlayerState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyChaseState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyPreExplosionState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyExplosionState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyHurtState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyDeathState.cpp" />
+    <ClCompile Include="application\Collider\EnemyBodyCollider.cpp" />
+    <ClCompile Include="application\Collider\CollisionManager.cpp" />
     <ClCompile Include="application\Boss\Attack\CenterStomp\CenterStomp.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="externals\imgui\imgui_demo.cpp" />
@@ -141,6 +153,98 @@
     <ClInclude Include="application\scene\TitleScene.h" />
     <ClInclude Include="application\scene\PlayScene.h" />
     <ClInclude Include="application\Player\Player.h" />
+    <ClInclude Include="application\Player\PlayerState\PlayerState.h" />
+    <ClInclude Include="application\Collider\Collider.h" />
+    <ClInclude Include="application\Collider\PlayerBodyCollider.h" />
+    <ClInclude Include="application\Collider\AttackCollider.h" />
+    <ClInclude Include="application\Boss\Boss.h" />
+    <ClInclude Include="application\Boss\Attack\CenterStomp\CenterStomp.h" />
+    <ClInclude Include="application\Enemy\Enemy.h" />
+    <ClInclude Include="application\Enemy\EnemyManager.h" />
+    <ClInclude Include="application\Enemy\EnemyState\EnemyState.h" />
+    <ClInclude Include="application\Collider\EnemyBodyCollider.h" />
+    <ClInclude Include="application\Collider\CollisionManager.h" />
+    <ClInclude Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ソースファイル">
+      <UniqueIdentifier>{d9429fbc-a45c-4a09-accd-7d639b3f1204}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル">
+      <UniqueIdentifier>{7be6bd21-6bb5-434f-b59f-2bf5a2ea2d85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="外部ファイル">
+      <UniqueIdentifier>{10a88c8f-860b-4156-bce4-27bc63e0df11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="シェーダー">
+      <UniqueIdentifier>{d00e7eef-e698-44cf-820e-da4c2ae980d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\magosuya">
+      <UniqueIdentifier>{2f6a1d5f-0a7f-438c-b0aa-d0bf96c43ba0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\magosuya\engine">
+      <UniqueIdentifier>{272283cd-e2df-4bc6-a28f-dfdd8cf66693}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\magosuya\object">
+      <UniqueIdentifier>{2a89f171-a0e7-4e8f-896f-8a6fb1373d95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\magosuya\utility">
+      <UniqueIdentifier>{68d7c6c6-196f-46d9-9d63-da40278cc47e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\magosuya\object\2d">
+      <UniqueIdentifier>{e0948fee-20e5-4aa8-9350-025ef1981440}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\magosuya\object\3d">
+      <UniqueIdentifier>{e22d1c64-6799-4529-be1d-d5260554f9ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\magosuya\utility\audio">
+      <UniqueIdentifier>{fbc6c45d-9f1b-4e68-be7a-5a881df9f9ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\magosuya\utility\camera">
+      <UniqueIdentifier>{d80154bf-3be6-4d69-8f92-08a0316d0269}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\magosuya\utility\input">
+      <UniqueIdentifier>{8acba643-37e2-46e8-9adf-fe880630c96b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\magosuya\utility\manager">
+      <UniqueIdentifier>{a7b841e9-39d8-40d4-8220-d56c979f6d07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\general">
+      <UniqueIdentifier>{3e5e4c26-2402-409b-9ddb-c94548049e20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\general">
+      <UniqueIdentifier>{f4051e4e-3868-44fd-82a7-adb5287b54d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\magosuya">
+      <UniqueIdentifier>{ad062e45-9d4e-481e-a879-dd3a8c5cae57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\magosuya\engine">
+      <UniqueIdentifier>{43229519-ce23-4416-bf5b-09e304dc3418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\magosuya\utility">
+      <UniqueIdentifier>{2868ef4d-0e95-4781-b0f4-e1e164fa53bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\magosuya\object">
+      <UniqueIdentifier>{829cf9a4-8cc4-48d5-8dbc-c4a14fd974a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\magosuya\object\2d">
+      <UniqueIdentifier>{bb2018e7-7b99-4f8e-890d-965275393f32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\magosuya\object\3d">
+      <UniqueIdentifier>{95eae0ef-733e-485b-829e-1dd0db913abf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\magosuya\utility\camera">
+      <UniqueIdentifier>{e075de14-080f-45a8-bf10-0d385afae3df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\magosuya\utility\input">
+      <UniqueIdentifier>{f696b3c0-0344-47c7-88a4-58bfed422508}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\magosuya\utility\manager">
+      <UniqueIdentifier>{ad0fc355-0c4e-4fc6-84b2-13b10b7c50fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\magosuya\utility\audio">
+      <UniqueIdentifier>{457fd7ce-1080-4188-9b25-f8a794eb8700}</UniqueIdentifier>
+    </Filter>
     <ClInclude Include="magosuya\utility\particle\Particle.h" />
     <ClInclude Include="magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />

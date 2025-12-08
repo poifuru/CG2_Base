@@ -25,6 +25,9 @@ PlayScene::PlayScene (CameraOrganizer* camera, InputManager* inputManager, DxCom
 
 	camera_ = camera;
 	input_ = inputManager;
+	boss_ = std::make_unique<Boss>(magosuya_);
+	enemies_ = std::make_unique<EnemyManager>(magosuya);
+	collisionManager_ = std::make_unique<CollisionManager>();
 }
 
 PlayScene::~PlayScene () {
@@ -68,6 +71,7 @@ void PlayScene::Initialize () {
 	camera_->AddCamera ("FollowCamera", CameraType::FollowCamera, transform);
 	camera_->SetActiveCamera ("FollowCamera");
 	camera_->SetFollowTarget ("FollowCamera", player_->GetTransform ());
+	enemies_->Initialize(player_.get());
 }
 
 void PlayScene::Update () {
@@ -84,7 +88,17 @@ void PlayScene::Update () {
 	mountain_->Update (camera_->GetVPMatrix ());
 	stone_->Update (camera_->GetVPMatrix ());
 	skydome_->Update (camera_->GetVPMatrix ());
-	camera_->Update ();
+	enemies_->Update(camera_->GetVPMatrix ());
+
+	// [ 当たり判定 ]
+	collisionManager_->Begin();
+	collisionManager_->SetColliders(&player_->GetAttackCollider());
+	collisionManager_->SetColliders(&player_->GetPlayerBodyCollider());
+	for (const auto& enemy : enemies_->GetEnemies()) {
+		collisionManager_->SetColliders(&enemy->GetAttackCollider());
+		collisionManager_->SetColliders(&enemy->GetBodyCollider());
+	}
+	collisionManager_->CheckAllCollisions();
 }
 
 void PlayScene::Draw () {
@@ -94,4 +108,5 @@ void PlayScene::Draw () {
 	mountain_->Draw ();
 	stone_->Draw ();
 	skydome_->Draw ();
+	enemies_->Draw();
 }

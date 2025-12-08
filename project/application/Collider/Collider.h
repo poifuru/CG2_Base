@@ -6,7 +6,18 @@ enum COLLISIONATTRIBUTE :int {
 	COL_Player = 1 << 0,
 	COL_Enemy = 1 << 1,
 	COL_Player_Attack = 1 << 2,
-	COL_Enemy_Attack = 1 << 3,
+	COL_Player_Attack_Level0 = 1 << 3,
+	COL_Player_Attack_Level1 = 1 << 4,
+	COL_Player_Attack_Level2 = 1 << 5,
+	COL_Player_Attack_Level3 = 1 << 6,
+	COL_Enemy_Attack = 1 << 7,
+	COL_Enemy_Attack_Level0 = 1 << 8,
+	COL_Enemy_Attack_Level1 = 1 << 9,
+	COL_Enemy_Attack_Level2 = 1 << 10,
+	COL_Enemy_Attack_Level3 = 1 << 11,
+	COL_Enemy_SlipDamage = 1 <<12,
+	COL_Boss = 1 << 13,
+	COL_Boss_Attack = 1 << 14,
 };
 
 class Collider

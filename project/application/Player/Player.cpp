@@ -25,7 +25,12 @@ void Player::Initialize()
 	attackColliderObj_->SetTexture("teapot");
 	attackColliderObj_->Initialize();
 
-	// Colliderの設定
+	playerColliderObj_ = std::make_unique<Model>(engine_);
+	playerColliderObj_->SetModelData("teapot");
+	playerColliderObj_->SetTexture("teapot");
+	playerColliderObj_->Initialize();
+
+	// [ 設定 ]
 	// 1, Player
 	playerCollider_ = std::make_unique<PlayerBodyCollider>(this);
 	// 2, Attack
@@ -66,23 +71,39 @@ void Player::Update(Matrix4x4* m)
 	pos.z += move_.z * speed_ * speedMultiplier_;
 	obj_->SetTransform({ obj_->GetTransform().scale,obj_->GetTransform().rotate,pos});
 
+	playerColliderObj_->SetTransform({ {playerCollider_->GetRadius(),0.1f,playerCollider_->GetRadius()},{0.0f,0.0f,0.0f},
+		{playerCollider_->GetWorldPosition().x,
+		playerCollider_->GetWorldPosition().y - 0.5f,
+		playerCollider_->GetWorldPosition().z} });
+
 	attackColliderObj_->SetTransform({ {attackCollider_->GetRadius(),0.1f,attackCollider_->GetRadius()},{0.0f,0.0f,0.0f},
 		{attackCollider_->GetWorldPosition().x,
 		attackCollider_->GetWorldPosition().y - 0.5f,
 		attackCollider_->GetWorldPosition().z} });
 
 	obj_->Update(m);
+	playerColliderObj_->Update(m);
 	attackColliderObj_->Update(m);
 #ifdef _DEBUG
+	ImGui::Begin("Player");
+	ImGui::SliderFloat3("Direction", &direction_.x,0.0f,0.0f);
+	ImGui::DragFloat3("pos", &pos.x);
+	ImGui::DragFloat("HP", &hp_);
+	ImGui::DragFloat("Normal Speed", &speed_,0.01f);
+	ImGui::End();
 	obj_->ImGui("player");
 #endif//_DEBUG
 }
 
 void Player::Draw()
 {
+	// 描画処理
+	// [ キャラ ]
 	obj_->Draw();
-
+	// [ プレイヤー自身の当たり判定 ]
+	playerColliderObj_->Draw();
 	if (isAttackViewFlag_) {
+		// [ 攻撃の当たり判定 ]
 		attackColliderObj_->Draw();
 	}
 }
@@ -237,4 +258,12 @@ void Player::TakeDamage(float damage) {
 		// 無敵時間を設定する (HurtState側でリセットする)
 		SetInvulnerable(true);
 	}
+}
+
+// --------------------------
+// Attack Collider
+// --------------------------
+
+void Player::AddAttackColliderType(uint32_t type) {
+	attackCollider_->SetMyType(attackCollider_->GetMyType() | type);
 }

@@ -6,6 +6,8 @@
 #include "player.h"
 #include "Boss.h"
 #include "DxCommon.h"
+#include "../Enemy/EnemyManager.h"
+#include "../Collider/CollisionManager.h"
 
 class PlayScene : public Scene {
 public:		//メンバ関数
@@ -23,4 +25,6 @@ private:	//メンバ変数
 	std::unique_ptr<Model> mountain_ = nullptr;
 	std::unique_ptr<Model> stone_ = nullptr;
 	std::unique_ptr<Model> skydome_ = nullptr;
+	std::unique_ptr<EnemyManager>enemies_ = nullptr;
+	std::unique_ptr<CollisionManager>collisionManager_ = nullptr;
 };
