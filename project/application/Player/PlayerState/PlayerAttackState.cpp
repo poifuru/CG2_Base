@@ -25,7 +25,7 @@ void PlayerAttackState::Update(){
     const float CHARGE_WINDOW_DURATION = 0.15f;
 
     if (attackTimer_ < CHARGE_WINDOW_DURATION) {
-        if (player_->input_->GetRawInput()->Push('J') == false) {
+        if (player_->IsAttack() == false) {
             isAttackHeld_ = false;
         }
     }

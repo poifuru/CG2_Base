@@ -12,6 +12,14 @@ void PlayerStopState::Update() {
 	else if (player_->input_->GetRawInput()->Push('S')) { isMove = true; }
 	else if (player_->input_->GetRawInput()->Push('A')) { isMove = true; }
 	else if (player_->input_->GetRawInput()->Push('D')) { isMove = true; }
+	if (player_->input_->GetGamePad()->IsConection()) {
+		Vector2 gamepad;
+		gamepad = player_->input_->GetGamePad()->GetStick(LR::Left);
+		if (gamepad.x != 0.0f || gamepad.y != 0.0f) {
+			// どちらか片方動いて入れば
+			isMove = true;
+		}
+	}
 
 	bool has_stamina = player_->GetStamina() > 0.0f;
 
@@ -32,7 +40,7 @@ void PlayerStopState::Update() {
 	//	return;
 	//}
 
-	if (player_->input_->GetRawInput()->Push('J')) {
+	if (player_->IsAttack()) {
 		// 攻撃
 		player_->ChangeState(new PlayerAttackState());
 		return;

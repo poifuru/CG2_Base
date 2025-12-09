@@ -34,10 +34,20 @@ void PlayerChargeState::Update() {
         move.x = 1.0f;
     }
 
+    if (player_->input_->GetGamePad()->IsConection()) {
+        Vector2 gamepad;
+        gamepad = player_->input_->GetGamePad()->GetStick(LR::Left);
+        if (gamepad.x != 0.0f || gamepad.y != 0.0f) {
+            // どちらか片方動いて入れば
+            move.x = gamepad.x;
+            move.z = gamepad.y;
+        }
+    }
+
     const float deltaTime = 1.0f / 60.0f;
 
     // 1. 入力チェック: ボタンが離されたか？
-    if (player_->input_->GetRawInput()->Push('J') == false) {
+    if (player_->IsAttack() == false) {
         // ボタンが離されたら、チャージ解放状態へ遷移
         player_->ChangeState(new PlayerChargeReleaseState(currentChargeLevel_));
         return;
