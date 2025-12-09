@@ -40,6 +40,12 @@ void Breath::Initialize() {
         projectiles_[i].curveForce = 0.0f;
         projectiles_[i].currentCurveTimer = 0;
         projectiles_[i].isCurvingZ = false;
+
+        projectiles_[i].collider = std::make_unique<BossProjectileCollider>(
+            &projectiles_[i].transform.translate,
+            3.0f,
+            COL_Boss_Attack_Breath
+        );
     }
 
     totalThrows_ = 0;
@@ -240,4 +246,15 @@ void Breath::ImGuiControl() {
 
     ImGui::End();
 #endif
+}
+
+std::vector<Collider*> Breath::GetColliders() {
+    std::vector<Collider*> colliders;
+    for (int i = 0; i < kNumProjectiles; ++i) {
+        // 弾がアクティブ、かつColliderが存在し、アクティブな場合にリストに追加
+        if (projectiles_[i].isActive && projectiles_[i].collider) {
+            colliders.push_back(projectiles_[i].collider.get());
+        }
+    }
+    return colliders;
 }

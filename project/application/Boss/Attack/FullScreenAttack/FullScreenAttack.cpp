@@ -34,6 +34,12 @@ void FullScreenAttack::Initialize() {
 		projectiles_[i].model->SetModelData("teapot");
 		projectiles_[i].model->SetTexture("teapot");
 		projectiles_[i].model->Initialize();
+
+		projectiles_[i].collider = std::make_unique<BossProjectileCollider>(
+			&projectiles_[i].transform.translate,
+			5.0f,
+			COL_Boss_Attack_FullScreenBullet
+		);
 	}
 }
 
@@ -221,4 +227,15 @@ void FullScreenAttack::ImGuiControl() {
 
 	ImGui::End();
 #endif
+}
+
+std::vector<Collider*> FullScreenAttack::GetColliders() {
+	std::vector<Collider*> colliders;
+	for (int i = 0; i < kNumProjectiles; ++i) {
+		// 弾がアクティブ、かつColliderが存在し、アクティブな場合にリストに追加
+		if (projectiles_[i].isActive && projectiles_[i].collider) {
+			colliders.push_back(projectiles_[i].collider.get());
+		}
+	}
+	return colliders;
 }

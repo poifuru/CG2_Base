@@ -15,6 +15,7 @@ void Player::Initialize()
 	obj_->SetModelData("player");
 	obj_->SetTexture("player");
 	obj_->Initialize();
+	obj_->SetPosition({0.0f,0.0f,-5.0f});
 
 	// 始まりのState
 	state_ = new PlayerStopState();
@@ -137,7 +138,7 @@ void Player::EnableHitBox(bool enable, const Vector3& worldPos) {
 		attackCollider_->SetMyType(COL_Player_Attack);
 
 		// 相手のマスクも設定
-		attackCollider_->SetYourType(COL_Enemy | COL_Enemy_Attack);
+		attackCollider_->SetYourType(COL_Enemy | COL_Enemy_Attack | COL_Boss);
 	}
 	else {
 		// 攻撃判定を非アクティブにする

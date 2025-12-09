@@ -12,6 +12,8 @@ CenterStomp::CenterStomp(Boss* boss) {
 	// 攻撃範囲表示用のモデル作成
 	model_ = std::make_unique<Model>(DxCommon::GetInstance());
 	ModelManager::GetInstance()->LoadModelData ("Resources/boss/wave", "wave");
+
+	collider_ = std::make_unique<CenterStompCollider>(this, 20.0f);
 }
 
 CenterStomp::~CenterStomp() {
@@ -42,6 +44,8 @@ void CenterStomp::StartAttack() {
 	// 「今の場所」から「中央上空」までの移動ルートをここで確定させます
 	startPos_ = boss_->GetPosition();     // スタート地点：今のボスの位置
 	targetPos_ = kCenterPoint_;           // ゴール地点X,Z：中央(0,0)
+
+	
 	}
 
 void CenterStomp::Update(Matrix4x4* m) {
@@ -140,6 +144,8 @@ void CenterStomp::UpdateFall() {
 
 	// 地面に着弾
 	if (timer_ >= duration_) {
+		collider_->SetMyType(COL_Boss_Attack_CenterStomp | COL_Boss_Attack);
+		collider_->SetYourType(COL_Player);
 		// ■ 修正点: 着弾時は必ず目標座標にスナップ
 		boss_->SetPosition(targetPos_);
 
@@ -178,7 +184,8 @@ void CenterStomp::UpdateCooldown() {
 	if (timer_ >= duration_) {
 		// すべて終了、通常状態へ戻る
 		phase_ = StompPhase::None;
-
+		collider_->SetMyType(COL_None);
+		collider_->SetYourType(COL_None);
 		// ■ 重要: ボスが通常行動（UpdateMove）に戻ったとき、
 		// (0,0,0)からスムーズに動けるようにボス側の内部状態も整合性が取れているはずです。
 		// Boss.cpp の UpdateMove は現在の座標から加算しているので問題ありません。

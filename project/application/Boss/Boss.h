@@ -5,6 +5,7 @@
 #include "Breath.h"
 #include "DxCommon.h"
 #include "InputManager.h"
+#include "../Collider/BossBodyCollider.h"
 
 class Player;
 
@@ -24,6 +25,8 @@ public:
 	// Getter
 	Transform& GetTransform() { return transform_; }
 	Vector3& GetPosition() { return transform_.translate; }
+	Collider* GetBodyCollider() const { return bossBodyCollider_.get(); }
+	std::vector<Collider*> GetAttackColliders();
 	// Setter
 	void SetTransform(Transform transform) { transform_ = transform; }
 	void SetPosition(Vector3 position) { transform_.translate = position; }
@@ -104,6 +107,9 @@ private:
 	// HP
 	float maxHP_ = 1000.0f;
 	float hp_ = 1000.0f;
+
+	std::unique_ptr<BossBodyCollider> bossBodyCollider_ = nullptr;
+	std::unique_ptr<Model>bodyColliderObj_ = nullptr;
 
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;

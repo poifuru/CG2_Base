@@ -190,6 +190,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Collider\AttackCollider.cpp" />
     <ClCompile Include="application\Boss\Boss.cpp" />
     <ClCompile Include="application\Boss\Attack\CenterStomp\CenterStomp.cpp" />
+    <ClCompile Include="application\Collider\BossBodyCollider.cpp" />
+    <ClCompile Include="application\Collider\CenterStompCollider.cpp" />
+    <ClCompile Include="application\Collider\BossProjectileCollider.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="externals\imgui\imgui_demo.cpp" />
     <ClCompile Include="externals\imgui\imgui_draw.cpp" />
@@ -362,6 +365,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Collider\Collider.h" />
     <ClInclude Include="application\Boss\Boss.h" />
     <ClInclude Include="application\Boss\Attack\CenterStomp\CenterStomp.h" />
+    <ClInclude Include="application\Collider\BossBodyCollider.h" />
+    <ClInclude Include="application\Collider\CenterStompCollider.h" />
+    <ClInclude Include="application\Collider\BossProjectileCollider.h" />
     <ClInclude Include="magosuya\utility\camera\LookAtCamera.h" />
     <ClInclude Include="magosuya\light\LightStructure.h" />
     <ClInclude Include="magosuya\utility\camera\CameraOrganizer.h" />
