@@ -29,7 +29,7 @@ void Breath::Initialize() {
         projectiles_[i].isActive = false;
         projectiles_[i].lifeTime = 0.0f;
         // スケールを0.3fで固定
-        projectiles_[i].transform = { {0.3f,0.3f,0.3f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
+        projectiles_[i].transform = { {0.1f,0.1f,0.1f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
 
         projectiles_[i].model = std::make_unique<Model>(dxCommon_);
         projectiles_[i].model->SetModelData("fireBall");
@@ -195,11 +195,15 @@ void Breath::UpdateProjectiles() {
             p.transform.translate.y += p.velocity.y;
             p.transform.translate.z += p.velocity.z;
 
+            // ★ 向きの更新 (モデルの正面が -Z のため、π (M_PI) を加算して 180 度回転させる)
+            float angleY = std::atan2(p.velocity.x, p.velocity.z);
+            p.transform.rotate.y = angleY + (float)M_PI;
+
             // 2. 寿命の更新と非アクティブ化
             p.lifeTime--;
 
             // スケールを固定 (kFixedScale で固定)
-            const float kFixedScale = 0.3f;
+            const float kFixedScale = 1.0f;
             p.transform.scale = { kFixedScale, kFixedScale, kFixedScale };
 
             if (p.lifeTime <= 0.0f) {

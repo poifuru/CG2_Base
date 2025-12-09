@@ -172,6 +172,9 @@ void FullScreenAttack::UpdateProjectiles() {
 			// Transformに適用
 			projectiles_[i].transform.scale = { currentScale, currentScale, currentScale };
 
+			float angleY = std::atan2(projectiles_[i].velocity.x, projectiles_[i].velocity.z);
+			projectiles_[i].transform.rotate.y = angleY + (float)M_PI;
+
 			// 4. 寿命が尽きたら非アクティブ化 (変更なし)
 			if (projectiles_[i].lifeTime <= 0.0f) {
 				projectiles_[i].isActive = false;

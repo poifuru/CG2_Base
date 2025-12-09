@@ -47,16 +47,16 @@ void BossBodyCollider::OnCollision(Collider* other) {
 	if (other->GetMyType() & COL_Enemy_Attack){
 		// [ Enemyの爆発の場合 ]
 		if (other->GetMyType() & COL_Enemy_Attack_Level0) {
-			damage = 20.0f;
+			damage = 8.0f;
 		}
 		if (other->GetMyType() & COL_Enemy_Attack_Level1) {
-			damage = 30.0f;
+			damage = 13.0f;
 		}
 		if (other->GetMyType() & COL_Enemy_Attack_Level2) {
-			damage = 45.0f;
+			damage = 24.0f;
 		}
 		if (other->GetMyType() & COL_Enemy_Attack_Level3) {
-			damage = 60.0f;
+			damage = 32.0f;
 		}
 
 		// [ Enemyが死んだ際に出すスリップダメージの場合 ]

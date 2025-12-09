@@ -29,21 +29,21 @@ void PlayerBodyCollider::OnCollision(Collider* other)
 
 		// [ Enemyの爆発の場合 ]
 		if (other->GetMyType() & COL_Enemy_Attack_Level0) {
-			damage = 2.0f;
-		}
-		if (other->GetMyType() & COL_Enemy_Attack_Level1) {
 			damage = 3.0f;
 		}
-		if (other->GetMyType() & COL_Enemy_Attack_Level2) {
+		if (other->GetMyType() & COL_Enemy_Attack_Level1) {
 			damage = 4.5f;
 		}
-		if (other->GetMyType() & COL_Enemy_Attack_Level3) {
+		if (other->GetMyType() & COL_Enemy_Attack_Level2) {
 			damage = 6.0f;
+		}
+		if (other->GetMyType() & COL_Enemy_Attack_Level3) {
+			damage = 7.5f;
 		}
 
 		// [ Enemyが死んだ際に出すスリップダメージの場合 ]
 		if (other->GetMyType() & COL_Enemy_SlipDamage) {
-			damage = 2.0f;
+			damage = 4.0f;
 		}
 	}
 	if (other->GetMyType() & COL_Boss_Attack) {
@@ -51,10 +51,10 @@ void PlayerBodyCollider::OnCollision(Collider* other)
 			damage = 50.0f;
 		}
 		if (other->GetMyType() & COL_Boss_Attack_FullScreenBullet) {
-			damage = 10.0f;
+			damage = 20.0f;
 		}
 		if (other->GetMyType() & COL_Boss_Attack_Breath) {
-			damage = 5.0f;
+			damage = 10.0f;
 		}
 	}
 	if (other->GetMyType() & COL_Boss) {
