@@ -72,6 +72,7 @@ private:
 	void WanderMove();
 	void FollowMove();
 	void EvadeMove();
+	void ClampPosition();
 
 	// Hp関係の関数
 	void UpdateHp();

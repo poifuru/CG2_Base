@@ -128,6 +128,9 @@ void Boss::UpdateMove () {
 
 	// 行動パターン
 	NormalMove ();
+
+	// 行動制限
+	ClampPosition();
 }
 
 void Boss::UpdateAttack() {
@@ -413,6 +416,24 @@ void Boss::UpdateMoveState () {
 		moveTimer_ = 0;
 		break;
 	}
+}
+
+void Boss::ClampPosition() {
+	// X座標を -45.0 から 45.0 に制限
+	if (transform_.translate.x < -45.0f) {
+		transform_.translate.x = -45.0f;
+	} else if (transform_.translate.x > 45.0f) {
+		transform_.translate.x = 45.0f;
+	}
+
+	// Z座標を -45.0 から 45.0 に制限
+	if (transform_.translate.z < -45.0f) {
+		transform_.translate.z = -45.0f;
+	} else if (transform_.translate.z > 45.0f) {
+		transform_.translate.z = 45.0f;
+	}
+
+	// Y座標は動かない前提（-1.0f）なので、ここでは制限しない
 }
 
 void Boss::UpdateHp () {
