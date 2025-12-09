@@ -12,7 +12,7 @@ Breath::Breath(DxCommon* dxCommon, Boss* boss) {
     dxCommon_ = dxCommon;
     boss_ = boss;
 
-    ModelManager::GetInstance()->LoadModelData ("Resources/teapot", "teapot");
+    //ModelManager::GetInstance()->LoadModelData ("Resources/teapot", "teapot");
 }
 
 // デストラクタ
@@ -32,8 +32,8 @@ void Breath::Initialize() {
         projectiles_[i].transform = { {0.3f,0.3f,0.3f}, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} };
 
         projectiles_[i].model = std::make_unique<Model>(dxCommon_);
-        projectiles_[i].model->SetModelData("teapot");
-        projectiles_[i].model->SetTexture("teapot");
+        projectiles_[i].model->SetModelData("fireBall");
+        projectiles_[i].model->SetTexture("fireBall");
         projectiles_[i].model->Initialize();
 
         // カーブ関連の初期化を削除/維持 (構造体の初期値 0.0f/0 を利用)

@@ -12,7 +12,7 @@ FullScreenAttack::FullScreenAttack(DxCommon* dxCommon, Boss* boss) {
 	boss_ = boss;
 
 	// ★ モデルデータ自体は一度だけロードする（モデルのインスタンスはInitializeで生成）
-	ModelManager::GetInstance()->LoadModelData ("Resources/teapot", "teapot");
+	ModelManager::GetInstance()->LoadModelData ("Resources/boss/fireBall", "fireBall");
 }
 
 FullScreenAttack::~FullScreenAttack() {
@@ -31,8 +31,8 @@ void FullScreenAttack::Initialize() {
 
 		// ★ 弾ごとに新しいModelオブジェクトを生成・初期化する
 		projectiles_[i].model = std::make_unique<Model>(dxCommon_);
-		projectiles_[i].model->SetModelData("teapot");
-		projectiles_[i].model->SetTexture("teapot");
+		projectiles_[i].model->SetModelData("fireBall");
+		projectiles_[i].model->SetTexture("fireBall");
 		projectiles_[i].model->Initialize();
 
 		projectiles_[i].collider = std::make_unique<BossProjectileCollider>(
