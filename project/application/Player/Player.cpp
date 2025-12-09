@@ -267,3 +267,29 @@ void Player::TakeDamage (float damage) {
 void Player::AddAttackColliderType (uint32_t type) {
 	attackCollider_->SetMyType (attackCollider_->GetMyType () | type);
 }
+
+// --------------------------
+// Input Function
+// --------------------------
+
+bool Player::IsAttack() {
+	bool flag = false;
+	if (input_->GetRawInput()->Push('J')) {
+		flag = true;
+	}
+	if (input_->GetGamePad()->IsConection()) {
+		if (input_->GetGamePad()->PushButton(Button::L)) {
+			flag = true;
+		}
+		if (input_->GetGamePad()->PushButton(Button::R)) {
+			flag = true;
+		}
+		/*if (input_->GetGamePad()->PushButton(Button::BACK)) {
+			flag = true;
+		}
+		if (input_->GetGamePad()->PushButton(Button::PUSHIN_RIGHT)) {
+			flag = true;
+		}*/
+	}
+	return flag;
+}

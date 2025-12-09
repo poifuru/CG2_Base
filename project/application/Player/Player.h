@@ -53,7 +53,9 @@ public:
 
 	// BodyCollider
 	PlayerBodyCollider& GetPlayerBodyCollider() { return *playerCollider_.get(); }
-
+	// 入力関係
+	// [ 攻撃 ]
+	bool IsAttack();
 	// 位置の取得
 	const Transform& GetTransform () { return obj_->GetTransform (); }
 	Vector3 GetPosition() { return obj_->GetTransform().translate; }

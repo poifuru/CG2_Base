@@ -43,6 +43,17 @@ void PlayerHurtState::Update()
 		isMove = true;
 	}
 
+	if (player_->input_->GetGamePad()->IsConection()) {
+		Vector2 gamepad;
+		gamepad = player_->input_->GetGamePad()->GetStick(LR::Left);
+		if (gamepad.x != 0.0f || gamepad.y != 0.0f) {
+			// どちらか片方動いて入れば
+			move.x = gamepad.x;
+			move.z = gamepad.y;
+			isMove = true;
+		}
+	}
+
 	// デルタタイム
 	const float deltaTime = 1.0f / 60.0f;
 	hurtTimer_ += deltaTime;
