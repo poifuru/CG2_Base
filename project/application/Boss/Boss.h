@@ -129,11 +129,8 @@ private:
 	float maxHP_ = 10000.0f;
 	float hp_ = 10000.0f;
 	bool isAlive_ = true;
+	bool bossExtinction_ = false;
 
-	// デスパーティクル
-	std::unique_ptr <MeshParticle> deathParticle_ = nullptr;
-	bool spawnFlag_ = false;
-	
 	// Collider
 	std::unique_ptr<BossBodyCollider> bossBodyCollider_ = nullptr;
 	std::unique_ptr<Model>bodyColliderObj_ = nullptr;

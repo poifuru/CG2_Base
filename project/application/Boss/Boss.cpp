@@ -40,9 +40,6 @@ void Boss::Initialize () {
 	bodyColliderObj_->Initialize ();
 	bodyColliderObj_->SetColor ({ 0.0f,0.0f,0.0f,1.0f });
 	defaultRadius_ = bossBodyCollider_->GetRadius();
-
-	deathParticle_ = std::make_unique<MeshParticle>();
-	deathParticle_->Initialize();
 }
 
 void Boss::Update (Matrix4x4* m) {
@@ -72,18 +69,16 @@ void Boss::Update (Matrix4x4* m) {
 
 	bodyColliderObj_->Update (m);
 
-	if (!isAlive_) {
-		deathParticle_->Update(m);
-	}
 }
 
 void Boss::Draw () {
-	model_->Draw ();
-	bodyColliderObj_->Draw ();
+	if (!bossExtinction_) {
+		model_->Draw();
+		bodyColliderObj_->Draw();
+	}
 	centerStomp_->Draw ();
 	fullScreenAttack_->Draw ();
 	Breath_->Draw ();
-	if(!isAlive_){ deathParticle_->Draw(); }
 }
 
 void Boss::ImGuiControl () {
@@ -92,8 +87,7 @@ void Boss::ImGuiControl () {
 	centerStomp_->ImGuiControl ();
 	fullScreenAttack_->ImGuiControl ();
 	Breath_->ImGuiControl ();
-	if (!isAlive_) { deathParticle_->ImGui(); }
-
+	
 	ImGui::Begin ("Status");
 	if (ImGui::BeginTabBar ("StatusTabBar")) {
 		if (ImGui::BeginTabItem ("HP")) {
@@ -538,7 +532,7 @@ void Boss::UpdateDead() {
 		bossBodyCollider_->SetRadius(defaultRadius_);
 		transform_.scale = { 1.0f,1.0f,1.0f };
 		transform_.rotate.x = 0.0f;
-		spawnFlag_ = false;
+		bossExtinction_ = false;
 		return;
 	}
 
@@ -548,19 +542,14 @@ void Boss::UpdateDead() {
 		transform_.scale.y -= 0.015f;
 		transform_.scale.z -= 0.015f;
 		// 影のscale
-		shadowRadius_ -= 0.15f;
+		shadowRadius_ -= 0.1f;
 		bossBodyCollider_->SetRadius(shadowRadius_);
 		// rotate
 		transform_.rotate.x += 0.025f;
 		transform_.rotate.y += 0.25f;
 
 	} else {
-		// デスパーティクルをボスの位置に
-		if (!spawnFlag_) {
-			deathParticle_->SetEmitterPos(transform_.translate * 0.8f);
-			deathParticle_->Spawn();
-			spawnFlag_ = true;
-		}
+		bossExtinction_ = true;
 	}
 }
 

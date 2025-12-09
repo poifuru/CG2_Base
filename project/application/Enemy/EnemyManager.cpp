@@ -52,7 +52,7 @@ void EnemyManager::Update(Matrix4x4* m) {
 }
 
 void EnemyManager::Draw() {
-	obj_->Draw();
+	//obj_->Draw();
 	for (const auto& enemy : enemies_) {
 		enemy->Draw();
 	}
