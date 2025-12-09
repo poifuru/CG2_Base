@@ -51,7 +51,7 @@ void PlayerBodyCollider::OnCollision(Collider* other)
 			damage = 50.0f;
 		}
 		if (other->GetMyType() & COL_Boss_Attack_FullScreenBullet) {
-			damage = 20.0f;
+			damage = 10.0f;
 		}
 		if (other->GetMyType() & COL_Boss_Attack_Breath) {
 			damage = 10.0f;
