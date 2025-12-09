@@ -104,6 +104,10 @@ void EnemyBodyCollider::OnCollision(Collider* other)
 			return;
 		}
 	}
+	else if (other->GetMyType() & COL_Boss) {
+		enemy_->TakeBossDamage();
+		return;
+	}
 }
 
 const Vector3 EnemyBodyCollider::GetWorldPosition()

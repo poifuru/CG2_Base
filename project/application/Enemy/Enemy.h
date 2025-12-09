@@ -22,6 +22,7 @@ public:
 	// [ 攻撃を喰らった際の処理 ]
 	void TakeDamage(float damage);
 	void TakeSlipDamage();
+	void TakeBossDamage();
 public:
 	// 設定や取得の関数
 	// [ 移動量 ]
