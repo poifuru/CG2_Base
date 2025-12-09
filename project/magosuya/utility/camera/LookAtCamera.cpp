@@ -17,10 +17,12 @@ void LookAtCamera::Initialize (const Transform& transform) {
 	target_ = {};
 	distance_ = 15.0f;
 
-	camera_.transform.translate.z = 0.0f;
+	camera_.transform.rotate.x = 0.3f;
+	camera_.transform.rotate.y = -1.0f;
 
-	camera_.world = Math::MakeAffineMatrix (camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);
-	camera_.view = Math::Inverse (camera_.world);
+	sensitivity_ = 0.001f;
+	pitchOver_ = 1.5708f;
+
 	camera_.proj = Math::MakePerspectiveFOVMatrix (0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, 0.1f, 1000.0f);
 }
 

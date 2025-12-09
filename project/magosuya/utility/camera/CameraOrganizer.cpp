@@ -50,6 +50,7 @@ void CameraOrganizer::AddCamera (const std::string& name, CameraType type) {
 	case::CameraType::LookAtCamera: {
 		LookAtCamera* lookAtCam = new LookAtCamera (input_);
 		camera = lookAtCam;
+		break;
 	}
 
 	case::CameraType::DebugCamera: {

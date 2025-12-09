@@ -35,7 +35,7 @@ void DebugCamera::Initialize(const Transform& transform) {
 	camera_.view = Math::Inverse (camera_.world);
 	camera_.proj = Math::MakePerspectiveFOVMatrix(0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, 0.1f, 1000.0f);
 
-	speed_ = 0.1f;
+	speed_ = 0.3f;
 }
 
 void DebugCamera::Update() {
