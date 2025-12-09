@@ -27,6 +27,9 @@ void EnemyBodyCollider::OnCollision(Collider* other)
 
 	// 衝突相手が COL_Enemy_Attack 属性を持っているか確認
 	if (other->GetMyType() & COL_Player_Attack){
+		// プレイヤーの攻撃が当たったかどうかをプラスする
+		enemy_->AddBodyHitType(COL_Enemy_Attack_From_Player);
+
 		Vector3 playerPos = other->GetWorldPosition();
 		Vector3 playerToEnemy = (enemyPos - playerPos);
 		playerToEnemy.y = 0.0f;
@@ -105,8 +108,10 @@ void EnemyBodyCollider::OnCollision(Collider* other)
 		}
 	}
 	else if (other->GetMyType() & COL_Boss) {
-		enemy_->TakeBossDamage();
-		return;
+		if (GetMyType() & COL_Enemy_Attack_From_Player) {
+			enemy_->TakeBossDamage();
+			return;
+		}
 	}
 }
 

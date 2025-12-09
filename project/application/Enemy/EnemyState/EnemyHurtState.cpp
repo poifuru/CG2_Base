@@ -21,6 +21,9 @@ void EnemyHurtState::Initialize() {
 	}
 
 	moveAmount_ = enemy_->GetKnockBackDirection();
+	if (enemy_->GetBodyCollider().GetMyType() & COL_Enemy_Attack_From_Player) {
+		enemy_->SetIsViewPlayerFlag(false);
+	}
 }
 
 void EnemyHurtState::Update() {
@@ -75,6 +78,13 @@ void EnemyHurtState::Update() {
 	}
 	// 攻撃の威力を設定してあげる
 	enemy_->SetAttackLevel(attackLevel_);
+
+	// [ COL_Enemy_Attack_From_Playerがあれば回転する ]
+	if (enemy_->GetBodyCollider().GetMyType() & COL_Enemy_Attack_From_Player) {
+		Vector3 rotation = enemy_->GetRotation();
+		rotation.y += Math::Deg2Rad(12);
+		enemy_->SetRotation(rotation);
+	}
 
 	// 3, 速度が一定以下になったらPreExplosionStateに移行
 	if (moveSpeed <= minSpeed_) {

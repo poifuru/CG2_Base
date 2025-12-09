@@ -53,6 +53,7 @@ public:
 	float GetMoveSpeed()const { return moveSpeed_; }
 	// [ 敵の当たり判定 ]
 	EnemyBodyCollider& GetBodyCollider() { return *bodyCollider_.get(); }
+	void AddBodyHitType(uint32_t type);
 	// [ 攻撃の当たり判定 ]
 	AttackCollider& GetAttackCollider() { return *attackCollider_.get(); }
 	// [ 当たり判定の設定 ]
