@@ -18,7 +18,7 @@ void LookAtCamera::Initialize (const Transform& transform) {
 	distance_ = 15.0f;
 
 	camera_.transform.rotate.x = 0.3f;
-	camera_.transform.rotate.y = -1.0f;
+	//camera_.transform.rotate.y = -1.0f;
 
 	sensitivity_ = 0.001f;
 	pitchOver_ = 1.5708f;
@@ -30,7 +30,7 @@ void LookAtCamera::Update () {
 	//マウスで視点移動
 	//回転処理(左クリックしながらドラッグ)
 	// カーソル非表示
-	if (input_->GetRawInput ()->TriggerMouse (MouseButton::MIDDLE)) {
+	if (input_->GetRawInput ()->PushMouse (MouseButton::MIDDLE)) {
 		ShowCursor (FALSE);
 		//ターゲットの球面座標上を回転させる
 		camera_.transform.rotate.y += input_->GetRawInput ()->GetMouseDeltaX () * sensitivity_;
@@ -44,7 +44,7 @@ void LookAtCamera::Update () {
 			camera_.transform.rotate.x = -pitchOver_;
 		}
 	}
-	if (input_->GetRawInput ()->ReleaseMouse (MouseButton::MIDDLE)) {
+	else {
 		// カーソルの制限を解除（NULLを指定）
 		ClipCursor (NULL);
 		ShowCursor (TRUE);

@@ -25,7 +25,7 @@ void EnemyManager::Initialize(Player* player) {
 	// [ Model ] 
 	obj_->SetModelData("zako");
 	obj_->SetTexture("zako");
-	obj_->Initialize({ 1.0f,1.0f,1.0f }, {0.0f,Math::Deg2Rad(90),Math::Deg2Rad(0)});
+	obj_->Initialize({ 1.0f,1.0f,1.0f }, {0.0f,Math::Deg2Rad(90),Math::Deg2Rad(0)}, {10.0f, 0.0f, 10.0f});
 }
 
 void EnemyManager::Update(Matrix4x4* m) {

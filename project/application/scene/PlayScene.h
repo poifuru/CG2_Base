@@ -24,6 +24,8 @@ private:	//メンバ変数
 	std::unique_ptr<Model> ground_ = nullptr;
 	std::unique_ptr<Model> mountain_ = nullptr;
 	std::unique_ptr<Model> stone_ = nullptr;
+	std::unique_ptr<Model> stone2_ = nullptr;
+	std::unique_ptr<Model> stone3_ = nullptr;
 	std::unique_ptr<Model> skydome_ = nullptr;
 	std::unique_ptr<EnemyManager>enemies_ = nullptr;
 	std::unique_ptr<CollisionManager>collisionManager_ = nullptr;

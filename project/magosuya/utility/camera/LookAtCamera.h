@@ -17,6 +17,7 @@ public:	//メンバ関数
 	//ImGui
 	void ImGui () override;
 
+	void SetPosition (const Vector3& pos) { camera_.transform.translate = pos; }
 	void SetTarget (const Vector3& targetPos) { target_ = targetPos; }
 	bool GetTatchImGui () { return tatchImGui_; }
 	void SetTatchImGui (bool flag) { tatchImGui_ = flag; }

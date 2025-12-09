@@ -155,6 +155,23 @@ void CameraOrganizer::SetFollowTarget (const std::string& cameraName, const Tran
 	}
 }
 
+void CameraOrganizer::SetLookAtPosition (const std::string& cameraName, const Vector3& pos) {
+	auto it = cameras_.find (cameraName);
+	if (it == cameras_.end ()) {
+		return;
+	}
+
+	CameraComponent* camera = it->second;
+
+	// 2. FollowCamera型にダウンキャストする
+	LookAtCamera* lookAtCamera = dynamic_cast<LookAtCamera*>(camera);
+
+	if (lookAtCamera) {
+		// 3. ダウンキャストに成功したら、SetTarget() を呼び出す！
+		lookAtCamera->SetPosition (pos);
+	}
+}
+
 void CameraOrganizer::SetLookAtTarget (const std::string& cameraName, const Vector3& targetPos) {
 	auto it = cameras_.find (cameraName);
 	if (it == cameras_.end ()) {

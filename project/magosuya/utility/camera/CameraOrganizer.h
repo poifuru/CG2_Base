@@ -45,6 +45,7 @@ public:
 	void SetFollowTarget (const std::string& cameraName, const Transform& target);
 
 	//LookAtカメラの設定をいじるためにコンテナからカメラを取得
+	void SetLookAtPosition (const std::string& cameraName, const Vector3& pos);
 	void SetLookAtTarget (const std::string& cameraName, const Vector3& targetPos);
 
 	//描画用のvp行列取得関数
