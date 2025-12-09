@@ -14,7 +14,7 @@ MeshParticle::MeshParticle () {
 		{},
 		{}
 	};
-	emitter_.count = 100;
+	emitter_.count = 1000;
 	emitter_.frequency = 0.3f;
 	emitter_.frequencyTime = 0.0f;
 	for (uint32_t i = 0; i < 2; ++i) {
@@ -142,16 +142,17 @@ MeshParticleData MeshParticle::MakeNewParticle (std::mt19937 randomEngine, const
 	pos_z = std::uniform_real_distribution<float> (-emitter_.transform.scale.z, emitter_.transform.scale.z);
 	randRotate_ = std::uniform_real_distribution<float> (0.3f, 0.9f);
 	randSize_ = std::uniform_real_distribution<float> (0.01f, 0.1f);
-	randVelocity_ = std::uniform_real_distribution<float> (0.0f, 5.0f);
+	randVelocity1_ = std::uniform_real_distribution<float> (0.0f, 5.0f);
+	randVelocity2_ = std::uniform_real_distribution<float> (-5.0f, 5.0f);
 	randColor_ = std::uniform_real_distribution<float> (0.0f, 1.0f);
-	randTime_ = std::uniform_real_distribution<float> (3.0f, 5.0f);
+	randTime_ = std::uniform_real_distribution<float> (2.0f, 3.0f);
 
 	//パーティクル情報の初期化
 	data.cube.transform.scale = { 0.25f, 0.25f, 0.25f };
 	data.cube.transform.rotate = { 0.0f, 0.0f, 0.0f };
 	data.cube.transform.translate = { pos_x (randomEngine), pos_y (randomEngine), pos_z (randomEngine) };
 	data.cube.size = 1.0f;
-	data.velocity = { 0.0f, randVelocity_ (randomEngine), 0.0f };
+	data.velocity = { randVelocity2_ (randomEngine), randVelocity1_ (randomEngine), randVelocity2_ (randomEngine) };
 	Vector4 color1 = { 1.0f, 0.1f, 0.1f, 1.0f };
 	Vector4 color2 = { 0.7f, 0.1f, 0.1f, 1.0f };
 	for (uint32_t i = 0; i < 4; ++i) {
