@@ -5,7 +5,8 @@
 #include "Breath.h"
 #include "DxCommon.h"
 #include "InputManager.h"
-#include "../Collider/BossBodyCollider.h"
+#include "BossBodyCollider.h"
+#include "MeshParticle.h"
 
 class Player;
 
@@ -27,6 +28,7 @@ public:
 	Vector3& GetPosition() { return transform_.translate; }
 	Collider* GetBodyCollider() const { return bossBodyCollider_.get(); }
 	std::vector<Collider*> GetAttackColliders();
+	bool& GetIsAlive() { return isAlive_; }
 	// Setter
 	void SetTransform(Transform transform) { transform_ = transform; }
 	void SetPosition(Vector3 position) { transform_.translate = position; }
@@ -63,6 +65,9 @@ private:
 	// 歩くアニメーション
 	void UpdateRotation();
 	void UpdateAnimation();
+
+	// 死亡したとき
+	void UpdateDead();
 
 private:
 	std::unique_ptr<Model> model_ = nullptr;
@@ -105,11 +110,18 @@ private:
 	float speed_ = 0.1f;
 
 	// HP
-	float maxHP_ = 1000.0f;
-	float hp_ = 1000.0f;
+	float maxHP_ = 10000.0f;
+	float hp_ = 10000.0f;
+	bool isAlive_ = true;
 
+	// デスパーティクル
+	std::unique_ptr <MeshParticle> deathParticle_ = nullptr;
+	
+	// Collider
 	std::unique_ptr<BossBodyCollider> bossBodyCollider_ = nullptr;
 	std::unique_ptr<Model>bodyColliderObj_ = nullptr;
+	float defaultRadius_ = 0.0f;
+	float shadowRadius_ = 0.0f;
 
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;

@@ -221,7 +221,7 @@ void Breath::Draw() {
 
 // ImGuiコントロール
 void Breath::ImGuiControl() {
-#ifdef _DEBUG
+#ifdef USEIMGUI
     ImGui::Begin("Throw Minion Attack");
     static int testThrows = 150;
     static float testInterval = 0.001f;

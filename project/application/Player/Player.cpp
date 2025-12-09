@@ -86,13 +86,14 @@ void Player::Update (Matrix4x4* m) {
 	playerColliderObj_->Update (m);
 	attackColliderObj_->Update (m);
 #ifdef _DEBUG
-	ImGui::Begin ("Player");
-	ImGui::SliderFloat3 ("Direction", &direction_.x, 0.0f, 0.0f);
-	ImGui::DragFloat3 ("pos", &pos.x);
-	ImGui::DragFloat ("HP", &hp_);
-	ImGui::DragFloat ("Normal Speed", &speed_, 0.01f);
-	ImGui::End ();
-	obj_->ImGui ("player");
+	ImGui::Begin("Player");
+	ImGui::SliderFloat3("Direction", &direction_.x,0.0f,0.0f);
+	ImGui::DragFloat3("pos", &pos.x);
+	std::string hpText = std::format("HP: {:.0f} / {:.0f}", hp_, maxHP_);
+	ImGui::ProgressBar(hp_ / maxHP_, ImVec2(0.0f, 0.0f), hpText.c_str());
+	ImGui::DragFloat("Normal Speed", &speed_,0.01f);
+	ImGui::End();
+	obj_->ImGui("player");
 #endif//_DEBUG
 }
 

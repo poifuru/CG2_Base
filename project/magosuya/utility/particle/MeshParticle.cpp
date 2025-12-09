@@ -95,8 +95,8 @@ void MeshParticle::Draw () {
 	for (particleIterator_ = particles_.begin (); particleIterator_ != particles_.end (); ++particleIterator_) {
 		Mesh::DrawCube (&particleIterator_->cube, *vp_);
 	}
-	EmitterLineDraw ();
-	FieldLineDraw ();
+	//EmitterLineDraw ();
+	//FieldLineDraw ();
 }
 
 void MeshParticle::ImGui () {
