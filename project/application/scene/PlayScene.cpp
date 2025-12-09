@@ -106,11 +106,11 @@ void PlayScene::Update () {
 }
 
 void PlayScene::Draw () {
-	player_->Draw();
-	boss_->Draw();
+	skydome_->Draw ();
 	ground_->Draw ();
 	mountain_->Draw ();
 	stone_->Draw ();
-	skydome_->Draw ();
+	player_->Draw();
+	boss_->Draw();
 	enemies_->Draw();
 }
