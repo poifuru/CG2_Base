@@ -115,6 +115,7 @@ void PlayScene::Update () {
 	stone2_->Update (camera_->GetVPMatrix ());
 	stone3_->Update (camera_->GetVPMatrix ());
 	skydome_->Update (camera_->GetVPMatrix ());
+	enemies_->SetPos ({ boss_->GetPosition ().x,0.0f,boss_->GetPosition ().z });
 	enemies_->Update(camera_->GetVPMatrix ());
 
 	// [ 当たり判定 ]
