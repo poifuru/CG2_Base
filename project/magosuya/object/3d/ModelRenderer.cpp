@@ -35,7 +35,7 @@ void ModelRenderer::Initialize () {
 	desc_.VS_ID = ShaderManager::GetInstance ()->CompileAndCasheShader (L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
 	desc_.PS_ID = ShaderManager::GetInstance ()->CompileAndCasheShader (L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
 	desc_.InputLayoutID = InputLayoutType::Standard3D;
-	desc_.BlendMode = BlendModeType::Opaque;
+	desc_.BlendMode = BlendModeType::Alpha;
 }
 
 void ModelRenderer::Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform) {

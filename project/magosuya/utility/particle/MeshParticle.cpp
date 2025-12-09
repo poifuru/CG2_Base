@@ -14,7 +14,7 @@ MeshParticle::MeshParticle () {
 		{},
 		{}
 	};
-	emitter_.count = 10;
+	emitter_.count = 100;
 	emitter_.frequency = 0.3f;
 	emitter_.frequencyTime = 0.0f;
 	for (uint32_t i = 0; i < 2; ++i) {
@@ -27,7 +27,7 @@ MeshParticle::MeshParticle () {
 		{0.0f, 2.0f, 0.0f},},
 
 		//acceleration
-		{-15.0f, 0.0f, 0.0f},
+		{0.0f, 0.0f, 0.0f},
 
 		//AABB
 		{{-1.0f, -1.0f, -1.0f},
@@ -44,7 +44,7 @@ void MeshParticle::Initialize () {
 
 void MeshParticle::Update (Matrix4x4* vp) {
 	//Emitter更新
-	EmitterUpdate ();
+	//EmitterUpdate ();
 	//エミッター範囲描画用ラインの更新
 	EmitterLinePosUpdate ();
 
@@ -126,6 +126,10 @@ void MeshParticle::ImGui () {
 	ImGui::End ();
 }
 
+void MeshParticle::Spawn () {
+	MakeNewParticle (randomEngine_, emitter_);
+}
+
 MeshParticleData MeshParticle::MakeNewParticle (std::mt19937 randomEngine, const Emitter& emitter_) {
 	//乱数エンジンのインスタンスを作成してrdの結果で初期化する
 	randomEngine.seed (rd ());
@@ -148,8 +152,11 @@ MeshParticleData MeshParticle::MakeNewParticle (std::mt19937 randomEngine, const
 	data.cube.transform.translate = { pos_x (randomEngine), pos_y (randomEngine), pos_z (randomEngine) };
 	data.cube.size = 1.0f;
 	data.velocity = { 0.0f, randVelocity_ (randomEngine), 0.0f };
-	for (uint32_t i = 0; i < 8; ++i) {
-		data.cube.color[i] = { randColor_ (randomEngine), randColor_ (randomEngine), randColor_ (randomEngine), 1.0f };
+	Vector4 color1 = { 1.0f, 0.1f, 0.1f, 1.0f };
+	Vector4 color2 = { 0.7f, 0.1f, 0.1f, 1.0f };
+	for (uint32_t i = 0; i < 4; ++i) {
+		data.cube.color[0 + i * 2] = color1;
+		data.cube.color[1 * i * 2] = color2;
 	}
 	data.lifeTime = randTime_ (randomEngine);
 	data.currentTime = 0.0f;

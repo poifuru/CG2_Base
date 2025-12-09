@@ -84,7 +84,7 @@ void CubeRenderer::Initialize (DxCommon* dxCommon) {
 	desc_.VS_ID = ShaderManager::GetInstance ()->CompileAndCasheShader (L"Resources/shader/Cube.VS.hlsl", L"vs_6_0");
 	desc_.PS_ID = ShaderManager::GetInstance ()->CompileAndCasheShader (L"Resources/shader/Cube.PS.hlsl", L"ps_6_0");
 	desc_.InputLayoutID = InputLayoutType::CubeMesh;
-	desc_.BlendMode = BlendModeType::Alpha;
+	desc_.BlendMode = BlendModeType::Additive;
 	desc_.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;	//三角形で描画
 	PSOManager::GetInstance ()->GetOrCreratePSO (desc_);
 }
