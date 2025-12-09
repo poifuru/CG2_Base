@@ -21,6 +21,7 @@ enum COLLISIONATTRIBUTE :int {
 	COL_Boss_Attack_CenterStomp = 1 << 15,
 	COL_Boss_Attack_FullScreenBullet = 1 << 16,
 	COL_Boss_Attack_Breath = 1 << 17,
+	COL_Enemy_Attack_From_Player = 1 << 18,
 };
 
 class Collider

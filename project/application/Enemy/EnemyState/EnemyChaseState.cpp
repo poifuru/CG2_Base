@@ -50,5 +50,5 @@ void EnemyChaseState::Update() {
 
 void EnemyChaseState::Exit() {
 	// 終了処理
-
+	enemy_->SetIsViewPlayerFlag(false);
 }

@@ -227,6 +227,14 @@ void Enemy::AddAttackHitType() {
 	}
 }
 
+void Enemy::AddBodyHitType(uint32_t type) {
+	if ((bodyCollider_->GetMyType() & type) != 0) {
+		// 既に追加されていたら無視
+		return;
+	}
+	bodyCollider_->SetMyType(bodyCollider_->GetMyType() | type);
+}
+
 // ---------------------------------
 // Level による処理の追加
 // ---------------------------------
