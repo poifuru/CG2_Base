@@ -136,19 +136,87 @@ void Boss::UpdateMove () {
 	NormalMove ();
 }
 
-void Boss::UpdateAttack () {
-	if (!isAlive_) {
+void Boss::UpdateAttack() {
+	if (!isAlive_ || IsAnyAttackActive() || Breath_->IsAttacking()) { // 攻撃中、またはブレス発動中は処理しない
 		return;
 	}
 
-	if (input_->GetRawInput ()->Trigger ('1')) {
-		centerStomp_->StartAttack ();
+	// クールダウンが終了したら新しい攻撃を選択
+	if (attackCooldownTimer_ <= 0) {
+		AttackType selectedAttack = SelectAttack();
+		StartSelectedAttack(selectedAttack);
+
+		// クールダウンを設定 (フェーズに応じて調整)
+		// HPが半分以上 (フェーズ1) の方が、クールダウンが長く（攻撃頻度が低く）なるようにする
+		if (hp_ > maxHP_ * 0.5f) {
+			// フェーズ1: 攻撃頻度が低い (クールダウンが長い)
+			attackCooldownTimer_ = baseCooldownFrames_;
+		} else {
+			// フェーズ2: 攻撃頻度が高い (クールダウンが短い)
+			attackCooldownTimer_ = baseCooldownFrames_ / 2;
+		}
+
+	} else {
+		attackCooldownTimer_--; // クールダウンを減らす
 	}
-	if (input_->GetRawInput ()->Trigger ('2')) {
-		fullScreenAttack_->StartAttack ();
+}
+
+Boss::AttackType Boss::SelectAttack() {
+	// 攻撃確率を定義
+	// {AttackType, 確率の重み}
+
+	std::vector<std::pair<AttackType, int>> attackWeights;
+
+	if (hp_ > maxHP_ * 0.5f) {
+		// フェーズ1 (HP > 50%): 攻撃回数が少なく、弱い攻撃を優先
+		attackWeights = {
+			{AttackType::CenterStomp, 10},
+			{AttackType::FullScreenAttack, 60},
+			{AttackType::Breath, 30}
+		};
+	} else {
+		// フェーズ2 (HP <= 50%): 攻撃回数が増え、強力な攻撃や追尾が必要な攻撃を優先
+		attackWeights = {
+			{AttackType::CenterStomp, 40},
+			{AttackType::FullScreenAttack, 20},
+			{AttackType::Breath, 40}
+		};
 	}
-	if (input_->GetRawInput ()->Trigger ('3')) {
-		Breath_->StartAttack (150, 0.001f);
+
+	// 重みに基づいてランダムで攻撃を選択
+	int totalWeight = 0;
+	for (const auto& pair : attackWeights) {
+		totalWeight += pair.second;
+	}
+
+	int randomValue = rand() % totalWeight;
+	int currentWeight = 0;
+
+	for (const auto& pair : attackWeights) {
+		currentWeight += pair.second;
+		if (randomValue < currentWeight) {
+			return pair.first;
+		}
+	}
+
+	return AttackType::CenterStomp; // フォールバック
+}
+
+void Boss::StartSelectedAttack(AttackType attackType) {
+	if (attackType == AttackType::CenterStomp) {
+		centerStomp_->StartAttack();
+	} else if (attackType == AttackType::FullScreenAttack) {
+		fullScreenAttack_->StartAttack();
+	} else if (attackType == AttackType::Breath) {
+		float speed = 0.15f; // フェーズ1の基本速度 (例)
+
+		// HPが半分以下 (フェーズ2) なら速度を上げる
+		if (hp_ <= maxHP_ * 0.5f) {
+			speed *= phase2SpeedFactor_; // phase2SpeedFactor_ は例として 1.5f
+		}
+
+		// Breath::StartAttack(duration, speed) を使用
+		Breath_->StartAttack(150, speed);
 	}
 }
 
