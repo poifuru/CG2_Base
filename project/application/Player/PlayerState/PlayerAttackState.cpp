@@ -15,6 +15,8 @@ void PlayerAttackState::Initialize(){
 
     // チャージ判定の初期化
     isAttackHeld_ = true;
+
+    player_->SetModelData("normalAttack");
 }
 
 void PlayerAttackState::Update(){

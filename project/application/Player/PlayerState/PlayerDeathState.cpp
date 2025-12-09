@@ -24,6 +24,22 @@ void PlayerDeathState::Update()
 	deathTimer_ += deltaTime;
 
 	// 1. **移動の停止** (Updateでも念のため停止を継続)
+	Vector3 rotation = player_->GetRotation();
+	rotation.y += Math::Deg2Rad(12);
+	player_->SetRotation(rotation);
+
+	Vector3 scale = player_->GetScale();
+	if (scale.x > 0.0f) {
+		scale.x -= 0.015f;
+		scale.y -= 0.015f;
+		scale.z -= 0.015f;
+	}
+	else if (scale.x < 0.0f) {
+		scale.x = 0.0f;
+		scale.y = 0.0f;
+		scale.z = 0.0f;
+	}
+	player_->SetScale(scale);
 	
 	// 2. **演出タイマーのチェック**
 	if (deathTimer_ >= MAX_DEATH_DURATION)

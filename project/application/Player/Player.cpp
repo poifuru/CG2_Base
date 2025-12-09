@@ -70,6 +70,18 @@ void Player::Update (Matrix4x4* m) {
 	pos.x += move_.x * speed_ * speedMultiplier_;
 	pos.y += move_.y * verticalVelocity_;
 	pos.z += move_.z * speed_ * speedMultiplier_;
+	if (pos.x <= -45.0f) {
+		pos.x = -44.5f;
+	}
+	if (pos.x >= 45.0f) {
+		pos.x = 44.5f;
+	}
+	if (pos.z >= 45.0f) {
+		pos.z = 44.5f;
+	}
+	if (pos.z <= -45.0f) {
+		pos.z = -44.5f;
+	}
 	obj_->SetTransform ({ obj_->GetTransform ().scale,obj_->GetTransform ().rotate,{pos.x, pos.y - 0.99f, pos.z} });
 
 	playerColliderObj_->SetTransform ({ {playerCollider_->GetRadius () * 0.7f,0.1f,playerCollider_->GetRadius () * 0.7f},{0.0f,0.0f,0.0f},
@@ -79,7 +91,7 @@ void Player::Update (Matrix4x4* m) {
 
 	playerColliderObj_->SetColor ({ 0.0f, 0.0f, 0.0f, 1.0f });
 
-	attackColliderObj_->SetTransform ({ {attackCollider_->GetRadius (),1.0f,attackCollider_->GetRadius ()},{0.0f,0.0f,0.0f},
+	attackColliderObj_->SetTransform ({ {attackCollider_->GetRadius() / 5.53f * 2.0f,1.0f,attackCollider_->GetRadius() / 5.53f * 2.0f},obj_->GetTransform().rotate,
 		{attackCollider_->GetWorldPosition ().x,
 		attackCollider_->GetWorldPosition ().y - 0.5f,
 		attackCollider_->GetWorldPosition ().z} });
@@ -295,4 +307,8 @@ bool Player::IsAttack() {
 		}*/
 	}
 	return flag;
+}
+
+void Player::SetModelData(const std::string& name) {
+	attackColliderObj_->SetModelData(name);
 }

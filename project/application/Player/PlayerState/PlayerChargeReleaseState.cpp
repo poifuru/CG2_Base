@@ -6,6 +6,8 @@ void PlayerChargeReleaseState::Initialize() {
 
     releaseTimer_ = 0.0f;
 
+    player_->SetModelData("wave");
+
     // チャージレベルに応じた攻撃アニメーション再生
     // if (chargeLevel_ == 2) { player_->PlayChargeAttackLevel2Animation(); }
     // else if (chargeLevel_ == 1) { player_->PlayChargeAttackLevel1Animation(); }
