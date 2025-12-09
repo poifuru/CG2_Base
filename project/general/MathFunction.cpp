@@ -329,6 +329,55 @@ namespace Math {
 		return result;
 	}
 
+	Matrix4x4 MakeLookAtMatrix (const Vector3& eye, const Vector3& target, const Vector3& up) {
+		//前方向ベクトルfの計算(Z軸)
+		Vector3 f = Math::Normalize (Math::Subtract (target, eye)); // f = normalize(target - eye)
+
+		//右方向ベクトルrの計算(X軸)
+		//fとUpの外積を取るでやんす
+		Vector3 r = Math::Normalize (Math::Cross (up, f)); // r = normalize(Up x f)
+
+		//上方向ベクトルuの計算(Y軸)
+		//fとrの外積を取るでやんす
+		Vector3 u = Math::Cross (f, r);
+
+		//f,r,uを使ってビュー行列M_viewを構築するでやんす
+		// ビュー行列は、回転と平行移動を兼ねた行列でワールド座標をカメラ座標へ変換する
+
+		// 平行移動成分tの計算(内積を使うでやんす)
+		float t_x = -Math::Dot (r, eye);
+		float t_y = -Math::Dot (u, eye);
+		float t_z = -Math::Dot (f, eye);
+
+		Matrix4x4 result;
+
+		//X軸(右ベクトル r)
+		result.m[0][0] = r.x;
+		result.m[0][1] = r.y;
+		result.m[0][2] = r.z;
+		result.m[0][3] = t_x; //-r・e
+
+		//Y軸(上ベクトル u)
+		result.m[1][0] = u.x;
+		result.m[1][1] = u.y;
+		result.m[1][2] = u.z;
+		result.m[1][3] = t_y; //-u・e
+
+		//Z軸(前ベクトル f)
+		result.m[2][0] = f.x;
+		result.m[2][1] = f.y;
+		result.m[2][2] = f.z;
+		result.m[2][3] = t_z; //-f・e
+
+		//W成分
+		result.m[3][0] = 0.0f;
+		result.m[3][1] = 0.0f;
+		result.m[3][2] = 0.0f;
+		result.m[3][3] = 1.0f;
+
+		return result;
+	}
+
 	Vector3 Transform (const Vector3& v, const Matrix4x4& m) {
 		Vector3 result;
 

@@ -4,6 +4,7 @@
 #include "../AttackPhase.h"
 #include <vector>
 #include <memory>
+#include "BossProjectileCollider.h"
 
 class Boss;
 
@@ -18,17 +19,18 @@ struct MinionProjectile {
 	float curveForce = 0.0f;
 	int currentCurveTimer = 0;
 	bool isCurvingZ = false;
+	std::unique_ptr<BossProjectileCollider> collider = nullptr;
 };
 
-class ThrowMinion {
+class Breath {
 public:
 	// 弾の数を調整 (例: 100個に増やし、連続攻撃に対応できるようにする)
 	static const int kNumProjectiles = 1000;
 	// 弾の最大ライフタイム (例: 5秒 = 300フレーム)
 	static const int kMaxLifeTime = 300;
 
-	ThrowMinion(DxCommon* dxCommon, Boss* boss);
-	~ThrowMinion();
+	Breath(DxCommon* dxCommon, Boss* boss);
+	~Breath();
 
 	void Initialize();
 	// ボスから受け取った親行列でモデルを更新
@@ -40,6 +42,8 @@ public:
 	void StartAttack(int numThrows, float intervalSeconds);
 	// AttackPhase::None が別途定義されている前提
 	bool IsAttacking() const { return phase_ != AttackPhase::None; }
+
+	std::vector<Collider*> GetColliders();
 
 private:
 	// 各フェーズの処理

@@ -1,14 +1,17 @@
 #include "EnemyManager.h"
 #include "MathFunction.h"
+#include "ModelManager.h"
 #include <algorithm>
 #include "imgui.h"
 
 EnemyManager::EnemyManager(DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 	obj_ = std::make_unique<Model>(dxCommon);
+	ModelManager::GetInstance ()->LoadModelData ("Resources/zako", "zako");
 }
 
 void EnemyManager::Initialize(Player* player) {
+
 	// プレイヤーのアドレスを取得
 	player_ = player;
 	// 初期化処理
@@ -20,8 +23,8 @@ void EnemyManager::Initialize(Player* player) {
 	// [ 初期速度 ]
 	initialSpeed_ = 0.6f;
 	// [ Model ] 
-	obj_->SetModelData("teapot");
-	obj_->SetTexture("teapot");
+	obj_->SetModelData("zako");
+	obj_->SetTexture("zako");
 	obj_->Initialize({ 1.0f,1.0f,1.0f }, {0.0f,Math::Deg2Rad(90),Math::Deg2Rad(0)});
 }
 

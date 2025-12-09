@@ -24,9 +24,9 @@ void TitleScene::Initialize () {
 	model_->Initialize ();
 
 	//定点カメラ用のtransform
-	Transform transform = {{1.0f, 1.0f, 1.0f},{},{0.0f, 0.0f, -50.0f},};
-	camera_->AddCamera ("mainCamera1", CameraType::FixedPontCamera, transform);
+	camera_->AddCamera ("mainCamera1", CameraType::FixedPontCamera);
 	camera_->SetActiveCamera ("mainCamera1");
+	camera_->SetPosition ({ 0.0f, 0.0f, -50.0f });
 }
 
 void TitleScene::Update () {

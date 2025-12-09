@@ -4,6 +4,7 @@
 #include "../AttackPhase.h"
 #include <vector>
 #include <memory> // std::unique_ptrのため
+#include "BossProjectileCollider.h"
 
 class Boss;
 
@@ -15,6 +16,7 @@ struct Projectile {
 	bool isActive = false;
 	// ★ 弾ごとに固有のモデルポインタを持たせる
 	std::unique_ptr<Model> model = nullptr;
+	std::unique_ptr<BossProjectileCollider> collider = nullptr;
 };
 
 class FullScreenAttack {
@@ -35,6 +37,8 @@ public:
 
 	void StartAttack();
 	bool IsAttacking() const { return phase_ != AttackPhase::None; }
+
+	std::vector<Collider*> GetColliders();
 
 private:
 	// 各フェーズの処理

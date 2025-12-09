@@ -28,7 +28,7 @@ public:
 	void Initialize (InputManager* inputManager);
 
 	//カメラを登録する関数
-	void AddCamera (const std::string& name, CameraType type, const Transform& transform);
+	void AddCamera (const std::string& name, CameraType type);
 
 	//アクティブなカメラを切り替える
 	void SetActiveCamera (const std::string& cameraName);
@@ -44,6 +44,10 @@ public:
 
 	//描画用のvp行列取得関数
 	Matrix4x4* GetVPMatrix () { return &vpMatrix_; }
+
+	//位置と回転をいじれるように
+	void SetPosition (const Vector3& position) { activeCamera_->SetTranslate (position); }
+	void SetRotate (const Vector3& rotate) { activeCamera_->SetRotate (rotate); }
 
 private:
 	//コンストラクタを禁止

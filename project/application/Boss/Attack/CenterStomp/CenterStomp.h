@@ -1,5 +1,6 @@
 #pragma once
 #include "Model.h"
+#include "CenterStompCollider.h"
 
 class Boss;
 
@@ -23,6 +24,10 @@ public:
 
 	void StartAttack();
 	bool IsAttacking() const { return phase_ != StompPhase::None; }
+
+	Collider* GetCollider() const { return collider_.get(); }
+	Vector3 GetPosition() const { return transform_.translate; }
+
 private:
 	// 各フェーズの処理
 	void UpdateRise();   // 上昇
@@ -43,5 +48,7 @@ private:
 	Vector3 startPos_;        // 移動開始地点
 	Vector3 targetPos_;       // 移動目標地点
 	const Vector3 kCenterPoint_ = {0.0f, 10.0f, 0.0f};
+
+	std::unique_ptr<CenterStompCollider> collider_ = nullptr;
 };
 

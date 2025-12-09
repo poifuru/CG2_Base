@@ -66,8 +66,7 @@ void PlayScene::Initialize () {
 	skydome_->Initialize ();
 	skydome_->IsLighting (LightReflectionModel::HalfLambert);
 
-	Transform transform = {};
-	camera_->AddCamera ("FollowCamera", CameraType::FollowCamera, transform);
+	camera_->AddCamera ("FollowCamera", CameraType::FollowCamera);
 	camera_->SetActiveCamera ("FollowCamera");
 	camera_->SetFollowTarget ("FollowCamera", player_->GetTransform ());
 	enemies_->Initialize(player_.get());
@@ -97,6 +96,10 @@ void PlayScene::Update () {
 		collisionManager_->SetColliders(&enemy->GetAttackCollider());
 		collisionManager_->SetColliders(&enemy->GetBodyCollider());
 	}
+	for (Collider* attackCollider : boss_->GetAttackColliders()) {
+		collisionManager_->SetColliders(attackCollider);
+	}
+	collisionManager_->SetColliders(boss_->GetBodyCollider());
 	collisionManager_->CheckAllCollisions();
 	camera_->Update ();
 }
