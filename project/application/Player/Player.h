@@ -2,6 +2,7 @@
 #include "MagosuyaEngine.h"
 #include "PlayerState.h"
 #include "Model.h"
+#include "Sprite.h"
 #include "Collider.h"
 #include "AttackCollider.h"
 #include "PlayerBodyCollider.h"
@@ -59,6 +60,10 @@ public:
 	// 位置の取得
 	const Transform& GetTransform () { return obj_->GetTransform (); }
 	Vector3 GetPosition() { return obj_->GetTransform().translate; }
+	Vector3 GetRotation()const { return obj_->GetTransform().rotate; }
+	void SetRotation(const Vector3& rot) { obj_->SetTransform({ obj_->GetTransform().scale,rot,obj_->GetTransform().translate }); }
+	Vector3 GetScale()const { return obj_->GetTransform().scale; }
+	void SetScale(const Vector3& scale) { obj_->SetTransform({ scale,obj_->GetTransform().rotate,obj_->GetTransform().translate }); }
 	void TakeDamage(float damage);
 	Vector3 GetForwardVector();
 	// カラー関係
@@ -66,11 +71,9 @@ public:
 	void SetColor(const Vector4& color) { obj_->SetColor(color); }
 	// [ αを変えたい場合 ]
 	void SetAlpha(float alpha) { obj_->SetAlpha(alpha); }
-	// Quaternionの設定・取得
-	//void SetPlayerQuaternion(const Quaternion& q) { obj_->worldTransform_.set_.Quaternion(q); }
-	//Quaternion GetPlayerQuaternion() { return obj_->worldTransform_.get_.Quaternion(); }
 	Vector3& Move() { return move_; }
 	void SetIsViewAttack(bool flag) { isAttackViewFlag_ = flag; }
+	void SetModelData(const std::string& name);
 private:
 	// 物理的な処理
 	void ApplyPhysics();
@@ -100,7 +103,7 @@ private:
 
 	// HPの可視化
 	/*Sprite(緑)*/
-
+	
 	/*Sprite(赤)*/
 
 	Vector3 move_ = { 0,0,0 };
