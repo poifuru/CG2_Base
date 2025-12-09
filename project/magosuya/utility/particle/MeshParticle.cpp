@@ -33,6 +33,8 @@ MeshParticle::MeshParticle () {
 		{{-1.0f, -1.0f, -1.0f},
 		{1.0f, 1.0f, 1.0f}}
 	};
+
+	color_ = {};
 }
 
 MeshParticle::~MeshParticle () {
@@ -158,11 +160,11 @@ MeshParticleData MeshParticle::MakeNewParticle (std::mt19937 randomEngine, const
 	data.cube.transform.translate.z += pos_z(randomEngine);
 	data.cube.size = 1.0f;
 	data.velocity = { randVelocity2_ (randomEngine), randVelocity1_ (randomEngine), randVelocity2_ (randomEngine) };
-	Vector4 color1 = { 1.0f, 0.1f, 0.1f, 1.0f };
-	Vector4 color2 = { 0.7f, 0.1f, 0.1f, 1.0f };
+	/*Vector4 color1 = { 1.0f, 0.1f, 0.1f, 1.0f };
+	Vector4 color2 = { 0.7f, 0.1f, 0.1f, 1.0f };*/
 	for (uint32_t i = 0; i < 4; ++i) {
-		data.cube.color[0 + i * 2] = color1;
-		data.cube.color[1 * i * 2] = color2;
+		data.cube.color[0 + i * 2] = color_;
+		data.cube.color[1 * i * 2] = color_;
 	}
 	data.lifeTime = randTime_ (randomEngine);
 	data.currentTime = 0.0f;

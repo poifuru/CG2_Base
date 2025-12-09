@@ -15,10 +15,8 @@ void LookAtCamera::Initialize (const Transform& transform) {
 
 	//LookAtCameraの初期値
 	target_ = {};
-	distance_ = -camera_.transform.translate.z;
-	if (distance_ >= 0.1f) {
-		distance_ = 15.0f;
-	}
+	distance_ = 15.0f;
+
 	camera_.transform.translate.z = 0.0f;
 
 	camera_.world = Math::MakeAffineMatrix (camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);
