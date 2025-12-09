@@ -32,7 +32,7 @@ public:
 	uint32_t GetParticleNum () { return kMaxParticleNum_; };
 	void SetEmitterPos (const Vector3& pos) { emitter_.transform.translate = pos; }
 	void SetMakeParticleCount (const int& count) { emitter_.count = count; }
-	void Spawn ();
+	void Spawn();
 
 private:	//内部関数
 	MeshParticleData MakeNewParticle (std::mt19937 randomEngine, const Emitter& emitter_);

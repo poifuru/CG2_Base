@@ -67,7 +67,7 @@ void PlayScene::Initialize () {
 	skydome_->IsLighting (LightReflectionModel::HalfLambert);
 
 	camera_->AddCamera ("LookAtCamera", CameraType::LookAtCamera);
-	camera_->SetActiveCamera ("LookAtCamera");
+	camera_->SetActiveCamera ("Debug");
 	enemies_->Initialize(player_.get());
 }
 

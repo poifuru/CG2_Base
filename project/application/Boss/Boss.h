@@ -116,6 +116,7 @@ private:
 
 	// デスパーティクル
 	std::unique_ptr <MeshParticle> deathParticle_ = nullptr;
+	bool spawnFlag_ = false;
 	
 	// Collider
 	std::unique_ptr<BossBodyCollider> bossBodyCollider_ = nullptr;

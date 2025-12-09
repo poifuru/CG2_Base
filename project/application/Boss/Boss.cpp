@@ -73,7 +73,7 @@ void Boss::Update (Matrix4x4* m) {
 	bodyColliderObj_->Update (m);
 
 	if (!isAlive_) {
-		deathParticle_->Update(m); 
+		deathParticle_->Update(m);
 	}
 }
 
@@ -470,11 +470,9 @@ void Boss::UpdateDead() {
 		bossBodyCollider_->SetRadius(defaultRadius_);
 		transform_.scale = { 1.0f,1.0f,1.0f };
 		transform_.rotate.x = 0.0f;
+		spawnFlag_ = false;
 		return;
 	}
-
-	// デスパーティクルをボスの位置に
-	
 
 	if (transform_.rotate.x <= 1.5f) {
 		// scale
@@ -487,8 +485,14 @@ void Boss::UpdateDead() {
 		// rotate
 		transform_.rotate.x += 0.025f;
 		transform_.rotate.y += 0.25f;
-	} else {
 
+	} else {
+		// デスパーティクルをボスの位置に
+		if (!spawnFlag_) {
+			deathParticle_->SetEmitterPos(transform_.translate * 0.8f);
+			deathParticle_->Spawn();
+			spawnFlag_ = true;
+		}
 	}
 }
 

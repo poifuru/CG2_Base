@@ -10,7 +10,7 @@ MeshParticle::MeshParticle () {
 	//乱数エンジンのインスタンスを作成してrdの結果で初期化する
 	randomEngine_.seed (rd ());
 	emitter_.transform = {
-		{1.0f, 1.0f, 1.0f},
+		{},
 		{},
 		{}
 	};
@@ -127,14 +127,14 @@ void MeshParticle::ImGui () {
 }
 
 void MeshParticle::Spawn () {
-	MakeNewParticle (randomEngine_, emitter_);
+	particles_.splice(particles_.end(), Emit(emitter_, randomEngine_));
 }
 
 MeshParticleData MeshParticle::MakeNewParticle (std::mt19937 randomEngine, const Emitter& emitter_) {
 	//乱数エンジンのインスタンスを作成してrdの結果で初期化する
 	randomEngine.seed (rd ());
 
-	MeshParticleData data;
+	MeshParticleData data{};
 
 	//使う分布を初期化する
 	pos_x = std::uniform_real_distribution<float> (-emitter_.transform.scale.x, emitter_.transform.scale.x);
@@ -150,7 +150,12 @@ MeshParticleData MeshParticle::MakeNewParticle (std::mt19937 randomEngine, const
 	//パーティクル情報の初期化
 	data.cube.transform.scale = { 0.25f, 0.25f, 0.25f };
 	data.cube.transform.rotate = { 0.0f, 0.0f, 0.0f };
-	data.cube.transform.translate = { pos_x (randomEngine), pos_y (randomEngine), pos_z (randomEngine) };
+	//emitterを加味してtranslateを再計算
+	data.cube.transform.translate = emitter_.transform.translate;
+
+	data.cube.transform.translate.x += pos_x(randomEngine);
+	data.cube.transform.translate.y += pos_y(randomEngine);
+	data.cube.transform.translate.z += pos_z(randomEngine);
 	data.cube.size = 1.0f;
 	data.velocity = { randVelocity2_ (randomEngine), randVelocity1_ (randomEngine), randVelocity2_ (randomEngine) };
 	Vector4 color1 = { 1.0f, 0.1f, 0.1f, 1.0f };
@@ -161,9 +166,6 @@ MeshParticleData MeshParticle::MakeNewParticle (std::mt19937 randomEngine, const
 	}
 	data.lifeTime = randTime_ (randomEngine);
 	data.currentTime = 0.0f;
-
-	//emitterを加味してtranslateを再計算
-	data.cube.transform.translate += emitter_.transform.translate;
 
 	return data;
 }
@@ -180,7 +182,7 @@ void MeshParticle::EmitterUpdate () {
 	emitter_.frequencyTime += kDeltaTime;	//発生時刻を進める
 	if (emitter_.frequency <= emitter_.frequencyTime) {		//頻度より大きいなら
 		particles_.splice (particles_.end (), Emit (emitter_, randomEngine_));	//particle発生
-		emitter_.frequencyTime -= emitter_.frequency;	//進めた時間を戻す
+		emitter_.frequencyTime -= emitter_.frequency;  //進めた時間を戻す
 	}
 }
 
