@@ -62,6 +62,7 @@ public:	//メンバ関数
 	Transform GetUVTransform () { return uvTransform_; }
 	void SetUVTransform (Transform transform) { uvTransform_ = transform; }
 	void SetColor (const Vector4& color) { renderer_->SetColor (color); }
+	void SetAlpha(const float& alpha) { renderer_->SetAlpha(alpha); }
 	void IsLighting (const LightReflectionModel& lighting) { renderer_->IsLighting (lighting); }
 
 private:		//メンバ変数

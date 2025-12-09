@@ -8,7 +8,7 @@ EnemyBodyCollider::EnemyBodyCollider(Enemy* enemy) : enemy_(enemy)
 	SetMyType(COL_Enemy);
 
 	// 衝突対象: 敵の攻撃
-	SetYourType(COL_Player_Attack | COL_Enemy | COL_Enemy_SlipDamage | COL_Enemy_Attack);
+	SetYourType(COL_Player_Attack | COL_Enemy | COL_Enemy_SlipDamage | COL_Enemy_Attack | COL_Boss_Attack | COL_Boss);
 
 	// デフォルトの当たり判定半径を設定
 	SetRadius(1.0f);
@@ -29,6 +29,7 @@ void EnemyBodyCollider::OnCollision(Collider* other)
 	if (other->GetMyType() & COL_Player_Attack){
 		Vector3 playerPos = other->GetWorldPosition();
 		Vector3 playerToEnemy = (enemyPos - playerPos);
+		playerToEnemy.y = 0.0f;
 		enemy_->SetKnockBackDirection(Math::Normalize(playerToEnemy));
 
 		// プレイヤーに新しく三つの属性を付与させるー＞その属性で攻撃をどのくらい溜めたのか判断する
@@ -39,15 +40,15 @@ void EnemyBodyCollider::OnCollision(Collider* other)
 		// 溜め攻撃
 		// [ Level1 ]
 		if (other->GetMyType() & COL_Player_Attack_Level1) {
-			damage = 1.0f;
+			damage = 0.35f;
 		}
 		// [ Level2 ]
 		if (other->GetMyType() & COL_Player_Attack_Level2) {
-			damage = 1.5f;
+			damage = 1.0f;
 		}
 		// [ Level3 ]
 		if (other->GetMyType() & COL_Player_Attack_Level3) {
-			damage = 3.0f;
+			damage = 2.0f;
 		}
 
 		enemy_->TakeDamage(damage);
@@ -57,6 +58,7 @@ void EnemyBodyCollider::OnCollision(Collider* other)
 	else if (other->GetMyType() & COL_Enemy) {
 		Vector3 enemyEnemyPos = other->GetWorldPosition();
 		Vector3 enemyToEnemy = (enemyPos - enemyEnemyPos);
+		enemyToEnemy.y = 0.0f;
 		enemy_->SetKnockBackDirection(Math::Normalize(enemyToEnemy));
 		damage = -0.1f;
 
@@ -78,6 +80,7 @@ void EnemyBodyCollider::OnCollision(Collider* other)
 		}
 		Vector3 enemyEnemyPos = other->GetWorldPosition();
 		Vector3 enemyToEnemy = (enemyPos - enemyEnemyPos);
+		enemyToEnemy.y = 0.0f;
 		enemy_->SetKnockBackDirection(Math::Normalize(enemyToEnemy));
 
 		enemy_->TakeDamage(damage / 20.0f);
@@ -88,13 +91,19 @@ void EnemyBodyCollider::OnCollision(Collider* other)
 		enemy_->TakeSlipDamage();
 	}
 	else if (other->GetMyType() & COL_Boss_Attack) {
-		// 喰らったら吹っ飛ぶ
-		damage = 2.75f;
-		enemy_->TakeDamage(damage);
-		return;
-	}
+		if (other->GetMyType() & COL_Boss_Attack_CenterStomp) {
 
-	
+			Vector3 bossPos = other->GetWorldPosition();
+			Vector3 bossToEnemy = (enemyPos - bossPos);
+			bossToEnemy.y = 0.0f;
+			enemy_->SetKnockBackDirection(Math::Normalize(bossToEnemy));
+
+			// 喰らったら吹っ飛ぶ
+			damage = 2.75f;
+			enemy_->TakeDamage(damage);
+			return;
+		}
+	}
 }
 
 const Vector3 EnemyBodyCollider::GetWorldPosition()

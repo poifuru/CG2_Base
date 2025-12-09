@@ -144,8 +144,13 @@ void CenterStomp::UpdateFall() {
 
 	// 地面に着弾
 	if (timer_ >= duration_) {
+
+		// Collider の再設定
+		// [ どんな攻撃かを決める ]
 		collider_->SetMyType(COL_Boss_Attack_CenterStomp | COL_Boss_Attack);
-		collider_->SetYourType(COL_Player);
+		// [ 攻撃を与える相手 ]
+		collider_->SetYourType(COL_Player | COL_Enemy);
+
 		// ■ 修正点: 着弾時は必ず目標座標にスナップ
 		boss_->SetPosition(targetPos_);
 

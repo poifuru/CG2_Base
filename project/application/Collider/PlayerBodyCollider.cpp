@@ -7,7 +7,7 @@ PlayerBodyCollider::PlayerBodyCollider(Player* player) : player_(player)
 	SetMyType(COL_Player);
 
 	// 衝突対象: 敵の攻撃
-	SetYourType(COL_Enemy_Attack | COL_Boss_Attack);
+	SetYourType(COL_Enemy_Attack | COL_Boss_Attack | COL_Boss);
 
 	// デフォルトの当たり判定半径を設定
 	SetRadius(1.0f);
@@ -57,7 +57,9 @@ void PlayerBodyCollider::OnCollision(Collider* other)
 			damage = 5.0f;
 		}
 	}
-
+	if (other->GetMyType() & COL_Boss) {
+		damage = 0.5f;
+	}
 	// 3. **Player3D 本体にダメージを通知**
 	// Player3D に TakeDamage(float) メソッドが必要です
 	player_->TakeDamage(damage);

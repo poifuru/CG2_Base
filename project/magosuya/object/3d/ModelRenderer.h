@@ -23,6 +23,7 @@ public:
 	Material* GetMaterial () { return materialData_; }
 	void IsLighting (const LightReflectionModel& lighting) { materialData_->enableLighting = lighting; }
 	void SetColor (const Vector4& color) { materialData_->color = color; }
+	void SetAlpha(const float& alpha) { materialData_->color.w = alpha; }
 	void SetImGuiID (const std::string& id) { tag_ = id; }
 	void SetModelData (const std::weak_ptr<ModelData>& data){ modelData_ = data; }
 
