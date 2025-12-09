@@ -11,7 +11,6 @@ CenterStomp::CenterStomp(Boss* boss) {
 
 	// 攻撃範囲表示用のモデル作成
 	model_ = std::make_unique<Model>(DxCommon::GetInstance());
-	ModelManager::GetInstance()->LoadModelData ("Resources/boss/wave", "wave");
 
 	collider_ = std::make_unique<CenterStompCollider>(this, 20.0f);
 }

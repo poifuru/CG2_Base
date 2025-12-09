@@ -50,6 +50,7 @@ void CameraOrganizer::AddCamera (const std::string& name, CameraType type) {
 	case::CameraType::LookAtCamera: {
 		LookAtCamera* lookAtCam = new LookAtCamera (input_);
 		camera = lookAtCam;
+		break;
 	}
 
 	case::CameraType::DebugCamera: {
@@ -151,6 +152,23 @@ void CameraOrganizer::SetFollowTarget (const std::string& cameraName, const Tran
 	if (followCamera) {
 		// 3. ダウンキャストに成功したら、SetTarget() を呼び出す！
 		followCamera->SetTarget (&target);
+	}
+}
+
+void CameraOrganizer::SetLookAtPosition (const std::string& cameraName, const Vector3& pos) {
+	auto it = cameras_.find (cameraName);
+	if (it == cameras_.end ()) {
+		return;
+	}
+
+	CameraComponent* camera = it->second;
+
+	// 2. FollowCamera型にダウンキャストする
+	LookAtCamera* lookAtCamera = dynamic_cast<LookAtCamera*>(camera);
+
+	if (lookAtCamera) {
+		// 3. ダウンキャストに成功したら、SetTarget() を呼び出す！
+		lookAtCamera->SetPosition (pos);
 	}
 }
 

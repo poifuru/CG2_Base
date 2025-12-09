@@ -19,6 +19,14 @@ PlayScene::PlayScene (CameraOrganizer* camera, InputManager* inputManager, DxCom
 	stone_ = std::make_unique<Model> (dxCommon);
 	ModelManager::GetInstance ()->LoadModelData ("Resources/field/stone", "stone");
 
+	//岩の壁
+	stone2_ = std::make_unique<Model> (dxCommon);
+	ModelManager::GetInstance ()->LoadModelData ("Resources/field/stone2", "stone2");
+
+	//岩の壁
+	stone3_ = std::make_unique<Model> (dxCommon);
+	ModelManager::GetInstance ()->LoadModelData ("Resources/field/stone3", "stone3");
+
 	//天球
 	skydome_ = std::make_unique<Model> (dxCommon);
 	ModelManager::GetInstance ()->LoadModelData ("Resources/skydome", "skydome");
@@ -60,14 +68,34 @@ void PlayScene::Initialize () {
 	Vector4 stoneColor = { 0.33f, 0.33f, 0.33f, 1.0f };
 	stone_->SetColor (stoneColor);
 
+	//岩2
+	stone2_->SetModelData ("stone2");
+	stone2_->SetTexture ("stone2");
+	stone2_->Initialize ({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -1.2f, 0.0f });
+	stone2_->IsLighting (LightReflectionModel::HalfLambert);
+	//岩の色
+	Vector4 stoneColor2 = { 0.33f, 0.33f, 0.33f, 0.2f };
+	stone2_->SetColor (stoneColor2);
+
+	//岩2
+	stone3_->SetModelData ("stone3");
+	stone3_->SetTexture ("stone3");
+	stone3_->Initialize ({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -1.2f, 0.0f });
+	stone3_->IsLighting (LightReflectionModel::HalfLambert);
+	//岩の色
+	Vector4 stoneColor3 = { 0.33f, 0.33f, 0.33f, 1.0f };
+	stone3_->SetColor (stoneColor3);
+
 	//天球
 	skydome_->SetModelData ("skydome");
 	skydome_->SetTexture ("skydome");
 	skydome_->Initialize ();
 	skydome_->IsLighting (LightReflectionModel::HalfLambert);
 
-	camera_->AddCamera ("LookAtCamera", CameraType::LookAtCamera);
-	camera_->SetActiveCamera ("Debug");
+	camera_->AddCamera ("FollowCamera", CameraType::FollowCamera);
+	camera_->SetActiveCamera ("FollowCamera");
+	camera_->SetFollowTarget ("FollowCamera", player_->GetTransform ());
+
 	enemies_->Initialize(player_.get());
 }
 
@@ -84,7 +112,10 @@ void PlayScene::Update () {
 	ground_->Update (camera_->GetVPMatrix ());
 	mountain_->Update (camera_->GetVPMatrix ());
 	stone_->Update (camera_->GetVPMatrix ());
+	stone2_->Update (camera_->GetVPMatrix ());
+	stone3_->Update (camera_->GetVPMatrix ());
 	skydome_->Update (camera_->GetVPMatrix ());
+	enemies_->SetPos ({ boss_->GetPosition ().x,0.0f,boss_->GetPosition ().z });
 	enemies_->Update(camera_->GetVPMatrix ());
 
 	// [ 当たり判定 ]
@@ -101,7 +132,6 @@ void PlayScene::Update () {
 	collisionManager_->SetColliders(boss_->GetBodyCollider());
 	collisionManager_->CheckAllCollisions();
 
-	camera_->SetLookAtTarget ("LookAtCamera", player_->GetPosition ());
 	camera_->Update ();
 }
 
@@ -110,7 +140,9 @@ void PlayScene::Draw () {
 	ground_->Draw ();
 	mountain_->Draw ();
 	stone_->Draw ();
-	player_->Draw();
-	boss_->Draw();
-	enemies_->Draw();
+	player_->Draw ();
+	boss_->Draw ();
+	enemies_->Draw ();
+	stone3_->Draw ();
+	stone2_->Draw ();
 }

@@ -10,6 +10,8 @@ Player::~Player () {
 
 void Player::Initialize () {
 	ModelManager::GetInstance ()->LoadModelData ("Resources/player", "player");
+	ModelManager::GetInstance ()->LoadModelData ("Resources/player/normalAttack", "normalAttack");
+	ModelManager::GetInstance ()->LoadModelData ("Resources/boss/wave", "wave");
 	obj_ = std::make_unique<Model> (DxCommon::GetInstance ());
 	obj_->SetModelData ("player");
 	obj_->SetTexture ("player");
@@ -21,8 +23,8 @@ void Player::Initialize () {
 	state_->SetPlayer (this);
 
 	attackColliderObj_ = std::make_unique<Model> (DxCommon::GetInstance ());
-	attackColliderObj_->SetModelData ("teapot");
-	attackColliderObj_->SetTexture ("teapot");
+	attackColliderObj_->SetModelData ("normalAttack");
+	attackColliderObj_->SetTexture ("normalAttack");
 	attackColliderObj_->Initialize ();
 
 	playerColliderObj_ = std::make_unique<Model> (dxCommon_);
@@ -77,7 +79,7 @@ void Player::Update (Matrix4x4* m) {
 
 	playerColliderObj_->SetColor ({ 0.0f, 0.0f, 0.0f, 1.0f });
 
-	attackColliderObj_->SetTransform ({ {attackCollider_->GetRadius (),0.1f,attackCollider_->GetRadius ()},{0.0f,0.0f,0.0f},
+	attackColliderObj_->SetTransform ({ {attackCollider_->GetRadius (),1.0f,attackCollider_->GetRadius ()},{0.0f,0.0f,0.0f},
 		{attackCollider_->GetWorldPosition ().x,
 		attackCollider_->GetWorldPosition ().y - 0.5f,
 		attackCollider_->GetWorldPosition ().z} });

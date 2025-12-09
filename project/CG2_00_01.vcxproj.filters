@@ -95,6 +95,7 @@
     <ClCompile Include="application\Collider\BossBodyCollider.cpp" />
     <ClCompile Include="application\Collider\CenterStompCollider.cpp" />
     <ClCompile Include="application\Collider\BossProjectileCollider.cpp" />
+    <ClCompile Include="magosuya\utility\audio\Audio.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\Boss\Attack\AttackPhase.h" />
@@ -173,6 +174,7 @@
     <ClInclude Include="application\Collider\BossBodyCollider.h" />
     <ClInclude Include="application\Collider\CenterStompCollider.h" />
     <ClInclude Include="application\Collider\BossProjectileCollider.h" />
+    <ClInclude Include="magosuya\utility\audio\Audio.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">

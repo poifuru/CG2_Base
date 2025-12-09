@@ -95,8 +95,8 @@ private:
 	bool isInvulnerable_ = false;
 
 	// HP
-	float maxHP_ = 100.0f;
-	float hp_ = 100.0f;
+	float maxHP_ = 200.0f;
+	float hp_ = 200.0f;
 
 	// HPの可視化
 	/*Sprite(緑)*/

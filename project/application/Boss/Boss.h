@@ -46,8 +46,23 @@ private:
 		left,
 	};
 
+	enum class WanderGoalType {
+		Center,      // マップ中央
+		MapEdge,     // マップ端
+		LocalRandom  // 現在地付近のランダム
+	};
+
+	enum class AttackType {
+		None,
+		CenterStomp,
+		FullScreenAttack,
+		Breath
+	};
+
 	// 攻撃系の関数
 	void UpdateAttack();
+	AttackType SelectAttack(); // 攻撃を選択する関数
+	void StartSelectedAttack(AttackType attackType); // 選択した攻撃を開始する関数
 
 	// 行動系の関数
 	void UpdateMove();
@@ -85,13 +100,6 @@ private:
 	int moveTimer_ = 0;           // ステート滞在時間
 	int maxMoveTime_ = 180;       // 移動ステートを切り替えるフレーム数 (例: 3秒)
 
-	// --- 徘徊 (Wander) ステート用データ ---
-	enum class WanderGoalType {
-		Center,      // マップ中央
-		MapEdge,     // マップ端
-		LocalRandom  // 現在地付近のランダム
-	};
-
 	Vector3 wanderTargetPos_ = { 0.0f, 0.0f, 0.0f }; // 徘徊の目標座標
 	int wanderUpdateCount_ = 0;                      // 目標更新のカウンター
 	WanderGoalType wanderGoalType_ = WanderGoalType::Center; // 現在の目標タイプ
@@ -109,15 +117,20 @@ private:
 	Rotate rotate_ = Rotate::left;
 	float speed_ = 0.1f;
 
+	// --- 攻撃AI用データ ---
+	int attackCooldownTimer_ = 0; // 攻撃クールダウンタイマー
+	int baseCooldownFrames_ = 300; // 基本の攻撃クールダウン (例: 5秒)
+	float phase2SpeedFactor_ = 0.2f; // フェーズ2での攻撃速度倍率
+
+	// 選択中の攻撃ステート
+	AttackType currentAttack_ = AttackType::None;
+
 	// HP
 	float maxHP_ = 10000.0f;
 	float hp_ = 10000.0f;
 	bool isAlive_ = true;
+	bool bossExtinction_ = false;
 
-	// デスパーティクル
-	std::unique_ptr <MeshParticle> deathParticle_ = nullptr;
-	bool spawnFlag_ = false;
-	
 	// Collider
 	std::unique_ptr<BossBodyCollider> bossBodyCollider_ = nullptr;
 	std::unique_ptr<Model>bodyColliderObj_ = nullptr;
