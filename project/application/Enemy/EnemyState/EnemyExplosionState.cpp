@@ -10,6 +10,9 @@ void EnemyExplosionState::Initialize() {
 	// [ 移動量 ]
 	enemy_->SetMoveAmount({ 0.0f,0.0f,0.0f });
 
+	// アタックレベルで半径を設定
+	enemy_->SetAttackRadiusForLevel();
+
 	// 当たり判定を設定
 	enemy_->EnableHitBox(true,enemy_->GetPosition());
 

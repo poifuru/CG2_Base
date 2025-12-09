@@ -171,6 +171,14 @@ void Enemy::TakeSlipDamage() {
 	ChangeState(new EnemyPreExplosionState());
 }
 
+void Enemy::TakeBossDamage() {
+	if (!isAlive_ /*|| IsInvulnerable()*/) {
+		return;
+	}
+
+	ChangeState(new EnemyExplosionState());
+}
+
 // --------------------------------
 // 当たり判定について
 // --------------------------------
@@ -225,19 +233,19 @@ void Enemy::AddAttackHitType() {
 
 void Enemy::SetAttackRadiusForLevel() {
 	if (attackLevel_ == 0.0f) {
-		SetAttackRadius(3.0f);
+		SetAttackRadius(3.0f * 1.3f);
 		obj_->SetColor({1.0f,1.0f,1.0f,1.0f});
 	}
 	if (attackLevel_ == 1.0f) {
-		SetAttackRadius(4.0f);
+		SetAttackRadius(4.0f * 1.3f);
 		obj_->SetColor({ 0.8f,0.5f,0.5f,1.0f });
 	}
 	if (attackLevel_ == 2.0f) {
-		SetAttackRadius(5.5f);
+		SetAttackRadius(5.5f * 1.3f);
 		obj_->SetColor({ 0.8f,0.2f,0.2f,1.0f });
 	}
 	if (attackLevel_ == 3.0f) {
-		SetAttackRadius(7.0f);
+		SetAttackRadius(7.0f  * 1.3f);
 		obj_->SetColor({ 0.8f,0.0f,0.0f,1.0f });
 	}
 }
