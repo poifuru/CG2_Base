@@ -206,6 +206,12 @@ void Breath::UpdateProjectiles() {
             const float kFixedScale = 1.0f;
             p.transform.scale = { kFixedScale, kFixedScale, kFixedScale };
 
+            if (p.transform.translate.x < -45.0f || p.transform.translate.x > 45.0f ||
+                p.transform.translate.z < -45.0f || p.transform.translate.z > 45.0f) {
+                p.isActive = false;
+                continue; // 非アクティブ化されたら次の弾へ
+            }
+
             if (p.lifeTime <= 0.0f) {
                 p.isActive = false;
             }

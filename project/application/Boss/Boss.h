@@ -114,7 +114,7 @@ private:
 	float emergencyEvadeFactor_ = 0.5f;  // 近すぎる場合に即座に離脱に切り替える距離係数
 	int wanderTimeFactor_ = 6;           // 自由徘徊の時間を基本移動時間の何倍にするか
 
-	Transform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f}, {0.0f,-1.0f,0.0f} };
+	Transform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f}, {0.0f,-1.0f,20.0f} };
 	Rotate rotate_ = Rotate::left;
 	float speed_ = 0.1f;
 
