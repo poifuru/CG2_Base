@@ -24,6 +24,7 @@ void EnemyPreExplosionState::Update() {
 	Vector3 enemyPos = enemy_->GetPosition();
 	Vector3 playerPos = enemy_->GetTarget()->GetPosition();
 	Vector3 toPlayer = playerPos - enemyPos;
+	toPlayer.y = 0.0f;
 
 	// [ 距離によって移動させる ]
 	if (Math::Length(toPlayer) > 0.01f) {

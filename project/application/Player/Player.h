@@ -61,7 +61,11 @@ public:
 	Vector3 GetPosition() { return obj_->GetTransform().translate; }
 	void TakeDamage(float damage);
 	Vector3 GetForwardVector();
-	void SetAlpha(float alpha) { obj_->SetColor({ 1.0f,1.0f,1.0f,alpha }); }
+	// カラー関係
+	// 色を変えたい場合
+	void SetColor(const Vector4& color) { obj_->SetColor(color); }
+	// [ αを変えたい場合 ]
+	void SetAlpha(float alpha) { obj_->SetAlpha(alpha); }
 	// Quaternionの設定・取得
 	//void SetPlayerQuaternion(const Quaternion& q) { obj_->worldTransform_.set_.Quaternion(q); }
 	//Quaternion GetPlayerQuaternion() { return obj_->worldTransform_.get_.Quaternion(); }

@@ -59,7 +59,7 @@ void Boss::Update (Matrix4x4* m) {
 
 	model_->SetTransform (transform_);
 
-	bodyColliderObj_->SetTransform ({ {bossBodyCollider_->GetRadius () * 0.4f, 0.1f, bossBodyCollider_->GetRadius () * 0.4f},{0.0f,0.0f,0.0f},
+	bodyColliderObj_->SetTransform ({ {bossBodyCollider_->GetRadius () * 0.8f, 0.1f, bossBodyCollider_->GetRadius () * 0.8f},{0.0f,0.0f,0.0f},
 		{bossBodyCollider_->GetWorldPosition ().x,
 		-0.9f,
 		bossBodyCollider_->GetWorldPosition ().z} });

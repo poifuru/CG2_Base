@@ -18,6 +18,7 @@ void EnemyChaseState::Update() {
 	Vector3 playerPos = enemy_->GetTarget()->GetPosition();
 
 	Vector3 toPlayer = playerPos - enemyPos;
+	toPlayer.y = 0.0f;
 	float distanceToPlayer = Math::Length(toPlayer);
 
 	// 2, プレイヤーに向かって移動する

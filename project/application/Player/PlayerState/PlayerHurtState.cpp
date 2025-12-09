@@ -62,7 +62,7 @@ void PlayerHurtState::Update()
 	
 	if (blinkCount % 2 == 0){
 		// 偶数回 (例: 0.0～0.1, 0.2～0.3) は不透明 (α=1.0)
-		player_->SetAlpha(1.0f);
+		player_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
 	}
 	else{
 		// 奇数回 (例: 0.1～0.2, 0.3～0.4) は透明 (α=0.0)
@@ -86,14 +86,20 @@ void PlayerHurtState::Update()
 		return;
 	}
 
+	if (player_->IsAttack()) {
+		// 攻撃
+		player_->ChangeState(new PlayerAttackState());
+		return;
+	}
+
 	//ImGuiManager::GetInstance()->Text("HurtState");
 }
 
 void PlayerHurtState::Exit()
 {
 	if (!player_) return;
-	// αを一応戻す
-	//player_->SetAlpha(1.0f);
+	// カラーを一応戻す
+	player_->SetColor({1.0f,1.0f,1.0f,1.0f});
 
 	// 無敵時間を解除
 	player_->SetInvulnerable(false);
