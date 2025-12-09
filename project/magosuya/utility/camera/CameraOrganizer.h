@@ -6,12 +6,14 @@
 #include "DebugCamera.h"
 #include "FixedPointCamera.h"
 #include "FollowCamera.h"
+#include "LookAtCamera.h"
 #include "MathFunction.h"
 #include "InputManager.h"
 
 enum class CameraType {
 	FixedPontCamera,
 	FollowCamera,
+	LookAtCamera,
 	DebugCamera,
 };
 
@@ -41,6 +43,9 @@ public:
 
 	//追従カメラの設定をいじるためにコンテナからカメラを取得
 	void SetFollowTarget (const std::string& cameraName, const Transform& target);
+
+	//LookAtカメラの設定をいじるためにコンテナからカメラを取得
+	void SetLookAtTarget (const std::string& cameraName, const Vector3& targetPos);
 
 	//描画用のvp行列取得関数
 	Matrix4x4* GetVPMatrix () { return &vpMatrix_; }

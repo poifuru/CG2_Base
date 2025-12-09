@@ -51,8 +51,8 @@ void EnemySearchPlayerState::Update() {
 	}
 
 #ifdef _DEBUG
-	ImGui::Begin("Enemy : Search");
-	ImGui::End();
+	/*ImGui::Begin("Enemy : Search");
+	ImGui::End();*/
 #endif//_DEBUG
 }
 

@@ -29,8 +29,8 @@ void EnemyExplosionState::Update() {
 		return;
 	}
 #ifdef _DEBUG
-	ImGui::Begin("Enemy : Explosion");
-	ImGui::End();
+	/*ImGui::Begin("Enemy : Explosion");
+	ImGui::End();*/
 #endif//_DEBUG
 }
 

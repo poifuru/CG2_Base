@@ -39,6 +39,10 @@ void Boss::Initialize () {
 	bodyColliderObj_->SetTexture ("slipDamage");
 	bodyColliderObj_->Initialize ();
 	bodyColliderObj_->SetColor ({ 0.0f,0.0f,0.0f,1.0f });
+	defaultRadius_ = bossBodyCollider_->GetRadius();
+
+	deathParticle_ = std::make_unique<MeshParticle>();
+	deathParticle_->Initialize();
 }
 
 void Boss::Update (Matrix4x4* m) {
@@ -48,6 +52,8 @@ void Boss::Update (Matrix4x4* m) {
 	UpdateAttack ();
 	// 行動の更新
 	UpdateMove ();
+	// 死亡の更新
+	UpdateDead();
 	// アニメーション
 	UpdateRotation ();
 	UpdateAnimation ();
@@ -61,10 +67,14 @@ void Boss::Update (Matrix4x4* m) {
 
 	bodyColliderObj_->SetTransform ({ {bossBodyCollider_->GetRadius () * 0.8f, 0.1f, bossBodyCollider_->GetRadius () * 0.8f},{0.0f,0.0f,0.0f},
 		{bossBodyCollider_->GetWorldPosition ().x,
-		0.0f,
+		-0.9f,
 		bossBodyCollider_->GetWorldPosition ().z} });
 
 	bodyColliderObj_->Update (m);
+
+	if (!isAlive_) {
+		deathParticle_->Update(m);
+	}
 }
 
 void Boss::Draw () {
@@ -73,27 +83,34 @@ void Boss::Draw () {
 	centerStomp_->Draw ();
 	fullScreenAttack_->Draw ();
 	Breath_->Draw ();
+	if(!isAlive_){ deathParticle_->Draw(); }
 }
 
 void Boss::ImGuiControl () {
-#ifdef _DEBUG
+#ifdef USEIMGUI
 	model_->ImGui ("boss");
 	centerStomp_->ImGuiControl ();
 	fullScreenAttack_->ImGuiControl ();
 	Breath_->ImGuiControl ();
+	if (!isAlive_) { deathParticle_->ImGui(); }
 
 	ImGui::Begin ("Status");
 	if (ImGui::BeginTabBar ("StatusTabBar")) {
 		if (ImGui::BeginTabItem ("HP")) {
-			ImGui::Text ("HP = %.0f/%.0f", hp_, maxHP_);
-			if (ImGui::Button ("Reset[HP]")) {
+			std::string hpText = std::format("HP: {:.0f} / {:.0f}", hp_, maxHP_);
+			ImGui::ProgressBar(hp_ / maxHP_, ImVec2(0.0f, 0.0f), hpText.c_str());
+			if (ImGui::Button ("Reset")) {
 				hp_ = maxHP_;
+				isAlive_ = true;
 			}
-			if (ImGui::Button ("damage-- [100]")) {
-				hp_ -= 100;
+			if (ImGui::Button("Death")) {
+				hp_ -= maxHP_;
 			}
-			if (ImGui::Button ("heal++   [100]")) {
-				hp_ += 100;
+			if (ImGui::Button ("damage-- [1000]")) {
+				hp_ -= 1000;
+			}
+			if (ImGui::Button ("heal++   [1000]")) {
+				hp_ += 1000;
 			}
 			ImGui::EndTabItem ();
 		}
@@ -108,7 +125,7 @@ bool Boss::IsAnyAttackActive () const {
 }
 
 void Boss::UpdateMove () {
-	if (IsAnyAttackActive ()) {
+	if (IsAnyAttackActive () || !isAlive_) {
 		return;
 	}
 
@@ -120,6 +137,10 @@ void Boss::UpdateMove () {
 }
 
 void Boss::UpdateAttack () {
+	if (!isAlive_) {
+		return;
+	}
+
 	if (input_->GetRawInput ()->Trigger ('1')) {
 		centerStomp_->StartAttack ();
 	}
@@ -333,7 +354,8 @@ void Boss::UpdateMoveState () {
 }
 
 void Boss::UpdateHp () {
-	DefineTheHpRange ();
+	DefineTheHpRange();
+	if (hp_ <= 0) { isAlive_ = false; }
 }
 
 // HPの max/min を超えないようにする
@@ -352,6 +374,10 @@ void Boss::TakeDamage (float damage) {
 }
 
 void Boss::UpdateRotation () {
+	if (!isAlive_) {
+		return;
+	}
+
 	// 1. プレイヤーとボスの位置を取得
 	Vector3 playerPosition = player_->GetPosition ();
 	Vector3 bossPosition = transform_.translate;
@@ -418,6 +444,10 @@ void Boss::UpdateRotation () {
 }
 
 void Boss::UpdateAnimation () {
+	if (!isAlive_) {
+		return;
+	}
+
 	if (!centerStomp_->IsAttacking ()) {
 		if (transform_.rotate.z >= 0.1f) {
 			rotate_ = Rotate::left;
@@ -430,6 +460,38 @@ void Boss::UpdateAnimation () {
 		}
 		if (rotate_ == Rotate::right) {
 			transform_.rotate.z += 0.015f;
+		}
+	}
+}
+
+void Boss::UpdateDead() {
+	if (isAlive_) {
+		shadowRadius_ = defaultRadius_;
+		bossBodyCollider_->SetRadius(defaultRadius_);
+		transform_.scale = { 1.0f,1.0f,1.0f };
+		transform_.rotate.x = 0.0f;
+		spawnFlag_ = false;
+		return;
+	}
+
+	if (transform_.rotate.x <= 1.5f) {
+		// scale
+		transform_.scale.x -= 0.015f;
+		transform_.scale.y -= 0.015f;
+		transform_.scale.z -= 0.015f;
+		// 影のscale
+		shadowRadius_ -= 0.15f;
+		bossBodyCollider_->SetRadius(shadowRadius_);
+		// rotate
+		transform_.rotate.x += 0.025f;
+		transform_.rotate.y += 0.25f;
+
+	} else {
+		// デスパーティクルをボスの位置に
+		if (!spawnFlag_) {
+			deathParticle_->SetEmitterPos(transform_.translate * 0.8f);
+			deathParticle_->Spawn();
+			spawnFlag_ = true;
 		}
 	}
 }

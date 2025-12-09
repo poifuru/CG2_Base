@@ -204,7 +204,7 @@ void CenterStomp::Draw() {
 }
 
 void CenterStomp::ImGuiControl() {
-#ifdef _DEBUG
+#ifdef USEIMGUI
 	ImGui::Begin("CenterStomp Attack");
 
 	// 攻撃テスト用ボタン

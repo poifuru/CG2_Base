@@ -17,20 +17,17 @@ public:	//メンバ関数
 	//ImGui
 	void ImGui () override;
 
+	void SetTarget (const Vector3& targetPos) { target_ = targetPos; }
 	bool GetTatchImGui () { return tatchImGui_; }
 	void SetTatchImGui (bool flag) { tatchImGui_ = flag; }
 
 private:	//メンバ変数
 	//ターゲットの位置
-	Vector3* target_ = nullptr;
+	Vector3 target_ = {};
 	//始点からターゲットまでの距離
 	float distance_ = 0.0f;
-
-	//カメラの正面に対しての前後左右に移動
-	Vector3 forward_;	//カメラの前方ベクトル
-	Vector3 right_;		//カメラの右ベクトル
-	float speed_;		//移動スピード
-	Vector3 move_;		//実際に移動に反映するベクトル
+	//上向きベクトル(固定)
+	const Vector3 upVector_ = { 0.0f, 1.0f, 0.0f };
 
 	//ドラッグで視点を変える
 	float sensitivity_;	//ドラッグの感度

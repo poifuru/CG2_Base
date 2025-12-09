@@ -43,8 +43,8 @@ void EnemyChaseState::Update() {
 		return;
 	}
 #ifdef _DEBUG
-	ImGui::Begin("Enemy : Chase");
-	ImGui::End();
+	/*ImGui::Begin("Enemy : Chase");
+	ImGui::End();*/
 #endif//_DEBUG
 }
 

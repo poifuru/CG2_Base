@@ -30,6 +30,10 @@ public:
 	void ImGui ();
 
 	uint32_t GetParticleNum () { return kMaxParticleNum_; };
+	void SetColor (const Vector4& color) { color_ = color; }
+	void SetEmitterPos (const Vector3& pos) { emitter_.transform.translate = pos; }
+	void SetMakeParticleCount (const int& count) { emitter_.count = count; }
+	void Spawn();
 
 private:	//内部関数
 	MeshParticleData MakeNewParticle (std::mt19937 randomEngine, const Emitter& emitter_);
@@ -58,6 +62,9 @@ public:
 
 	LineVertexData lineData_[2] = {};
 
+	//頂点カラー
+	Vector4 color_ = {};
+
 	//vp行列
 	Matrix4x4* vp_ = {};
 
@@ -74,7 +81,8 @@ public:
 	std::uniform_real_distribution<float> pos_z;			//発生位置_z
 	std::uniform_real_distribution<float> randRotate_;		//サイズ
 	std::uniform_real_distribution<float> randSize_;		//サイズ
-	std::uniform_real_distribution<float> randVelocity_;	//速度
+	std::uniform_real_distribution<float> randVelocity1_;	//速度
+	std::uniform_real_distribution<float> randVelocity2_;	//速度
 	std::uniform_real_distribution<float> randColor_;		//色
 	std::uniform_real_distribution<float> randTime_;		//パーティクルの生存可能時間
 };

@@ -64,8 +64,8 @@ void EnemyDecisionState::Update() {
 		return;
 	}
 #ifdef _DEBUG
-	ImGui::Begin("Enemy : Decision");
-	ImGui::End();
+	/*ImGui::Begin("Enemy : Decision");
+	ImGui::End();*/
 #endif//_DEBUG
 }
 

@@ -198,7 +198,7 @@ void FullScreenAttack::Draw() {
 }
 
 void FullScreenAttack::ImGuiControl() {
-#ifdef _DEBUG
+#ifdef USEIMGUI
 	ImGui::Begin("FullScreen Attack");
 
 	// 攻撃テスト用ボタン

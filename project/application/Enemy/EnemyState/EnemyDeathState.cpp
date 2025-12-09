@@ -27,9 +27,9 @@ void EnemyDeathState::Update() {
 		return;
 	}
 #ifdef _DEBUG
-	ImGui::Begin("Enemy : Death");
+	/*ImGui::Begin("Enemy : Death");
 	ImGui::DragFloat("alpha", &alpha);
-	ImGui::End();
+	ImGui::End();*/
 #endif//_DEBUG
 }
 

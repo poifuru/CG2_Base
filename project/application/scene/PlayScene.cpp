@@ -66,9 +66,8 @@ void PlayScene::Initialize () {
 	skydome_->Initialize ();
 	skydome_->IsLighting (LightReflectionModel::HalfLambert);
 
-	camera_->AddCamera ("FollowCamera", CameraType::FollowCamera);
-	camera_->SetActiveCamera ("FollowCamera");
-	camera_->SetFollowTarget ("FollowCamera", player_->GetTransform ());
+	camera_->AddCamera ("LookAtCamera", CameraType::LookAtCamera);
+	camera_->SetActiveCamera ("Debug");
 	enemies_->Initialize(player_.get());
 }
 
@@ -101,15 +100,17 @@ void PlayScene::Update () {
 	}
 	collisionManager_->SetColliders(boss_->GetBodyCollider());
 	collisionManager_->CheckAllCollisions();
+
+	camera_->SetLookAtTarget ("LookAtCamera", player_->GetPosition ());
 	camera_->Update ();
 }
 
 void PlayScene::Draw () {
-	player_->Draw();
-	boss_->Draw();
+	skydome_->Draw ();
 	ground_->Draw ();
 	mountain_->Draw ();
 	stone_->Draw ();
-	skydome_->Draw ();
+	player_->Draw();
+	boss_->Draw();
 	enemies_->Draw();
 }

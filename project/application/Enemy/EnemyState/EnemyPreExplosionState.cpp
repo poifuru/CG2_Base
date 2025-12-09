@@ -45,8 +45,8 @@ void EnemyPreExplosionState::Update() {
 		return;
 	}
 #ifdef _DEBUG
-	ImGui::Begin("Enemy : PreExplosion");
-	ImGui::End();
+	/*ImGui::Begin("Enemy : PreExplosion");
+	ImGui::End();*/
 #endif//_DEBUG
 }
 
