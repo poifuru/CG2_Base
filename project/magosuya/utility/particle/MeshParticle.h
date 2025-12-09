@@ -77,7 +77,8 @@ public:
 	std::uniform_real_distribution<float> pos_z;			//発生位置_z
 	std::uniform_real_distribution<float> randRotate_;		//サイズ
 	std::uniform_real_distribution<float> randSize_;		//サイズ
-	std::uniform_real_distribution<float> randVelocity_;	//速度
+	std::uniform_real_distribution<float> randVelocity1_;	//速度
+	std::uniform_real_distribution<float> randVelocity2_;	//速度
 	std::uniform_real_distribution<float> randColor_;		//色
 	std::uniform_real_distribution<float> randTime_;		//パーティクルの生存可能時間
 };
