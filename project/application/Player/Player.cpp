@@ -68,11 +68,11 @@ void Player::Update (Matrix4x4* m) {
 	pos.x += move_.x * speed_ * speedMultiplier_;
 	pos.y += move_.y * verticalVelocity_;
 	pos.z += move_.z * speed_ * speedMultiplier_;
-	obj_->SetTransform ({ obj_->GetTransform ().scale,obj_->GetTransform ().rotate,{pos.x, pos.y - 1.0f, pos.z} });
+	obj_->SetTransform ({ obj_->GetTransform ().scale,obj_->GetTransform ().rotate,{pos.x, pos.y - 0.99f, pos.z} });
 
 	playerColliderObj_->SetTransform ({ {playerCollider_->GetRadius () * 0.7f,0.1f,playerCollider_->GetRadius () * 0.7f},{0.0f,0.0f,0.0f},
 		{playerCollider_->GetWorldPosition ().x,
-		playerCollider_->GetWorldPosition ().y + 0.05f,
+		playerCollider_->GetWorldPosition ().y + 0.03f,
 		playerCollider_->GetWorldPosition ().z} });
 
 	playerColliderObj_->SetColor ({ 0.0f, 0.0f, 0.0f, 1.0f });

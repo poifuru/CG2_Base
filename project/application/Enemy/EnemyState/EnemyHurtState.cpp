@@ -82,8 +82,8 @@ void EnemyHurtState::Update() {
 		return;
 	}
 #ifdef _DEBUG
-	ImGui::Begin("Enemy : Hurt");
-	ImGui::End();
+	/*ImGui::Begin("Enemy : Hurt");
+	ImGui::End();*/
 #endif//_DEBUG
 }
 

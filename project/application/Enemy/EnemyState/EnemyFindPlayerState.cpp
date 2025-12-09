@@ -29,8 +29,8 @@ void EnemyFindPlayerState::Update() {
 		return;
 	}
 #ifdef _DEBUG
-	ImGui::Begin("Enemy : Find");
-	ImGui::End();
+	/*ImGui::Begin("Enemy : Find");
+	ImGui::End();*/
 #endif//_DEBUG
 }
 

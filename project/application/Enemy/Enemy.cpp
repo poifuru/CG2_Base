@@ -101,16 +101,16 @@ void Enemy::Update(Matrix4x4* m) {
 	attackColliderObj_->Update(m);
 
 #ifdef _DEBUG
-	ImGui::Begin("Enemy");
-	if (attackCollider_->GetMyType() != COL_None) {
-		// EnableHitBoxでTrueの場合値が変わることからなり立つ
-		ImGui::Text("Enable : Treu");
-	}
-	ImGui::DragFloat("moveSpeed", &moveSpeed_);
-	ImGui::DragFloat3("pos", &newPos.x);
-	ImGui::DragFloat3("moveAmount", &moveAmount_.x);
-	ImGui::End();
-	obj_->ImGui("Enemy");
+	//ImGui::Begin("Enemy");
+	//if (attackCollider_->GetMyType() != COL_None) {
+	//	// EnableHitBoxでTrueの場合値が変わることからなり立つ
+	//	ImGui::Text("Enable : Treu");
+	//}
+	//ImGui::DragFloat("moveSpeed", &moveSpeed_);
+	//ImGui::DragFloat3("pos", &newPos.x);
+	//ImGui::DragFloat3("moveAmount", &moveAmount_.x);
+	//ImGui::End();
+	//obj_->ImGui("Enemy");
 #endif//_DEBUG
 }
 

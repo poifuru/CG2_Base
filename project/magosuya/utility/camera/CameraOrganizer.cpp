@@ -47,6 +47,11 @@ void CameraOrganizer::AddCamera (const std::string& name, CameraType type) {
 		break;
 	}
 
+	case::CameraType::LookAtCamera: {
+		LookAtCamera* lookAtCam = new LookAtCamera (input_);
+		camera = lookAtCam;
+	}
+
 	case::CameraType::DebugCamera: {
 		DebugCamera* debugCam = new DebugCamera (input_);
 		camera = debugCam;
@@ -86,29 +91,50 @@ void CameraOrganizer::SetActiveCamera (const std::string& cameraName) {
 }
 
 void CameraOrganizer::Update () {
-	//デバッグカメラ切り替え
-	if (input_->GetRawInput ()->Trigger (VK_TAB)) {
-		//現在のカメラがデバッグカメラであるかをチェック
-		if (activeCamera_ && dynamic_cast<DebugCamera*>(activeCamera_)) {
-			//デバッグカメラなら前回使用していたカメラをセット
-			SetActiveCamera (lastAcriveCamera_);
-			activeCameraName_ = lastAcriveCamera_;
-		}
-		else {
-			//デバッグカメラでないなら切り替え
-			SetActiveCamera ("Debug");
-		}
-	}
 	activeCamera_->Update ();
 	vpMatrix_ = activeCamera_->GetVPMat ();
 }
 
 void CameraOrganizer::ImGui () {
+#ifdef USEIMGUI
 	ImGui::Begin ("CameraOrganizer");
-	ImGui::Text (("アクティブなカメラ : " + activeCameraName_).c_str ());
 	ImGui::Separator ();
+	// 現在アクティブなカメラの名前を取得
+	const char* current_item = activeCameraName_.c_str ();
+
+	// 登録済みのカメラ名を格納するvector
+	std::vector<const char*> cameraNames;
+	for (const auto& pair : cameras_) {
+		// std::stringのポインタを保持
+		cameraNames.push_back (pair.first.c_str ());
+	}
+
+	// ImGui::Comboを使ってリストからカメラを選択
+	if (ImGui::BeginCombo ("##CameraList", current_item)) { // "##CameraList"はラベルを非表示にするテクニックでやんす
+		for (const char* name : cameraNames) {
+			// 現在選択されているアイテムかチェック
+			bool is_selected = (current_item == name);
+
+			// Selectableアイテムの描画
+			if (ImGui::Selectable (name, is_selected)) {
+				// 選択されたらアクティブカメラを切り替える
+				SetActiveCamera (name);
+			}
+
+			// オートスクロールするために選択されているアイテムにフォーカス
+			if (is_selected) {
+				ImGui::SetItemDefaultFocus ();
+			}
+		}
+		ImGui::EndCombo ();
+	}
+
+	// 現在アクティブなカメラ名を表示（オプション）
+	ImGui::Text (("アクティブなカメラ : " + activeCameraName_).c_str ());
+
 	activeCamera_->ImGui ();
 	ImGui::End ();
+#endif
 }
 
 void CameraOrganizer::SetFollowTarget (const std::string& cameraName, const Transform& target) {
@@ -125,5 +151,22 @@ void CameraOrganizer::SetFollowTarget (const std::string& cameraName, const Tran
 	if (followCamera) {
 		// 3. ダウンキャストに成功したら、SetTarget() を呼び出す！
 		followCamera->SetTarget (&target);
+	}
+}
+
+void CameraOrganizer::SetLookAtTarget (const std::string& cameraName, const Vector3& targetPos) {
+	auto it = cameras_.find (cameraName);
+	if (it == cameras_.end ()) {
+		return;
+	}
+
+	CameraComponent* camera = it->second;
+
+	// 2. FollowCamera型にダウンキャストする
+	LookAtCamera* lookAtCamera = dynamic_cast<LookAtCamera*>(camera);
+
+	if (lookAtCamera) {
+		// 3. ダウンキャストに成功したら、SetTarget() を呼び出す！
+		lookAtCamera->SetTarget (targetPos);
 	}
 }
