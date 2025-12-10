@@ -122,7 +122,7 @@ void TitleScene::Initialize () {
 
 void TitleScene::Update () {
 	// ゲーム終了
-	if (input_->GetRawInput()->Trigger(VK_SPACE) || input_->GetGamePad()->TriggerButton(Button::A)) {
+	if (t_ >= 1.0f && input_->GetRawInput()->Trigger(VK_SPACE) || input_->GetGamePad()->TriggerButton(Button::A)) {
 		nextScene_ = SceneLabel::Play;
 		isFinish_ = true;
 		bgm_.StopSound(bgmHandle_);
@@ -162,6 +162,8 @@ void TitleScene::Draw () {
 	stone_->Draw ();
 	moji_->Draw ();
 	zako_->Draw ();
-	pushA_->Draw ();
+	if (t_ >= 1.0f) {
+		pushA_->Draw ();
+	}
 	particle_->Draw ();
 }
