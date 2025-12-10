@@ -38,6 +38,14 @@ void Player::Initialize () {
 	// 2, Attack
 	attackCollider_ = std::make_unique<AttackCollider> ();
 	EnableHitBox (false, obj_->GetTransform ().translate);
+
+	// HPについて
+	hpSpriteG_ = std::make_unique<Sprite>(DxCommon::GetInstance(), TextureManager::GetInstance());
+	hpSpriteGPos_ = {100.0f,100.0f,0.0f};
+	TextureManager::GetInstance()->LoadTexture("Resources/UI/hpBar_Player","hpBar_Player");
+	hpSpriteG_->SetID("hpBar_Player");
+	hpSpriteG_->SetTexture("hpBar_Player");
+	hpSpriteG_->Initialize(hpSpriteGPos_);
 }
 
 void Player::Update (Matrix4x4* m) {
@@ -99,6 +107,7 @@ void Player::Update (Matrix4x4* m) {
 	obj_->Update (m);
 	playerColliderObj_->Update (m);
 	attackColliderObj_->Update (m);
+	hpSpriteG_->Update();
 #ifdef _DEBUG
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("Direction", &direction_.x,0.0f,0.0f);
@@ -121,6 +130,8 @@ void Player::Draw () {
 		// [ 攻撃の当たり判定 ]
 		attackColliderObj_->Draw ();
 	}
+
+	hpSpriteG_->Draw();
 }
 
 void Player::ChangeState (PlayerState* newState) {

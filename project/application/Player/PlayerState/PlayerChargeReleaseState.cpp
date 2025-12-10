@@ -37,19 +37,19 @@ void PlayerChargeReleaseState::Update() {
         if (chargeLevel_ >= 3) {
             // Level 3 の場合
             attackOffset.z = 0.0f;
-            colliderRadius = 4.5f;
+            colliderRadius = 5.5f;
             attackType = COL_Player_Attack_Level3;
         }
         else if (chargeLevel_ == 2) {
             // Level 2 の場合
             attackOffset.z = 0.0f;
-            colliderRadius = 3.0f;
+            colliderRadius = 4.0f;
             attackType = COL_Player_Attack_Level2;
         }
         else if(chargeLevel_ <= 1){
             // Level 1 以下の通常チャージの場合
             attackOffset.z = 0.0f;
-            colliderRadius = 2.0f;
+            colliderRadius = 3.0f;
             attackType = COL_Player_Attack_Level1;
         }
 
