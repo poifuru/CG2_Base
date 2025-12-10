@@ -99,7 +99,7 @@ void GameoverScene::Update () {
 	}
 
 	if (t_ <= 1.0f) {
-		t_ += kDeltaTime / 3.0f;
+		t_ += kDeltaTime / 2.0f;
 	}
 	if (t_ >= 0.99999f) {
 		t_ = 1.0f;
