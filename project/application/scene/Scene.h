@@ -37,8 +37,9 @@ protected:	//メンバ変数
 	//次に行きたいシーンを持たせる
 	SceneLabel nextScene_ = SceneLabel::Title;
 
-	Audio bgm_;
+	Audio audio_;
 	SoundData bgmHandle_;
+	SoundData clickHandle_;
 
 	//ポインタを借りる
 	CameraOrganizer* camera_ = nullptr;

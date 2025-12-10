@@ -31,7 +31,8 @@ ClearScene::ClearScene (CameraOrganizer* camera, InputManager* inputManager, DxC
 }
 
 ClearScene::~ClearScene () {
-	
+	audio_.Unload(bgmHandle_);
+	audio_.Unload(clickHandle_);
 }
 
 void ClearScene::Initialize () {
@@ -81,9 +82,10 @@ void ClearScene::Initialize () {
 
 	t_ = 0.0f;
 
-	bgm_.Initialize();
-	bgmHandle_ = bgm_.LoadSound("resources/Audio/BGM/Clear.mp3");
-	bgm_.PlaySoundW(bgmHandle_, true);
+	audio_.Initialize();
+	bgmHandle_ = audio_.LoadSound("resources/Audio/BGM/Clear.mp3");
+	clickHandle_ = audio_.LoadSound("resources/Audio/SE/click.mp3");
+	audio_.PlaySoundW(bgmHandle_, 0.5f, true);
 }
 
 void ClearScene::Update () {
@@ -91,7 +93,8 @@ void ClearScene::Update () {
 	if (input_->GetRawInput()->Trigger(VK_SPACE) || input_->GetGamePad()->TriggerButton(Button::A)) {
 		nextScene_ = SceneLabel::Title;
 		isFinish_ = true;
-		bgm_.StopSound(bgmHandle_);
+		audio_.PlaySoundW(clickHandle_, 1.0f, false);
+		audio_.StopSound(bgmHandle_);
 	}
 
 	if (t_ <= 1.0f) {

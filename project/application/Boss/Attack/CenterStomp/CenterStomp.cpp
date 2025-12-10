@@ -16,6 +16,7 @@ CenterStomp::CenterStomp(Boss* boss) {
 }
 
 CenterStomp::~CenterStomp() {
+	audio_.Unload(centerAttackHandle_);
 }
 
 void CenterStomp::Initialize() {
@@ -28,6 +29,9 @@ void CenterStomp::Initialize() {
 
 	phase_ = StompPhase::None;
 	isAliveWave_ = false;
+
+	audio_.Initialize();
+	centerAttackHandle_ = audio_.LoadSound("resources/Audio/SE/centerAttack.mp3");
 }
 
 void CenterStomp::StartAttack() {
@@ -43,9 +47,7 @@ void CenterStomp::StartAttack() {
 	// 「今の場所」から「中央上空」までの移動ルートをここで確定させます
 	startPos_ = boss_->GetPosition();     // スタート地点：今のボスの位置
 	targetPos_ = kCenterPoint_;           // ゴール地点X,Z：中央(0,0)
-
-	
-	}
+}
 
 void CenterStomp::Update(Matrix4x4* m) {
 	// 状態遷移マシンの実行
@@ -165,6 +167,8 @@ void CenterStomp::UpdateFall() {
 		phase_ = StompPhase::Cooldown;
 		timer_ = 0;
 		duration_ = 60; // 硬直時間
+
+		audio_.PlaySoundW(centerAttackHandle_, 2.0f, false);
 	}
 }
 

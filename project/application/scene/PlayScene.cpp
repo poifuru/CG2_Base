@@ -38,7 +38,8 @@ PlayScene::PlayScene (CameraOrganizer* camera, InputManager* inputManager, DxCom
 }
 
 PlayScene::~PlayScene () {
-
+	audio_.Unload(bgmHandle_);
+	audio_.Unload(clickHandle_);
 }
 
 void PlayScene::Initialize () {
@@ -105,13 +106,15 @@ void PlayScene::Initialize () {
 
 	tutorialFlag_ = true;
 
-	bgm_.Initialize ();
-	bgmHandle_ = bgm_.LoadSound ("resources/Audio/BGM/Game.mp3");
-	bgm_.PlaySoundW (bgmHandle_, true);
+	audio_.Initialize ();
+	bgmHandle_ = audio_.LoadSound ("resources/Audio/BGM/Game.mp3");
+	clickHandle_ = audio_.LoadSound("resources/Audio/SE/click.mp3");
+	audio_.PlaySoundW(bgmHandle_, 0.5f, true);
 }
 
 void PlayScene::Update () {
-	if (input_->GetRawInput ()->Trigger (VK_SPACE) || input_->GetGamePad()->TriggerButton(Button::A)){
+	if (input_->GetRawInput ()->Trigger (VK_SPACE) && tutorialFlag_ || input_->GetGamePad()->TriggerButton(Button::A) && tutorialFlag_){
+		audio_.PlaySoundW(clickHandle_, 1.0f, false);
 		tutorialFlag_ = false;
 	}
 
@@ -139,13 +142,13 @@ void PlayScene::Update () {
 		if (player_->GetIsDead ()) {
 			nextScene_ = SceneLabel::Gameover;
 			isFinish_ = true;
-			bgm_.StopSound (bgmHandle_);
+			audio_.StopSound (bgmHandle_);
 		}
 
 		if (boss_->GetClear ()) {
 			nextScene_ = SceneLabel::Clear;
 			isFinish_ = true;
-			bgm_.StopSound (bgmHandle_);
+			audio_.StopSound (bgmHandle_);
 		}
 	}
 	ground_->Update (camera_->GetVPMatrix ());

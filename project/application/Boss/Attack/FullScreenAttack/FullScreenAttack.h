@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory> // std::unique_ptrのため
 #include "BossProjectileCollider.h"
+#include "Audio.h"
 
 class Boss;
 
@@ -68,4 +69,7 @@ private:
 	const float kProjectileSpeed_ = 0.5f;
 
 	Matrix4x4* vp_ = nullptr;
+
+	Audio audio_;
+	SoundData breathHandle_;
 };

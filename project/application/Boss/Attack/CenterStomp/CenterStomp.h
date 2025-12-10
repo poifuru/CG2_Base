@@ -1,6 +1,7 @@
 #pragma once
 #include "Model.h"
 #include "CenterStompCollider.h"
+#include "Audio.h"
 
 class Boss;
 
@@ -50,5 +51,8 @@ private:
 	const Vector3 kCenterPoint_ = {0.0f, 10.0f, 0.0f};
 
 	std::unique_ptr<CenterStompCollider> collider_ = nullptr;
+
+	Audio audio_;
+	SoundData centerAttackHandle_;
 };
 

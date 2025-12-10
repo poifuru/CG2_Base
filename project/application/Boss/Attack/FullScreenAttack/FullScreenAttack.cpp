@@ -16,6 +16,7 @@ FullScreenAttack::FullScreenAttack(DxCommon* dxCommon, Boss* boss) {
 }
 
 FullScreenAttack::~FullScreenAttack() {
+	audio_.Unload(breathHandle_);
 }
 
 void FullScreenAttack::Initialize() {
@@ -41,6 +42,9 @@ void FullScreenAttack::Initialize() {
 			COL_Boss_Attack_FullScreenBullet
 		);
 	}
+
+	audio_.Initialize();
+	breathHandle_ = audio_.LoadSound("resources/Audio/SE/breath.mp3");
 }
 
 void FullScreenAttack::StartAttack() {
@@ -100,6 +104,7 @@ void FullScreenAttack::UpdateCharge() {
 // 発射フェーズ (ここでは瞬間的に次のフェーズへ移行)
 void FullScreenAttack::UpdateShoot() {
 	// 発射処理は EmitProjectiles() で一度だけ行うため、ここでは主にアニメーションなどの処理
+	audio_.PlaySoundW(breathHandle_, 1.0f, false);
 
 	phase_ = AttackPhase::Cooldown;
 	timer_ = 0;

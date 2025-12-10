@@ -17,6 +17,7 @@ Breath::Breath(DxCommon* dxCommon, Boss* boss) {
 
 // デストラクタ
 Breath::~Breath() {
+    audio_.Unload(breathHandle_);
 }
 
 // 初期化
@@ -53,6 +54,9 @@ void Breath::Initialize() {
     intervalFrames_ = 0;
     intervalTimer_ = 0;
     // isCurving_ の設定を削除
+
+    audio_.Initialize();
+    breathHandle_ = audio_.LoadSound("resources/Audio/SE/breath.mp3");
 }
 
 // 攻撃開始
@@ -119,6 +123,8 @@ void Breath::UpdateShoot() {
         throwCount_++;
         // isCurving_ の反転を削除
         intervalTimer_ = 0;
+
+        audio_.PlaySoundW(breathHandle_, 0.5f, false);
     }
 }
 

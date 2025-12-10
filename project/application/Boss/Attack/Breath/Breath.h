@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include "BossProjectileCollider.h"
+#include "Audio.h"
 
 class Boss;
 
@@ -79,4 +80,7 @@ private:
 	const float kProjectileSpeed_ = 0.3f;
 	
 	Matrix4x4* vp_ = nullptr;
+
+	Audio audio_;
+	SoundData breathHandle_;
 };
