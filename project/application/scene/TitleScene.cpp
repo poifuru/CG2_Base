@@ -4,6 +4,9 @@
 #include "ModelManager.h"
 #include "TextureManager.h"
 
+//デルタタイムを定義
+const float kDeltaTime = 1.0f / 60.0f;
+
 TitleScene::TitleScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
 	//地面のモデル
 	ground_ = std::make_unique<Model> (dxCommon);
@@ -20,6 +23,15 @@ TitleScene::TitleScene (CameraOrganizer* camera, InputManager* inputManager, DxC
 	//天球
 	skydome_ = std::make_unique<Model> (dxCommon);
 	ModelManager::GetInstance ()->LoadModelData ("Resources/skydome", "skydome");
+
+	//タイトル
+	moji_ = std::make_unique<Model> (dxCommon);
+	ModelManager::GetInstance ()->LoadModelData ("Resources/Title/moji", "moji");
+
+	zako_ = std::make_unique<Model> (dxCommon);
+	ModelManager::GetInstance ()->LoadModelData ("Resources/Title/zako", "zako2");
+
+	particle_ = std::make_unique<MeshParticle> ();
 
 	camera_ = camera;
 	input_ = inputManager;
@@ -60,10 +72,36 @@ void TitleScene::Initialize () {
 	skydome_->Initialize ();
 	skydome_->IsLighting (LightReflectionModel::HalfLambert);
 
+	//タイトル
+	moji_->SetModelData ("moji");
+	moji_->SetTexture ("moji");
+	moji_->Initialize ();
+	moji_->IsLighting (LightReflectionModel::HalfLambert);
+	moji_->SetTransform ({
+		{0.25f, 0.25f, 0.25f},
+		{-0.19f, -1.39f, 0.21f},
+		{6.63f, 13.37f, -0.16f},
+						  });
+
+	zako_->SetModelData ("zako2");
+	zako_->SetTexture ("zako2");
+	zako_->Initialize ();
+	zako_->IsLighting (LightReflectionModel::HalfLambert);
+	zako_->SetTransform ({
+		{0.25f, 0.25f, 0.25f},
+		{-0.19f, -1.39f, 0.21f},
+		{6.63f, 13.37f, -0.16f},
+						 });
+
+	particle_->Initialize ();
+	particle_->SetEmitterPos ({ 46.5f, 21.0f, 59.0f });
+	particle_->SetColor ({ 1.0f, 1.0f, 1.0f, 1.0f });
+
 	//定点カメラ用のtransform
 	camera_->AddCamera ("mainCamera1", CameraType::FixedPontCamera);
 	camera_->SetActiveCamera ("mainCamera1");
 	camera_->SetPosition ({ 0.0f, 0.0f, -50.0f });
+	camera_->SetRotate ({ -0.17f, 0.23f, 0.0f });
 }
 
 void TitleScene::Update () {
@@ -77,6 +115,18 @@ void TitleScene::Update () {
 	mountain_->Update (camera_->GetVPMatrix ());
 	stone_->Update (camera_->GetVPMatrix ());
 	skydome_->Update (camera_->GetVPMatrix ());
+	moji_->Update (camera_->GetVPMatrix ());
+	moji_->ImGui ("moji");
+	zako_->Update (camera_->GetVPMatrix ());
+	zako_->ImGui ("zako2");
+
+	particleTimeCount_ += kDeltaTime;
+	if (particleTimeCount_ >= particleTimer_) {
+		particle_->Spawn ();
+		particleTimeCount_ = 0.0f;
+	}
+
+	particle_->Update (camera_->GetVPMatrix ());
 
 	camera_->Update ();
 }
@@ -86,4 +136,7 @@ void TitleScene::Draw () {
 	ground_->Draw ();
 	mountain_->Draw ();
 	stone_->Draw ();
+	moji_->Draw ();
+	zako_->Draw ();
+	particle_->Draw ();
 }
