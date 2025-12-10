@@ -12,6 +12,7 @@ void Player::Initialize () {
 	ModelManager::GetInstance ()->LoadModelData ("Resources/player", "player");
 	ModelManager::GetInstance ()->LoadModelData ("Resources/player/normalAttack", "normalAttack");
 	ModelManager::GetInstance ()->LoadModelData ("Resources/boss/wave", "wave");
+	ModelManager::GetInstance ()->LoadModelData ("Resources/player/cross", "cross");
 	obj_ = std::make_unique<Model> (DxCommon::GetInstance ());
 	obj_->SetModelData ("player");
 	obj_->SetTexture ("player");
@@ -31,6 +32,11 @@ void Player::Initialize () {
 	playerColliderObj_->SetModelData ("slipDamage");
 	playerColliderObj_->SetTexture ("slipDamage");
 	playerColliderObj_->Initialize ();
+
+	cross_ = std::make_unique<Model> (DxCommon::GetInstance ());
+	cross_->SetModelData ("cross");
+	cross_->SetTexture ("cross");
+	cross_->Initialize ();
 
 	// [ 設定 ]
 	// 1, Player
@@ -126,6 +132,7 @@ void Player::Update (Matrix4x4* m) {
 	obj_->Update (m);
 	playerColliderObj_->Update (m);
 	attackColliderObj_->Update (m);
+	cross_->Update (m);
 	hpSpriteG_->Update();
 #ifdef _DEBUG
 	ImGui::Begin("Player");

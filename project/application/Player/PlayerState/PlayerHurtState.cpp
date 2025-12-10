@@ -1,5 +1,6 @@
 #include "PlayerState.h" 
 #include "Player.h"
+#include "DxCommon.h"
 
 void PlayerHurtState::Initialize()
 {
@@ -98,6 +99,8 @@ void PlayerHurtState::Update()
 void PlayerHurtState::Exit()
 {
 	if (!player_) return;
+	
+
 	// カラーを一応戻す
 	player_->SetColor({1.0f,1.0f,1.0f,1.0f});
 
