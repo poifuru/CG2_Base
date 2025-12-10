@@ -64,6 +64,12 @@ void ClearScene::Initialize () {
 }
 
 void ClearScene::Update () {
+	// ゲーム終了
+	if (input_->GetRawInput()->Trigger(VK_SPACE) || input_->GetGamePad()->TriggerButton(Button::A)) {
+		nextScene_ = SceneLabel::Title;
+		isFinish_ = true;
+	}
+
 	ground_->Update (camera_->GetVPMatrix ());
 	mountain_->Update (camera_->GetVPMatrix ());
 	stone_->Update (camera_->GetVPMatrix ());

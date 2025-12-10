@@ -97,17 +97,6 @@ void PlayScene::Initialize () {
 
 void PlayScene::Update () {
 	boss_->ImGuiControl();
-
-	if (player_->GetIsDead()) {
-		nextScene_ = SceneLabel::Gameover;
-		isFinish_ = true;
-	}
-
-	if (boss_->GetClear()) {
-		nextScene_ = SceneLabel::Clear;
-		isFinish_ = true;
-	}
-
 	player_->Update(camera_->GetVPMatrix());
 	boss_->Update(camera_->GetVPMatrix());
 	ground_->Update (camera_->GetVPMatrix ());
@@ -134,6 +123,16 @@ void PlayScene::Update () {
 	collisionManager_->CheckAllCollisions();
 
 	camera_->Update ();
+
+	if (player_->GetIsDead()) {
+		nextScene_ = SceneLabel::Gameover;
+		isFinish_ = true;
+	}
+
+	if (boss_->GetClear()) {
+		nextScene_ = SceneLabel::Clear;
+		isFinish_ = true;
+	}
 }
 
 void PlayScene::Draw () {

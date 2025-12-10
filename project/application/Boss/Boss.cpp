@@ -19,27 +19,55 @@ Boss::~Boss () {
 
 }
 
-void Boss::Initialize () {
-	model_->SetModelData ("boss");
-	model_->SetTexture ("boss");
-	model_->Initialize ();
+void Boss::Initialize() {
+	model_->SetModelData("boss");
+	model_->SetTexture("boss");
+	model_->Initialize();
 
-	centerStomp_ = std::make_unique<CenterStomp> (this);
-	centerStomp_->Initialize ();
+	centerStomp_ = std::make_unique<CenterStomp>(this);
+	centerStomp_->Initialize();
 
-	fullScreenAttack_ = std::make_unique<FullScreenAttack> (dxCommon_, this);
-	fullScreenAttack_->Initialize ();
+	fullScreenAttack_ = std::make_unique<FullScreenAttack>(dxCommon_, this);
+	fullScreenAttack_->Initialize();
 
-	Breath_ = std::make_unique<Breath> (dxCommon_, this);
-	Breath_->Initialize ();
+	Breath_ = std::make_unique<Breath>(dxCommon_, this);
+	Breath_->Initialize();
 
-	bossBodyCollider_ = std::make_unique<BossBodyCollider> (this);
-	bodyColliderObj_ = std::make_unique<Model> (dxCommon_);
-	bodyColliderObj_->SetModelData ("slipDamage");
-	bodyColliderObj_->SetTexture ("slipDamage");
-	bodyColliderObj_->Initialize ();
-	bodyColliderObj_->SetColor ({ 0.0f,0.0f,0.0f,1.0f });
+	bossBodyCollider_ = std::make_unique<BossBodyCollider>(this);
+	bodyColliderObj_ = std::make_unique<Model>(dxCommon_);
+	bodyColliderObj_->SetModelData("slipDamage");
+	bodyColliderObj_->SetTexture("slipDamage");
+	bodyColliderObj_->Initialize();
+	bodyColliderObj_->SetColor({ 0.0f,0.0f,0.0f,1.0f });
+
+	// --- 【初期化の追加・確認】 ---
+
+	// 1. HPと生存状態 (既存だが確認)
+	maxHP_ = 10000.0f; // maxHP_はコンストラクタで設定されるべきだが、念のため
+	hp_ = maxHP_;
+	isAlive_ = true;
+	bossExtinction_ = false;
+	isClear_ = false;
+	deathTimer_ = 0;
+
+	// 2. 座標、スケール、回転
+	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f}, {0.0f,-1.0f,20.0f} };
+	rotate_ = Rotate::left;
+
+	// 3. 行動・AI制御
+	moveState_ = MoveState::Wander;
+	moveTimer_ = 0;
+	wanderTargetPos_ = { 0.0f, 0.0f, 0.0f };
+	wanderUpdateCount_ = 0;
+
+	// 4. 攻撃AI制御
+	attackCooldownTimer_ = 0;
+	currentAttack_ = AttackType::None;
+
+	// 5. コライダー
 	defaultRadius_ = bossBodyCollider_->GetRadius();
+	shadowRadius_ = defaultRadius_;
+	bossBodyCollider_->SetRadius(defaultRadius_);
 }
 
 void Boss::Update (Matrix4x4* m) {
