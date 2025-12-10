@@ -46,7 +46,7 @@ void PlayerDeathState::Update()
 	{
 		// 演出終了後、ゲームオーバー画面やリザルト画面に遷移する処理を呼び出す
 		// 例: SceneManager::GetInstance()->ChangeScene(SceneType::GameOver); 
-
+		player_->SetIsDead(true);
 		// 死亡演出後の処理が完了したら、このStateのUpdateは基本的に何もしなくて良い
 		// シーン遷移が完了すると、この Player3D インスタンスも破棄される想定
 	}
