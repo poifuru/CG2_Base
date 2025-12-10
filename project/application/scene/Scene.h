@@ -2,6 +2,7 @@
 #include <memory>
 #include "CameraOrganizer.h"
 #include "InputManager.h"
+#include "Audio.h"
 
 //シーンのラベル
 enum class SceneLabel {
@@ -35,6 +36,9 @@ protected:	//メンバ変数
 	SceneLabel nowScene_ = SceneLabel::Title;
 	//次に行きたいシーンを持たせる
 	SceneLabel nextScene_ = SceneLabel::Title;
+
+	Audio bgm_;
+	SoundData bgmHandle_;
 
 	//ポインタを借りる
 	CameraOrganizer* camera_ = nullptr;

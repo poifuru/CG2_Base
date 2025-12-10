@@ -94,6 +94,10 @@ void PlayScene::Initialize () {
 	camera_->SetFollowTarget ("FollowCamera", player_->GetTransform ());
 
 	enemies_->Initialize(player_.get(), boss_.get());
+
+	bgm_.Initialize();
+	bgmHandle_ = bgm_.LoadSound("resources/Audio/BGM/Game.mp3");
+	bgm_.PlaySoundW(bgmHandle_, true);
 }
 
 void PlayScene::Update () {
@@ -128,11 +132,13 @@ void PlayScene::Update () {
 	if (player_->GetIsDead()) {
 		nextScene_ = SceneLabel::Gameover;
 		isFinish_ = true;
+		bgm_.StopSound(bgmHandle_);
 	}
 
 	if (boss_->GetClear()) {
 		nextScene_ = SceneLabel::Clear;
 		isFinish_ = true;
+		bgm_.StopSound(bgmHandle_);
 	}
 }
 

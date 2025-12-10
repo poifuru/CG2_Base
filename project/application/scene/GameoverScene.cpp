@@ -61,6 +61,10 @@ void GameoverScene::Initialize () {
 	camera_->AddCamera ("mainCamera2", CameraType::FixedPontCamera);
 	camera_->SetActiveCamera ("mainCamera2");
 	camera_->SetPosition ({ 0.0f, 0.0f, -50.0f });
+
+	bgm_.Initialize();
+	bgmHandle_ = bgm_.LoadSound("resources/Audio/BGM/GameOver.mp3");
+	bgm_.PlaySoundW(bgmHandle_, true);
 }
 
 void GameoverScene::Update () {
@@ -68,6 +72,7 @@ void GameoverScene::Update () {
 	if (input_->GetRawInput()->Trigger(VK_SPACE) || input_->GetGamePad()->TriggerButton(Button::A)) {
 		nextScene_ = SceneLabel::Title;
 		isFinish_ = true;
+		bgm_.StopSound(bgmHandle_);
 	}
 
 	ground_->Update (camera_->GetVPMatrix ());

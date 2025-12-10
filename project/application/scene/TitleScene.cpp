@@ -109,6 +109,10 @@ void TitleScene::Initialize () {
 	camera_->SetActiveCamera ("mainCamera1");
 	camera_->SetPosition ({ 0.0f, 0.0f, -50.0f });
 	camera_->SetRotate ({ -0.17f, 0.23f, 0.0f });
+
+	bgm_.Initialize();
+	bgmHandle_ = bgm_.LoadSound("resources/Audio/BGM/Title.mp3");
+	bgm_.PlaySoundW(bgmHandle_, true);
 }
 
 void TitleScene::Update () {
@@ -116,6 +120,7 @@ void TitleScene::Update () {
 	if (input_->GetRawInput()->Trigger(VK_SPACE) || input_->GetGamePad()->TriggerButton(Button::A)) {
 		nextScene_ = SceneLabel::Play;
 		isFinish_ = true;
+		bgm_.StopSound(bgmHandle_);
 	}
 
 	ground_->Update (camera_->GetVPMatrix ());
