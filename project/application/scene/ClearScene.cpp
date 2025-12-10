@@ -1,5 +1,9 @@
 #include "ClearScene.h"
 #include "MagosuyaEngine.h"
+#include "Easing.h"
+
+//デルタタイムを定義
+const float kDeltaTime = 1.0f / 60.0f;
 
 ClearScene::ClearScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
 	//地面のモデル
@@ -17,6 +21,10 @@ ClearScene::ClearScene (CameraOrganizer* camera, InputManager* inputManager, DxC
 	//天球
 	skydome_ = std::make_unique<Model> (dxCommon);
 	ModelManager::GetInstance ()->LoadModelData ("Resources/skydome", "skydome");
+
+	//クリアスプライト
+	clear_ = std::make_unique<Sprite> (dxCommon);
+	TextureManager::GetInstance ()->LoadTexture ("Resources/UI/clear.png", "clear");
 	
 	camera_ = camera;
 	input_ = inputManager;
@@ -57,10 +65,21 @@ void ClearScene::Initialize () {
 	skydome_->Initialize ();
 	skydome_->IsLighting (LightReflectionModel::HalfLambert);
 
+	clear_->SetID ("clear");
+	clear_->Initialize ({ 340.0f, 260.0f, 0.0f });
+	clear_->SetTexture ("clear");
+
+	//カメラの現在地
+	gameCameraPos_ = camera_->GetPosition ("FollowCamera");
+	gameCameraRotate_ = camera_->GetRotate ("FollowCamera");
+
 	//定点カメラ用のtransform
 	camera_->AddCamera ("mainCamera3", CameraType::FixedPontCamera);
 	camera_->SetActiveCamera ("mainCamera3");
-	camera_->SetPosition ({ 0.0f, 0.0f, -50.0f });
+	camera_->SetPosition (gameCameraPos_);
+	camera_->SetRotate (gameCameraRotate_);
+
+	t_ = 0.0f;
 
 	bgm_.Initialize();
 	bgmHandle_ = bgm_.LoadSound("resources/Audio/BGM/Clear.mp3");
@@ -75,11 +94,21 @@ void ClearScene::Update () {
 		bgm_.StopSound(bgmHandle_);
 	}
 
+	if (t_ <= 1.0f) {
+		t_ += kDeltaTime / 20.0f;
+	}
+	if (t_ >= 0.99999f) {
+		t_ = 1.0f;
+	}
+
 	ground_->Update (camera_->GetVPMatrix ());
 	mountain_->Update (camera_->GetVPMatrix ());
 	stone_->Update (camera_->GetVPMatrix ());
 	skydome_->Update (camera_->GetVPMatrix ());
+	clear_->Update ();
 
+	camera_->SetPosition (Math::Lerp (camera_->GetPosition ("mainCamera3"), cameraGoalPos_, Easing::easeOutCirc (t_)));
+	camera_->SetRotate(Math::Lerp (camera_->GetRotate ("mainCamera3"), cameraGoalRotate_, Easing::easeOutCirc (t_)));
 	camera_->Update ();
 }
 
@@ -88,4 +117,7 @@ void ClearScene::Draw () {
 	ground_->Draw ();
 	mountain_->Draw ();
 	stone_->Draw ();
+	if (t_ >= 1.0f) {
+		clear_->Draw ();
+	}
 }

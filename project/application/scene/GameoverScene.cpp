@@ -1,6 +1,10 @@
 #include "GameoverScene.h"
 #include "MagosuyaEngine.h"
 #include "InputManager.h"
+#include "Easing.h"
+
+//デルタタイムを定義
+const float kDeltaTime = 1.0f / 60.0f;
 
 GameoverScene::GameoverScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
 	//地面のモデル
@@ -18,6 +22,10 @@ GameoverScene::GameoverScene (CameraOrganizer* camera, InputManager* inputManage
 	//天球
 	skydome_ = std::make_unique<Model> (dxCommon);
 	ModelManager::GetInstance ()->LoadModelData ("Resources/skydome", "skydome");
+
+	//ゲームオーバースプライト
+	gameover_ = std::make_unique<Sprite> (dxCommon);
+	TextureManager::GetInstance ()->LoadTexture ("Resources/UI/gameover.png", "gameover");
 	
 	camera_ = camera;
 	input_ = inputManager;
@@ -57,10 +65,21 @@ void GameoverScene::Initialize () {
 	skydome_->Initialize ();
 	skydome_->IsLighting (LightReflectionModel::HalfLambert);
 
+	gameover_->SetID ("gameover");
+	gameover_->Initialize ({ 340.0f, 260.0f, 0.0f });
+	gameover_->SetTexture ("gameover");
+
+	//カメラの現在地
+	gameCameraPos_ = camera_->GetPosition ("FollowCamera");
+	gameCameraRotate_ = camera_->GetRotate ("FollowCamera");
+
 	//定点カメラ用のtransform
 	camera_->AddCamera ("mainCamera2", CameraType::FixedPontCamera);
 	camera_->SetActiveCamera ("mainCamera2");
-	camera_->SetPosition ({ 0.0f, 0.0f, -50.0f });
+	camera_->SetPosition (gameCameraPos_);
+	camera_->SetRotate (gameCameraRotate_);
+
+	t_ = 0.0f;
 
 	bgm_.Initialize();
 	bgmHandle_ = bgm_.LoadSound("resources/Audio/BGM/GameOver.mp3");
@@ -75,11 +94,21 @@ void GameoverScene::Update () {
 		bgm_.StopSound(bgmHandle_);
 	}
 
+	if (t_ <= 1.0f) {
+		t_ += kDeltaTime / 20.0f;
+	}
+	if (t_ >= 0.99999f) {
+		t_ = 1.0f;
+	}
+
 	ground_->Update (camera_->GetVPMatrix ());
 	mountain_->Update (camera_->GetVPMatrix ());
 	stone_->Update (camera_->GetVPMatrix ());
 	skydome_->Update (camera_->GetVPMatrix ());
+	gameover_->Update ();
 
+	camera_->SetPosition (Math::Lerp (camera_->GetPosition ("mainCamera2"), cameraGoalPos_, Easing::easeOutCirc (t_)));
+	camera_->SetRotate (Math::Lerp (camera_->GetRotate ("mainCamera2"), cameraGoalRotate_, Easing::easeOutCirc (t_)));
 	camera_->Update ();
 }
 
@@ -88,4 +117,8 @@ void GameoverScene::Draw () {
 	ground_->Draw ();
 	mountain_->Draw ();
 	stone_->Draw ();
+
+	if (t_ >= 1.0f) {
+		gameover_->Draw ();
+	}
 }

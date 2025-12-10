@@ -52,6 +52,8 @@ public:
 	Matrix4x4* GetVPMatrix () { return &vpMatrix_; }
 
 	//位置と回転をいじれるように
+	Vector3 GetPosition (const std::string& ID) { return cameras_.at (ID)->GetTranslate (); }
+	Vector3 GetRotate (const std::string& ID) { return cameras_.at (ID)->GetRotate (); }
 	void SetPosition (const Vector3& position) { activeCamera_->SetTranslate (position); }
 	void SetRotate (const Vector3& rotate) { activeCamera_->SetRotate (rotate); }
 
