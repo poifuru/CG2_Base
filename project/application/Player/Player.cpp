@@ -6,6 +6,7 @@
 
 Player::~Player() {
 	delete state_;
+	audio_.Unload(playerDamageHandle_);
 }
 
 void Player::Initialize() {
@@ -71,6 +72,8 @@ void Player::Initialize() {
 	hpSpriteRed_->SetTexture("white16x16");
 	hpSpriteRed_->SetScale({ 558.0f,75.0f,0.0f });
 
+	audio_.Initialize();
+	playerDamageHandle_ = audio_.LoadSound("resources/Audio/SE/playerDamage.mp3");
 }
 
 void Player::ResetData() {
@@ -334,6 +337,7 @@ void Player::TakeDamage(float damage) {
 	if (hp_ < 0.0f) {
 		hp_ = 0.0f;
 	}
+	audio_.PlaySoundW(playerDamageHandle_, 1.0f, false);
 
 	// 3. 死亡判定
 	if (IsDead()) {

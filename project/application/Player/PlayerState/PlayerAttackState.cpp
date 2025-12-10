@@ -17,6 +17,10 @@ void PlayerAttackState::Initialize(){
     isAttackHeld_ = true;
 
     player_->SetModelData("normalAttack");
+
+    audio_.Initialize();
+    playerAttackHandle_ = audio_.LoadSound("resources/Audio/SE/playerAttack.mp3");
+    soundOn_ = false;
 }
 
 void PlayerAttackState::Update(){
@@ -65,6 +69,11 @@ void PlayerAttackState::Update(){
         colliderRadius = 2.0f;
         player_->SetAttackColliderRadius(colliderRadius);
         hitBoxWorldPos = attackOffset/*+ (Quaternion::RotateVector(attackOffset,player_->GetPlayerQuaternion()) * 2.0f)*/;
+        
+        if (!soundOn_) {
+            audio_.PlaySoundW(playerAttackHandle_, 1.0f, false);
+            soundOn_ = true;
+        }
         player_->EnableHitBox(true, hitBoxWorldPos);
         player_->AddAttackColliderType(COL_Player_Attack_Level0);
         player_->SetIsViewAttack(true);
@@ -122,5 +131,5 @@ void PlayerAttackState::Exit()
     player_->EnableHitBox(false,player_->GetPosition());
 
     // 他に何かあれば
-
+    audio_.Unload(playerAttackHandle_);
 }

@@ -7,6 +7,7 @@
 #include "AttackCollider.h"
 #include "PlayerBodyCollider.h"
 #include "InputManager.h"
+#include "Audio.h"
 
 class Player
 {
@@ -142,4 +143,7 @@ private:
 	float gravity_ = 0.098f;
 	// 地面にいるかどうかのフラグ
 	bool isOnGround_ = false;
+
+	Audio audio_;
+	SoundData playerDamageHandle_;
 };

@@ -18,6 +18,10 @@ void PlayerChargeReleaseState::Initialize() {
 
     // チャージレベルに応じて攻撃持続時間を調整しても良い
     // if (chargeLevel_ == 2) { maxReleaseDuration_ = 1.2f; }
+
+    audio_.Initialize();
+    playerAttackHandle_ = audio_.LoadSound("resources/Audio/SE/playerAttack.mp3");
+    audio_.PlaySoundW(playerAttackHandle_, 1.0f, false);
 }
 
 void PlayerChargeReleaseState::Update() {

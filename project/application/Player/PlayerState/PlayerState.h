@@ -3,6 +3,7 @@
 #include "InputManager.h"
 #include <memory>
 #include "Model.h"
+#include "Audio.h"
 
 class Player;
 
@@ -101,6 +102,10 @@ private:
 	float comboWindowStart_ = 0.2f; // 攻撃開始から200ms後
 	float comboWindowEnd_ = 0.4f;   // 攻撃開始から400ms後
 	bool isAttackHeld_ = false;
+
+	bool soundOn_;
+	Audio audio_;
+	SoundData playerAttackHandle_;
 };
 
 // チャージ時のState
@@ -132,6 +137,9 @@ private:
 	float releaseTimer_ = 0.0f; // 攻撃アニメーションの経過時間
 	float maxReleaseDuration_ = 0.8f; // 攻撃アニメーションの持続時間 (チャージレベルで変動させても良い)
 	int chargeLevel_ = 0; // 発動する攻撃のチャージレベル
+
+	Audio audio_;
+	SoundData playerAttackHandle_;
 };
 
 class PlayerComboAttackState
