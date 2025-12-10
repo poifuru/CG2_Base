@@ -46,12 +46,31 @@ void Player::Initialize() {
 	EnableHitBox(false, obj_->GetTransform().translate);
 
 	// HPについて
-	hpSpriteG_ = std::make_unique<Sprite>(DxCommon::GetInstance());
-	hpSpriteGPos_ = {30.0f,600.0f,0.0f};
-	TextureManager::GetInstance()->LoadTexture("Resources/UI/hpBar_Player.png","hpBar_Player");
-	hpSpriteG_->SetID("hpBar_Player");
-	hpSpriteG_->Initialize(hpSpriteGPos_);
-	hpSpriteG_->SetTexture ("hpBar_Player");
+	// [ Frame ]
+	hpSpriteFrame_ = std::make_unique<Sprite>(DxCommon::GetInstance());
+	TextureManager::GetInstance()->LoadTexture("Resources/UI/hpBar_Player.png", "hpBar_Player");
+	hpSpriteFrame_->SetID("hpBar_Player");
+	hpSpriteFrame_->Initialize({ 30.0f,550.0f,0.0f });
+	hpSpriteFrame_->SetTexture("hpBar_Player");
+	hpSpriteFrame_->SetScale({ 900.0f * 0.8f,300.0f * 0.8f,0.0f });
+
+	// [ Green ]
+	hpSpriteGreen_ = std::make_unique<Sprite>(DxCommon::GetInstance());
+	TextureManager::GetInstance()->LoadTexture("Resources/UI/white16x16.png", "white16x16");
+	hpSpriteGreen_->SetID("white16x16");
+	hpSpriteGreen_->Initialize({ 110.0f,632.0f,0.0f });
+	hpSpriteGreen_->SetColor({ 0.0f,1.0f,0.0f,1.0f });
+	hpSpriteGreen_->SetTexture("white16x16");
+	hpSpriteGreen_->SetScale({ 558.0f,75.0f,0.0f });
+
+	// [ Red ]
+	hpSpriteRed_ = std::make_unique<Sprite>(DxCommon::GetInstance());
+	hpSpriteRed_->SetID("white16x16");
+	hpSpriteRed_->Initialize({ 110.0f,632.0f,0.0f });
+	hpSpriteRed_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+	hpSpriteRed_->SetTexture("white16x16");
+	hpSpriteRed_->SetScale({ 558.0f,75.0f,0.0f });
+
 }
 
 void Player::ResetData() {
@@ -134,8 +153,27 @@ void Player::Update(Matrix4x4* m) {
 	attackColliderObj_->Update (m);
 	cross_->Update (m);
 	cross_->SetPosition ({ obj_->GetPosition ().x, obj_->GetPosition ().y + 3.0f, obj_->GetPosition ().z });
-	hpSpriteG_->Update();
-	hpSpriteG_->ImGui ();
+	Vector3 greenScale = hpSpriteGreen_->GetScale();
+	float t = (hp_ / maxHP_);
+	greenScale.x = t * 558.0f + (1.0f - t) * 0.0f;
+	hpSpriteGreen_->SetScale(greenScale);
+
+	if (hp_ <= maxHP_ * (15.0f / 100.0f)) {
+		hpSpriteGreen_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+	}
+	else if (hp_ <= maxHP_ * (50.0f / 100.0f)) {
+		hpSpriteGreen_->SetColor({ 1.0f,1.0f,0.0f,1.0f });
+	}
+
+	Vector3 redScale = hpSpriteRed_->GetScale();
+	t = 0.05f;
+	redScale.x = (1.0f - t) * redScale.x + t * greenScale.x;
+	hpSpriteRed_->SetScale(redScale);
+
+	hpSpriteFrame_->Update();
+	hpSpriteGreen_->Update();
+	hpSpriteRed_->Update();
+
 #ifdef _DEBUG
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("Direction", &direction_.x, 0.0f, 0.0f);
@@ -159,7 +197,9 @@ void Player::Draw() {
 		attackColliderObj_->Draw();
 	}
 
-	hpSpriteG_->Draw();
+	hpSpriteRed_->Draw();
+	hpSpriteGreen_->Draw();
+	hpSpriteFrame_->Draw();
 }
 
 void Player::ChangeState(PlayerState* newState) {

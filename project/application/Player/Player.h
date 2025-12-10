@@ -111,10 +111,12 @@ private:
 	bool isDead_ = false;
 
 	// HPの可視化
+	// Frame
+	std::unique_ptr<Sprite>hpSpriteFrame_ = nullptr;
 	/*Sprite(緑)*/
-	std::unique_ptr<Sprite>hpSpriteG_ = nullptr;
-	Vector3 hpSpriteGPos_ = {};
+	std::unique_ptr<Sprite>hpSpriteGreen_ = nullptr;
 	/*Sprite(赤)*/
+	std::unique_ptr<Sprite>hpSpriteRed_ = nullptr;
 
 	Vector3 move_ = { 0,0,0 };
 	Vector3 direction_ = { 0.0f,0.0f,0.0f };

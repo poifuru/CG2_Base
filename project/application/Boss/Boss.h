@@ -1,5 +1,6 @@
 #pragma once
 #include "Model.h"
+#include "Sprite.h"
 #include "CenterStomp.h"
 #include "FullScreenAttack.h"
 #include "Breath.h"
@@ -133,6 +134,15 @@ private:
 	// HP
 	float maxHP_ = 10000.0f;
 	float hp_ = 10000.0f;
+
+	// HPの可視化
+	// Frame
+	std::unique_ptr<Sprite>hpSpriteFrame_ = nullptr;
+	/*Sprite(緑)*/
+	std::unique_ptr<Sprite>hpSpriteGreen_ = nullptr;
+	/*Sprite(赤)*/
+	std::unique_ptr<Sprite>hpSpriteRed_ = nullptr;
+
 	bool isAlive_ = true;
 	bool bossExtinction_ = false;
 	bool isClear_ = false;
