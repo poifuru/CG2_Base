@@ -84,6 +84,9 @@ void PlayerChargeReleaseState::Exit() {
     // スタミナ回復ブロックの解除
     //player_->UnblockStaminaRecovery();
 
+    // Playerのカラーを解除
+    player_->SetColor({ 1.0f,1.0f,1.0f,1.0f });
+
     // 攻撃判定を確実に無効化
     player_->EnableHitBox(false, player_->GetPosition());
     player_->SetIsViewAttack(false);

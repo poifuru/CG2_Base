@@ -64,14 +64,16 @@ void PlayerChargeState::Update() {
         // [Level1は速度の変更は特になし]
         // 移動速度(初期値)
         player_->SetSpeedMultiplier(0.35f);
+
+        player_->SetColor({1.0f,0.8f,0.8f,1.0f});
     }
     else if (chargeTimer_ < 1.5f) {
         currentChargeLevel_ = 2; // Level 2 チャージ
 
         // 移動速度の変更
         player_->SetSpeedMultiplier(0.20f);
-
         // エフェクトの変更
+        player_->SetColor({ 0.8f,0.6f,0.6f,1.0f });
     }
     else {
         currentChargeLevel_ = 3; // Level 3 チャージ (MAX)
@@ -80,6 +82,7 @@ void PlayerChargeState::Update() {
         player_->SetSpeedMultiplier(0.10f);
 
         // 最大チャージ時のエフェクト
+        player_->SetColor({ 0.8f,0.3f,0.3f,1.0f });
     }
 
     if (!player_->IsOnGround()) {
