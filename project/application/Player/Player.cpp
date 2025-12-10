@@ -47,11 +47,11 @@ void Player::Initialize() {
 
 	// HPについて
 	hpSpriteG_ = std::make_unique<Sprite>(DxCommon::GetInstance());
-	hpSpriteGPos_ = { 100.0f,100.0f,0.0f };
-	TextureManager::GetInstance()->LoadTexture("Resources/UI/hpBar_Player", "hpBar_Player");
+	hpSpriteGPos_ = {30.0f,600.0f,0.0f};
+	TextureManager::GetInstance()->LoadTexture("Resources/UI/hpBar_Player.png","hpBar_Player");
 	hpSpriteG_->SetID("hpBar_Player");
-	hpSpriteG_->SetTexture("hpBar_Player");
 	hpSpriteG_->Initialize(hpSpriteGPos_);
+	hpSpriteG_->SetTexture ("hpBar_Player");
 }
 
 void Player::ResetData() {
@@ -129,11 +129,13 @@ void Player::Update(Matrix4x4* m) {
 		attackCollider_->GetWorldPosition().y - 0.5f,
 		attackCollider_->GetWorldPosition().z} });
 
-	obj_->Update(m);
-	playerColliderObj_->Update(m);
-	attackColliderObj_->Update(m);
-	cross_->Update(m);
+	obj_->Update (m);
+	playerColliderObj_->Update (m);
+	attackColliderObj_->Update (m);
+	cross_->Update (m);
+	cross_->SetPosition ({ obj_->GetPosition ().x, obj_->GetPosition ().y + 3.0f, obj_->GetPosition ().z });
 	hpSpriteG_->Update();
+	hpSpriteG_->ImGui ();
 #ifdef _DEBUG
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("Direction", &direction_.x, 0.0f, 0.0f);

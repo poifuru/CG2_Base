@@ -74,6 +74,7 @@ void PlayerHurtState::Update()
 	// --- のけぞりアニメーション/無敵時間終了 ---
 	if (hurtTimer_ >= MAX_HURT_DURATION)
 	{
+		player_->GetCross ()->Draw ();
 		// 終了したら、待機 State に戻る
 		player_->ChangeState(new PlayerStopState());
 		return;

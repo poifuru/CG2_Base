@@ -77,7 +77,7 @@ public:
 	Vector3& Move() { return move_; }
 	void SetIsViewAttack(bool flag) { isAttackViewFlag_ = flag; }
 	void SetModelData(const std::string& name);
-	//void GetCross () { cross_.get (); }
+	Model* GetCross () { return cross_.get(); }
 private:
 	// 物理的な処理
 	void ApplyPhysics();

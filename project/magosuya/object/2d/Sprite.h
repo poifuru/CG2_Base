@@ -27,9 +27,12 @@ private:	//プライベート関数
 	void AdjustTextureSize ();
 
 public:		//アクセッサ
+	//スケール
+	Vector3 GetScale () { return transformData_.transform.scale; }
+	void SetScale (const Vector3& scale) { transformData_.transform.scale = scale; }
 	//位置
 	Vector3 GetPosition () { return transformData_.transform.translate; }
-	void SetPosition (Vector3& position) { transformData_.transform.translate = position; }
+	void SetPosition (const Vector3& position) { transformData_.transform.translate = position; }
 	//回転
 	float GetRotation () { return rotation_; }
 	void SetRotation (float rotation) { rotation_ = rotation; }

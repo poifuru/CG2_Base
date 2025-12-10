@@ -57,6 +57,8 @@ public:	//メンバ関数
 	//アクセッサ
 	Vector3 GetPosition () { return transform_.translate; }
 	void SetPosition (const Vector3& position) { transform_.translate = position; }
+	Vector3 GetRotate () { return transform_.rotate; }
+	void SetRotate (const Vector3& rotate) { transform_.translate = rotate; }
 	const Transform& GetTransform () { return transform_; }
 	void SetTransform (Transform transform) { transform_ = transform; }
 	Transform GetUVTransform () { return uvTransform_; }
