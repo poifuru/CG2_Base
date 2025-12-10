@@ -103,6 +103,10 @@ void PlayScene::Update () {
 		isFinish_ = true;
 	}
 
+	if (player_->GetIsDead()) {
+		isFinish_ = true;
+	}
+
 	player_->Update(camera_->GetVPMatrix());
 	boss_->Update(camera_->GetVPMatrix());
 	ground_->Update (camera_->GetVPMatrix ());

@@ -42,6 +42,8 @@ public:
 	float GetSpeedMultiplier() { return speedMultiplier_; }
 	// 状態チェック
 	bool IsDead() const { return hp_ <= 0.0f; }
+	void SetIsDead(bool flag) { isDead_ = flag; }
+	bool GetIsDead()const { return isDead_; }
 	bool IsInvulnerable() const { return isInvulnerable_; } // 無敵時間のチェック
 	void SetInvulnerable(bool isInvulnerable) { isInvulnerable_ = isInvulnerable; }
 	// AttackCollider
@@ -100,6 +102,8 @@ private:
 	// HP
 	float maxHP_ = 200.0f;
 	float hp_ = 200.0f;
+
+	bool isDead_ = false;
 
 	// HPの可視化
 	/*Sprite(緑)*/
