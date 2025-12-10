@@ -86,11 +86,11 @@ void PlayerHurtState::Update()
 		return;
 	}
 
-	if (player_->IsAttack()) {
-		// 攻撃
-		player_->ChangeState(new PlayerAttackState());
-		return;
-	}
+	//if (player_->IsAttack()) {
+	//	// 攻撃
+	//	player_->ChangeState(new PlayerAttackState());
+	//	return;
+	//}
 
 	//ImGuiManager::GetInstance()->Text("HurtState");
 }

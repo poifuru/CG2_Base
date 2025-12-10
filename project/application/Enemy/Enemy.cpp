@@ -95,7 +95,7 @@ void Enemy::Update(Matrix4x4* m) {
 	bodyColliderObj_->Update(m);
 	// -[ Attack Collider ]-
 	Vector3 attackColliderPos = attackCollider_->GetWorldPosition();
-	attackColliderObj_->SetTransform({ {attackCollider_->GetRadius(),0.1f,attackCollider_->GetRadius()}, {0.0f,0.0f,0.0f}, {attackColliderPos}});// 本体と位置合わせ
+	attackColliderObj_->SetTransform({ {attackCollider_->GetRadius() * 0.725f,0.1f,attackCollider_->GetRadius() * 0.725f}, {0.0f,0.0f,0.0f}, {attackColliderPos}});// 本体と位置合わせ
 	attackColliderObj_->Update(m);
 
 #ifdef _DEBUG
