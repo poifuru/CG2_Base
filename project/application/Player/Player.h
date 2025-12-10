@@ -77,6 +77,7 @@ public:
 	Vector3& Move() { return move_; }
 	void SetIsViewAttack(bool flag) { isAttackViewFlag_ = flag; }
 	void SetModelData(const std::string& name);
+	Model* GetCross () { return cross_.get(); }
 private:
 	// 物理的な処理
 	void ApplyPhysics();
@@ -96,6 +97,9 @@ private:
 	std::unique_ptr<AttackCollider>attackCollider_;
 	std::unique_ptr<Model>attackColliderObj_;
 	bool isAttackViewFlag_ = false;
+
+	//攻撃できないよモデル
+	std::unique_ptr<Model> cross_ = nullptr;
 
 	// 無敵管理フラグ
 	bool isInvulnerable_ = false;

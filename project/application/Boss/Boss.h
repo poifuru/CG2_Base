@@ -31,6 +31,7 @@ public:
 	bool& GetIsAlive() { return isAlive_; }
 	float& GetHP() { return hp_; }
 	float& GetMaxHP() { return maxHP_; }
+	bool& GetClear() { return isClear_; }
 
 	// Setter
 	void SetTransform(Transform transform) { transform_ = transform; }
@@ -134,6 +135,9 @@ private:
 	float hp_ = 10000.0f;
 	bool isAlive_ = true;
 	bool bossExtinction_ = false;
+	bool isClear_ = false;
+	int deathTimer_;
+	int maxDeathTime_ = 30;
 
 	// Collider
 	std::unique_ptr<BossBodyCollider> bossBodyCollider_ = nullptr;

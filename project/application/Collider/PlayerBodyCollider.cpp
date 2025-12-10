@@ -1,5 +1,6 @@
 #include "PlayerBodyCollider.h"
-#include "../application/Player/Player.h"
+#include "Player.h"
+#include "InputManager.h"
 
 PlayerBodyCollider::PlayerBodyCollider(Player* player) : player_(player)
 {
@@ -58,7 +59,7 @@ void PlayerBodyCollider::OnCollision(Collider* other)
 		}
 	}
 	if (other->GetMyType() & COL_Boss) {
-		damage = 0.5f;
+		damage = 10.0f;
 	}
 	// 3. **Player3D 本体にダメージを通知**
 	// Player3D に TakeDamage(float) メソッドが必要です

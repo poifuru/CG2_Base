@@ -61,9 +61,20 @@ void ClearScene::Initialize () {
 	camera_->AddCamera ("mainCamera3", CameraType::FixedPontCamera);
 	camera_->SetActiveCamera ("mainCamera3");
 	camera_->SetPosition ({ 0.0f, 0.0f, -50.0f });
+
+	bgm_.Initialize();
+	bgmHandle_ = bgm_.LoadSound("resources/Audio/BGM/Clear.mp3");
+	bgm_.PlaySoundW(bgmHandle_, true);
 }
 
 void ClearScene::Update () {
+	// ゲーム終了
+	if (input_->GetRawInput()->Trigger(VK_SPACE) || input_->GetGamePad()->TriggerButton(Button::A)) {
+		nextScene_ = SceneLabel::Title;
+		isFinish_ = true;
+		bgm_.StopSound(bgmHandle_);
+	}
+
 	ground_->Update (camera_->GetVPMatrix ());
 	mountain_->Update (camera_->GetVPMatrix ());
 	stone_->Update (camera_->GetVPMatrix ());

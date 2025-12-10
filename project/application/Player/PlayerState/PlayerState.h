@@ -1,6 +1,8 @@
 #pragma once
 #include "struct.h"
 #include "InputManager.h"
+#include <memory>
+#include "Model.h"
 
 class Player;
 
@@ -186,5 +188,6 @@ public:
 private:
 	float hurtTimer_ = 0.0f;          // のけぞりの経過時間
 	float MAX_HURT_DURATION = 0.8f;
+	std::unique_ptr<Model> cross_ = nullptr;
 };
 

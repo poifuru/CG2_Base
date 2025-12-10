@@ -27,5 +27,10 @@ private:	//メンバ変数
 
 	//タイトルモデル
 	std::unique_ptr<Model> moji_ = nullptr;
+	Vector3 mojiPos = {};
 	std::unique_ptr<Model> zako_ = nullptr;
+	Vector3 zakoPos = {};
+	std::unique_ptr<Sprite> pushA_ = nullptr;
+
+	float t_ = 0.0f;
 };

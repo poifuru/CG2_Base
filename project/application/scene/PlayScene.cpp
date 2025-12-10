@@ -4,8 +4,8 @@
 #include "InputManager.h"
 
 PlayScene::PlayScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
-	player_ = std::make_unique<Player>(inputManager, dxCommon);
-	boss_ = std::make_unique<Boss>(dxCommon, player_.get());
+	player_ = std::make_unique<Player> (inputManager, dxCommon);
+	boss_ = std::make_unique<Boss> (dxCommon, player_.get ());
 
 	//地面のモデル
 	ground_ = std::make_unique<Model> (dxCommon);
@@ -27,21 +27,26 @@ PlayScene::PlayScene (CameraOrganizer* camera, InputManager* inputManager, DxCom
 	//天球
 	skydome_ = std::make_unique<Model> (dxCommon);
 
+	//チュートリアル
+	tutorial_ = std::make_unique<Sprite> (dxCommon);
+	TextureManager::GetInstance ()->LoadTexture ("Resources/UI/tutorial.png", "tutorial");
+
 	camera_ = camera;
 	input_ = inputManager;
-	enemies_ = std::make_unique<EnemyManager>(dxCommon);
-	collisionManager_ = std::make_unique<CollisionManager>();
+	enemies_ = std::make_unique<EnemyManager> (dxCommon);
+	collisionManager_ = std::make_unique<CollisionManager> ();
 }
 
 PlayScene::~PlayScene () {
-	
+
 }
 
 void PlayScene::Initialize () {
 	nowScene_ = SceneLabel::Play;
 	isFinish_ = false;
-	player_->Initialize();
-	boss_->Initialize();
+	player_->Initialize ();
+	player_->ResetData ();
+	boss_->Initialize ();
 
 	//地面のモデル
 	ground_->SetModelData ("ground");
@@ -88,61 +93,85 @@ void PlayScene::Initialize () {
 	skydome_->Initialize ();
 	skydome_->IsLighting (LightReflectionModel::HalfLambert);
 
+	tutorial_->SetID ("tutorial");
+	tutorial_->Initialize ({ 148.0f, 42.0f, 0.0f });
+	tutorial_->SetTexture ("tutorial");
+
 	camera_->AddCamera ("FollowCamera", CameraType::FollowCamera);
 	camera_->SetActiveCamera ("FollowCamera");
 	camera_->SetFollowTarget ("FollowCamera", player_->GetTransform ());
 
-	enemies_->Initialize(player_.get(), boss_.get());
+	enemies_->Initialize (player_.get (), boss_.get ());
+
+	tutorialFlag_ = true;
+
+	bgm_.Initialize ();
+	bgmHandle_ = bgm_.LoadSound ("resources/Audio/BGM/Game.mp3");
+	bgm_.PlaySoundW (bgmHandle_, true);
 }
 
 void PlayScene::Update () {
-	boss_->ImGuiControl();
-
-	if (input_->GetRawInput()->Trigger(VK_F1)) {
-		nextScene_ = SceneLabel::Title;
-		isFinish_ = true;
+	if (input_->GetRawInput ()->Trigger (VK_SPACE) || input_->GetGamePad()->TriggerButton(Button::A)){
+		tutorialFlag_ = false;
 	}
 
-	if (player_->GetIsDead()) {
-		isFinish_ = true;
-	}
+	if (!tutorialFlag_) {
+		boss_->ImGuiControl ();
+		player_->Update (camera_->GetVPMatrix ());
+		boss_->Update (camera_->GetVPMatrix ());
+		enemies_->SetPos ({ boss_->GetPosition ().x,0.0f,boss_->GetPosition ().z });
+		enemies_->Update (camera_->GetVPMatrix ());
 
-	player_->Update(camera_->GetVPMatrix());
-	boss_->Update(camera_->GetVPMatrix());
+		// [ 当たり判定 ]
+		collisionManager_->Begin ();
+		collisionManager_->SetColliders (&player_->GetAttackCollider ());
+		collisionManager_->SetColliders (&player_->GetPlayerBodyCollider ());
+		for (const auto& enemy : enemies_->GetEnemies ()) {
+			collisionManager_->SetColliders (&enemy->GetAttackCollider ());
+			collisionManager_->SetColliders (&enemy->GetBodyCollider ());
+		}
+		for (Collider* attackCollider : boss_->GetAttackColliders ()) {
+			collisionManager_->SetColliders (attackCollider);
+		}
+		collisionManager_->SetColliders (boss_->GetBodyCollider ());
+		collisionManager_->CheckAllCollisions ();
+
+		if (player_->GetIsDead ()) {
+			nextScene_ = SceneLabel::Gameover;
+			isFinish_ = true;
+			bgm_.StopSound (bgmHandle_);
+		}
+
+		if (boss_->GetClear ()) {
+			nextScene_ = SceneLabel::Clear;
+			isFinish_ = true;
+			bgm_.StopSound (bgmHandle_);
+		}
+	}
 	ground_->Update (camera_->GetVPMatrix ());
 	mountain_->Update (camera_->GetVPMatrix ());
 	stone_->Update (camera_->GetVPMatrix ());
 	stone2_->Update (camera_->GetVPMatrix ());
 	stone3_->Update (camera_->GetVPMatrix ());
 	skydome_->Update (camera_->GetVPMatrix ());
-	enemies_->SetPos ({ boss_->GetPosition ().x,0.0f,boss_->GetPosition ().z });
-	enemies_->Update(camera_->GetVPMatrix ());
-
-	// [ 当たり判定 ]
-	collisionManager_->Begin();
-	collisionManager_->SetColliders(&player_->GetAttackCollider());
-	collisionManager_->SetColliders(&player_->GetPlayerBodyCollider());
-	for (const auto& enemy : enemies_->GetEnemies()) {
-		collisionManager_->SetColliders(&enemy->GetAttackCollider());
-		collisionManager_->SetColliders(&enemy->GetBodyCollider());
-	}
-	for (Collider* attackCollider : boss_->GetAttackColliders()) {
-		collisionManager_->SetColliders(attackCollider);
-	}
-	collisionManager_->SetColliders(boss_->GetBodyCollider());
-	collisionManager_->CheckAllCollisions();
-
+	tutorial_->Update ();
 	camera_->Update ();
 }
 
 void PlayScene::Draw () {
+	
+	if(!tutorialFlag_){
+		player_->Draw ();
+		boss_->Draw ();
+		enemies_->Draw ();
+	}
 	skydome_->Draw ();
 	ground_->Draw ();
 	mountain_->Draw ();
 	stone_->Draw ();
-	player_->Draw ();
-	boss_->Draw ();
-	enemies_->Draw ();
 	stone3_->Draw ();
 	stone2_->Draw ();
+	if (tutorialFlag_) {
+		tutorial_->Draw ();
+	}
 }

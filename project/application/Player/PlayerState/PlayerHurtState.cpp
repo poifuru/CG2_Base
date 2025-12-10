@@ -1,5 +1,6 @@
 #include "PlayerState.h" 
 #include "Player.h"
+#include "DxCommon.h"
 
 void PlayerHurtState::Initialize()
 {
@@ -73,6 +74,7 @@ void PlayerHurtState::Update()
 	// --- のけぞりアニメーション/無敵時間終了 ---
 	if (hurtTimer_ >= MAX_HURT_DURATION)
 	{
+		player_->GetCross ()->Draw ();
 		// 終了したら、待機 State に戻る
 		player_->ChangeState(new PlayerStopState());
 		return;
@@ -98,6 +100,8 @@ void PlayerHurtState::Update()
 void PlayerHurtState::Exit()
 {
 	if (!player_) return;
+	
+
 	// カラーを一応戻す
 	player_->SetColor({1.0f,1.0f,1.0f,1.0f});
 
