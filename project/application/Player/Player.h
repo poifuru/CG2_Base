@@ -15,6 +15,7 @@ public:
 	~Player();
 public:
 	void Initialize();
+	void ResetData();
 	void Update(Matrix4x4* m);
 	void Draw();
 public:
