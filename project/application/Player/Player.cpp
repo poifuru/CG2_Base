@@ -71,16 +71,16 @@ void Player::Update (Matrix4x4* m) {
 	pos.y += move_.y * verticalVelocity_;
 	pos.z += move_.z * speed_ * speedMultiplier_;
 	if (pos.x <= -45.0f) {
-		pos.x = -44.5f;
+		pos.x = -45.0f;
 	}
 	if (pos.x >= 45.0f) {
-		pos.x = 44.5f;
+		pos.x = 45.0f;
 	}
 	if (pos.z >= 45.0f) {
-		pos.z = 44.5f;
+		pos.z = 45.0f;
 	}
 	if (pos.z <= -45.0f) {
-		pos.z = -44.5f;
+		pos.z = -45.0f;
 	}
 	obj_->SetTransform ({ obj_->GetTransform ().scale,obj_->GetTransform ().rotate,{pos.x, pos.y - 0.99f, pos.z} });
 
