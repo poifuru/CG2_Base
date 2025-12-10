@@ -48,6 +48,25 @@ void Player::Initialize () {
 	hpSpriteG_->Initialize(hpSpriteGPos_);
 }
 
+void Player::ResetData() {
+	obj_->Initialize();
+	obj_->SetPosition({ 0.0f,0.0f,-20.0f });
+	// 始まりのState
+	state_ = new PlayerStopState();
+	state_->SetPlayer(this);
+	isAttackViewFlag_ = false;
+	isInvulnerable_ = false;
+	hp_ = maxHP_;
+	isDead_ = false;
+	// 一旦これは元のスピード
+	speed_ = 0.3f;
+	// 移動速度倍率
+	speedMultiplier_ = 1.0f;
+	// 旋回するスピード
+	rotateSpeed_ = 0.4f;
+	EnableHitBox(false, obj_->GetTransform().translate);
+}
+
 void Player::Update (Matrix4x4* m) {
 	// 毎フレーム初期化する処理↓↓↓
 	move_ = { 0.0f,0.0f,0.0f };
