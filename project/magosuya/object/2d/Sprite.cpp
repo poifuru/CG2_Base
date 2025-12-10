@@ -5,9 +5,8 @@
 #include "DxCommon.h"
 #include "TextureManager.h"
 
-Sprite::Sprite (DxCommon* dxCommon, TextureManager* texManager) {
-	texManager_ = texManager;
-	renderer_ = std::make_unique<SpriteRenderer> (dxCommon, texManager);
+Sprite::Sprite (DxCommon* dxCommon) {
+	renderer_ = std::make_unique<SpriteRenderer> (dxCommon);
 }
 
 Sprite::~Sprite () {
@@ -32,7 +31,7 @@ void Sprite::Initialize (Vector3 position) {
 }
 
 void Sprite::SetTexture (std::string ID) {
-	handle_ = texManager_->GetTextureHandle(ID);
+	handle_ = TextureManager::GetInstance ()->GetTextureHandle(ID);
 }
 
 void Sprite::MakewvpMatrix () {
@@ -58,7 +57,7 @@ void Sprite::ImGui () {
 }
 
 void Sprite::AdjustTextureSize () {
-	const DirectX::TexMetadata& metadata = texManager_->GetMetaData (id_);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance ()->GetMetaData (id_);
 
 	textureSize_.x = static_cast<float>(metadata.width);
 	textureSize_.y = static_cast<float>(metadata.height);

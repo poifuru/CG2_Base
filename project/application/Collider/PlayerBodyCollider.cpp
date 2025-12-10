@@ -1,5 +1,6 @@
 #include "PlayerBodyCollider.h"
-#include "../application/Player/Player.h"
+#include "Player.h"
+#include "InputManager.h"
 
 PlayerBodyCollider::PlayerBodyCollider(Player* player) : player_(player)
 {

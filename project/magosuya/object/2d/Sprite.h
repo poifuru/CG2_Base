@@ -13,7 +13,7 @@ class TextureManager;
 
 class Sprite {
 public:		//メンバ関数  
-	Sprite (DxCommon* dxCommon, TextureManager* texManager);
+	Sprite (DxCommon* dxCommon);
 	~Sprite ();
 
 	void Initialize (Vector3 position);
@@ -81,7 +81,4 @@ private:	//メンバ変数
 
 	//描画を担当するレンダラークラス
 	std::unique_ptr<SpriteRenderer> renderer_ = nullptr;
-
-	//ポインタを借りてくる
-	TextureManager* texManager_ = nullptr;
 };

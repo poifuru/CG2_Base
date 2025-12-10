@@ -31,6 +31,9 @@ TitleScene::TitleScene (CameraOrganizer* camera, InputManager* inputManager, DxC
 	zako_ = std::make_unique<Model> (dxCommon);
 	ModelManager::GetInstance ()->LoadModelData ("Resources/Title/zako", "zako2");
 
+	pushA_ = std::make_unique<Sprite> (dxCommon);
+	TextureManager::GetInstance ()->LoadTexture ("Resources/UI/pushA.png", "pushA");
+
 	particle_ = std::make_unique<MeshParticle> ();
 
 	camera_ = camera;
@@ -93,6 +96,10 @@ void TitleScene::Initialize () {
 		{6.63f, 13.37f, -0.16f},
 						 });
 
+	pushA_->SetID ("pushA");
+	pushA_->Initialize ({ 400.0f, 500.0f, 0.0f });
+	pushA_->SetTexture ("pushA");
+
 	particle_->Initialize ();
 	particle_->SetEmitterPos ({ 46.5f, 21.0f, 59.0f });
 	particle_->SetColor ({ 1.0f, 1.0f, 1.0f, 1.0f });
@@ -106,7 +113,7 @@ void TitleScene::Initialize () {
 
 void TitleScene::Update () {
 	// ゲーム終了
-	if (input_->GetRawInput()->Trigger(VK_F1)) {
+	if (input_->GetRawInput()->Trigger(VK_SPACE) || input_->GetGamePad()->TriggerButton(Button::A)) {
 		nextScene_ = SceneLabel::Play;
 		isFinish_ = true;
 	}
@@ -119,6 +126,7 @@ void TitleScene::Update () {
 	moji_->ImGui ("moji");
 	zako_->Update (camera_->GetVPMatrix ());
 	zako_->ImGui ("zako2");
+	pushA_->Update ();
 
 	particleTimeCount_ += kDeltaTime;
 	if (particleTimeCount_ >= particleTimer_) {
@@ -138,5 +146,6 @@ void TitleScene::Draw () {
 	stone_->Draw ();
 	moji_->Draw ();
 	zako_->Draw ();
+	pushA_->Draw ();
 	particle_->Draw ();
 }

@@ -40,7 +40,7 @@ void Player::Initialize () {
 	EnableHitBox (false, obj_->GetTransform ().translate);
 
 	// HPについて
-	hpSpriteG_ = std::make_unique<Sprite>(DxCommon::GetInstance(), TextureManager::GetInstance());
+	hpSpriteG_ = std::make_unique<Sprite>(DxCommon::GetInstance());
 	hpSpriteGPos_ = {100.0f,100.0f,0.0f};
 	TextureManager::GetInstance()->LoadTexture("Resources/UI/hpBar_Player","hpBar_Player");
 	hpSpriteG_->SetID("hpBar_Player");
@@ -284,6 +284,8 @@ void Player::TakeDamage (float damage) {
 		// 無敵時間を設定する (HurtState側でリセットする)
 		SetInvulnerable (true);
 	}
+
+	InputManager::GetInstance ()->GetGamePad ()->Vibration (0.1f * damage, 0.5f, 0.3f);
 }
 
 // --------------------------
@@ -304,18 +306,9 @@ bool Player::IsAttack() {
 		flag = true;
 	}
 	if (input_->GetGamePad()->IsConection()) {
-		if (input_->GetGamePad()->PushButton(Button::L)) {
+		if (input_->GetGamePad()->PushButton(Button::B)) {
 			flag = true;
 		}
-		if (input_->GetGamePad()->PushButton(Button::R)) {
-			flag = true;
-		}
-		/*if (input_->GetGamePad()->PushButton(Button::BACK)) {
-			flag = true;
-		}
-		if (input_->GetGamePad()->PushButton(Button::PUSHIN_RIGHT)) {
-			flag = true;
-		}*/
 	}
 	return flag;
 }
