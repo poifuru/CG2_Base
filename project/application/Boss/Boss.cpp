@@ -181,7 +181,7 @@ Boss::AttackType Boss::SelectAttack() {
 			{AttackType::None, 20 }
 		};
 	} else {
-		// フェーズ2 (HP <= 50%): 攻撃回数が増え、強力な攻撃や追尾が必要な攻撃を優先
+		// フェーズ2 (HP <= 30%): 攻撃回数が増え、強力な攻撃や追尾が必要な攻撃を優先
 		attackWeights = {
 			{AttackType::CenterStomp, 50},
 			{AttackType::FullScreenAttack, 5},
@@ -581,6 +581,8 @@ void Boss::UpdateDead() {
 
 	} else {
 		bossExtinction_ = true;
+		deathTimer_++;
+		if (deathTimer_ > maxDeathTime_) { isClear_ = true; }
 	}
 }
 

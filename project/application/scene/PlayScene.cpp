@@ -107,6 +107,11 @@ void PlayScene::Update () {
 		isFinish_ = true;
 	}
 
+	if (boss_->GetClear()) {
+		nextScene_ = SceneLabel::Clear;
+		isFinish_ = true;
+	}
+
 	player_->Update(camera_->GetVPMatrix());
 	boss_->Update(camera_->GetVPMatrix());
 	ground_->Update (camera_->GetVPMatrix ());
