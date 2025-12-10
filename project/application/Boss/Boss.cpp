@@ -16,7 +16,7 @@ Boss::Boss (DxCommon* dxCommon, Player* player) {
 }
 
 Boss::~Boss () {
-
+	audio_.Unload(bossDeathHandle_);
 }
 
 void Boss::Initialize() {
@@ -94,6 +94,10 @@ void Boss::Initialize() {
 	defaultRadius_ = bossBodyCollider_->GetRadius();
 	shadowRadius_ = defaultRadius_;
 	bossBodyCollider_->SetRadius(defaultRadius_);
+
+	audio_.Initialize();
+	bossDeathHandle_ = audio_.LoadSound("resources/Audio/SE/bossDeath.mp3");
+	soundOn_ = false;
 }
 
 void Boss::Update (Matrix4x4* m) {
@@ -526,7 +530,13 @@ void Boss::ClampPosition() {
 
 void Boss::UpdateHp () {
 	DefineTheHpRange();
-	if (hp_ <= 0) { isAlive_ = false; }
+	if (hp_ <= 0) { 
+		if (!soundOn_) {
+			audio_.PlaySoundW(bossDeathHandle_, 2.0f, false);
+			soundOn_ = true;
+		}
+		isAlive_ = false; 
+	}
 }
 
 // HPの max/min を超えないようにする
@@ -644,7 +654,7 @@ void Boss::UpdateDead() {
 		bossExtinction_ = false;
 		return;
 	}
-
+	
 	if (transform_.rotate.x <= 1.5f) {
 		// scale
 		transform_.scale.x -= 0.015f;

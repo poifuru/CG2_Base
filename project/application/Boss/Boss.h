@@ -8,6 +8,7 @@
 #include "InputManager.h"
 #include "BossBodyCollider.h"
 #include "MeshParticle.h"
+#include "Audio.h"
 
 class Player;
 
@@ -159,4 +160,8 @@ private:
 	DxCommon* dxCommon_ = nullptr;
 	Player* player_ = nullptr;
 	InputManager* input_ = nullptr;
+
+	Audio audio_;
+	SoundData bossDeathHandle_;
+	bool soundOn_;
 };

@@ -7,6 +7,7 @@
 Player::~Player() {
 	delete state_;
 	audio_.Unload(playerDamageHandle_);
+	audio_.Unload(playerDeathHandle_);
 }
 
 void Player::Initialize() {
@@ -74,6 +75,7 @@ void Player::Initialize() {
 
 	audio_.Initialize();
 	playerDamageHandle_ = audio_.LoadSound("resources/Audio/SE/playerDamage.mp3");
+	playerDeathHandle_ = audio_.LoadSound("resources/Audio/SE/playerDeath.mp3");
 }
 
 void Player::ResetData() {
@@ -341,6 +343,8 @@ void Player::TakeDamage(float damage) {
 
 	// 3. 死亡判定
 	if (IsDead()) {
+		audio_.PlaySoundW(playerDeathHandle_, 1.5f, false);
+
 		// HPが0になったら死亡 State へ遷移
 		ChangeState(new PlayerDeathState());
 

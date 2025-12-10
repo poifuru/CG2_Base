@@ -146,4 +146,5 @@ private:
 
 	Audio audio_;
 	SoundData playerDamageHandle_;
+	SoundData playerDeathHandle_;
 };
