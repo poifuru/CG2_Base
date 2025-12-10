@@ -95,7 +95,7 @@ void ClearScene::Update () {
 	}
 
 	if (t_ <= 1.0f) {
-		t_ += kDeltaTime / 20.0f;
+		t_ += kDeltaTime / 3.0f;
 	}
 	if (t_ >= 0.99999f) {
 		t_ = 1.0f;
@@ -107,8 +107,8 @@ void ClearScene::Update () {
 	skydome_->Update (camera_->GetVPMatrix ());
 	clear_->Update ();
 
-	camera_->SetPosition (Math::Lerp (camera_->GetPosition ("mainCamera3"), cameraGoalPos_, Easing::easeOutCirc (t_)));
-	camera_->SetRotate(Math::Lerp (camera_->GetRotate ("mainCamera3"), cameraGoalRotate_, Easing::easeOutCirc (t_)));
+	camera_->SetPosition (Math::Lerp (gameCameraPos_, cameraGoalPos_, Easing::easeOutCirc (t_)));
+	camera_->SetRotate(Math::Lerp (gameCameraRotate_, cameraGoalRotate_, Easing::easeOutCirc (t_)));
 	camera_->Update ();
 }
 

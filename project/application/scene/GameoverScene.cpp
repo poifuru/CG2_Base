@@ -95,7 +95,7 @@ void GameoverScene::Update () {
 	}
 
 	if (t_ <= 1.0f) {
-		t_ += kDeltaTime / 20.0f;
+		t_ += kDeltaTime / 3.0f;
 	}
 	if (t_ >= 0.99999f) {
 		t_ = 1.0f;
@@ -107,8 +107,8 @@ void GameoverScene::Update () {
 	skydome_->Update (camera_->GetVPMatrix ());
 	gameover_->Update ();
 
-	camera_->SetPosition (Math::Lerp (camera_->GetPosition ("mainCamera2"), cameraGoalPos_, Easing::easeOutCirc (t_)));
-	camera_->SetRotate (Math::Lerp (camera_->GetRotate ("mainCamera2"), cameraGoalRotate_, Easing::easeOutCirc (t_)));
+	camera_->SetPosition (Math::Lerp (gameCameraPos_, cameraGoalPos_, Easing::easeOutCirc (t_)));
+	camera_->SetRotate (Math::Lerp (gameCameraRotate_, cameraGoalRotate_, Easing::easeOutCirc (t_)));
 	camera_->Update ();
 }
 
