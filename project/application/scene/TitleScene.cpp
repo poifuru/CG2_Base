@@ -3,6 +3,7 @@
 #include "InputManager.h"
 #include "ModelManager.h"
 #include "TextureManager.h"
+#include "Easing.h"
 
 //デルタタイムを定義
 const float kDeltaTime = 1.0f / 60.0f;
@@ -85,6 +86,7 @@ void TitleScene::Initialize () {
 		{-0.19f, -1.39f, 0.21f},
 		{6.63f, 13.37f, -0.16f},
 						  });
+	mojiPos = moji_->GetPosition ();
 
 	zako_->SetModelData ("zako2");
 	zako_->SetTexture ("zako2");
@@ -95,6 +97,7 @@ void TitleScene::Initialize () {
 		{-0.19f, -1.39f, 0.21f},
 		{6.63f, 13.37f, -0.16f},
 						 });
+	zakoPos = zako_->GetPosition ();
 
 	pushA_->SetID ("pushA");
 	pushA_->Initialize ({ 400.0f, 500.0f, 0.0f });
@@ -110,6 +113,8 @@ void TitleScene::Initialize () {
 	camera_->SetPosition ({ 0.0f, 0.0f, -50.0f });
 	camera_->SetRotate ({ -0.17f, 0.23f, 0.0f });
 
+	t_ = 0.0f;
+
 	bgm_.Initialize();
 	bgmHandle_ = bgm_.LoadSound("resources/Audio/BGM/Title.mp3");
 	bgm_.PlaySoundW(bgmHandle_, true);
@@ -123,13 +128,19 @@ void TitleScene::Update () {
 		bgm_.StopSound(bgmHandle_);
 	}
 
+	if (t_ <= 1.0f) {
+		t_ += kDeltaTime / 3.0f;
+	}
+
 	ground_->Update (camera_->GetVPMatrix ());
 	mountain_->Update (camera_->GetVPMatrix ());
 	stone_->Update (camera_->GetVPMatrix ());
 	skydome_->Update (camera_->GetVPMatrix ());
 	moji_->Update (camera_->GetVPMatrix ());
+	moji_->SetPosition ({ mojiPos.x, Math::Lerp (40.0f, mojiPos.y, Easing::easeOutBounce (t_)), mojiPos.z });
 	moji_->ImGui ("moji");
 	zako_->Update (camera_->GetVPMatrix ());
+	zako_->SetPosition ({ zakoPos.x, Math::Lerp (40.0f, zakoPos.y, Easing::easeOutBounce (t_)), zakoPos.z });
 	zako_->ImGui ("zako2");
 	pushA_->Update ();
 
