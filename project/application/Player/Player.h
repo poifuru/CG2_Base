@@ -103,7 +103,8 @@ private:
 
 	// HPの可視化
 	/*Sprite(緑)*/
-	
+	std::unique_ptr<Sprite>hpSpriteG_ = nullptr;
+	Vector3 hpSpriteGPos_ = {};
 	/*Sprite(赤)*/
 
 	Vector3 move_ = { 0,0,0 };
