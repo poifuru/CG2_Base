@@ -41,6 +41,7 @@ void PlayScene::Initialize () {
 	nowScene_ = SceneLabel::Play;
 	isFinish_ = false;
 	player_->Initialize();
+	player_->ResetData();
 	boss_->Initialize();
 
 	//地面のモデル

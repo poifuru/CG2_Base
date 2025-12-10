@@ -11,6 +11,7 @@ public:
 	EnemyManager(DxCommon* dxCommon);
 public:
 	void Initialize(Player* player, Boss* boss);
+	void ResetData();
 	void Update(Matrix4x4* m);
 	void Draw();
 public:

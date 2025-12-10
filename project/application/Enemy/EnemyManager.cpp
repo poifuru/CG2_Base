@@ -27,6 +27,15 @@ void EnemyManager::Initialize(Player* player, Boss* boss) {
 	obj_->SetModelData("zako");
 	obj_->SetTexture("zako");
 	obj_->Initialize({ 1.0f,1.0f,1.0f }, {0.0f,Math::Deg2Rad(90),Math::Deg2Rad(0)}, {10.0f, 0.0f, 10.0f});
+
+	ResetData();
+}
+
+void EnemyManager::ResetData() {
+	for (const auto& enemy : enemies_) {
+		enemy->Death();
+	}
+	Delete();
 }
 
 void EnemyManager::Update(Matrix4x4* m) {

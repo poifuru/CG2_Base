@@ -23,6 +23,7 @@ public:
 	void TakeDamage(float damage);
 	void TakeSlipDamage();
 	void TakeBossDamage();
+	void Death() { isFinished_ = true; }
 public:
 	// 設定や取得の関数
 	// [ 移動量 ]
