@@ -98,12 +98,8 @@ void PlayScene::Initialize () {
 void PlayScene::Update () {
 	boss_->ImGuiControl();
 
-	if (input_->GetRawInput()->Trigger(VK_F1)) {
-		nextScene_ = SceneLabel::Title;
-		isFinish_ = true;
-	}
-
 	if (player_->GetIsDead()) {
+		nextScene_ = SceneLabel::Gameover;
 		isFinish_ = true;
 	}
 
