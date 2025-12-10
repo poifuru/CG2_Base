@@ -18,6 +18,10 @@ void EnemyExplosionState::Initialize() {
 
 	// Enemyは死んだ
 	enemy_->SetIsAlive(false);
+
+	audio_.Initialize();
+	explosionHandle_ = audio_.LoadSound("resources/Audio/SE/explosion.mp3");
+	audio_.PlaySoundW(explosionHandle_, 1.7f, false);
 }
 
 void EnemyExplosionState::Update() {
@@ -40,4 +44,5 @@ void EnemyExplosionState::Update() {
 void EnemyExplosionState::Exit() {
 	// 終了処理
 	enemy_->EnableHitBox(false, {0.0f,0.0f,0.0f});
+	audio_.Unload(explosionHandle_);
 }

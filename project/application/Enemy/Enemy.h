@@ -5,12 +5,13 @@
 #include "EnemyState.h"
 #include "AttackCollider.h"
 #include "EnemyBodyCollider.h"
+#include "Audio.h"
 
 class Enemy
 {
 public:
 	Enemy(DxCommon* dxCommon) :dxCommon_(dxCommon) {};
-	~Enemy() { delete state_; }
+	~Enemy();
 public:
 	void Initialize(const Vector3& pos,const Vector3& velocity,Player*player);
 	void Update(Matrix4x4* m);
@@ -105,5 +106,8 @@ private:
 	// [ エリアのサイズ ]
 	Vector3* ariaLeftTop_ = {};
 	Vector2* ariaSize_ = {};
+
+	Audio audio_;
+	SoundData reflectionHandle_;
 };
 

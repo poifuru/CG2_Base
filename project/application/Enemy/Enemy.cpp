@@ -2,6 +2,11 @@
 #include "MathFunction.h"
 #include "imgui.h"
 
+Enemy::~Enemy() {
+	delete state_;
+	audio_.Unload(reflectionHandle_);
+}
+
 void Enemy::Initialize(const Vector3& pos, const Vector3& velocity, Player* player) {
 
 	// 初期化処理
@@ -46,6 +51,9 @@ void Enemy::Initialize(const Vector3& pos, const Vector3& velocity, Player* play
 	playerPos.y = -1.0f;
 	bodyColliderObj_->SetTransform({ {1.0f,1.0f,1.0f}, {0.0f,0.0f,0.0f}, {playerPos}});// 本体と位置合わせ
 	EnableHitBox(false, playerPos);
+
+	audio_.Initialize();
+	reflectionHandle_ = audio_.LoadSound("resources/Audio/SE/reflection.mp3");
 }
 
 void Enemy::Update(Matrix4x4* m) {
@@ -147,6 +155,8 @@ void Enemy::TakeDamage(float damage) {
 	if (!isAlive_ /*|| IsInvulnerable()*/) {
 		return;
 	}
+
+	audio_.PlaySoundW(reflectionHandle_, 0.4f, false);
 
 	// 2. 速度を設定する
 	moveSpeed_ += damage;

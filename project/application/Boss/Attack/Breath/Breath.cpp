@@ -124,7 +124,7 @@ void Breath::UpdateShoot() {
         // isCurving_ の反転を削除
         intervalTimer_ = 0;
 
-        audio_.PlaySoundW(breathHandle_, 0.5f, false);
+        audio_.PlaySoundW(breathHandle_, 0.1f, false);
     }
 }
 

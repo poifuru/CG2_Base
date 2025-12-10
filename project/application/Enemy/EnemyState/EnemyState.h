@@ -1,5 +1,6 @@
 #pragma once
 #include "struct.h"
+#include "Audio.h"
 class Enemy; // 前方宣言
 
 // Enemy Attack Levelについて
@@ -100,6 +101,9 @@ public:
 private:
 	float explosionTimer_ = 0.0f;
 	float maxExplosionTime_ = 1.0f;
+
+	Audio audio_;
+	SoundData explosionHandle_;
 };
 
 // 7. ダメージを受けた際の State(モンストみたいに初速をうけ、跳ね返りまくる)

@@ -52,5 +52,5 @@ void EnemyPreExplosionState::Update() {
 
 void EnemyPreExplosionState::Exit() {
 	// 終了処理
-
+	
 }
