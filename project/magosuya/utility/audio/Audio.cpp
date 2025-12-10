@@ -98,21 +98,24 @@ SoundData Audio::LoadSound (const std::string& filePath) {
     return soundData;
 }
 
-void Audio::PlaySound (SoundData& soundData, bool loop) {
+void Audio::PlaySoundW (SoundData& soundData, float volume, bool loop) {
     if (!xAudio2_ || !soundData.wfex) return;
 
-    HRESULT hr = xAudio2_->CreateSourceVoice (&soundData.sourceVoice, soundData.wfex);
-    assert (SUCCEEDED (hr));
+    HRESULT hr = xAudio2_->CreateSourceVoice(&soundData.sourceVoice, soundData.wfex);
+    assert(SUCCEEDED(hr));
+
+    hr = soundData.sourceVoice->SetVolume(volume);
+    assert(SUCCEEDED(hr));
 
     XAUDIO2_BUFFER buffer{};
-    buffer.AudioBytes = static_cast<UINT32>(soundData.audioData.size ());
-    buffer.pAudioData = soundData.audioData.data ();
+    buffer.AudioBytes = static_cast<UINT32>(soundData.audioData.size());
+    buffer.pAudioData = soundData.audioData.data();
     buffer.Flags = XAUDIO2_END_OF_STREAM;
     buffer.LoopCount = loop ? XAUDIO2_LOOP_INFINITE : 0;
 
-    hr = soundData.sourceVoice->SubmitSourceBuffer (&buffer);
-    assert (SUCCEEDED (hr));
-    soundData.sourceVoice->Start (0);
+    hr = soundData.sourceVoice->SubmitSourceBuffer(&buffer);
+    assert(SUCCEEDED(hr));
+    soundData.sourceVoice->Start(0);
 }
 
 void Audio::StopSound (SoundData& soundData) {
