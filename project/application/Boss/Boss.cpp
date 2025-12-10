@@ -50,6 +50,32 @@ void Boss::Initialize() {
 	isClear_ = false;
 	deathTimer_ = 0;
 
+	// HPについて
+	// [ Frame ]
+	hpSpriteFrame_ = std::make_unique<Sprite>(DxCommon::GetInstance());
+	TextureManager::GetInstance()->LoadTexture("Resources/UI/hpBar_boss.png", "hpBar_Boss");
+	hpSpriteFrame_->SetID("hpBar_Boss");
+	hpSpriteFrame_->Initialize({ 77.0f,-4.0f,0.0f });
+	hpSpriteFrame_->SetTexture("hpBar_Boss");
+	hpSpriteFrame_->SetScale({ 1165,162.0f,0.0f });
+
+	// [ Green ]
+	hpSpriteGreen_ = std::make_unique<Sprite>(DxCommon::GetInstance());
+	TextureManager::GetInstance()->LoadTexture("Resources/UI/white16x16.png", "white16x16");
+	hpSpriteGreen_->SetID("white16x16");
+	hpSpriteGreen_->Initialize({ 210.0f,52.0f,0.0f });
+	hpSpriteGreen_->SetColor({ 0.0f,1.0f,0.0f,1.0f });
+	hpSpriteGreen_->SetTexture("white16x16");
+	hpSpriteGreen_->SetScale({ 900.0f,52.0f,0.0f });
+
+	// [ Red ]
+	hpSpriteRed_ = std::make_unique<Sprite>(DxCommon::GetInstance());
+	hpSpriteRed_->SetID("white16x16");
+	hpSpriteRed_->Initialize({ 210.0f,52.0f,0.0f });
+	hpSpriteRed_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+	hpSpriteRed_->SetTexture("white16x16");
+	hpSpriteRed_->SetScale({ 900.0f,52.0f,0.0f });
+
 	// 2. 座標、スケール、回転
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f}, {0.0f,-1.0f,20.0f} };
 	rotate_ = Rotate::left;
@@ -97,6 +123,26 @@ void Boss::Update (Matrix4x4* m) {
 
 	bodyColliderObj_->Update (m);
 
+	Vector3 greenScale = hpSpriteGreen_->GetScale();
+	float t = (hp_ / maxHP_);
+	greenScale.x = t * 900.0f + (1.0f - t) * 0.0f;
+	hpSpriteGreen_->SetScale(greenScale);
+
+	Vector3 redScale = hpSpriteRed_->GetScale();
+	t = 0.05f;
+	redScale.x = (1.0f - t) * redScale.x + t * greenScale.x;
+	hpSpriteRed_->SetScale(redScale);
+
+	if (hp_ <= maxHP_ * (15.0f / 100.0f)) {
+		hpSpriteGreen_->SetColor({ 1.0f,0.0f,0.0f,1.0f });
+	}
+	else if (hp_ <= maxHP_ * (50.0f / 100.0f)) {
+		hpSpriteGreen_->SetColor({ 1.0f,1.0f,0.0f,1.0f });
+	}
+
+	hpSpriteFrame_->Update();
+	hpSpriteGreen_->Update();
+	hpSpriteRed_->Update();
 }
 
 void Boss::Draw () {
@@ -107,6 +153,10 @@ void Boss::Draw () {
 	centerStomp_->Draw ();
 	fullScreenAttack_->Draw ();
 	Breath_->Draw ();
+
+	hpSpriteRed_->Draw();
+	hpSpriteGreen_->Draw();
+	hpSpriteFrame_->Draw();
 }
 
 void Boss::ImGuiControl () {
