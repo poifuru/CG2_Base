@@ -141,10 +141,8 @@ void TitleScene::Update () {
 	skydome_->Update (camera_->GetVPMatrix ());
 	moji_->Update (camera_->GetVPMatrix ());
 	moji_->SetPosition ({ mojiPos.x, Math::Lerp (40.0f, mojiPos.y, Easing::easeOutBounce (t_)), mojiPos.z });
-	moji_->ImGui ("moji");
 	zako_->Update (camera_->GetVPMatrix ());
 	zako_->SetPosition ({ zakoPos.x, Math::Lerp (40.0f, zakoPos.y, Easing::easeOutBounce (t_)), zakoPos.z });
-	zako_->ImGui ("zako2");
 	pushA_->Update ();
 
 	particleTimeCount_ += kDeltaTime;
