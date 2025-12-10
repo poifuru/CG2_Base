@@ -371,7 +371,7 @@ bool Player::IsAttack() {
 		flag = true;
 	}
 	if (input_->GetGamePad()->IsConection()) {
-		if (input_->GetGamePad()->PushButton(Button::B)) {
+		if (input_->GetGamePad()->PushButton(Button::A)) {
 			flag = true;
 		}
 	}
