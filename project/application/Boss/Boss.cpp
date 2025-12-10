@@ -495,7 +495,7 @@ void Boss::TakeDamage (float damage) {
 }
 
 void Boss::UpdateRotation () {
-	if (!isAlive_) {
+	if (!isAlive_ || transform_.translate == player_->GetPosition()) {
 		return;
 	}
 
