@@ -167,16 +167,26 @@ Boss::AttackType Boss::SelectAttack() {
 	if (hp_ > maxHP_ * 0.5f) {
 		// フェーズ1 (HP > 50%): 攻撃回数が少なく、弱い攻撃を優先
 		attackWeights = {
-			{AttackType::CenterStomp, 10},
+			{AttackType::CenterStomp, 5},
 			{AttackType::FullScreenAttack, 60},
-			{AttackType::Breath, 30}
+			{AttackType::Breath, 15},
+			{AttackType::None, 20 }
+		};
+	} else if (hp_ > maxHP_ * 0.3f) {
+		// フェーズ2 (HP >= 30%): 攻撃回数が増え、強力な攻撃や追尾が必要な攻撃を優先
+		attackWeights = {
+			{AttackType::CenterStomp, 15},
+			{AttackType::FullScreenAttack, 25},
+			{AttackType::Breath, 40},
+			{AttackType::None, 20 }
 		};
 	} else {
 		// フェーズ2 (HP <= 50%): 攻撃回数が増え、強力な攻撃や追尾が必要な攻撃を優先
 		attackWeights = {
-			{AttackType::CenterStomp, 40},
-			{AttackType::FullScreenAttack, 20},
-			{AttackType::Breath, 40}
+			{AttackType::CenterStomp, 50},
+			{AttackType::FullScreenAttack, 5},
+			{AttackType::Breath, 25},
+			{AttackType::None, 20 }
 		};
 	}
 

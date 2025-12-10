@@ -29,6 +29,9 @@ public:
 	Collider* GetBodyCollider() const { return bossBodyCollider_.get(); }
 	std::vector<Collider*> GetAttackColliders();
 	bool& GetIsAlive() { return isAlive_; }
+	float& GetHP() { return hp_; }
+	float& GetMaxHP() { return maxHP_; }
+
 	// Setter
 	void SetTransform(Transform transform) { transform_ = transform; }
 	void SetPosition(Vector3 position) { transform_.translate = position; }

@@ -175,9 +175,10 @@ void FullScreenAttack::UpdateProjectiles() {
 			float angleY = std::atan2(projectiles_[i].velocity.x, projectiles_[i].velocity.z);
 			projectiles_[i].transform.rotate.y = angleY + (float)M_PI;
 
-			// ⭐️ 【追加】マップ範囲外に出たら非アクティブ化 (X: -45.0 ~ 45.0, Z: -45.0 ~ 45.0)
-			if (projectiles_[i].transform.translate.x < -45.0f || projectiles_[i].transform.translate.x > 45.0f ||
-				projectiles_[i].transform.translate.z < -45.0f || projectiles_[i].transform.translate.z > 45.0f) {
+			// ⭐️ 【追加】マップ範囲外に出たら非アクティブ化 (X: -50.0 ~ 50.0, Z: -50.0 ~ 50.0)
+			if (projectiles_[i].transform.translate.x < -50.0f || projectiles_[i].transform.translate.x > 50.0f ||
+				projectiles_[i].transform.translate.z < -50.0f || projectiles_[i].transform.translate.z > 50.0f) {
+				projectiles_[i].transform.scale = { 0.01f,0.01f,0.01f };
 				projectiles_[i].isActive = false;
 				continue; // 非アクティブ化されたら次の弾へ
 			}

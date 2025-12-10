@@ -32,18 +32,18 @@ void PlayerBodyCollider::OnCollision(Collider* other)
 			damage = 3.0f;
 		}
 		if (other->GetMyType() & COL_Enemy_Attack_Level1) {
-			damage = 4.5f;
-		}
-		if (other->GetMyType() & COL_Enemy_Attack_Level2) {
 			damage = 6.0f;
 		}
+		if (other->GetMyType() & COL_Enemy_Attack_Level2) {
+			damage = 9.0f;
+		}
 		if (other->GetMyType() & COL_Enemy_Attack_Level3) {
-			damage = 7.5f;
+			damage = 15.0f;
 		}
 
 		// [ Enemyが死んだ際に出すスリップダメージの場合 ]
 		if (other->GetMyType() & COL_Enemy_SlipDamage) {
-			damage = 4.0f;
+			damage = 5.0f;
 		}
 	}
 	if (other->GetMyType() & COL_Boss_Attack) {
