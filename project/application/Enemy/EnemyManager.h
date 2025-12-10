@@ -1,6 +1,7 @@
 #pragma once
 #include "Enemy.h"
 #include "Player.h"
+#include "Boss.h"
 #include "Model.h"
 #include "DxCommon.h"
 
@@ -9,7 +10,7 @@ class EnemyManager
 public:
 	EnemyManager(DxCommon* dxCommon);
 public:
-	void Initialize(Player* player);
+	void Initialize(Player* player, Boss* boss);
 	void Update(Matrix4x4* m);
 	void Draw();
 public:
@@ -19,11 +20,14 @@ public:
 	std::vector<std::unique_ptr<Enemy>>& GetEnemies() { return enemies_; }
 private:
 	void Delete();
+	void ChangeState();
 private:
 	// エンジン
 	DxCommon* dxCommon_ = nullptr;
 	// プレイヤー
 	Player* player_ = nullptr;
+	// ボス
+	Boss* boss_ = nullptr;
 	// エネミー
 	std::vector<std::unique_ptr<Enemy>>enemies_;
 	// 生成インターバル
@@ -31,7 +35,7 @@ private:
 	// 生成時間
 	float spawnTimer_;
 	// 生成最大数
-	const uint32_t kMaxSpawnCount_ = 10;
+	const uint32_t kMaxSpawnCount_ = 15;
 	// 初期速度
 	float initialSpeed_;// Enemyを射出する速度
 	// 見た目

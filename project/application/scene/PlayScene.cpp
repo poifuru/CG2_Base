@@ -92,7 +92,7 @@ void PlayScene::Initialize () {
 	camera_->SetActiveCamera ("FollowCamera");
 	camera_->SetFollowTarget ("FollowCamera", player_->GetTransform ());
 
-	enemies_->Initialize(player_.get());
+	enemies_->Initialize(player_.get(), boss_.get());
 }
 
 void PlayScene::Update () {

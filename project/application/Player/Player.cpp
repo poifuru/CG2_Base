@@ -16,7 +16,7 @@ void Player::Initialize () {
 	obj_->SetModelData ("player");
 	obj_->SetTexture ("player");
 	obj_->Initialize ();
-	obj_->SetPosition ({ 0.0f,0.0f,-5.0f });
+	obj_->SetPosition ({ 0.0f,0.0f,-20.0f });
 
 	// 始まりのState
 	state_ = new PlayerStopState ();

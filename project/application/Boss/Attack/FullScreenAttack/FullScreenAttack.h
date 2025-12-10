@@ -23,8 +23,8 @@ class FullScreenAttack {
 public:
 	// 弾の数を定義
 	static const int kNumProjectiles = 16;
-	// 弾の最大ライフタイム (例: 5秒 = 5 * 60フレーム)
-	static const int kMaxLifeTime = 300;
+	// 弾の最大ライフタイム (例: 3秒 = 3 * 60フレーム)
+	static const int kMaxLifeTime = 180;
 
 	FullScreenAttack(DxCommon* dxCommon, Boss* boss);
 	~FullScreenAttack();

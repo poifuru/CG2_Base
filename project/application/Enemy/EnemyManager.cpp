@@ -10,10 +10,11 @@ EnemyManager::EnemyManager(DxCommon* dxCommon) {
 	ModelManager::GetInstance ()->LoadModelData ("Resources/zako", "zako");
 }
 
-void EnemyManager::Initialize(Player* player) {
-
+void EnemyManager::Initialize(Player* player, Boss* boss) {
 	// プレイヤーのアドレスを取得
 	player_ = player;
+	// ボスのアドレスを取得
+	boss_ = boss;
 	// 初期化処理
 	// [ 生成インターバル ]
 	spawnInterval_ = 3.0f;
@@ -29,6 +30,9 @@ void EnemyManager::Initialize(Player* player) {
 }
 
 void EnemyManager::Update(Matrix4x4* m) {
+
+	ChangeState();
+
 	if (enemies_.size() < kMaxSpawnCount_) {
 		Spawn(m);
 	}
@@ -97,4 +101,17 @@ void EnemyManager::Delete() {
 	std::erase_if(enemies_, [](const auto& enemy) {
 		return enemy->GetIsFinished();
 	});
+}
+
+void EnemyManager::ChangeState() {
+	if (boss_->GetHP() > boss_->GetMaxHP() * 0.5) {
+		initialSpeed_ = 0.6f;
+		spawnInterval_ = 3.0f;
+	} else if (boss_->GetHP() > boss_->GetMaxHP() * 0.3) {
+		initialSpeed_ = 0.4f;
+		spawnInterval_ = 2.0f;
+	} else {
+		initialSpeed_ = 0.2f;
+		spawnInterval_ = 1.0f;
+	}
 }

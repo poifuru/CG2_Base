@@ -53,8 +53,6 @@ void Enemy::Update(Matrix4x4* m) {
 	// [ 移動量をリセット ]
 	//moveAmount_ = { 0.0f,0.0f,0.0f };
 
-	
-
 	// Stateの更新処理
 	if (state_) {
 		state_->Update();

@@ -29,6 +29,9 @@ public:
 	Collider* GetBodyCollider() const { return bossBodyCollider_.get(); }
 	std::vector<Collider*> GetAttackColliders();
 	bool& GetIsAlive() { return isAlive_; }
+	float& GetHP() { return hp_; }
+	float& GetMaxHP() { return maxHP_; }
+
 	// Setter
 	void SetTransform(Transform transform) { transform_ = transform; }
 	void SetPosition(Vector3 position) { transform_.translate = position; }
@@ -72,6 +75,7 @@ private:
 	void WanderMove();
 	void FollowMove();
 	void EvadeMove();
+	void ClampPosition();
 
 	// Hp関係の関数
 	void UpdateHp();
@@ -113,7 +117,7 @@ private:
 	float emergencyEvadeFactor_ = 0.5f;  // 近すぎる場合に即座に離脱に切り替える距離係数
 	int wanderTimeFactor_ = 6;           // 自由徘徊の時間を基本移動時間の何倍にするか
 
-	Transform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f}, {0.0f,-1.0f,0.0f} };
+	Transform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f}, {0.0f,-1.0f,20.0f} };
 	Rotate rotate_ = Rotate::left;
 	float speed_ = 0.1f;
 

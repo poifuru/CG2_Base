@@ -45,25 +45,66 @@ void BossBodyCollider::OnCollision(Collider* other) {
 		}
 	}
 	if (other->GetMyType() & COL_Enemy_Attack){
-		// [ Enemyの爆発の場合 ]
-		if (other->GetMyType() & COL_Enemy_Attack_Level0) {
-			damage = 20.0f;
-		}
-		if (other->GetMyType() & COL_Enemy_Attack_Level1) {
-			damage = 30.0f;
-		}
-		if (other->GetMyType() & COL_Enemy_Attack_Level2) {
-			damage = 45.0f;
-		}
-		if (other->GetMyType() & COL_Enemy_Attack_Level3) {
-			damage = 60.0f;
-		}
+		if (boss_->GetHP() > boss_->GetMaxHP() * 0.5) {
+			// [ Enemyの爆発の場合 ]
+			if (other->GetMyType() & COL_Enemy_Attack_Level0) {
+				damage = 20.0f;
+			}
+			if (other->GetMyType() & COL_Enemy_Attack_Level1) {
+				damage = 24.0f;
+			}
+			if (other->GetMyType() & COL_Enemy_Attack_Level2) {
+				damage = 28.0f;
+			}
+			if (other->GetMyType() & COL_Enemy_Attack_Level3) {
+				damage = 32.0f;
+			}
 
-		// [ Enemyが死んだ際に出すスリップダメージの場合 ]
-		if (other->GetMyType() & COL_Enemy_SlipDamage) {
-			damage = 0.2f;
+			// [ Enemyが死んだ際に出すスリップダメージの場合 ]
+			if (other->GetMyType() & COL_Enemy_SlipDamage) {
+				damage = 0.3f;
+			}
+		} else if (boss_->GetHP() > boss_->GetMaxHP() * 0.3) {
+			// [ Enemyの爆発の場合 ]
+			if (other->GetMyType() & COL_Enemy_Attack_Level0) {
+				damage = 9.0f;
+			}
+			if (other->GetMyType() & COL_Enemy_Attack_Level1) {
+				damage = 12.0f;
+			}
+			if (other->GetMyType() & COL_Enemy_Attack_Level2) {
+				damage = 15.0f;
+			}
+			if (other->GetMyType() & COL_Enemy_Attack_Level3) {
+				damage = 18.0f;
+			}
+
+			// [ Enemyが死んだ際に出すスリップダメージの場合 ]
+			if (other->GetMyType() & COL_Enemy_SlipDamage) {
+				damage = 0.2f;
+			}
+		} else {
+			// [ Enemyの爆発の場合 ]
+			if (other->GetMyType() & COL_Enemy_Attack_Level0) {
+				damage = 1.0f;
+			}
+			if (other->GetMyType() & COL_Enemy_Attack_Level1) {
+				damage = 3.0f;
+			}
+			if (other->GetMyType() & COL_Enemy_Attack_Level2) {
+				damage = 5.0f;
+			}
+			if (other->GetMyType() & COL_Enemy_Attack_Level3) {
+				damage = 8.0f;
+			}
+
+			// [ Enemyが死んだ際に出すスリップダメージの場合 ]
+			if (other->GetMyType() & COL_Enemy_SlipDamage) {
+				damage = 0.1f;
+			}
 		}
-	}
+	} 
+
 	// 3. **Bossにダメージを適用**
 	if (damage > 0.0f) {
 		boss_->TakeDamage(damage);
