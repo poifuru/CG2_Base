@@ -338,6 +338,6 @@ x64/
 desktop.ini
 
 project/$
-/project/imgui.ini
-/project/pbd
-/project/lib
+ini
+pbd
+lib
