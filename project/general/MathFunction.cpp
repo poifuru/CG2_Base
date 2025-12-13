@@ -329,6 +329,55 @@ namespace Math {
 		return result;
 	}
 
+	Matrix4x4 MakeLookAtMatrix (const Vector3& eye, const Vector3& target, const Vector3& up) {
+		//前方向ベクトルfの計算(Z軸)
+		Vector3 f = Math::Normalize (Math::Subtract (target, eye)); // f = normalize(target - eye)
+
+		//右方向ベクトルrの計算(X軸)
+		//fとUpの外積を取るでやんす
+		Vector3 r = Math::Normalize (Math::Cross (up, f)); // r = normalize(Up x f)
+
+		//上方向ベクトルuの計算(Y軸)
+		//fとrの外積を取るでやんす
+		Vector3 u = Math::Cross (f, r);
+
+		//f,r,uを使ってビュー行列M_viewを構築するでやんす
+		// ビュー行列は、回転と平行移動を兼ねた行列でワールド座標をカメラ座標へ変換する
+
+		// 平行移動成分tの計算(内積を使うでやんす)
+		float t_x = -Math::Dot (r, eye);
+		float t_y = -Math::Dot (u, eye);
+		float t_z = -Math::Dot (f, eye);
+
+		Matrix4x4 result;
+
+		//X軸(右ベクトル r)
+		result.m[0][0] = r.x;
+		result.m[0][1] = r.y;
+		result.m[0][2] = r.z;
+		result.m[0][3] = t_x; //-r・e
+
+		//Y軸(上ベクトル u)
+		result.m[1][0] = u.x;
+		result.m[1][1] = u.y;
+		result.m[1][2] = u.z;
+		result.m[1][3] = t_y; //-u・e
+
+		//Z軸(前ベクトル f)
+		result.m[2][0] = f.x;
+		result.m[2][1] = f.y;
+		result.m[2][2] = f.z;
+		result.m[2][3] = t_z; //-f・e
+
+		//W成分
+		result.m[3][0] = 0.0f;
+		result.m[3][1] = 0.0f;
+		result.m[3][2] = 0.0f;
+		result.m[3][3] = 1.0f;
+
+		return result;
+	}
+
 	Vector3 Transform (const Vector3& v, const Matrix4x4& m) {
 		Vector3 result;
 
@@ -774,13 +823,16 @@ namespace Math {
 	//	wasMousePressed = isMousePressed;
 	//}
 
-	Vector3 Lerp (const Vector3& v1, const Vector3& v2, float t) {
-		Vector3 v;
-		//t = std::min (1.0f, std::max (0.0f, t));
+	float Lerp(const float& start, const float& end, float t) {
+		return t * end + (1 - t) * start;
+	}
 
-		v.x = t * v1.x + (v2.x - v1.x) * t;
-		v.y = t * v1.y + (v2.y - v1.y) * t;
-		v.z = t * v1.z + (v2.z - v1.z) * t;
+	Vector3 Lerp(const Vector3& start, const Vector3& end, float t) {
+		Vector3 v;
+
+		v.x = t * end.x + (1 - t) * start.x;
+		v.y = t * end.y + (1 - t) * start.y;
+		v.z = t * end.z + (1 - t) * start.z;
 
 		return v;
 	}
@@ -822,6 +874,11 @@ namespace Math {
 
 		reflect = input - normal * (2.0f * dot);
 		return reflect;
+	}
+
+	float Deg2Rad (float deg) {
+		float ret = static_cast<float>(deg) * (3.14159265358979323846f / 180.0f);
+		return ret;
 	}
 }
 

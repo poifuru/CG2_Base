@@ -6,7 +6,7 @@
 #include <imgui.h>
 #include "WindowsAPI.h"
 
-DebugCamera::DebugCamera() {
+DebugCamera::DebugCamera(InputManager* inputManager) {
 	camera_.transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -30.0f} };
 	camera_.world = {};
 	camera_.view = {};
@@ -20,8 +20,7 @@ DebugCamera::DebugCamera() {
 	sensitivity_ = 0.001f;
 	pitchOver_ = 1.5708f;
 
-	inputManager_ = InputManager::GetInstance ();
-	winAPI_ = WindowsAPI::GetInstance ();
+	input_ = inputManager;
 
 	instanceNum_++;
 }
@@ -34,9 +33,9 @@ void DebugCamera::Initialize(const Transform& transform) {
 	camera_.transform = transform;
 	camera_.world = Math::MakeAffineMatrix (camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);
 	camera_.view = Math::Inverse (camera_.world);
-	camera_.proj = Math::MakePerspectiveFOVMatrix(0.45f, (float)winAPI_->kClientWidth / (float)winAPI_->kClientHeight, 0.1f, 1000.0f);
+	camera_.proj = Math::MakePerspectiveFOVMatrix(0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, 0.1f, 1000.0f);
 
-	speed_ = 0.1f;
+	speed_ = 0.3f;
 }
 
 void DebugCamera::Update() {
@@ -58,63 +57,63 @@ void DebugCamera::Update() {
 
 	move_ = { 0.0f, 0.0f, 0.0f };
 
-	if (inputManager_->GetRawInput()->Push('W')) {
+	if (input_->GetRawInput()->Push('W')) {
 		move_ += forward_ * speed_;
 	}
-	if (inputManager_->GetRawInput ()->Push ('S')) {
+	if (input_->GetRawInput ()->Push ('S')) {
 		move_ -= forward_ * speed_;
 	}
-	if (inputManager_->GetRawInput ()->Push ('D')) {
+	if (input_->GetRawInput ()->Push ('D')) {
 		move_ += right_ * speed_;
 	}
-	if (inputManager_->GetRawInput ()->Push ('A')) {
+	if (input_->GetRawInput ()->Push ('A')) {
 		move_ -= right_ * speed_;
 	}
 
 	camera_.transform.translate += move_;
 
-	if (inputManager_->GetRawInput ()->Push (VK_SPACE)) {
+	if (input_->GetRawInput ()->Push (VK_SPACE)) {
 		camera_.transform.translate.y += speed_;
 	}
-	if (inputManager_->GetRawInput ()->Push (VK_SHIFT)) {
+	if (input_->GetRawInput ()->Push (VK_SHIFT)) {
 		camera_.transform.translate.y -= speed_;
 	}
 
 	//マウスで視点移動
 	//回転処理(左クリックしながらドラッグ)
 	// カーソル非表示
-	if (inputManager_->GetRawInput ()->TriggerMouse(MouseButton::MIDDLE)) {
+	if (input_->GetRawInput ()->TriggerMouse(MouseButton::MIDDLE)) {
 		ShowCursor(FALSE);
 
 		// クライアント領域の矩形を取得
 		RECT clientRect;
-		GetClientRect (winAPI_->GetHwnd(), &clientRect);
+		GetClientRect (WindowsAPI::GetInstance ()->GetHwnd(), &clientRect);
 
 		// クライアント領域の座標をスクリーン座標に変換するでやんす
 		// ClipCursorはスクリーン座標を要求するからでやんす
 		POINT pt = { clientRect.left, clientRect.top };
-		ClientToScreen (winAPI_->GetHwnd (), &pt);
+		ClientToScreen (WindowsAPI::GetInstance ()->GetHwnd (), &pt);
 		clientRect.left = pt.x;
 		clientRect.top = pt.y;
 
 		pt.x = clientRect.right;
 		pt.y = clientRect.bottom;
-		ClientToScreen (winAPI_->GetHwnd (), &pt);
+		ClientToScreen (WindowsAPI::GetInstance ()->GetHwnd (), &pt);
 		clientRect.right = pt.x;
 		clientRect.bottom = pt.y;
 
 		// カーソルをウィンドウのクライアント領域に制限するでやんす！
 		ClipCursor (&clientRect);
 	}
-	if (inputManager_->GetRawInput ()->ReleaseMouse (MouseButton::MIDDLE)) {
+	if (input_->GetRawInput ()->ReleaseMouse (MouseButton::MIDDLE)) {
 		// カーソルの制限を解除（NULLを指定）
 		ClipCursor (NULL);
 		ShowCursor (TRUE);
 	}
 
-	if (inputManager_->GetRawInput ()->PushMouse (MouseButton::MIDDLE)) {
-		camera_.transform.rotate.y += inputManager_->GetRawInput ()->GetMouseDeltaX() * sensitivity_;
-		camera_.transform.rotate.x += inputManager_->GetRawInput ()->GetMouseDeltaY () * sensitivity_;
+	if (input_->GetRawInput ()->PushMouse (MouseButton::MIDDLE)) {
+		camera_.transform.rotate.y += input_->GetRawInput ()->GetMouseDeltaX() * sensitivity_;
+		camera_.transform.rotate.x += input_->GetRawInput ()->GetMouseDeltaY () * sensitivity_;
 
 		if (camera_.transform.rotate.x > pitchOver_) {
 			camera_.transform.rotate.x = pitchOver_;

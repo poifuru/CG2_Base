@@ -12,7 +12,6 @@ using namespace Microsoft::WRL;
 #include <DirectXTex.h>
 #include "WindowsAPI.h"
 #include "LeakChecker.h"
-#include "InputManager.h"
 
 class DxCommon {
 public:		//メンバ関数(mainで呼び出すよう)
@@ -54,7 +53,7 @@ public:		//メンバ関数(mainで呼び出すよう)
 	/// <param name="numDescriptors"></param>
 	/// <param name="shaderVisible"></param>
 	/// <returns></returns>
-	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap (D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);	
+	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap (D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
 #pragma region ディスクリプタハンドル取得関数(必要になったらRTVやDSVなども)
 	/// <summary>

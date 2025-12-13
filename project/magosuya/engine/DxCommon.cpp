@@ -14,7 +14,7 @@
 #include "function.h"
 #include "Logger.h"
 #include "ChangeString.h"
-#include "Windows.h"
+#include "InputManager.h"
 
 void DxCommon::Initialize () {
 	HRESULT hr;
@@ -165,8 +165,8 @@ ComPtr<IDxcBlob> DxCommon::CompilerShader (const std::wstring& filePath, const w
 	//hlslファイルを読む
 	ComPtr<IDxcBlobEncoding> shaderSource = nullptr;
 	HRESULT hr = dxcUtils->LoadFile (filePath.c_str (), nullptr, &shaderSource);
-		//読めなかったらあきらめる
-		assert (SUCCEEDED (hr));
+	//読めなかったらあきらめる
+	assert (SUCCEEDED (hr));
 	//読み込んだファイルの内容を設定する
 	DxcBuffer shaderSourceBuffer;
 	shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer ();
@@ -188,7 +188,7 @@ ComPtr<IDxcBlob> DxCommon::CompilerShader (const std::wstring& filePath, const w
 		&shaderSourceBuffer,		//読み込んだファイル
 		arguments,					//コンパイルオプション
 		_countof (arguments),		//コンパイルオプションの数
-		includeHandler.Get(),				//includeが含まれた諸々
+		includeHandler.Get (),				//includeが含まれた諸々
 		IID_PPV_ARGS (shaderResult.GetAddressOf ())	//コンパイル結果
 	);
 	//コンパイルエラーではなくdxcが起動できないなど致命的な状況

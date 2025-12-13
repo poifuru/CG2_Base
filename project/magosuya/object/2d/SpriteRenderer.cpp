@@ -5,7 +5,7 @@
 #include "DxCommon.h"
 #include "TextureManager.h"
 
-SpriteRenderer::SpriteRenderer (DxCommon* dxCommon, TextureManager* texManager) {
+SpriteRenderer::SpriteRenderer (DxCommon* dxCommon) {
 	dxCommon_ = DxCommon::GetInstance ();
 	commandList_ = dxCommon->GetCommandList ();
 	texManager_ = TextureManager::GetInstance ();
@@ -42,7 +42,7 @@ void SpriteRenderer::Initialize () {
 	materialBuffer_ = dxCommon_->CreateBufferResource (sizeof (Material));
 	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };	//初期カラーは白
-	materialData_->enableLighting = false;
+	materialData_->enableLighting = LightReflectionModel::None;
 	materialData_->uvTranform = Math::MakeIdentity4x4 ();
 
 	//indexData_に書き込み
@@ -63,7 +63,7 @@ void SpriteRenderer::Update (Matrix4x4 wvpData, Transform uvTransform, Vector2 a
 
 	//画像切り出し用
 	id_ = id;
-	const DirectX::TexMetadata& metadata = texManager_->GetMetaData (id_);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetaData (id_);
 	float tex_left = texLeftTop.x / metadata.width;
 	float tex_right = (texLeftTop.x + texSize.x) / metadata.width;
 	float tex_top = texLeftTop.y / metadata.height;

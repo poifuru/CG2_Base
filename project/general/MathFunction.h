@@ -80,6 +80,9 @@ namespace Math {
 	//ビューポート変換行列
 	Matrix4x4 MakeViewportMatrix (float left, float top, float width, float height, float minDepth, float maxDepth);
 
+	//LookAt行列
+	Matrix4x4 MakeLookAtMatrix (const Vector3& eye, const Vector3& target, const Vector3& up);
+
 	Vector3 Transform (const Vector3& v, const Matrix4x4& m);
 
 	//Vector3数値表示
@@ -146,8 +149,11 @@ namespace Math {
 	//オブジェクトの回転を操作する関数
 	//void objectRotation(Vector3& rotate);
 
+	// floatLerp関数
+	float Lerp(const float& f1, const float& f2, float t);
+
 	//Vector3Lerp関数
-	Vector3 Lerp (const Vector3& v1, const Vector3& v2, float t);
+	Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t);
 
 	//ベジェ曲線描画用の点を求める関数
 	Vector3 ComputeBezierPoint (const Vector3& p0, const Vector3& p1, const Vector3& p2, float t);
@@ -158,6 +164,8 @@ namespace Math {
 
 	//反射ベクトルを求める関数
 	Vector3 Reflect (const Vector3& input, Vector3& normal);
+
+	float Deg2Rad (float deg);
 }
 
 //演算子オーバーロード

@@ -52,6 +52,9 @@ private:	//内部関数
 	[[nodiscard]]
 	ComPtr<ID3D12Resource> UploadTextureData (const ComPtr<ID3D12Resource>& texture, const DirectX::ScratchImage& mipImages);
 
+	//ダミーのテクスチャを作成する関数
+	TextureData* CreateDummyTexture (const std::string& ID);
+
 private:	//メンバ変数
 	std::unordered_map<std::string, TextureData> textureMap_;
 

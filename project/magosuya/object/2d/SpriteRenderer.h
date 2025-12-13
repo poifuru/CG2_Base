@@ -10,7 +10,7 @@ class TextureManager;
 
 class SpriteRenderer {
 public:		//外部公開メソッド
-	SpriteRenderer (DxCommon* dxCommon, TextureManager* texManager);
+	SpriteRenderer (DxCommon* dxCommon);
 	~SpriteRenderer ();
 
 	void Initialize ();

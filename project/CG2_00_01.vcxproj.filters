@@ -1,218 +1,182 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="Resources\shader\Object3d.PS.hlsl">
-      <Filter>シェーダー</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shader\Object3d.VS.hlsl">
-      <Filter>シェーダー</Filter>
-    </FxCompile>
-    <FxCompile Include="Resources\shader\Particle.VS.hlsl" />
-    <FxCompile Include="Resources\shader\Particle.PS.hlsl" />
-    <FxCompile Include="Resources\shader\Line.VS.hlsl" />
-    <FxCompile Include="Resources\shader\Line.PS.hlsl" />
     <FxCompile Include="Resources\shader\Cube.PS.hlsl" />
     <FxCompile Include="Resources\shader\Cube.VS.hlsl" />
+    <FxCompile Include="Resources\shader\Line.PS.hlsl" />
+    <FxCompile Include="Resources\shader\Line.VS.hlsl" />
+    <FxCompile Include="Resources\shader\Object3d.PS.hlsl" />
+    <FxCompile Include="Resources\shader\Object3d.VS.hlsl" />
+    <FxCompile Include="Resources\shader\Particle.PS.hlsl" />
+    <FxCompile Include="Resources\shader\Particle.VS.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\engine\DxCommon.cpp">
-      <Filter>ソースファイル\magosuya\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\engine\LeakChecker.cpp">
-      <Filter>ソースファイル\magosuya\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\engine\WindowsAPI.cpp">
-      <Filter>ソースファイル\magosuya\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\object\2d\SpriteRenderer.cpp">
-      <Filter>ソースファイル\magosuya\object\2d</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\object\2d\Sprite.cpp">
-      <Filter>ソースファイル\magosuya\object\2d</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\object\3d\Model.cpp">
-      <Filter>ソースファイル\magosuya\object\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\object\3d\ModelRenderer.cpp">
-      <Filter>ソースファイル\magosuya\object\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\object\3d\SphereModel.cpp">
-      <Filter>ソースファイル\magosuya\object\3d</Filter>
-    </ClCompile>
-    <ClCompile Include="general\ChangeString.cpp">
-      <Filter>ソースファイル\general</Filter>
-    </ClCompile>
-    <ClCompile Include="general\function.cpp">
-      <Filter>ソースファイル\general</Filter>
-    </ClCompile>
-    <ClCompile Include="general\Logger.cpp">
-      <Filter>ソースファイル\general</Filter>
-    </ClCompile>
-    <ClCompile Include="general\MathFunction.cpp">
-      <Filter>ソースファイル\general</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\utility\camera\DebugCamera.cpp">
-      <Filter>ソースファイル\magosuya\utility\camera</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\utility\imgui\ImGuiManager.cpp">
-      <Filter>ソースファイル\magosuya\utility\manager</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\object\3d\ModelManager.cpp">
-      <Filter>ソースファイル\magosuya\utility\manager</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\object\2d\TextureManager.cpp">
-      <Filter>ソースファイル\magosuya\utility\manager</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\utility\input\InputManager.cpp">
-      <Filter>ソースファイル\magosuya\utility\input</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\utility\input\GamePad.cpp">
-      <Filter>ソースファイル\magosuya\utility\input</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\utility\input\RawInput.cpp">
-      <Filter>ソースファイル\magosuya\utility\input</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\utility\audio\Sound.cpp">
-      <Filter>ソースファイル\magosuya\utility\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\utility\audio\SoundData.cpp">
-      <Filter>ソースファイル\magosuya\utility\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\utility\audio\SoundManager.cpp">
-      <Filter>ソースファイル\magosuya\utility\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="magosuya\MagosuyaEngine.cpp">
-      <Filter>ソースファイル\magosuya</Filter>
-    </ClCompile>
+    <ClCompile Include="application\Collider\PlayerBodyCollider.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerAttackState.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerChargeReleaseState.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerChargeState.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerDashState.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerDeathState.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerEvasionState.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerExhaustedState.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerFallState.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerHurtState.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerStopState.cpp" />
+    <ClCompile Include="application\Player\PlayerState\PlayerWalkState.cpp" />
+    <ClCompile Include="application\scene\ClearScene.cpp" />
+    <ClCompile Include="application\scene\GameoverScene.cpp" />
+    <ClCompile Include="application\Collider\Collider.cpp" />
+    <ClCompile Include="application\Collider\AttackCollider.cpp" />
+    <ClCompile Include="application\Boss\Boss.cpp" />
+    <ClCompile Include="application\Boss\Attack\CenterStomp\CenterStomp.cpp" />
+    <ClCompile Include="externals\imgui\imgui.cpp" />
+    <ClCompile Include="externals\imgui\imgui_demo.cpp" />
+    <ClCompile Include="externals\imgui\imgui_draw.cpp" />
+    <ClCompile Include="externals\imgui\imgui_impl_dx12.cpp" />
+    <ClCompile Include="externals\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="externals\imgui\imgui_tables.cpp" />
+    <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="magosuya\utility\camera\CameraOrganizer.cpp" />
+    <ClCompile Include="magosuya\utility\camera\FixedPointCamera.cpp" />
+    <ClCompile Include="magosuya\mesh\cube\CubeRenderer.cpp" />
+    <ClCompile Include="magosuya\mesh\line\LineRenderer.cpp" />
+    <ClCompile Include="magosuya\PSO\BlendModeManager.cpp" />
+    <ClCompile Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.cpp" />
+    <ClCompile Include="general\Logger.cpp" />
+    <ClCompile Include="general\ChangeString.cpp" />
+    <ClCompile Include="magosuya\PSO\InputLayoutManager.cpp" />
+    <ClCompile Include="magosuya\utility\camera\FollowCamera.cpp" />
+    <ClCompile Include="magosuya\utility\imgui\ImGuiManager.cpp" />
+    <ClCompile Include="magosuya\engine\LeakChecker.cpp" />
+    <ClCompile Include="magosuya\engine\DxCommon.cpp" />
+    <ClCompile Include="magosuya\utility\camera\DebugCamera.cpp" />
+    <ClCompile Include="general\function.cpp" />
+    <ClCompile Include="magosuya\utility\input\GamePad.cpp" />
+    <ClCompile Include="magosuya\utility\input\InputManager.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="general\MathFunction.cpp" />
+    <ClCompile Include="magosuya\utility\audio\Sound.cpp" />
+    <ClCompile Include="magosuya\object\3d\SphereModel.cpp" />
+    <ClCompile Include="magosuya\object\2d\Sprite.cpp" />
+    <ClCompile Include="magosuya\object\3d\Model.cpp" />
+    <ClCompile Include="magosuya\utility\audio\SoundData.cpp" />
+    <ClCompile Include="magosuya\utility\audio\SoundManager.cpp" />
+    <ClCompile Include="magosuya\utility\input\RawInput.cpp" />
+    <ClCompile Include="magosuya\object\3d\ModelManager.cpp" />
+    <ClCompile Include="magosuya\MagosuyaEngine.cpp" />
+    <ClCompile Include="magosuya\engine\WindowsAPI.cpp" />
+    <ClCompile Include="magosuya\object\2d\TextureManager.cpp" />
+    <ClCompile Include="magosuya\object\2d\SpriteRenderer.cpp" />
+    <ClCompile Include="magosuya\object\3d\ModelRenderer.cpp" />
     <ClCompile Include="application\scene\SceneManager.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
     <ClCompile Include="application\scene\PlayScene.cpp" />
-    <ClCompile Include="application\scene\ClearScene.cpp" />
-    <ClCompile Include="application\scene\GameoverScene.cpp" />
+    <ClCompile Include="application\Player\Player.cpp" />
     <ClCompile Include="magosuya\utility\particle\Particle.cpp" />
     <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
     <ClCompile Include="magosuya\PSO\RootSignatureManager.cpp" />
     <ClCompile Include="magosuya\PSO\PSOManager.cpp" />
-    <ClCompile Include="magosuya\PSO\BlendModeManager.cpp" />
-    <ClCompile Include="magosuya\PSO\InputLayoutManager.cpp" />
-    <ClCompile Include="magosuya\mesh\line\LineRenderer.cpp" />
     <ClCompile Include="magosuya\mesh\Mesh.cpp" />
-    <ClCompile Include="magosuya\mesh\cube\CubeRenderer.cpp" />
     <ClCompile Include="magosuya\utility\particle\MeshParticle.cpp" />
-    <ClCompile Include="magosuya\utility\camera\FixedPointCamera.cpp" />
-    <ClCompile Include="magosuya\utility\camera\CameraOrganizer.cpp" />
-    <ClCompile Include="magosuya\utility\camera\FollowCamera.cpp" />
+    <ClCompile Include="application\Boss\Attack\Breath\Breath.cpp" />
+    <ClCompile Include="application\Enemy\Enemy.cpp" />
+    <ClCompile Include="application\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="application\Collider\CollisionManager.cpp" />
+    <ClCompile Include="application\Collider\EnemyBodyCollider.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyChaseState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyDeathState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyDecisionState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyExplosionState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyFindPlayerState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyHurtState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemyPreExplosionState.cpp" />
+    <ClCompile Include="application\Enemy\EnemyState\EnemySearchPlayerState.cpp" />
+    <ClCompile Include="magosuya\utility\camera\LookAtCamera.cpp" />
+    <ClCompile Include="application\Collider\BossBodyCollider.cpp" />
+    <ClCompile Include="application\Collider\CenterStompCollider.cpp" />
+    <ClCompile Include="application\Collider\BossProjectileCollider.cpp" />
+    <ClCompile Include="magosuya\utility\audio\Audio.cpp" />
+    <ClCompile Include="general\Easing.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="general\ChangeString.h">
-      <Filter>ヘッダーファイル\general</Filter>
-    </ClInclude>
-    <ClInclude Include="general\Logger.h">
-      <Filter>ヘッダーファイル\general</Filter>
-    </ClInclude>
-    <ClInclude Include="general\function.h">
-      <Filter>ヘッダーファイル\general</Filter>
-    </ClInclude>
-    <ClInclude Include="general\MathFunction.h">
-      <Filter>ヘッダーファイル\general</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\externals.h">
-      <Filter>外部ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\engine\WindowsAPI.h">
-      <Filter>ヘッダーファイル\magosuya\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\engine\DxCommon.h">
-      <Filter>ヘッダーファイル\magosuya\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\engine\LeakChecker.h">
-      <Filter>ヘッダーファイル\magosuya\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\MagosuyaEngine.h">
-      <Filter>ヘッダーファイル\magosuya</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\object\2d\Sprite.h">
-      <Filter>ヘッダーファイル\magosuya\object\2d</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\object\2d\SpriteRenderer.h">
-      <Filter>ヘッダーファイル\magosuya\object\2d</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\object\3d\Model.h">
-      <Filter>ヘッダーファイル\magosuya\object\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\object\3d\ModelRenderer.h">
-      <Filter>ヘッダーファイル\magosuya\object\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\object\3d\SphereModel.h">
-      <Filter>ヘッダーファイル\magosuya\object\3d</Filter>
-    </ClInclude>
-    <ClInclude Include="general\struct.h">
-      <Filter>ヘッダーファイル\general</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\utility\imgui\ImGuiManager.h">
-      <Filter>ヘッダーファイル\magosuya\utility\manager</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\object\3d\ModelManager.h">
-      <Filter>ヘッダーファイル\magosuya\utility\manager</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\object\2d\TextureManager.h">
-      <Filter>ヘッダーファイル\magosuya\utility\manager</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\utility\audio\Sound.h">
-      <Filter>ヘッダーファイル\magosuya\utility\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\utility\audio\SoundData.h">
-      <Filter>ヘッダーファイル\magosuya\utility\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\utility\audio\SoundManager.h">
-      <Filter>ヘッダーファイル\magosuya\utility\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\utility\camera\DebugCamera.h">
-      <Filter>ヘッダーファイル\magosuya\utility\camera</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\utility\input\GamePad.h">
-      <Filter>ヘッダーファイル\magosuya\utility\input</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\utility\input\RawInput.h">
-      <Filter>ヘッダーファイル\magosuya\utility\input</Filter>
-    </ClInclude>
-    <ClInclude Include="magosuya\utility\input\InputManager.h">
-      <Filter>ヘッダーファイル\magosuya\utility\input</Filter>
-    </ClInclude>
+    <ClInclude Include="application\Boss\Attack\AttackPhase.h" />
+    <ClInclude Include="application\Collider\AttackCollider.h" />
+    <ClInclude Include="application\Collider\PlayerBodyCollider.h" />
+    <ClInclude Include="application\Player\PlayerState\PlayerState.h" />
     <ClInclude Include="application\scene\Scene.h" />
-    <ClInclude Include="application\scene\SceneManager.h" />
-    <ClInclude Include="application\scene\TitleScene.h" />
-    <ClInclude Include="application\scene\PlayScene.h" />
     <ClInclude Include="application\scene\ClearScene.h" />
+    <ClInclude Include="application\Collider\Collider.h" />
+    <ClInclude Include="application\Boss\Boss.h" />
+    <ClInclude Include="application\Boss\Attack\CenterStomp\CenterStomp.h" />
+    <ClInclude Include="magosuya\light\LightStructure.h" />
+    <ClInclude Include="magosuya\utility\camera\CameraOrganizer.h" />
+    <ClInclude Include="magosuya\utility\camera\FixedPointCamera.h" />
+    <ClInclude Include="magosuya\utility\camera\CameraComponent.h" />
+    <ClInclude Include="magosuya\mesh\cube\CubeRenderer.h" />
+    <ClInclude Include="magosuya\mesh\cube\CubeRenderData.h" />
+    <ClInclude Include="magosuya\mesh\line\LineRenderData.h" />
+    <ClInclude Include="magosuya\mesh\line\LineRenderer.h" />
+    <ClInclude Include="magosuya\mesh\MaxMeshNum.h" />
+    <ClInclude Include="magosuya\PSO\BlendModeManager.h" />
+    <ClInclude Include="externals\externals.h" />
     <ClInclude Include="application\scene\GameoverScene.h" />
-    <ClInclude Include="externals\imgui\imstb_rectpack.h" />
-    <ClInclude Include="externals\imgui\imstb_textedit.h" />
-    <ClInclude Include="externals\imgui\imstb_truetype.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />
     <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
     <ClInclude Include="externals\imgui\imgui_impl_win32.h" />
     <ClInclude Include="externals\imgui\imgui_internal.h" />
-    <ClInclude Include="magosuya\utility\particle\Particle.h" />
-    <ClInclude Include="magosuya\PSO\ShaderManager.h" />
-    <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />
-    <ClInclude Include="magosuya\PSO\PSOManager.h" />
-    <ClInclude Include="magosuya\PSO\BlendModeManager.h" />
+    <ClInclude Include="externals\imgui\imstb_rectpack.h" />
+    <ClInclude Include="externals\imgui\imstb_textedit.h" />
+    <ClInclude Include="externals\imgui\imstb_truetype.h" />
+    <ClInclude Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.h" />
+    <ClInclude Include="general\Logger.h" />
+    <ClInclude Include="general\ChangeString.h" />
     <ClInclude Include="magosuya\PSO\InputLayoutManager.h" />
-    <ClInclude Include="magosuya\mesh\line\LineRenderer.h" />
-    <ClInclude Include="magosuya\mesh\Mesh.h" />
-    <ClInclude Include="magosuya\mesh\line\LineRenderData.h" />
-    <ClInclude Include="magosuya\mesh\MaxMeshNum.h" />
-    <ClInclude Include="magosuya\mesh\cube\CubeRenderData.h" />
-    <ClInclude Include="magosuya\mesh\cube\CubeRenderer.h" />
-    <ClInclude Include="magosuya\utility\particle\MeshParticle.h" />
-    <ClInclude Include="magosuya\utility\camera\CameraComponent.h" />
-    <ClInclude Include="magosuya\utility\camera\FixedPointCamera.h" />
-    <ClInclude Include="magosuya\utility\camera\CameraOrganizer.h" />
     <ClInclude Include="magosuya\utility\camera\FollowCamera.h" />
+    <ClInclude Include="magosuya\utility\imgui\ImGuiManager.h" />
+    <ClInclude Include="magosuya\engine\LeakChecker.h" />
+    <ClInclude Include="magosuya\engine\DxCommon.h" />
+    <ClInclude Include="magosuya\utility\camera\DebugCamera.h" />
+    <ClInclude Include="magosuya\utility\input\GamePad.h" />
+    <ClInclude Include="general\function.h" />
+    <ClInclude Include="general\MathFunction.h" />
+    <ClInclude Include="magosuya\utility\audio\Sound.h" />
+    <ClInclude Include="magosuya\object\3d\SphereModel.h" />
+    <ClInclude Include="magosuya\object\2d\Sprite.h" />
+    <ClInclude Include="general\struct.h" />
+    <ClInclude Include="magosuya\object\3d\Model.h" />
+    <ClInclude Include="magosuya\utility\audio\SoundData.h" />
+    <ClInclude Include="magosuya\utility\audio\SoundManager.h" />
+    <ClInclude Include="magosuya\utility\input\InputManager.h" />
+    <ClInclude Include="magosuya\utility\input\RawInput.h" />
+    <ClInclude Include="magosuya\object\3d\ModelManager.h" />
+    <ClInclude Include="magosuya\MagosuyaEngine.h" />
+    <ClInclude Include="magosuya\engine\WindowsAPI.h" />
+    <ClInclude Include="magosuya\object\2d\TextureManager.h" />
+    <ClInclude Include="magosuya\object\2d\SpriteRenderer.h" />
+    <ClInclude Include="magosuya\object\3d\ModelRenderer.h" />
+    <ClInclude Include="application\scene\SceneManager.h" />
+    <ClInclude Include="application\scene\TitleScene.h" />
+    <ClInclude Include="application\scene\PlayScene.h" />
+    <ClInclude Include="application\Player\Player.h" />
+    <ClInclude Include="application\Player\PlayerState\PlayerState.h" />
+    <ClInclude Include="application\Collider\Collider.h" />
+    <ClInclude Include="application\Collider\PlayerBodyCollider.h" />
+    <ClInclude Include="application\Collider\AttackCollider.h" />
+    <ClInclude Include="application\Boss\Boss.h" />
+    <ClInclude Include="application\Boss\Attack\CenterStomp\CenterStomp.h" />
+    <ClInclude Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.h" />
+    <ClInclude Include="application\Enemy\Enemy.h" />
+    <ClInclude Include="application\Enemy\EnemyManager.h" />
+    <ClInclude Include="application\Collider\CollisionManager.h" />
+    <ClInclude Include="application\Collider\EnemyBodyCollider.h" />
+    <ClInclude Include="application\Enemy\EnemyState\EnemyState.h" />
+    <ClInclude Include="magosuya\utility\camera\LookAtCamera.h" />
+    <ClInclude Include="application\Collider\BossBodyCollider.h" />
+    <ClInclude Include="application\Collider\CenterStompCollider.h" />
+    <ClInclude Include="application\Collider\BossProjectileCollider.h" />
+    <ClInclude Include="magosuya\utility\audio\Audio.h" />
+    <ClInclude Include="general\Easing.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">
@@ -293,14 +257,19 @@
     <Filter Include="ヘッダーファイル\magosuya\utility\audio">
       <UniqueIdentifier>{457fd7ce-1080-4188-9b25-f8a794eb8700}</UniqueIdentifier>
     </Filter>
+    <ClInclude Include="magosuya\utility\particle\Particle.h" />
+    <ClInclude Include="magosuya\PSO\ShaderManager.h" />
+    <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />
+    <ClInclude Include="magosuya\PSO\PSOManager.h" />
+    <ClInclude Include="magosuya\mesh\Mesh.h" />
+    <ClInclude Include="magosuya\utility\particle\MeshParticle.h" />
+    <ClInclude Include="application\Boss\Attack\Breath\Breath.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\shader\Object3d.hlsli">
-      <Filter>シェーダー</Filter>
-    </None>
-    <None Include="Resources\shader\Particle.hlsli" />
-    <None Include="Resources\shader\Line.hlsli" />
     <None Include="Resources\shader\Cube.hlsli" />
+    <None Include="Resources\shader\Line.hlsli" />
+    <None Include="Resources\shader\Object3d.hlsli" />
+    <None Include="Resources\shader\Particle.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

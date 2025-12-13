@@ -30,9 +30,10 @@ public:
 	void ImGui ();
 
 	uint32_t GetParticleNum () { return kMaxParticleNum_; };
+	void SetColor (const Vector4& color) { color_ = color; }
 	void SetEmitterPos (const Vector3& pos) { emitter_.transform.translate = pos; }
 	void SetMakeParticleCount (const int& count) { emitter_.count = count; }
-	void Spawn ();
+	void Spawn();
 
 private:	//内部関数
 	MeshParticleData MakeNewParticle (std::mt19937 randomEngine, const Emitter& emitter_);
@@ -60,6 +61,9 @@ public:
 	Vector3 fieldPos[8] = {};
 
 	LineVertexData lineData_[2] = {};
+
+	//頂点カラー
+	Vector4 color_ = {};
 
 	//vp行列
 	Matrix4x4* vp_ = {};

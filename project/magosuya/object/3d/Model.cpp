@@ -2,12 +2,10 @@
 #include <imgui.h>
 #include "function.h"
 #include "MathFunction.h"
-#include "TextureManager.h"
 #include "ModelManager.h"
+#include "TextureManager.h"
 
-Model::Model (DxCommon* dxCommon, TextureManager* texManager, ModelManager* modelManager) {
-	texManager_ = texManager;
-	modelManager_ = modelManager;
+Model::Model (DxCommon* dxCommon) {
 	renderer_ = std::make_unique<ModelRenderer> (dxCommon);
 }
 
@@ -30,16 +28,16 @@ void Model::Draw () {
 	renderer_->Draw (texture_);
 }
 
-void Model::ImGui () {
-	renderer_->ImGui (transform_, uvTransform_);
+void Model::ImGui (const std::string& windowName) {
+	renderer_->ImGui (transform_, uvTransform_, windowName);
 }
 
 void Model::SetModelData (const std::string& ID) {
-	modelData_ = modelManager_->GetModelData (ID);
+	modelData_ = ModelManager::GetInstance()->GetModelData (ID);
 	renderer_->SetModelData (modelData_);
 	renderer_->SetImGuiID (ID); 
 }
 
 void Model::SetTexture (const std::string& ID) {
-	texture_ = texManager_->GetTextureHandle (ID);
+	texture_ = TextureManager::GetInstance()->GetTextureHandle (ID);
 }

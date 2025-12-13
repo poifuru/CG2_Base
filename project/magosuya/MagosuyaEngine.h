@@ -1,18 +1,16 @@
 #pragma once
 #include <memory>
 #include <string>
-
-//前方宣言
-class WindowsAPI;
-class DxCommon;
-class ImGuiManager;
-class InputManager;
-class TextureManager;
-class ModelManager;
-class PSOManager;
-class LineRenderer;
-class CubeRenderer;
-class CameraOrganizer;
+#include "Windows.h"
+#include "DxCommon.h"
+#include "TextureManager.h"
+#include "ImGuiManager.h"
+#include "ModelManager.h"
+#include "PSOManager.h"
+#include "LineRenderer.h"
+#include "CubeRenderer.h"
+#include "Mesh.h"
+#include "CameraOrganizer.h"
 
 class MagosuyaEngine {
 public:		//メンバ関数

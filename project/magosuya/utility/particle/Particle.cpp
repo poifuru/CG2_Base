@@ -50,7 +50,7 @@ void Particle::Initialize () {
 		instancingData_[i].World = Math::MakeIdentity4x4 ();
 		instancingData_[i].color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		materialData_[i].color = { 1.0f, 1.0f, 1.0f, 1.0f };
-		materialData_[i].enableLighting = false;
+		materialData_[i].enableLighting = LightReflectionModel::None;
 		materialData_[i].uvTranform = Math::MakeIdentity4x4 ();
 	}
 

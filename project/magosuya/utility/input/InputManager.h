@@ -17,7 +17,8 @@ public:	//メンバ関数
 	//preKeys更新用
 	void EndFrame ();
 
-	RawInput* GetRawInput () { return rawInput_.get(); }
+	RawInput* GetRawInput () { return rawInput_.get (); }
+	GamePad* GetGamePad () { return gamePad_.get (); }
 
 private:
 	//コンストラクタを禁止
@@ -30,4 +31,5 @@ private:
 
 private://メンバ変数
 	std::unique_ptr<RawInput> rawInput_;
+	std::unique_ptr<GamePad> gamePad_;
 };
