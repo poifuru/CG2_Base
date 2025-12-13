@@ -1,24 +1,29 @@
 #include "GameoverScene.h"
 #include "MagosuyaEngine.h"
-#include "utility/input/InputManager.h"
+#include "InputManager.h"
+#include "Easing.h"
 
-GameoverScene::GameoverScene (MagosuyaEngine* magosuya) {
-	magosuya_ = magosuya;
+//デルタタイムを定義
+const float kDeltaTime = 1.0f / 60.0f;
+
+GameoverScene::GameoverScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
+	camera_ = camera;
+	input_ = inputManager;
 }
 
 GameoverScene::~GameoverScene () {
-	
+
 }
 
 void GameoverScene::Initialize () {
-	nowScene_ = SceneLabel::Gameover;
-	isFinish_ = false;
+	nextScene_ = SceneLabel::Title;
+	isFinish_ = true;
 }
 
 void GameoverScene::Update () {
-	
+
 }
 
 void GameoverScene::Draw () {
-	
+
 }

@@ -1,13 +1,20 @@
 #include "TitleScene.h"
-#include "MagosuyaEngine.h"
-#include "utility/input/InputManager.h"
+#include "CameraOrganizer.h"
+#include "InputManager.h"
+#include "ModelManager.h"
+#include "TextureManager.h"
+#include "Easing.h"
 
-TitleScene::TitleScene (MagosuyaEngine* magosuya) {
-	magosuya_ = magosuya;
+//デルタタイムを定義
+const float kDeltaTime = 1.0f / 60.0f;
+
+TitleScene::TitleScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
+	camera_ = camera;
+	input_ = inputManager;
 }
 
 TitleScene::~TitleScene () {
-
+	
 }
 
 void TitleScene::Initialize () {
@@ -16,7 +23,7 @@ void TitleScene::Initialize () {
 }
 
 void TitleScene::Update () {
-
+	
 }
 
 void TitleScene::Draw () {

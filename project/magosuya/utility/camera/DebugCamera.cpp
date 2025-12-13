@@ -1,10 +1,16 @@
 #include "DebugCamera.h"
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
+#pragma	comment(lib, "dxguid.lib")
+#include <string>
+#include <imgui.h>
+#include "WindowsAPI.h"
 
-DebugCamera::DebugCamera() {
-	transform_ = {};
-	worldMatrix_ = {};
-	viewMatrix_ = {};
-	projectionMatrix_ = {};
+DebugCamera::DebugCamera(InputManager* inputManager) {
+	camera_.transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -30.0f} };
+	camera_.world = {};
+	camera_.view = {};
+	camera_.proj = {};
 
 	forward_ = {};
 	right_ = {};
@@ -13,107 +19,121 @@ DebugCamera::DebugCamera() {
 
 	sensitivity_ = 0.001f;
 	pitchOver_ = 1.5708f;
+
+	input_ = inputManager;
+
+	instanceNum_++;
 }
 
-void DebugCamera::Initialize() {
-	transform_ = {
-		{1.0f, 1.0f, 1.0f},
-		{0.0f, 0.0f, 0.0f},
-		{0.0f, 0.0f, -10.0f},
-	};
-	worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
-	viewMatrix_ = Inverse(worldMatrix_);
-	projectionMatrix_ = MakePerspectiveFOVMatrix(0.45f, 1280.0f / 720.0f, 0.1f, 100.0f);
+DebugCamera::~DebugCamera () {
 
-	speed_ = 0.1f;
 }
 
-void DebugCamera::Updata(HWND hwnd, HRESULT hr, InputManager* inputManager) {
+void DebugCamera::Initialize(const Transform& transform) {
+	camera_.transform = transform;
+	camera_.world = Math::MakeAffineMatrix (camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);
+	camera_.view = Math::Inverse (camera_.world);
+	camera_.proj = Math::MakePerspectiveFOVMatrix(0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, 0.1f, 1000.0f);
+
+	speed_ = 0.3f;
+}
+
+void DebugCamera::Update() {
 	//=======更新処理=======//
 	//カメラの前後左右の移動
 	forward_ = {
-	worldMatrix_.m[2][0], // z軸のx成分
-	worldMatrix_.m[2][1], // z軸のy成分
-	worldMatrix_.m[2][2]  // z軸のz成分
+	camera_.world.m[2][0], // z軸のx成分
+	camera_.world.m[2][1], // z軸のy成分
+	camera_.world.m[2][2]  // z軸のz成分
 	};
-	forward_ = Normalize(forward_);
+	forward_ = Math::Normalize(forward_);
 
 	right_ = {
-	worldMatrix_.m[0][0], // x軸のx成分
-	worldMatrix_.m[0][1], // x軸のy成分
-	worldMatrix_.m[0][2]  // x軸のz成分
+	camera_.world.m[0][0], // x軸のx成分
+	camera_.world.m[0][1], // x軸のy成分
+	camera_.world.m[0][2]  // x軸のz成分
 	};
-	right_ = Normalize(right_);
+	right_ = Math::Normalize(right_);
 
 	move_ = { 0.0f, 0.0f, 0.0f };
 
-	if (inputManager->GetRawInput()->Push('W')) {
+	if (input_->GetRawInput()->Push('W')) {
 		move_ += forward_ * speed_;
 	}
-	if (inputManager->GetRawInput ()->Push ('S')) {
+	if (input_->GetRawInput ()->Push ('S')) {
 		move_ -= forward_ * speed_;
 	}
-	if (inputManager->GetRawInput ()->Push ('D')) {
+	if (input_->GetRawInput ()->Push ('D')) {
 		move_ += right_ * speed_;
 	}
-	if (inputManager->GetRawInput ()->Push ('A')) {
+	if (input_->GetRawInput ()->Push ('A')) {
 		move_ -= right_ * speed_;
 	}
 
-	transform_.translate += move_;
+	camera_.transform.translate += move_;
 
-	if (inputManager->GetRawInput ()->Push (VK_SPACE)) {
-		transform_.translate.y += speed_;
+	if (input_->GetRawInput ()->Push (VK_SPACE)) {
+		camera_.transform.translate.y += speed_;
 	}
-	if (inputManager->GetRawInput ()->Push (VK_SHIFT)) {
-		transform_.translate.y -= speed_;
+	if (input_->GetRawInput ()->Push (VK_SHIFT)) {
+		camera_.transform.translate.y -= speed_;
 	}
 
 	//マウスで視点移動
 	//回転処理(左クリックしながらドラッグ)
 	// カーソル非表示
-	if (inputManager->GetRawInput ()->TriggerMouse(MouseButton::LEFT)) {
+	if (input_->GetRawInput ()->TriggerMouse(MouseButton::MIDDLE)) {
 		ShowCursor(FALSE);
 
 		// クライアント領域の矩形を取得
 		RECT clientRect;
-		GetClientRect (hwnd, &clientRect);
+		GetClientRect (WindowsAPI::GetInstance ()->GetHwnd(), &clientRect);
 
 		// クライアント領域の座標をスクリーン座標に変換するでやんす
 		// ClipCursorはスクリーン座標を要求するからでやんす
 		POINT pt = { clientRect.left, clientRect.top };
-		ClientToScreen (hwnd, &pt);
+		ClientToScreen (WindowsAPI::GetInstance ()->GetHwnd (), &pt);
 		clientRect.left = pt.x;
 		clientRect.top = pt.y;
 
 		pt.x = clientRect.right;
 		pt.y = clientRect.bottom;
-		ClientToScreen (hwnd, &pt);
+		ClientToScreen (WindowsAPI::GetInstance ()->GetHwnd (), &pt);
 		clientRect.right = pt.x;
 		clientRect.bottom = pt.y;
 
 		// カーソルをウィンドウのクライアント領域に制限するでやんす！
 		ClipCursor (&clientRect);
 	}
-	if (inputManager->GetRawInput ()->ReleaseMouse (MouseButton::LEFT)) {
+	if (input_->GetRawInput ()->ReleaseMouse (MouseButton::MIDDLE)) {
 		// カーソルの制限を解除（NULLを指定）
 		ClipCursor (NULL);
 		ShowCursor (TRUE);
 	}
 
-	if (inputManager->GetRawInput ()->PushMouse (MouseButton::LEFT)) {
-		transform_.rotate.y += inputManager->GetRawInput ()->GetMouseDeltaX() * sensitivity_;
-		transform_.rotate.x += inputManager->GetRawInput ()->GetMouseDeltaY () * sensitivity_;
+	if (input_->GetRawInput ()->PushMouse (MouseButton::MIDDLE)) {
+		camera_.transform.rotate.y += input_->GetRawInput ()->GetMouseDeltaX() * sensitivity_;
+		camera_.transform.rotate.x += input_->GetRawInput ()->GetMouseDeltaY () * sensitivity_;
 
-		if (transform_.rotate.x > pitchOver_) {
-			transform_.rotate.x = pitchOver_;
+		if (camera_.transform.rotate.x > pitchOver_) {
+			camera_.transform.rotate.x = pitchOver_;
 		}
-		if (transform_.rotate.x < -pitchOver_) {
-			transform_.rotate.x = -pitchOver_;
+		if (camera_.transform.rotate.x < -pitchOver_) {
+			camera_.transform.rotate.x = -pitchOver_;
 		}
 	}
 
 	//変化した情報をworldMatrixにまとめてviewMatrixに入れる
-	worldMatrix_ = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
-	viewMatrix_ = Inverse(worldMatrix_);
+	camera_.world = Math::MakeAffineMatrix(camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);
+	camera_.view = Math::Inverse(camera_.world);
+	camera_.vp = Math::Multiply (camera_.view, camera_.proj);
+}
+
+void DebugCamera::ImGui () {
+	std::string ID = std::to_string (instanceNum_);
+	std::string label = "DebugCamera";
+
+	ImGui::DragFloat3 (("scale##" + label + ID).c_str (), &camera_.transform.scale.x, 0.01f);
+	ImGui::DragFloat3 (("rotate##" + label + ID).c_str (), &camera_.transform.rotate.x, 0.01f);
+	ImGui::DragFloat3 (("translate##" + label + ID).c_str (), &camera_.transform.translate.x, 0.01f);
 }

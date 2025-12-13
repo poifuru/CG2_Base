@@ -1,12 +1,12 @@
 #include "SceneManager.h"
+#include "CameraOrganizer.h"
 
-SceneManager::SceneManager (MagosuyaEngine* magosuya) {
-	magosuya_ = magosuya;
+SceneManager::SceneManager (CameraOrganizer* camera, InputManager* input, DxCommon* dxCommon) {
 	scene_ = SceneLabel::Title;
-	titleScene_ = std::make_unique<TitleScene> (magosuya);
-	playScene_ = std::make_unique<PlayScene> (magosuya);
-	clearScene_ = std::make_unique<ClearScene> (magosuya);
-	gameoverScene_ = std::make_unique<GameoverScene> (magosuya);
+	titleScene_ = std::make_unique<TitleScene> (camera, input, dxCommon);
+	playScene_ = std::make_unique<PlayScene> (camera, input, dxCommon);
+	clearScene_ = std::make_unique<ClearScene> (camera, input, dxCommon);
+	gameoverScene_ = std::make_unique<GameoverScene> (camera, input, dxCommon);
 	currentScene_ = titleScene_.get ();
 }
 
@@ -59,6 +59,8 @@ void SceneManager::Update () {
 		}
 		currentScene_->Initialize ();
 	}
+
+	CameraOrganizer::GetInstance ()->ImGui ();
 }
 
 void SceneManager::Draw () {

@@ -1,12 +1,17 @@
 #include "ClearScene.h"
 #include "MagosuyaEngine.h"
+#include "Easing.h"
 
-ClearScene::ClearScene (MagosuyaEngine* magosuya) {
-	magosuya_ = magosuya;
+//デルタタイムを定義
+const float kDeltaTime = 1.0f / 60.0f;
+
+ClearScene::ClearScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
+	camera_ = camera;
+	input_ = inputManager;
 }
 
 ClearScene::~ClearScene () {
-	
+
 }
 
 void ClearScene::Initialize () {
@@ -19,5 +24,4 @@ void ClearScene::Update () {
 }
 
 void ClearScene::Draw () {
-	
 }

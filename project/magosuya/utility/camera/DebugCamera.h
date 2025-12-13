@@ -1,51 +1,35 @@
 #pragma once
 #include <Windows.h>
-#include "struct.h"
+#include <Wrl.h>
+using namespace Microsoft::WRL;
 #include <d3d12.h>
 #include <d3d12sdklayers.h>
-#pragma comment(lib, "d3d12.lib")
 #include <dxgi1_6.h>
-#pragma comment(lib, "dxgi.lib")
-#include <wrl.h>
-using namespace Microsoft::WRL;
-#define DIRECTINPUT_VERSION		0x0800	//DirectInputのバージョン指定
-#include <dinput.h>
-#pragma	comment(lib, "dinput8.lib")
-#pragma	comment(lib, "dxguid.lib")
+#include "CameraComponent.h"
+#include "struct.h"
 #include "MathFunction.h"
-#include "utility/Input/InputManager.h"
+#include "InputManager.h"
 
-class DebugCamera{
+class DebugCamera : public CameraComponent{
 public:	//メンバ関数
 	//コンストラクタ
-	DebugCamera ();
+	DebugCamera (InputManager* inputManager);
+	~DebugCamera () override;
 
 	//初期化
-	void Initialize ();
+	void Initialize (const Transform& transform) override;
 
 	//更新
-	void Updata (HWND hwnd, HRESULT hr, InputManager* inputManager);
+	void Update () override;
 
-	//ゲッター
-	Matrix4x4 GetWorldMatrix () { return worldMatrix_; }
-	Matrix4x4 GetViewMatrix () { return viewMatrix_; }
-	Matrix4x4 GetProjectionMatrix () { return projectionMatrix_; }
+	//ImGui
+	void ImGui () override;
+
 	bool GetTatchImGui () { return tatchImGui_; }
 	void SetTatchImGui (bool flag) { tatchImGui_ = flag; }
 
 private:	//メンバ変数
-	Transform transform_;
-
-	//ワールド座標
-	Matrix4x4 worldMatrix_;
-	
-	//ビュー行列
-	Matrix4x4 viewMatrix_;
-	
-	//射影行列
-	Matrix4x4 projectionMatrix_;
-
-	//=======カメラの挙動に使う変数=======//
+	//=====カメラの挙動に使う変数=======//
 	//カメラの正面に対しての前後左右に移動
 	Vector3 forward_;	//カメラの前方ベクトル
 	Vector3 right_;		//カメラの右ベクトル
@@ -57,5 +41,11 @@ private:	//メンバ変数
 	float pitchOver_;	//上を向きすぎるのを防止する
 
 	bool tatchImGui_ = false;	//ImGuiにカーソルが触れているか
+
+	//ImGui識別用変数
+	static inline int instanceNum_ = 0;
+
+	//ポインタを借りる
+	InputManager* input_ = nullptr;
 };
 

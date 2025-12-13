@@ -1,12 +1,15 @@
 #include "PlayScene.h"
-#include "MagosuyaEngine.h"
+#include "MathFunction.h"
+#include "CameraOrganizer.h"
+#include "InputManager.h"
 
-PlayScene::PlayScene (MagosuyaEngine* magosuya) {
-	magosuya_ = magosuya;
+PlayScene::PlayScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
+	camera_ = camera;
+	input_ = inputManager;
 }
 
 PlayScene::~PlayScene () {
-	
+
 }
 
 void PlayScene::Initialize () {
@@ -15,7 +18,7 @@ void PlayScene::Initialize () {
 }
 
 void PlayScene::Update () {
-	
+
 }
 
 void PlayScene::Draw () {

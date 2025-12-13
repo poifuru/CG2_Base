@@ -1,17 +1,19 @@
-#pragma once    
-#include <d3d12.h>  
-#include <wrl.h>  
+#pragma once
+#include <Windows.h>
+#include <Wrl.h>
 using namespace Microsoft::WRL;
+#include <d3d12.h>  
 #include <memory>
 #include "SpriteRenderer.h"
 #include "struct.h"
 
 //前方宣言
-class MagosuyaEngine;
+class DxCommon;
+class TextureManager;
 
 class Sprite {
 public:		//メンバ関数  
-	Sprite (MagosuyaEngine* magosuya);
+	Sprite (DxCommon* dxCommon);
 	~Sprite ();
 
 	void Initialize (Vector3 position);
@@ -25,9 +27,12 @@ private:	//プライベート関数
 	void AdjustTextureSize ();
 
 public:		//アクセッサ
+	//スケール
+	Vector3 GetScale () { return transformData_.transform.scale; }
+	void SetScale (const Vector3& scale) { transformData_.transform.scale = scale; }
 	//位置
 	Vector3 GetPosition () { return transformData_.transform.translate; }
-	void SetPosition (Vector3& position) { transformData_.transform.translate = position; }
+	void SetPosition (const Vector3& position) { transformData_.transform.translate = position; }
 	//回転
 	float GetRotation () { return rotation_; }
 	void SetRotation (float rotation) { rotation_ = rotation; }
@@ -79,7 +84,4 @@ private:	//メンバ変数
 
 	//描画を担当するレンダラークラス
 	std::unique_ptr<SpriteRenderer> renderer_ = nullptr;
-
-	//ポインタを借りてくる
-	MagosuyaEngine* magosuya_ = nullptr;
 };

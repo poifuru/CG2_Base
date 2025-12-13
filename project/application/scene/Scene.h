@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>
-
-class InputManager;
-extern std::unique_ptr<InputManager> g_inputManager;
+#include "CameraOrganizer.h"
+#include "InputManager.h"
+#include "Audio.h"
 
 //シーンのラベル
 enum class SceneLabel {
@@ -37,6 +37,11 @@ protected:	//メンバ変数
 	//次に行きたいシーンを持たせる
 	SceneLabel nextScene_ = SceneLabel::Title;
 
+	Audio audio_;
+	SoundData bgmHandle_;
+	SoundData clickHandle_;
+
 	//ポインタを借りる
-	MagosuyaEngine* magosuya_ = nullptr;
+	CameraOrganizer* camera_ = nullptr;
+	InputManager* input_ = nullptr;
 };

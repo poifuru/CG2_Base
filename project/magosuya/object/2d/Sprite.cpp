@@ -2,11 +2,11 @@
 #include <DirectXTex.h>
 #include "function.h"
 #include "MathFunction.h"
-#include "MagosuyaEngine.h"
+#include "DxCommon.h"
+#include "TextureManager.h"
 
-Sprite::Sprite (MagosuyaEngine* magosuya) {
-	magosuya_ = magosuya;
-	renderer_ = std::make_unique<SpriteRenderer> (magosuya);
+Sprite::Sprite (DxCommon* dxCommon) {
+	renderer_ = std::make_unique<SpriteRenderer> (dxCommon);
 }
 
 Sprite::~Sprite () {
@@ -25,20 +25,20 @@ void Sprite::Initialize (Vector3 position) {
 	transformData_.uvTransform.translate = {};
 
 	//wvpMatrixの初期化
-	transformData_.wvpMatrix = MakeIdentity4x4 ();
+	transformData_.wvpMatrix = Math::MakeIdentity4x4 ();
 
 	renderer_->Initialize ();
 }
 
 void Sprite::SetTexture (std::string ID) {
-	handle_ = magosuya_->GetTextureHandle(ID);
+	handle_ = TextureManager::GetInstance ()->GetTextureHandle(ID);
 }
 
 void Sprite::MakewvpMatrix () {
-	Matrix4x4 world = MakeAffineMatrix (transformData_.transform.scale, transformData_.transform.rotate, transformData_.transform.translate);
-	Matrix4x4 view = MakeIdentity4x4 ();
-	Matrix4x4 proj = MakeOrthographicMatrix (0, 0, 1280.0f, 720.0f, 0, 100.0f);
-	transformData_.wvpMatrix = Multiply (world, Multiply (view, proj));
+	Matrix4x4 world = Math::MakeAffineMatrix (transformData_.transform.scale, transformData_.transform.rotate, transformData_.transform.translate);
+	Matrix4x4 view = Math::MakeIdentity4x4 ();
+	Matrix4x4 proj = Math::MakeOrthographicMatrix (0, 0, 1280.0f, 720.0f, 0, 100.0f);
+	transformData_.wvpMatrix = Math::Multiply (world, Math::Multiply (view, proj));
 }
 
 void Sprite::Update () {
@@ -57,7 +57,7 @@ void Sprite::ImGui () {
 }
 
 void Sprite::AdjustTextureSize () {
-	const DirectX::TexMetadata& metadata = magosuya_->GetMetaData (id_);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance ()->GetMetaData (id_);
 
 	textureSize_.x = static_cast<float>(metadata.width);
 	textureSize_.y = static_cast<float>(metadata.height);

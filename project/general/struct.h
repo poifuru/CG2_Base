@@ -144,13 +144,19 @@ struct VertexData {
 	Vector4 position;
 	Vector2 texcoord;
 	Vector3 normal;
-	//float padding1;
+};
+
+//ライティングの反射モデル
+enum LightReflectionModel {
+	None,
+	Lambert,
+	HalfLambert,
 };
 
 //マテリアルの構造体
 struct Material {
 	Vector4 color;
-	int32_t enableLighting;
+	LightReflectionModel enableLighting;
 	float padding[3];
 	Matrix4x4 uvTranform;
 };
@@ -186,18 +192,12 @@ struct SpriteData {
 	Matrix4x4 wvpMatrix;	//wvp行列ポインタ
 };
 
-enum Light {
-	none,
-	lambert,
-	halfLambert,
-};
-
 //平行光源構造体
 struct DirectionalLight {
-	Vector4 color;		//ライトの色
-	Vector3 direction;	//ライトの向き
-	float intensity;	//輝度
-	Light mode;			//ライティングの設定
+	Vector4 color;				//ライトの色
+	Vector3 direction;			//ライトの向き
+	float intensity;			//輝度
+	LightReflectionModel mode;	//ライティングの設定
 };
 
 //MaterialData構造体
@@ -226,30 +226,54 @@ struct ModelData {
 	D3D12_INDEX_BUFFER_VIEW ibView{};
 };
 
-//チャンクヘッダ
-struct ChunkHeader {
-	char id[4];		//チャンク毎のID
-	int32_t size;	//チャンクサイズ
+//パーティクル構造体
+struct ParticleData {
+	Transform transform;
+	Vector3 velocity;
+	Vector4 color;
+	float lifeTime;
+	float currentTime;
 };
 
-//RIFFヘッダチャンク
-struct RiffHeader {
-	ChunkHeader chunk;	//"RIFF"
-	char type[4];		//"WAVE"
+//GPUに送るParticleのデータ
+struct ParticleForGPU {
+	Matrix4x4 WVP;
+	Matrix4x4 World;
+	Vector4 color;
 };
 
-//FMTチャンク
-struct FormatChunk {
-	ChunkHeader chunk;	//"fmt"
-	WAVEFORMATEX fmt;		//波形フォーマット
+//エミッター構造体
+struct Emitter {
+	Transform transform;	//transform
+	uint32_t count;			//発生数
+	float frequency;		//発生頻度
+	float frequencyTime;	//頻度用時刻
 };
 
-//サウンドデータ構造体
-struct SoundData {
-	//波形フォーマット
-	WAVEFORMATEX wfex;
-	//バッファの先頭アドレス
-	BYTE* pBuffer;
-	//バッファのサイズ
-	unsigned int bufferSize;
-};
+////チャンクヘッダ
+//struct ChunkHeader {
+//	char id[4];		//チャンク毎のID
+//	int32_t size;	//チャンクサイズ
+//};
+//
+////RIFFヘッダチャンク
+//struct RiffHeader {
+//	ChunkHeader chunk;	//"RIFF"
+//	char type[4];		//"WAVE"
+//};
+//
+////FMTチャンク
+//struct FormatChunk {
+//	ChunkHeader chunk;	//"fmt"
+//	WAVEFORMATEX fmt;		//波形フォーマット
+//};
+//
+////サウンドデータ構造体
+//struct SoundData {
+//	//波形フォーマット
+//	WAVEFORMATEX wfex;
+//	//バッファの先頭アドレス
+//	BYTE* pBuffer;
+//	//バッファのサイズ
+//	unsigned int bufferSize;
+//};

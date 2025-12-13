@@ -1,6 +1,6 @@
 #pragma once
 class LeakChecker {
 public:
-	~LeakChecker ();
+	~LeakChecker();
 };
 
