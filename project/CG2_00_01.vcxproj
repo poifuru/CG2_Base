@@ -98,6 +98,9 @@
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
+    <FxCompile>
+      <ShaderModel>6.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -128,6 +131,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
 xcopy /E /I /Y "$(SolutionDir)Resources\" "$(TargetDir)Resources\"
 echo "MaoSuya Engine Builded"</Command>
     </PostBuildEvent>
+    <FxCompile>
+      <ShaderModel>6.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
     <ClCompile>
@@ -158,41 +164,13 @@ echo "MaoSuya Engine Builded"</Command>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
 copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"</Command>
     </PostBuildEvent>
+    <FxCompile>
+      <ShaderModel>6.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="application\Collider\CollisionManager.cpp" />
-    <ClCompile Include="application\Collider\EnemyBodyCollider.cpp" />
-    <ClCompile Include="application\Collider\PlayerBodyCollider.cpp" />
-    <ClCompile Include="application\Enemy\Enemy.cpp" />
-    <ClCompile Include="application\Enemy\EnemyManager.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemyChaseState.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemyDeathState.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemyDecisionState.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemyExplosionState.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemyFindPlayerState.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemyHurtState.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemyPreExplosionState.cpp" />
-    <ClCompile Include="application\Enemy\EnemyState\EnemySearchPlayerState.cpp" />
-    <ClCompile Include="application\Player\PlayerState\PlayerAttackState.cpp" />
-    <ClCompile Include="application\Player\PlayerState\PlayerChargeReleaseState.cpp" />
-    <ClCompile Include="application\Player\PlayerState\PlayerChargeState.cpp" />
-    <ClCompile Include="application\Player\PlayerState\PlayerDashState.cpp" />
-    <ClCompile Include="application\Player\PlayerState\PlayerDeathState.cpp" />
-    <ClCompile Include="application\Player\PlayerState\PlayerEvasionState.cpp" />
-    <ClCompile Include="application\Player\PlayerState\PlayerExhaustedState.cpp" />
-    <ClCompile Include="application\Player\PlayerState\PlayerFallState.cpp" />
-    <ClCompile Include="application\Player\PlayerState\PlayerHurtState.cpp" />
-    <ClCompile Include="application\Player\PlayerState\PlayerStopState.cpp" />
-    <ClCompile Include="application\Player\PlayerState\PlayerWalkState.cpp" />
     <ClCompile Include="application\scene\ClearScene.cpp" />
     <ClCompile Include="application\scene\GameoverScene.cpp" />
-    <ClCompile Include="application\Collider\Collider.cpp" />
-    <ClCompile Include="application\Collider\AttackCollider.cpp" />
-    <ClCompile Include="application\Boss\Boss.cpp" />
-    <ClCompile Include="application\Boss\Attack\CenterStomp\CenterStomp.cpp" />
-    <ClCompile Include="application\Collider\BossBodyCollider.cpp" />
-    <ClCompile Include="application\Collider\CenterStompCollider.cpp" />
-    <ClCompile Include="application\Collider\BossProjectileCollider.cpp" />
     <ClCompile Include="general\Easing.cpp" />
     <ClCompile Include="magosuya\utility\audio\Audio.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
@@ -208,7 +186,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="magosuya\mesh\cube\CubeRenderer.cpp" />
     <ClCompile Include="magosuya\mesh\line\LineRenderer.cpp" />
     <ClCompile Include="magosuya\PSO\BlendModeManager.cpp" />
-    <ClCompile Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.cpp" />
     <ClCompile Include="general\Logger.cpp" />
     <ClCompile Include="general\ChangeString.cpp" />
     <ClCompile Include="magosuya\PSO\InputLayoutManager.cpp" />
@@ -259,14 +236,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\SceneManager.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
     <ClCompile Include="application\scene\PlayScene.cpp" />
-    <ClCompile Include="application\Player\Player.cpp" />
     <ClCompile Include="magosuya\utility\particle\Particle.cpp" />
     <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
     <ClCompile Include="magosuya\PSO\RootSignatureManager.cpp" />
     <ClCompile Include="magosuya\PSO\PSOManager.cpp" />
     <ClCompile Include="magosuya\mesh\Mesh.cpp" />
     <ClCompile Include="magosuya\utility\particle\MeshParticle.cpp" />
-    <ClCompile Include="application\Boss\Attack\Breath\Breath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\Cube.PS.hlsl">
@@ -353,23 +328,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="application\Boss\Attack\AttackPhase.h" />
-    <ClInclude Include="application\Collider\AttackCollider.h" />
-    <ClInclude Include="application\Collider\CollisionManager.h" />
-    <ClInclude Include="application\Collider\EnemyBodyCollider.h" />
-    <ClInclude Include="application\Collider\PlayerBodyCollider.h" />
-    <ClInclude Include="application\Enemy\Enemy.h" />
-    <ClInclude Include="application\Enemy\EnemyManager.h" />
-    <ClInclude Include="application\Enemy\EnemyState\EnemyState.h" />
-    <ClInclude Include="application\Player\PlayerState\PlayerState.h" />
     <ClInclude Include="application\scene\Scene.h" />
     <ClInclude Include="application\scene\ClearScene.h" />
-    <ClInclude Include="application\Collider\Collider.h" />
-    <ClInclude Include="application\Boss\Boss.h" />
-    <ClInclude Include="application\Boss\Attack\CenterStomp\CenterStomp.h" />
-    <ClInclude Include="application\Collider\BossBodyCollider.h" />
-    <ClInclude Include="application\Collider\CenterStompCollider.h" />
-    <ClInclude Include="application\Collider\BossProjectileCollider.h" />
     <ClInclude Include="general\Easing.h" />
     <ClInclude Include="magosuya\utility\audio\Audio.h" />
     <ClInclude Include="magosuya\utility\camera\LookAtCamera.h" />
@@ -393,7 +353,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="application\Boss\Attack\FullScreenAttack\FullScreenAttack.h" />
     <ClInclude Include="general\Logger.h" />
     <ClInclude Include="general\ChangeString.h" />
     <ClInclude Include="magosuya\PSO\InputLayoutManager.h" />
@@ -438,14 +397,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\SceneManager.h" />
     <ClInclude Include="application\scene\TitleScene.h" />
     <ClInclude Include="application\scene\PlayScene.h" />
-    <ClInclude Include="application\Player\Player.h" />
     <ClInclude Include="magosuya\utility\particle\Particle.h" />
     <ClInclude Include="magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />
     <ClInclude Include="magosuya\PSO\PSOManager.h" />
     <ClInclude Include="magosuya\mesh\Mesh.h" />
     <ClInclude Include="magosuya\utility\particle\MeshParticle.h" />
-    <ClInclude Include="application\Boss\Attack\Breath\Breath.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Cube.hlsli" />

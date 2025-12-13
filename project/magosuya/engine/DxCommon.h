@@ -15,19 +15,19 @@ using namespace Microsoft::WRL;
 
 class DxCommon {
 public:		//メンバ関数(mainで呼び出すよう)
-	static DxCommon* GetInstance () {
+	static DxCommon* GetInstance() {
 		//初めて呼び出されたときに一回だけ初期化
 		static DxCommon instance;
 		return &instance;
 	}
 
-	void Initialize ();
-	void BeginFrame ();
-	void EndFrame ();
-	void Finalize ();
+	void Initialize();
+	void BeginFrame();
+	void EndFrame();
+	void Finalize();
 
 	//Textureデータを読みこむ関数
-	static DirectX::ScratchImage LoadTexture (const std::string& filePath);
+	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
 	/// <summary>
 	/// シェーダーをコンパイルする関数
@@ -36,14 +36,14 @@ public:		//メンバ関数(mainで呼び出すよう)
 	/// <param name="profile">使用するプロファイル</param>
 	/// <param name="os">ログストリーム</param>
 	/// <returns>shader</returns>
-	ComPtr<IDxcBlob> CompilerShader (const std::wstring& filePath, const wchar_t* profile, std::ofstream& os);
+	ComPtr<IDxcBlob> CompilerShader(const std::wstring& filePath, const wchar_t* profile, std::ofstream& os);
 
 	/// <summary>
 	/// Resource作成関数
 	/// </summary>
 	/// <param name="sizeInBytes"></param>
 	/// <returns></returns>
-	ComPtr<ID3D12Resource> CreateBufferResource (size_t sizeInBytes);
+	ComPtr<ID3D12Resource> CreateBufferResource(size_t sizeInBytes);
 
 	/// <summary>
 	/// ディスクリプタヒープ作成関数
@@ -53,7 +53,7 @@ public:		//メンバ関数(mainで呼び出すよう)
 	/// <param name="numDescriptors"></param>
 	/// <param name="shaderVisible"></param>
 	/// <returns></returns>
-	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap (D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
+	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
 #pragma region ディスクリプタハンドル取得関数(必要になったらRTVやDSVなども)
 	/// <summary>
@@ -61,51 +61,51 @@ public:		//メンバ関数(mainで呼び出すよう)
 	/// </summary>
 	/// <param name="index">要素数</param>
 	/// <returns>SRVのCPUディスクリプタハンドル</returns>
-	D3D12_CPU_DESCRIPTOR_HANDLE GetSRVCPUDescriptorHandle (uint32_t index);
+	D3D12_CPU_DESCRIPTOR_HANDLE GetSRVCPUDescriptorHandle(uint32_t index);
 
 	/// <summary>
 	/// SRV専用のGPUディスクリプタハンドル取得関数
 	/// </summary>
 	/// <param name="index">要素数</param>
 	/// <returns>SRVのGPUディスクリプタハンドル</returns>
-	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle (uint32_t index);
+	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle(uint32_t index);
 #pragma endregion
 
 private:
 	//コンストラクタを禁止
-	DxCommon () = default;
+	DxCommon() = default;
 	// コピーコンストラクタと代入演算子を禁止
-	DxCommon (const DxCommon&) = delete;
+	DxCommon(const DxCommon&) = delete;
 	DxCommon& operator=(const DxCommon&) = delete;
-	DxCommon (DxCommon&&) = delete;
+	DxCommon(DxCommon&&) = delete;
 	DxCommon& operator=(DxCommon&&) = delete;
 
 private:	//プライベート関数
-	void InitializeFixFPS ();
-	void CreateDevice ();
-	void CreateCommand ();
-	void CreateDxcCompiler ();
-	void CreateFence ();
-	void CreateDescriptorHeap ();
-	void CreateSwapChain ();
-	void CreateDepthBaffer ();
-	void CreateRTV ();
-	void CreateDSV ();
-	void ViewportRectInit ();
-	void ScissorRectInit ();
-	void UpdateFixFPS ();
+	void InitializeFixFPS();
+	void CreateDevice();
+	void CreateCommand();
+	void CreateDxcCompiler();
+	void CreateFence();
+	void CreateDescriptorHeap();
+	void CreateSwapChain();
+	void CreateDepthBaffer();
+	void CreateRTV();
+	void CreateDSV();
+	void ViewportRectInit();
+	void ScissorRectInit();
+	void UpdateFixFPS();
 
 public:		//アクセッサ
 	//DescriptorHandleを取得する関数(CPUとGPU)
-	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle (const ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index);
-	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle (const ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index);
-	ID3D12Device* GetDevice () { return device.Get (); }
-	ID3D12GraphicsCommandList* GetCommandList () { return commandList.Get (); }
-	ID3D12DescriptorHeap* GetsrvDescriptorHeap () { return srvDescriptorHeap.Get (); }
-	IDxcUtils* GetDxcUtils () { return dxcUtils.Get(); }
-	IDxcCompiler3* GetDxcCompiler () { return dxcCompiler.Get (); }
-	IDxcIncludeHandler* GetIncludeHandler () { return includeHandler.Get (); }
-	UINT GetDescriptorSizeSrv () { return srvDescriptorHeapSize_; }
+	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(const ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index);
+	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(const ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index);
+	ID3D12Device* GetDevice() { return device.Get(); }
+	ID3D12GraphicsCommandList* GetCommandList() { return commandList.Get(); }
+	ID3D12DescriptorHeap* GetsrvDescriptorHeap() { return srvDescriptorHeap.Get(); }
+	IDxcUtils* GetDxcUtils() { return dxcUtils.Get(); }
+	IDxcCompiler3* GetDxcCompiler() { return dxcCompiler.Get(); }
+	IDxcIncludeHandler* GetIncludeHandler() { return includeHandler.Get(); }
+	UINT GetDescriptorSizeSrv() { return srvDescriptorHeapSize_; }
 
 
 private://メンバ変数
