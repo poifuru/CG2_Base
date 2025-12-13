@@ -92,7 +92,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalDependencies>imgui.lib;DirectXTex.lib;$(CoreLibraryDependencies);%(AdditionalDependencies);</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration);%(AdditionalLibraryDirectories);$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration);%(AdditionalLibraryDirectories);$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration);$(SolutionDir);$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
@@ -121,7 +121,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)externals\DirectXTex\lib\$(Configuration)\;$(SolutionDir)externals\imgui\lib\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)externals\DirectXTex\lib\$(Configuration)\;$(SolutionDir)externals\imgui\lib\$(Configuration)\;%(AdditionalLibraryDirectories);$(SolutionDir);$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration)</AdditionalLibraryDirectories>
       <AdditionalDependencies>imgui.lib;DirectXTex.lib;$(CoreLibraryDependencies);%(AdditionalDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
@@ -156,7 +156,7 @@ echo "MaoSuya Engine Builded"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration />
-      <AdditionalLibraryDirectories>$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration);%(AdditionalLibraryDirectories);$(SolutionDir);$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration)</AdditionalLibraryDirectories>
       <AdditionalDependencies>imgui.lib;DirectXTex.lib;$(CoreLibraryDependencies);%(AdditionalDependencies);</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
