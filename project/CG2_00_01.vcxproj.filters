@@ -63,6 +63,7 @@
     <ClCompile Include="magosuya\utility\camera\LookAtCamera.cpp" />
     <ClCompile Include="magosuya\utility\audio\Audio.cpp" />
     <ClCompile Include="general\Easing.cpp" />
+    <ClCompile Include="magosuya\engine\SRV\SRVManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\Scene.h" />
@@ -119,6 +120,7 @@
     <ClInclude Include="magosuya\utility\camera\LookAtCamera.h" />
     <ClInclude Include="magosuya\utility\audio\Audio.h" />
     <ClInclude Include="general\Easing.h" />
+    <ClInclude Include="magosuya\engine\SRV\SRVManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">

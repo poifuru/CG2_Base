@@ -101,12 +101,9 @@ public:		//アクセッサ
 	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(const ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index);
 	ID3D12Device* GetDevice() { return device.Get(); }
 	ID3D12GraphicsCommandList* GetCommandList() { return commandList.Get(); }
-	ID3D12DescriptorHeap* GetsrvDescriptorHeap() { return srvDescriptorHeap.Get(); }
 	IDxcUtils* GetDxcUtils() { return dxcUtils.Get(); }
 	IDxcCompiler3* GetDxcCompiler() { return dxcCompiler.Get(); }
 	IDxcIncludeHandler* GetIncludeHandler() { return includeHandler.Get(); }
-	UINT GetDescriptorSizeSrv() { return srvDescriptorHeapSize_; }
-
 
 private://メンバ変数
 	LeakChecker leakCheck_{};
@@ -159,12 +156,6 @@ private://メンバ変数
 
 	//RTVの設定
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
-
-	//ディスクリプタヒープサイズ
-	UINT srvDescriptorHeapSize_;
-
-	//SRVディスクリプタヒープ
-	ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap{};
 
 	//初期値0でFenceを作る
 	ComPtr<ID3D12Fence> fence = nullptr;
