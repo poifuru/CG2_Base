@@ -7,6 +7,7 @@ using namespace Microsoft::WRL;
 #include "struct.h"
 #include "CubeRenderData.h"
 #include "PSOManager.h"
+#include "SRVManager.h"
 
 class DxCommon;
 
@@ -37,11 +38,12 @@ private:
 	CubeRenderer& operator=(CubeRenderer&&) = delete;
 
 private:
-	//使うディスクリプターの場所
-	const uint32_t descriptorIndex_ = 102;
-
 	//現在描画要求のあるCubeの数
 	uint32_t currentCubeCount_ = 0;
+
+	//ディスクリプタヒープのインデックス
+	UINT instancingIndex_ = 0;
+	UINT vertexIndex_ = 0;
 
 	//PSOの設定
 	PSODescriptor desc_ = {};
@@ -65,4 +67,5 @@ private:
 	DxCommon* dxCommon_ = nullptr;
 	ID3D12Device* device_ = nullptr;
 	ID3D12GraphicsCommandList* commandList_ = nullptr;
+	SRVManager* srvManager_ = nullptr;
 };

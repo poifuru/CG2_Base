@@ -78,9 +78,6 @@ void DxCommon::BeginFrame() {
 	commandList->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
 	//指定した深度で画面全体をクリアする
 	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-	//ImGui描画用のDescriptorHeapの設定
-	ComPtr<ID3D12DescriptorHeap> descriptorHeaps[] = { srvDescriptorHeap.Get() };
-	commandList->SetDescriptorHeaps(1, descriptorHeaps->GetAddressOf());
 	//Viewportを設定
 	commandList->RSSetViewports(1, &viewport);
 	//Scissorを設定
@@ -269,14 +266,6 @@ ComPtr<ID3D12DescriptorHeap> DxCommon::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEA
 	return descriptorHeap;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE DxCommon::GetSRVCPUDescriptorHandle(uint32_t index) {
-	return GetCPUDescriptorHandle(srvDescriptorHeap, rtvDescriptorHeapSize_, index);
-}
-
-D3D12_GPU_DESCRIPTOR_HANDLE DxCommon::GetSRVGPUDescriptorHandle(uint32_t index) {
-	return GetGPUDescriptorHandle(srvDescriptorHeap, rtvDescriptorHeapSize_, index);
-}
-
 void DxCommon::InitializeFixFPS() {
 	reference_ = std::chrono::steady_clock::now();
 }
@@ -423,13 +412,10 @@ void DxCommon::CreateFence() {
 void DxCommon::CreateDescriptorHeap() {
 	//ディスクリプターヒープサイズを取得する
 	rtvDescriptorHeapSize_ = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	srvDescriptorHeapSize_ = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	dsvDescriptorHeapSize_ = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
 	//RTVディスクリプタヒープ生成
 	rtvDescriptorHeap = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
-	//SRV用ディスクリプタ生成。ディスクリプタの数は128。SRVはShader内で触るものなので、ShaderVisibleはtrue
-	srvDescriptorHeap = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 	//DSVディスクリプタヒープ生成
 	dsvDescriptorHeap = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 }

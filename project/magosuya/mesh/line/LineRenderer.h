@@ -7,38 +7,43 @@ using namespace Microsoft::WRL;
 #include "struct.h"
 #include "LineRenderData.h"
 #include "PSOManager.h"
+#include "SRVManager.h"
 
 class DxCommon;
 
 class LineRenderer {
 public:
-	static LineRenderer* GetInstance () {
+	static LineRenderer* GetInstance() {
 		//初めて呼び出されたときに一回だけ初期化
 		static LineRenderer instance;
 		return &instance;
 	}
-	~LineRenderer ();
+	~LineRenderer();
 
-	void Initialize (DxCommon* dxCommon);
-	void UpdateVertexData (const LineVertexData* data);
-	void TransferData (const LineForGPU& data);
-	void Draw ();
+	void Initialize(DxCommon* dxCommon);
+	void UpdateVertexData(const LineVertexData* data);
+	void TransferData(const LineForGPU& data);
+	void Draw();
 
 private:	//内部関数
-	void ResetCurrentLineCount () { currentLineCount_ = 0; }
+	void ResetCurrentLineCount() { currentLineCount_ = 0; }
 
 private:
 	//コンストラクタを禁止
-	LineRenderer () = default;
+	LineRenderer() = default;
 	// コピーコンストラクタと代入演算子を禁止
-	LineRenderer (const LineRenderer&) = delete;
+	LineRenderer(const LineRenderer&) = delete;
 	LineRenderer& operator=(const LineRenderer&) = delete;
-	LineRenderer (LineRenderer&&) = delete;
+	LineRenderer(LineRenderer&&) = delete;
 	LineRenderer& operator=(LineRenderer&&) = delete;
 
 private:
 	//使うディスクリプターの場所
 	const uint32_t descriptorIndex_ = 100;
+
+	//ディスクリプタヒープのインデックス
+	UINT instancingIndex_ = 0;
+	UINT vertexIndex_ = 0;
 
 	//現在描画要求のあるLineの数
 	uint32_t currentLineCount_ = 0;
@@ -63,4 +68,5 @@ private:
 	DxCommon* dxCommon_ = nullptr;
 	ID3D12Device* device_ = nullptr;
 	ID3D12GraphicsCommandList* commandList_ = nullptr;
+	SRVManager* srvManager_ = nullptr;
 };

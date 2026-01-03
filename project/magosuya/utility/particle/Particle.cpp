@@ -11,6 +11,7 @@ Particle::Particle (DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 	device_ = dxCommon->GetDevice ();
 	commandList_ = dxCommon->GetCommandList ();
+	srvManager_ = SRVManager::GetInstance();
 	data_ = std::make_unique<ModelData> ();
 	uvTransform_ = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 	//乱数エンジンのインスタンスを作成してrdの結果で初期化する
@@ -79,28 +80,12 @@ void Particle::Initialize () {
 	desc_.InputLayoutID = InputLayoutType::Particle;
 	desc_.BlendMode = BlendModeType::Additive;
 	desc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;	//Depthの書き込みを行わない
-	//desc_.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
 
-	//particle用SRVを作成する
-	D3D12_SHADER_RESOURCE_VIEW_DESC particleSrvDesc = {};
-	particleSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-	particleSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	particleSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	particleSrvDesc.Buffer.FirstElement = 0;
-	particleSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	particleSrvDesc.Buffer.NumElements = kMaxParticleNum_;
-	particleSrvDesc.Buffer.StructureByteStride = sizeof (ParticleForGPU);
-	particleSrvHandleCPU = dxCommon_->GetCPUDescriptorHandle (
-		dxCommon_->GetsrvDescriptorHeap (), dxCommon_->GetDescriptorSizeSrv (), descriptorIndex_
-	);
-	particleSrvHandleGPU = dxCommon_->GetGPUDescriptorHandle (
-		dxCommon_->GetsrvDescriptorHeap (), dxCommon_->GetDescriptorSizeSrv (), descriptorIndex_
-	);
-	device_->CreateShaderResourceView (instancingBuffer_.Get (), &particleSrvDesc, particleSrvHandleCPU);
+	UINT useIndex = srvManager_->Allocate();
+
+	srvManager_->CreateSRVStructuredBuffer(useIndex, instancingBuffer_.Get(), kMaxParticleNum_, sizeof(ParticleForGPU));
 
 	billBoardMatrix_ = Math::MakeIdentity4x4 ();
-
-	descriptorIndex_++;
 }
 
 void Particle::Update (Matrix4x4* cameraMatrix, Matrix4x4* vp) {

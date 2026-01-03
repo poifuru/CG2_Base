@@ -55,22 +55,6 @@ public:		//メンバ関数(mainで呼び出すよう)
 	/// <returns></returns>
 	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
-#pragma region ディスクリプタハンドル取得関数(必要になったらRTVやDSVなども)
-	/// <summary>
-	/// SRV専用のCPUディスクリプタハンドル取得関数
-	/// </summary>
-	/// <param name="index">要素数</param>
-	/// <returns>SRVのCPUディスクリプタハンドル</returns>
-	D3D12_CPU_DESCRIPTOR_HANDLE GetSRVCPUDescriptorHandle(uint32_t index);
-
-	/// <summary>
-	/// SRV専用のGPUディスクリプタハンドル取得関数
-	/// </summary>
-	/// <param name="index">要素数</param>
-	/// <returns>SRVのGPUディスクリプタハンドル</returns>
-	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle(uint32_t index);
-#pragma endregion
-
 private:
 	//コンストラクタを禁止
 	DxCommon() = default;

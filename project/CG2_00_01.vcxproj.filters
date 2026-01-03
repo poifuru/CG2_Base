@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="Resources\shader\Cube.PS.hlsl" />
-    <FxCompile Include="Resources\shader\Cube.VS.hlsl" />
     <FxCompile Include="Resources\shader\Line.PS.hlsl" />
     <FxCompile Include="Resources\shader\Line.VS.hlsl" />
     <FxCompile Include="Resources\shader\Object3d.PS.hlsl" />
@@ -54,7 +52,6 @@
     <ClCompile Include="application\scene\SceneManager.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
     <ClCompile Include="application\scene\PlayScene.cpp" />
-    <ClCompile Include="magosuya\utility\particle\Particle.cpp" />
     <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
     <ClCompile Include="magosuya\PSO\RootSignatureManager.cpp" />
     <ClCompile Include="magosuya\PSO\PSOManager.cpp" />
@@ -201,7 +198,6 @@
     <Filter Include="ヘッダーファイル\magosuya\utility\audio">
       <UniqueIdentifier>{457fd7ce-1080-4188-9b25-f8a794eb8700}</UniqueIdentifier>
     </Filter>
-    <ClInclude Include="magosuya\utility\particle\Particle.h" />
     <ClInclude Include="magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />
     <ClInclude Include="magosuya\PSO\PSOManager.h" />

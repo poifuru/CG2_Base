@@ -4,6 +4,7 @@
 #include "Sprite.h"
 #include "Model.h"
 #include "MeshParticle.h"
+#include "Mesh.h"
 
 class TitleScene : public Scene {
 public:		//メンバ関数
@@ -15,5 +16,5 @@ public:		//メンバ関数
 	void Draw () override;
 
 private:	//メンバ変数
-	
+	std::unique_ptr<Model> model_ = nullptr;
 };

@@ -9,6 +9,8 @@ using namespace Microsoft::WRL;
 #include <random>
 #include "struct.h"
 #include "PSOManager.h"
+#include "SRVManager.h"
+#include "ParticleRenderer.h"
 
 class DxCommon;
 
@@ -31,9 +33,6 @@ private:	//内部関数
 	void EmitterUpdate ();
 
 private:
-	//Descriptorの場所
-	static inline uint32_t descriptorIndex_ = 50;
-
 	//PSOの設定
 	PSODescriptor desc_ = {};
 
@@ -92,5 +91,6 @@ private:
 	DxCommon* dxCommon_ = nullptr;
 	ID3D12Device* device_ = nullptr;
 	ID3D12GraphicsCommandList* commandList_ = nullptr;
+	SRVManager* srvManager_ = nullptr;
 };
 

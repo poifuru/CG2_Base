@@ -14,6 +14,7 @@ void CubeRenderer::Initialize (DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 	device_ = dxCommon->GetDevice ();
 	commandList_ = dxCommon->GetCommandList ();
+	srvManager_ = SRVManager::GetInstance();
 
 	cubeBuffer_ = std::make_unique<CubeVertexData> ();
 
@@ -39,45 +40,15 @@ void CubeRenderer::Initialize (DxCommon* dxCommon) {
 		instancingData_[i].WVP = Math::MakeIdentity4x4 ();
 	}
 
-	//instancing用にSRVを作成(t0にバインド)
-	D3D12_SHADER_RESOURCE_VIEW_DESC cubeSrvDesc = {};
-	cubeSrvDesc.Format = DXGI_FORMAT_UNKNOWN; // Structured BufferなのでUNKNOWN
-	cubeSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	cubeSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	cubeSrvDesc.Buffer.FirstElement = 0;
-	cubeSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	cubeSrvDesc.Buffer.NumElements = MaxMeshNum::Cube; // キューブの最大数
-	cubeSrvDesc.Buffer.StructureByteStride = sizeof (CubeForGPU); // 1インスタンスのサイズ
+	//使うインデックスを確保
+	instancingIndex_ = srvManager_->Allocate();
+	vertexIndex_ = srvManager_->Allocate();
 
-	cubeSrvHandleCPU_ = dxCommon_->GetCPUDescriptorHandle (
-		dxCommon_->GetsrvDescriptorHeap (), dxCommon_->GetDescriptorSizeSrv (), descriptorIndex_
-	);
-	cubeSrvHandleGPU_ = dxCommon_->GetGPUDescriptorHandle (
-		dxCommon_->GetsrvDescriptorHeap (), dxCommon_->GetDescriptorSizeSrv (), descriptorIndex_
-	);
-	device_->CreateShaderResourceView (instancingBuffer_.Get (), &cubeSrvDesc, cubeSrvHandleCPU_);
+	//インスタンシング用のSRV作成
+	srvManager_->CreateSRVStructuredBuffer(instancingIndex_, instancingBuffer_.Get(), MaxMeshNum::Cube, sizeof(CubeForGPU));
 
-	// 頂点バッファ用のSRVを作成(t1にバインド)
-	D3D12_SHADER_RESOURCE_VIEW_DESC vertexSrvDesc = {};
-	vertexSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-	vertexSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	vertexSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	vertexSrvDesc.Buffer.FirstElement = 0;
-	vertexSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	vertexSrvDesc.Buffer.NumElements = VertexNum::Cube * MaxMeshNum::Cube; // 全頂点数
-	vertexSrvDesc.Buffer.StructureByteStride = sizeof (CubeVertexPositionColor); // 1頂点のサイズ
-
-	// CubeForGPUのSRV(t0)の後に、頂点バッファのSRV(t1)をセット
-	// descriptorIndex_ は t0 として使うでやんす
-	const uint32_t vertexDescriptorIndex_ = descriptorIndex_ + 1;
-
-	vertexSrvHandleCPU_ = dxCommon_->GetCPUDescriptorHandle (
-		dxCommon_->GetsrvDescriptorHeap (), dxCommon_->GetDescriptorSizeSrv (), vertexDescriptorIndex_
-	);
-	vertexSrvHandleGPU_ = dxCommon_->GetGPUDescriptorHandle (
-		dxCommon_->GetsrvDescriptorHeap (), dxCommon_->GetDescriptorSizeSrv (), vertexDescriptorIndex_
-	);
-	device_->CreateShaderResourceView (cubeBuffer_->vertexBuffer.Get (), &vertexSrvDesc, vertexSrvHandleCPU_);
+	//頂点バッファ用のSRV作成
+	srvManager_->CreateSRVStructuredBuffer(vertexIndex_ + 1, cubeBuffer_->vertexBuffer.Get(), VertexNum::Cube, sizeof(CubeVertexData));
 
 	//PSOの設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::CubeMesh);
@@ -210,7 +181,7 @@ void CubeRenderer::Draw () {
 	PSOManager::GetInstance ()->SetPSO (desc_);
 	commandList_->IASetPrimitiveTopology (D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);		//三角形で描画	
 	commandList_->IASetIndexBuffer (&cubeBuffer_->ibView);		//IBVを設定
-	commandList_->SetGraphicsRootDescriptorTable (1, cubeSrvHandleGPU_);
+	commandList_->SetGraphicsRootDescriptorTable (1, srvManager_->GetGPUDescriptorHandle(instancingIndex_));
 
 	if (currentCubeCount_ > 0) {
 		// 描画

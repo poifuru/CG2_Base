@@ -6,7 +6,7 @@ void SRVManager::Initialize(DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 
 	//ディスクリプタヒープの生成
-	descriptorHeap_ = dxCommon_->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount_, true);
+	CreateDescriptorHeap();
 
 	//ディスクリプタ1個分のサイズを取得して記録
 	descriptorSize_ = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -14,14 +14,38 @@ void SRVManager::Initialize(DxCommon* dxCommon) {
 
 uint32_t SRVManager::Allocate() {
 	//インデックスが上限に達していないかチェック
-	assert(useIndex_ != kMaxSRVCount_);
+	assert(nextDescriptorIndex_ < kMaxSRVCount_ || !freeIndexQueue_.empty());
 
-	//returnする番号を一旦記録しておく
-	int index = useIndex_;
-	//次回のために番号を1進める
-	useIndex_++;
-	//記録した番号を返す
-	return index;
+	//SRVを作成するDescriptorHeapの場所を決める
+	UINT newIndex;
+
+	//キューの空きリストをチェック
+	if(!freeIndexQueue_.empty()) {
+		//空きがあればそこを使う
+		newIndex = freeIndexQueue_.front();
+		freeIndexQueue_.pop();	//キューから取り除く
+	}
+	else {
+		//空きがなかったら、次に割り当てるインデックスを使う
+		newIndex = nextDescriptorIndex_;
+		nextDescriptorIndex_++;	//線形ポインタを進める
+	}
+
+	return newIndex;
+}
+
+void SRVManager::Free(uint32_t index) {
+	freeIndexQueue_.push(index);
+}
+
+void SRVManager::PreDraw() {
+	//描画用DescriptorHeapの設定
+	ID3D12DescriptorHeap* descriptorHeaps[] = { descriptorHeap_.Get() };
+	dxCommon_->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
+}
+
+void SRVManager::SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex) {
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(RootParameterIndex, GetGPUDescriptorHandle(srvIndex));
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE SRVManager::GetCPUDescriptorHandle(uint32_t index) {
@@ -37,20 +61,44 @@ D3D12_GPU_DESCRIPTOR_HANDLE SRVManager::GetGPUDescriptorHandle(uint32_t index) {
 }
 
 void SRVManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format, UINT MipLevels) {
+	//metaDataをもとにSRVの設定
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = Format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+	srvDesc.Texture2D.MipLevels = UINT(MipLevels);
 
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU;
+	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU;
+	handleCPU = GetCPUDescriptorHandle(srvIndex);
+	handleGPU = GetGPUDescriptorHandle(srvIndex);
+
+	//実際にSRVを生成
+	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, handleCPU);
 }
 
 void SRVManager::CreateSRVStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByteStride) {
 	//particle用SRVを作成する
-	D3D12_SHADER_RESOURCE_VIEW_DESC StructuredDesc = {};
-	StructuredDesc.Format = DXGI_FORMAT_UNKNOWN;
-	StructuredDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	StructuredDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-	StructuredDesc.Buffer.FirstElement = 0;
-	StructuredDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	StructuredDesc.Buffer.NumElements = numElements;
-	StructuredDesc.Buffer.StructureByteStride = structureByteStride;
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	srvDesc.Buffer.FirstElement = 0;
+	srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	srvDesc.Buffer.NumElements = numElements;
+	srvDesc.Buffer.StructureByteStride = structureByteStride;
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = GetCPUDescriptorHandle(srvIndex);
 	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = GetGPUDescriptorHandle(srvIndex);
-	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &StructuredDesc, handleCPU);
+	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, handleCPU);
+}
+
+void SRVManager::CreateDescriptorHeap() {
+	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
+
+	descriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	descriptorHeapDesc.NumDescriptors = kMaxSRVCount_;
+	descriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+
+	HRESULT hr = dxCommon_->GetDevice()->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(descriptorHeap_.GetAddressOf()));
+	assert(SUCCEEDED(hr));
 }
