@@ -38,7 +38,7 @@ SphereModel::SphereModel (DxCommon* dxCommon, int subdivision) {
 	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = LightReflectionModel::None;
-	materialData_->uvTranform = Math::MakeIdentity4x4 ();
+	materialData_->uvTransform = Math::MakeIdentity4x4 ();
 
 	transform_ = {};
 	uvTransform_ = {};
@@ -180,7 +180,7 @@ void SphereModel::Update (Matrix4x4* view, Matrix4x4* proj) {
 	matrixData_->WorldInverseTranspose = Math::Transpose (Math::Inverse (matrixData_->World));
 
 	//uvTranform更新
-	materialData_->uvTranform = Math::MakeAffineMatrix (uvTransform_.scale, uvTransform_.rotate, uvTransform_.translate);
+	materialData_->uvTransform = Math::MakeAffineMatrix (uvTransform_.scale, uvTransform_.rotate, uvTransform_.translate);
 }
 
 void SphereModel::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {

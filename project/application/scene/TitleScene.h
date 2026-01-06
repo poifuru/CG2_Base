@@ -16,5 +16,11 @@ public:		//メンバ関数
 	void Draw () override;
 
 private:	//メンバ変数
-	std::unique_ptr<Model> model_ = nullptr;
+	std::unique_ptr<Model> title_ = nullptr;
+
+	//平行光源のResourceを作成してデフォルト値を書き込む
+	ComPtr<ID3D12Resource> dierctionalLightResource_ = nullptr;
+	DirectionalLight* directionalLightData_ = nullptr;
+	//ライティング用の変数
+	Vector4 colorLight;
 };

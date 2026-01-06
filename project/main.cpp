@@ -128,19 +128,6 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	//音声の読み込み
 	//SoundData soundData1 = SoundLoadWave ("Resources/Sounds/Alarm01.wav");
 
-	//平行光源のResourceを作成してデフォルト値を書き込む
-	ComPtr<ID3D12Resource> dierctionalLightResource = DxCommon::GetInstance ()->CreateBufferResource (sizeof (DirectionalLight));
-	DirectionalLight* directionalLightData = nullptr;
-	//書き込むためのアドレス取得
-	dierctionalLightResource->Map (0, nullptr, reinterpret_cast<void**>(&directionalLightData));
-	//実際に書き込み
-	directionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	directionalLightData->direction = { 0.0f, -1.0f, 0.0f };
-	directionalLightData->intensity = 1.0f;
-	directionalLightData->mode = LightReflectionModel::HalfLambert;
-	//ライティング用の変数
-	float colorLight[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
 	/*メインループ！！！！！！！！！*/
 	//ウィンドウの×ボタンが押されるまでループ
 	while (true) {
@@ -155,17 +142,6 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		//***更新処理***//
 		sceneManager->Update ();
 		//*************//
-
-		//光源のdirectionの正規化
-		directionalLightData->direction = Math::Normalize (directionalLightData->direction);
-		//RootSignatureをセット
-		ID3D12RootSignature* standardRootSig = RootSignatureManager::GetInstance ()->GetRootSignature (
-			RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::Standard3D)
-		);
-
-		DxCommon::GetInstance ()->GetCommandList ()->SetGraphicsRootSignature (standardRootSig);
-		//ライティングの設定
-		DxCommon::GetInstance ()->GetCommandList ()->SetGraphicsRootConstantBufferView (3, dierctionalLightResource->GetGPUVirtualAddress ());
 
 		//***描画処理***//
 		sceneManager->Draw ();

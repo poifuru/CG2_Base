@@ -158,7 +158,7 @@ struct Material {
 	Vector4 color;
 	LightReflectionModel enableLighting;
 	float padding[3];
-	Matrix4x4 uvTranform;
+	Matrix4x4 uvTransform;
 };
 
 //TransformationMatrix構造体
@@ -197,7 +197,6 @@ struct DirectionalLight {
 	Vector4 color;				//ライトの色
 	Vector3 direction;			//ライトの向き
 	float intensity;			//輝度
-	LightReflectionModel mode;	//ライティングの設定
 };
 
 //MaterialData構造体

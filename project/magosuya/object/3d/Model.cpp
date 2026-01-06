@@ -24,8 +24,8 @@ void Model::Update (Matrix4x4* vp) {
 	renderer_->Update (world, *vp, uvTransform_);
 }
 
-void Model::Draw () {
-	renderer_->Draw (texture_);
+void Model::Draw (ID3D12Resource* light) {
+	renderer_->Draw (texture_, light);
 }
 
 void Model::ImGui (const std::string& windowName) {

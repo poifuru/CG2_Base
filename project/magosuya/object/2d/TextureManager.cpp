@@ -7,7 +7,7 @@
 void TextureManager::Initialize (DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 	srvManager_ = SRVManager::GetInstance();
-	CreateDummyTexture ("DummyTexture");
+	CreateDummyTexture ("Dummy");
 }
 
 TextureData* TextureManager::LoadTexture (const std::string& filePath, const std::string& ID) {
@@ -37,7 +37,7 @@ TextureData* TextureManager::LoadTexture (const std::string& filePath, const std
 		ss << L"[エラー] テクスチャ読み込み失敗！ ダミーのテクスチャを返します HRESULT: 0x" << std::hex << hr << std::endl;
 		OutputDebugStringW (ss.str ().c_str ());
 		//ダミーテクスチャデータを取得
-		TextureData& dummyData = textureMap_.at ("__DummyTexture__");
+		TextureData& dummyData = textureMap_.at ("Dummy");
 		//参照カウントを増やす
 		dummyData.ref_count++;
 		//元のIDでダミーテクスチャの情報を登録(そのIDが通らないので同じIDが来た時にすぐにダミーデータを返せるように)
