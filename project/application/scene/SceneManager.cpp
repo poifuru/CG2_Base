@@ -91,7 +91,7 @@ void SceneManager::Update () {
 	//光源のdirectionの正規化
 	directionalLightData_->direction = Math::Normalize(directionalLightData_->direction);
 
-	CameraOrganizer::GetInstance ()->ImGui ();
+	//CameraOrganizer::GetInstance ()->ImGui ();
 }
 
 void SceneManager::Draw () {

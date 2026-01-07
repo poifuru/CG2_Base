@@ -17,7 +17,6 @@ TitleScene::TitleScene (CameraOrganizer* camera, InputManager* inputManager, DxC
 	ModelManager::GetInstance()->LoadModelData("Resources/pikopiko", "pikopiko");
 
 	camera_->AddCamera("main1", CameraType::FixedPontCamera);
-	camera_->SetActiveCamera("main1");
 }
 
 TitleScene::~TitleScene () {
@@ -45,6 +44,9 @@ void TitleScene::Initialize () {
 	directionalLightData_->intensity = 1.0f;
 	//ライティング用の変数
 	colorLight = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	camera_->SetActiveCamera("main1");
+	camera_->SetPosition({ 0.0f, 0.0f, -10.0f });
 }
 
 void TitleScene::Update () {
@@ -56,7 +58,7 @@ void TitleScene::Update () {
 	camera_->Update();
 	
 	title_->Update(&camera_->GetVPMatrix());
-	title_->ImGui("pikopiko");
+	//title_->ImGui("pikopiko");
 
 	//光源のdirectionの正規化
 	directionalLightData_->direction = Math::Normalize (directionalLightData_->direction); 

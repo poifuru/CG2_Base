@@ -1,20 +1,25 @@
 #pragma once
 #include "Entity.h"
+#include "CameraOrganizer.h"
 
-enum Direction {
-	Left,
-	Right
-};
+//旋回時間(秒)
+static inline const float kTimeTurn = 0.16f;
 
 class Player : public Entity {
 public:		//メンバ関数
-	Player(DxCommon* dxCommon);
+	enum Direction {
+		Left,
+		Right
+	};
+
+	Player(DxCommon* dxCommon, CameraOrganizer* camera);
 	~Player();
 
-	void Initialize();
-	void Update();
-	void Draw();
+	void Initialize() override;
+	void Update() override;
+	void Draw() override;
 	void IsHit();
+	void SetLight(ID3D12Resource* light) { light_ = light; }
 
 private:
 	void move();
@@ -24,9 +29,11 @@ private:
 	void WeaponTransform();
 	void AABBPos();
 	void Invincible();
+	void TurnControll();
 
 public:
 	//アクセッサ
+	Transform GetTransform() { return model_->GetTransform(); }
 	int GetHp() { return hp_; }
 	int SetHp(int hp) { return hp_ += hp; }
 	AABB GetAABBModel() { return aabb_; }
@@ -53,4 +60,15 @@ private:	//メンバ変数
 	bool isAttack_ = false;
 	float attackTime_ = 0.0f;
 	bool attackIsHit_ = false;
+
+	//旋回開始時の角度
+	float turnFirstRotationY_ = 0.0f;
+	//旋回タイマー
+	float turnTimer_ = 0.0f;
+
+	bool isUpperAttack_ = false; // 上攻撃かどうかを判定
+
+	CameraOrganizer* camera_ = nullptr;
+	ID3D12Resource* light_ = nullptr;
+	InputManager* input_ = nullptr;
 };
