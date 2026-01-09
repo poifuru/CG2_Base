@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="Resources\shader\Cube.PS.hlsl" />
-    <FxCompile Include="Resources\shader\Cube.VS.hlsl" />
     <FxCompile Include="Resources\shader\Line.PS.hlsl" />
     <FxCompile Include="Resources\shader\Line.VS.hlsl" />
     <FxCompile Include="Resources\shader\Object3d.PS.hlsl" />
@@ -13,13 +11,6 @@
   <ItemGroup>
     <ClCompile Include="application\scene\ClearScene.cpp" />
     <ClCompile Include="application\scene\GameoverScene.cpp" />
-    <ClCompile Include="externals\imgui\imgui.cpp" />
-    <ClCompile Include="externals\imgui\imgui_demo.cpp" />
-    <ClCompile Include="externals\imgui\imgui_draw.cpp" />
-    <ClCompile Include="externals\imgui\imgui_impl_dx12.cpp" />
-    <ClCompile Include="externals\imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="externals\imgui\imgui_tables.cpp" />
-    <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="magosuya\utility\camera\CameraOrganizer.cpp" />
     <ClCompile Include="magosuya\utility\camera\FixedPointCamera.cpp" />
     <ClCompile Include="magosuya\mesh\cube\CubeRenderer.cpp" />
@@ -54,7 +45,6 @@
     <ClCompile Include="application\scene\SceneManager.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
     <ClCompile Include="application\scene\PlayScene.cpp" />
-    <ClCompile Include="magosuya\utility\particle\Particle.cpp" />
     <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
     <ClCompile Include="magosuya\PSO\RootSignatureManager.cpp" />
     <ClCompile Include="magosuya\PSO\PSOManager.cpp" />
@@ -63,6 +53,12 @@
     <ClCompile Include="magosuya\utility\camera\LookAtCamera.cpp" />
     <ClCompile Include="magosuya\utility\audio\Audio.cpp" />
     <ClCompile Include="general\Easing.cpp" />
+    <ClCompile Include="magosuya\engine\SRV\SRVManager.cpp" />
+    <ClCompile Include="application\entity\Entity.cpp" />
+    <ClCompile Include="application\mapchip\mapchip.cpp" />
+    <ClCompile Include="application\mapchip\mapChipRenderer.cpp" />
+    <ClCompile Include="application\entity\player\Player.cpp" />
+    <ClCompile Include="application\entity\boss\Boss.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\Scene.h" />
@@ -119,6 +115,12 @@
     <ClInclude Include="magosuya\utility\camera\LookAtCamera.h" />
     <ClInclude Include="magosuya\utility\audio\Audio.h" />
     <ClInclude Include="general\Easing.h" />
+    <ClInclude Include="magosuya\engine\SRV\SRVManager.h" />
+    <ClInclude Include="application\entity\Entity.h" />
+    <ClInclude Include="application\mapchip\mapchip.h" />
+    <ClInclude Include="application\mapchip\mapChipRenderer.h" />
+    <ClInclude Include="application\entity\player\Player.h" />
+    <ClInclude Include="application\entity\boss\Boss.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">
@@ -199,7 +201,6 @@
     <Filter Include="ヘッダーファイル\magosuya\utility\audio">
       <UniqueIdentifier>{457fd7ce-1080-4188-9b25-f8a794eb8700}</UniqueIdentifier>
     </Filter>
-    <ClInclude Include="magosuya\utility\particle\Particle.h" />
     <ClInclude Include="magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />
     <ClInclude Include="magosuya\PSO\PSOManager.h" />

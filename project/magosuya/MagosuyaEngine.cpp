@@ -9,6 +9,8 @@ void MagosuyaEngine::Initialize () {
 	winApi_->Initialize (InputManager::GetInstance ());
 	dxCommon_ = DxCommon::GetInstance ();
 	dxCommon_->Initialize ();
+	srvManager_ = SRVManager::GetInstance();
+	srvManager_->Initialize(dxCommon_);
 	imguiManager_ = ImGuiManager::GetInstance ();
 	imguiManager_->Initialize ();
 	inputManager_ = InputManager::GetInstance ();
@@ -30,6 +32,7 @@ void MagosuyaEngine::Initialize () {
 void MagosuyaEngine::BeginFrame () {
 	imguiManager_->BeginFrame ();
 	dxCommon_->BeginFrame ();
+	srvManager_->PreDraw();
 
 	//ゲームパッドの更新
 	inputManager_->GetGamePad ()->Update ();

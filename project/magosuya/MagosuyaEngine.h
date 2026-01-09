@@ -3,6 +3,7 @@
 #include <string>
 #include "Windows.h"
 #include "DxCommon.h"
+#include "SRVManager.h"
 #include "TextureManager.h"
 #include "ImGuiManager.h"
 #include "ModelManager.h"
@@ -37,6 +38,7 @@ private:
 private:
 	WindowsAPI* winApi_ = nullptr;
 	DxCommon* dxCommon_ = nullptr;
+	SRVManager* srvManager_ = nullptr;
 	ImGuiManager* imguiManager_ = nullptr;
 	InputManager* inputManager_ = nullptr;
 	TextureManager* texManager_ = nullptr;

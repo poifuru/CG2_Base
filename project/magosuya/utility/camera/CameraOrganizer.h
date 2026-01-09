@@ -49,7 +49,7 @@ public:
 	void SetLookAtTarget (const std::string& cameraName, const Vector3& targetPos);
 
 	//描画用のvp行列取得関数
-	Matrix4x4* GetVPMatrix () { return &vpMatrix_; }
+	Matrix4x4& GetVPMatrix () { return vpMatrix_; }
 
 	//位置と回転をいじれるように
 	Vector3 GetPosition (const std::string& ID) { return cameras_.at (ID)->GetTranslate (); }

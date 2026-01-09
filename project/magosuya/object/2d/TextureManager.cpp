@@ -4,11 +4,10 @@
 #include <filesystem>
 #include "ChangeString.h"
 
-UINT TextureManager::nextDescriptorIndex_ = 1;
-
 void TextureManager::Initialize (DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
-	CreateDummyTexture ("__DummyTexture__");
+	srvManager_ = SRVManager::GetInstance();
+	CreateDummyTexture ("Dummy");
 }
 
 TextureData* TextureManager::LoadTexture (const std::string& filePath, const std::string& ID) {
@@ -38,7 +37,7 @@ TextureData* TextureManager::LoadTexture (const std::string& filePath, const std
 		ss << L"[エラー] テクスチャ読み込み失敗！ ダミーのテクスチャを返します HRESULT: 0x" << std::hex << hr << std::endl;
 		OutputDebugStringW (ss.str ().c_str ());
 		//ダミーテクスチャデータを取得
-		TextureData& dummyData = textureMap_.at ("__DummyTexture__");
+		TextureData& dummyData = textureMap_.at ("Dummy");
 		//参照カウントを増やす
 		dummyData.ref_count++;
 		//元のIDでダミーテクスチャの情報を登録(そのIDが通らないので同じIDが来た時にすぐにダミーデータを返せるように)
@@ -64,38 +63,19 @@ TextureData* TextureManager::LoadTexture (const std::string& filePath, const std
 	//実際にデータを転送
 	intermediateResource_.push_back(UploadTextureData (newData.textureResource, mipImage));
 
-	//metaDataをもとにSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = newData.metadata.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
-	srvDesc.Texture2D.MipLevels = UINT (newData.metadata.mipLevels);
+	//srvManagerで空きディスクリプタのインデックスを確保
+	UINT newIndex = srvManager_->Allocate();
 
-	//SRVを作成するDescriptorHeapの場所を決める
-	UINT newIndex;
-
-	//キューの空きリストをチェック
-	if (!freeIndexQueue_.empty ()) {
-		//空きがあればそこを使う
-		newIndex = freeIndexQueue_.front ();
-		freeIndexQueue_.pop ();	//キューから取り除く
-	}
-	else {
-		//空きがなかったら、次に割り当てるインデックスを使う
-		newIndex = nextDescriptorIndex_;
-		nextDescriptorIndex_++;
-	}
-
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
-	textureSrvHandleCPU = dxCommon_->GetSRVCPUDescriptorHandle (newIndex);
-	textureSrvHandleGPU = dxCommon_->GetSRVGPUDescriptorHandle (newIndex);
-
-	//実際にSRVを生成
-	dxCommon_->GetDevice ()->CreateShaderResourceView (newData.textureResource.Get (), &srvDesc, textureSrvHandleCPU);
+	//srvManagerでSRVの生成
+	srvManager_->CreateSRVforTexture2D(
+		newIndex,
+		newData.textureResource.Get(),
+		newData.metadata.format,
+		(UINT)newData.metadata.mipLevels
+	);
 
 	//生成物をmapに渡すためにデータを詰める
-	newData.handle = textureSrvHandleGPU;
+	newData.handle = srvManager_->GetGPUDescriptorHandle(newIndex);
 	//どのインデックスを使ったかを保存しておくと解放時に便利
 	newData.descriptorIndex = newIndex;
 
@@ -122,7 +102,7 @@ void TextureManager::UnloadTexture (const std::string& ID) {
 	if (data.ref_count <= 0) {
 		//GPUリソースはComPtrで自動開放
 		//使っていたインデックスを空きリストに戻す
-		freeIndexQueue_.push (data.descriptorIndex);
+		srvManager_->Free(data.descriptorIndex);
 		//キャッシュマップからデータを削除
 		textureMap_.erase (ID);
 	}
@@ -228,30 +208,26 @@ TextureData* TextureManager::CreateDummyTexture (const std::string& ID) {
 	srvDesc.Texture2D.MipLevels = UINT (newData.metadata.mipLevels);
 
 	//SRVを作成するDescriptorHeapの場所を決める
-	UINT newIndex;
+	UINT newIndex = srvManager_->Allocate();
 
-	//キューの空きリストをチェック
-	if (!freeIndexQueue_.empty ()) {
-		//空きがあればそこを使う
-		newIndex = freeIndexQueue_.front ();
-		freeIndexQueue_.pop ();	//キューから取り除く
-	}
-	else {
-		//空きがなかったら、次に割り当てるインデックスを使う
-		newIndex = nextDescriptorIndex_;
-		nextDescriptorIndex_++;
-	}
+	//srvManagerでSRVの生成
+	srvManager_->CreateSRVforTexture2D(
+		newIndex,
+		newData.textureResource.Get(),
+		newData.metadata.format,
+		(UINT)newData.metadata.mipLevels
+	);
 
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU;
-	textureSrvHandleCPU = dxCommon_->GetSRVCPUDescriptorHandle (newIndex);
-	textureSrvHandleGPU = dxCommon_->GetSRVGPUDescriptorHandle (newIndex);
-
-	//実際にSRVを生成
-	dxCommon_->GetDevice ()->CreateShaderResourceView (newData.textureResource.Get (), &srvDesc, textureSrvHandleCPU);
+	//srvManagerでSRVの生成
+	srvManager_->CreateSRVforTexture2D(
+		newIndex,
+		newData.textureResource.Get(),
+		newData.metadata.format,
+		(UINT)newData.metadata.mipLevels
+	);
 
 	//生成物をmapに渡すためにデータを詰める
-	newData.handle = textureSrvHandleGPU;
+	newData.handle = srvManager_->GetGPUDescriptorHandle(newIndex);
 	//どのインデックスを使ったかを保存しておくと解放時に便利
 	newData.descriptorIndex = newIndex;
 

@@ -30,7 +30,7 @@ void ModelRenderer::Initialize () {
 	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = LightReflectionModel::None;
-	materialData_->uvTranform = Math::MakeIdentity4x4 ();
+	materialData_->uvTransform = Math::MakeIdentity4x4 ();
 
 	//PSO設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::Standard3D);
@@ -46,10 +46,10 @@ void ModelRenderer::Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform
 	matrixData_->WorldInverseTranspose = Math::Transpose (Math::Inverse (matrixData_->World));
 
 	//uvTranform更新
-	materialData_->uvTranform = Math::MakeAffineMatrix (uvTransform.scale, uvTransform.rotate, uvTransform.translate);
+	materialData_->uvTransform = Math::MakeAffineMatrix (uvTransform.scale, uvTransform.rotate, uvTransform.translate);
 }
 
-void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
+void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light) {
 	// 共有データをロックして有効性をチェック
 	std::shared_ptr<ModelData> data = modelData_.lock ();
 	if (!data) {
@@ -69,6 +69,8 @@ void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	commandList_->SetGraphicsRootConstantBufferView (1, materialBuffer_->GetGPUVirtualAddress ());
 	//テクスチャのSRVを設定
 	commandList_->SetGraphicsRootDescriptorTable (2, textureHandle);
+	//ライトをセット
+	commandList_->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
 	//実際に描画する(後々Index描画に変える)
 	commandList_->DrawIndexedInstanced (static_cast<UINT>(data->indexCount), 1, 0, 0, 0);
 }

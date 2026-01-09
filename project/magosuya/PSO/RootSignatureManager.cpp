@@ -89,6 +89,34 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	particleStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
 	//*******//
 
+	//***Mapchip***//
+	// Index [0]: StructuredBuffer (t0)
+	mapchipRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	mapchipRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	mapchipRootParameters[0].DescriptorTable.pDescriptorRanges = particleDescriptorRanges; // t0用を流用
+	mapchipRootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
+
+	// Index [1]: Texture (t0)
+	mapchipRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	mapchipRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	mapchipRootParameters[1].DescriptorTable.pDescriptorRanges = textureDescriptorRanges; // t0用を流用
+	mapchipRootParameters[1].DescriptorTable.NumDescriptorRanges = 1;
+
+	// Index [2]: ConstantBuffer (b0) ※マテリアル用
+	mapchipRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	mapchipRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	mapchipRootParameters[2].Descriptor.ShaderRegister = 0; // b0
+
+	mapchipStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;				//バイリニアフィルタ
+	mapchipStaticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	mapchipStaticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	mapchipStaticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	mapchipStaticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;			//比較しない
+	mapchipStaticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;							//ありったけのmipmapを使う
+	mapchipStaticSamplers[0].ShaderRegister = 0;									//s0を指定
+	mapchipStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
+	//*******//
+
 	//***LineMesh***//
 	//DescriptorRange
 	//行列データのインスタンシング用(VSで使うt0レジスタ用)
@@ -302,6 +330,19 @@ D3D12_ROOT_SIGNATURE_DESC RootSignatureManager::CreateRootSigDesc (RootSigType t
 		//Sampler
 		desc.pStaticSamplers = particleStaticSamplers;
 		desc.NumStaticSamplers = _countof (particleStaticSamplers);
+		break;
+
+	case RootSigType::Mapchip:
+		//RootSignature
+		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+		//RootParameter作成。複数設定できるので配列
+		desc.pParameters = mapchipRootParameters;				//ルートパラメータ配列へのポインタ
+		desc.NumParameters = _countof(mapchipRootParameters);	//配列の長さ
+
+		//Sampler
+		desc.pStaticSamplers = mapchipStaticSamplers;
+		desc.NumStaticSamplers = _countof(mapchipStaticSamplers);
 		break;
 
 	case RootSigType::LineMesh:

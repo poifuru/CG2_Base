@@ -1,4 +1,4 @@
-	#include <Windows.h>
+#include <Windows.h>
 #include <xaudio2.h>
 #pragma comment(lib,"xaudio2.lib")
 #include <imgui.h>
@@ -127,19 +127,6 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	//音声の読み込み
 	//SoundData soundData1 = SoundLoadWave ("Resources/Sounds/Alarm01.wav");
-
-	//平行光源のResourceを作成してデフォルト値を書き込む
-	ComPtr<ID3D12Resource> dierctionalLightResource = DxCommon::GetInstance ()->CreateBufferResource (sizeof (DirectionalLight));
-	DirectionalLight* directionalLightData = nullptr;
-	//書き込むためのアドレス取得
-	dierctionalLightResource->Map (0, nullptr, reinterpret_cast<void**>(&directionalLightData));
-	//実際に書き込み
-	directionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	directionalLightData->direction = { 0.0f, -1.0f, 0.0f };
-	directionalLightData->intensity = 1.0f;
-	directionalLightData->mode = LightReflectionModel::HalfLambert;
-	//ライティング用の変数
-	float colorLight[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	/*メインループ！！！！！！！！！*/
 	//ウィンドウの×ボタンが押されるまでループ

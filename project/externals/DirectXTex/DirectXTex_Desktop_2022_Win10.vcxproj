@@ -53,19 +53,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|X64'">
     <OutDir>$(SolutionDir)externals\DirectXTex\lib\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)..\generated\outputs\$(Configuration)\DirectXTex\</IntDir>
     <TargetName>DirectXTex</TargetName>
     <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|X64'">
     <OutDir>$(SolutionDir)externals\DirectXTex\lib\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)..\generated\outputs\$(Configuration)\DirectXTex\</IntDir>
     <TargetName>DirectXTex</TargetName>
     <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|X64'">
     <OutDir>$(SolutionDir)externals\DirectXTex\lib\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)..\generated\outputs\$(Configuration)\DirectXTex\</IntDir>
     <TargetName>DirectXTex</TargetName>
     <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>

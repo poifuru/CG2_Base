@@ -8,6 +8,7 @@ using namespace Microsoft::WRL;
 #include <vector>
 #include "DxCommon.h"
 #include "struct.h"
+#include "SRVManager.h"
 
 class TextureManager {
 public:		//外部公開メソッド
@@ -58,14 +59,11 @@ private:	//内部関数
 private:	//メンバ変数
 	std::unordered_map<std::string, TextureData> textureMap_;
 
-	//ディスクリプタヒープインデックスの管理
-	static UINT nextDescriptorIndex_;
-	std::queue<int> freeIndexQueue_;
-
 	//中間リソースの解放待ちリスト
 	std::vector<ComPtr<ID3D12Resource>> intermediateResource_;
 
 	//ポインタ借りてくる
-	DxCommon* dxCommon_;
+	DxCommon* dxCommon_ = nullptr;
+	SRVManager* srvManager_ = nullptr;
 };
 

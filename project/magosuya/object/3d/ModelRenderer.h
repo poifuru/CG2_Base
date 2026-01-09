@@ -16,7 +16,7 @@ public:
 
 	void Initialize ();
 	void Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform);
-	void Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
+	void Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light);
 	void ImGui (Transform& transform, Transform& uvTransform, const std::string& windowName);
 
 	//アクセッサ

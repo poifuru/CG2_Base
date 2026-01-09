@@ -4,6 +4,7 @@
 #include <imgui_impl_win32.h>
 #include "DxCommon.h"
 #include "Windows.h"
+#include "SRVManager.h"
 
 ImGuiManager::~ImGuiManager () {
 #ifdef USEIMGUI
@@ -28,9 +29,9 @@ void ImGuiManager::Initialize () {
 	ImGui_ImplDX12_Init (DxCommon::GetInstance()->GetDevice (),
 						 2,
 						 DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
-						 DxCommon::GetInstance ()->GetsrvDescriptorHeap(),
-						 DxCommon::GetInstance ()->GetsrvDescriptorHeap ()->GetCPUDescriptorHandleForHeapStart (),
-						 DxCommon::GetInstance ()->GetsrvDescriptorHeap ()->GetGPUDescriptorHandleForHeapStart ()
+						 SRVManager::GetInstance ()->GetDescriptorHeap(),
+						 SRVManager::GetInstance ()->GetDescriptorHeap ()->GetCPUDescriptorHandleForHeapStart (),
+						 SRVManager::GetInstance ()->GetDescriptorHeap ()->GetGPUDescriptorHandleForHeapStart ()
 	);
 #endif
 }

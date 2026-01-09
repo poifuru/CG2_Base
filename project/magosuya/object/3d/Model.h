@@ -40,7 +40,7 @@ public:	//メンバ関数
 	/// <param name="cmdList">コマンドリスト</param>
 	/// <param name="textureHandle">使うテクスチャ</param>
 	/// <param name="light">ライト</param>
-	void Draw ();
+	void Draw (ID3D12Resource* light);
 	
 	/// <summary>
 	/// ImGuiで編集できるよ
@@ -58,7 +58,7 @@ public:	//メンバ関数
 	Vector3 GetPosition () { return transform_.translate; }
 	void SetPosition (const Vector3& position) { transform_.translate = position; }
 	Vector3 GetRotate () { return transform_.rotate; }
-	void SetRotate (const Vector3& rotate) { transform_.translate = rotate; }
+	void SetRotate (const Vector3& rotate) { transform_.rotate = rotate; }
 	const Transform& GetTransform () { return transform_; }
 	void SetTransform (Transform transform) { transform_ = transform; }
 	Transform GetUVTransform () { return uvTransform_; }

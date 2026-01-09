@@ -12,6 +12,7 @@ class DxCommon;
 enum class RootSigType : uint32_t {
 	Standard3D,			// あなたが定義したCBV x 3 + DescriptorTable x 1 の構成
 	Particle,			//パーティクル用
+	Mapchip,			//マップチップ用
 	LineMesh,
 	CubeMesh,			//メッシュ描画用
 	PostProcess,		// ポストエフェクト用（SRV中心）(未実装)
@@ -63,6 +64,11 @@ private:	// メンバ変数
 	D3D12_DESCRIPTOR_RANGE textureDescriptorRanges[1] = {};
 	D3D12_ROOT_PARAMETER particleRootParameters[3] = {};
 	D3D12_STATIC_SAMPLER_DESC particleStaticSamplers[1] = {};
+	//Mapchip
+	D3D12_DESCRIPTOR_RANGE mapchipDescriptorRanges[1] = {};
+	D3D12_DESCRIPTOR_RANGE mapchipTextureDescriptorRanges[1] = {};
+	D3D12_ROOT_PARAMETER mapchipRootParameters[3] = {};
+	D3D12_STATIC_SAMPLER_DESC mapchipStaticSamplers[1] = {};
 	//Line
 	D3D12_DESCRIPTOR_RANGE lineMeshDescriptorRanges[2] = {};
 	D3D12_ROOT_PARAMETER lineMeshRootParameters[2] = {};
