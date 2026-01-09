@@ -156,17 +156,6 @@ int WINAPI WinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		sceneManager->Update ();
 		//*************//
 
-		//光源のdirectionの正規化
-		directionalLightData->direction = Math::Normalize (directionalLightData->direction);
-		//RootSignatureをセット
-		ID3D12RootSignature* standardRootSig = RootSignatureManager::GetInstance ()->GetRootSignature (
-			RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::Standard3D)
-		);
-
-		DxCommon::GetInstance ()->GetCommandList ()->SetGraphicsRootSignature (standardRootSig);
-		//ライティングの設定
-		DxCommon::GetInstance ()->GetCommandList ()->SetGraphicsRootConstantBufferView (3, dierctionalLightResource->GetGPUVirtualAddress ());
-
 		//***描画処理***//
 		sceneManager->Draw ();
 		//*************//
