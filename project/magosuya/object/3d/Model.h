@@ -32,7 +32,7 @@ public:	//メンバ関数
 	/// 更新
 	/// </summary>
 	/// <param name="vp">vp行列</param>
-	void Update (Matrix4x4* vp);
+	void Update (Vector3 cameraWorld, Matrix4x4* vp);
 
 	/// <summary>
 	/// 描画処理

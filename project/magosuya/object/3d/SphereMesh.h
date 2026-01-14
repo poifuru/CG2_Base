@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 #include <Windows.h>
 #include <Wrl.h>
 using namespace Microsoft::WRL;
@@ -6,33 +7,39 @@ using namespace Microsoft::WRL;
 #include <vector>
 #include "DxCommon.h"
 #include "struct.h"
+#include "PSOManager.h"
 
-class SphereModel {
+class SphereMesh {
 public:		//メンバ関数
-	SphereModel (DxCommon* dxCommon, int subdivision);
-	~SphereModel ();
+	SphereMesh(DxCommon* dxCommon);
 
-	void Initialize (Vector3 position, float radius);
-	void Update (Matrix4x4* view, Matrix4x4* proj);
-	void Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
+	~SphereMesh();
 
-	void ShowImGuiEditor ();
+	void Initialize(Vector3 position, float radius);
+	void Update(Vector3 cameraWorld, Matrix4x4* vp);
+	void Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light);
+
+	void ImGui();
 
 	//アクセッサ
-	std::vector<VertexData> GetVertexData () { return vertexData_; }
-	Matrix4x4 GetWorld () { return transformationMatrix_.World; }
+	std::vector<VertexData> GetVertexData() { return vertexData_; }
+	Matrix4x4 GetWorld() { return transformationMatrix_.World; }
 
 private:	//メンバ変数
+	PSODescriptor desc_ = {};
+
 	ComPtr<ID3D12Resource> vertexBuffer_;
 	//ComPtr<ID3D12Resource> indexBuffer_;
 	ComPtr<ID3D12Resource> matrixBuffer_;
 	ComPtr<ID3D12Resource> materialBuffer_;
+	ComPtr<ID3D12Resource> cameraBuffer_;
 
 	std::vector<VertexData> vertexData_;
 	VertexData* vertexDataPtr_;    // GPU側への書き込みポインタ
 	//std::vector<uint32_t> indexData_;
 	TransformationMatrix* matrixData_ = nullptr;
 	Material* materialData_ = nullptr;
+	Vector3* cameraData_ = nullptr;
 
 	//バッファビュー
 	D3D12_VERTEX_BUFFER_VIEW vbView_{};
@@ -45,7 +52,7 @@ private:	//メンバ変数
 
 	//球の半径
 	float radius_;
-	
+
 	//球の縦横の分割数
 	int kSubdivision_;
 

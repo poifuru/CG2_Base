@@ -31,6 +31,11 @@ void ModelRenderer::Initialize () {
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = LightReflectionModel::None;
 	materialData_->uvTransform = Math::MakeIdentity4x4 ();
+	materialData_->shininess = 50.0f;
+
+	cameraBuffer_ = dxCommon_->CreateBufferResource(sizeof(Vector3));
+	cameraBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
+	cameraData_ = {};
 
 	//PSO設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::Standard3D);
@@ -40,13 +45,15 @@ void ModelRenderer::Initialize () {
 	desc_.BlendMode = BlendModeType::Alpha;
 }
 
-void ModelRenderer::Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform) {
+void ModelRenderer::Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform, Vector3 cameraWorld) {
 	matrixData_->World = world;
 	matrixData_->WVP = Math::Multiply(matrixData_->World, vp);
 	matrixData_->WorldInverseTranspose = Math::Transpose (Math::Inverse (matrixData_->World));
 
 	//uvTranform更新
 	materialData_->uvTransform = Math::MakeAffineMatrix (uvTransform.scale, uvTransform.rotate, uvTransform.translate);
+
+	cameraData_ = &cameraWorld;
 }
 
 void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light) {
@@ -71,6 +78,8 @@ void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resou
 	commandList_->SetGraphicsRootDescriptorTable (2, textureHandle);
 	//ライトをセット
 	commandList_->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
+	//カメラのPositionをセット
+	commandList_->SetGraphicsRootConstantBufferView(4, cameraBuffer_->GetGPUVirtualAddress());
 	//実際に描画する(後々Index描画に変える)
 	commandList_->DrawIndexedInstanced (static_cast<UINT>(data->indexCount), 1, 0, 0, 0);
 }
@@ -92,9 +101,10 @@ void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform, const s
 	ImGui::DragFloat3 (("UVscale" + label).c_str (), &uvTransform.scale.x, 0.01f);
 	ImGui::DragFloat3 (("UVrotate" + label).c_str (), &uvTransform.rotate.x, 0.01f);
 	ImGui::DragFloat3 (("UVtranslate" + label).c_str (), &uvTransform.translate.x, 0.01f);
+	ImGui::DragFloat(("shininess" + label).c_str(), &materialData_->shininess, 0.1f);
 	//ライトの種類を選べるようにする
 	int currentNum = 0;
-	const char* lights[] = { "None", "lambert", "halfLambert" };
+	const char* lights[] = { "None", "lambert", "halfLambert"};
 	if (ImGui::Combo (("ライティング" + label).c_str(), &currentNum, lights, IM_ARRAYSIZE (lights))) {
 		if (currentNum == 0) {
 			materialData_->enableLighting = LightReflectionModel::None;

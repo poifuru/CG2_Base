@@ -23,5 +23,8 @@ VertexShaderOutput main(VertexShaderInput input)
     //法線変換
     float3 worldNormal = mul(input.normal, (float3x3) gTransformaitionMatrix.WorldInverseTranspose);
     output.normal = normalize(worldNormal);
+    
+    //カメラのワールド座標を渡す
+    output.worldPosition = mul(input.position, gTransformaitionMatrix.World).xyz;
     return output;
 }   

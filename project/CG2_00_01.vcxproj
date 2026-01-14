@@ -177,6 +177,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\entity\Entity.cpp" />
     <ClCompile Include="application\entity\boss\Boss.cpp" />
     <ClCompile Include="general\Easing.cpp" />
+    <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
     <ClCompile Include="magosuya\utility\audio\Audio.cpp" />
     <ClCompile Include="magosuya\utility\camera\LookAtCamera.cpp" />
     <ClCompile Include="magosuya\utility\camera\CameraOrganizer.cpp" />
@@ -204,7 +205,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="magosuya\object\3d\SphereModel.cpp">
+    <ClCompile Include="magosuya\object\3d\SphereMesh.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">false</ExcludedFromBuild>
@@ -234,7 +235,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\SceneManager.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
     <ClCompile Include="application\scene\PlayScene.cpp" />
-    <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
     <ClCompile Include="magosuya\PSO\RootSignatureManager.cpp" />
     <ClCompile Include="magosuya\PSO\PSOManager.cpp" />
     <ClCompile Include="magosuya\mesh\Mesh.cpp" />
@@ -318,6 +318,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\entity\Entity.h" />
     <ClInclude Include="application\entity\boss\Boss.h" />
     <ClInclude Include="general\Easing.h" />
+    <ClInclude Include="magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="magosuya\utility\audio\Audio.h" />
     <ClInclude Include="magosuya\utility\camera\LookAtCamera.h" />
     <ClInclude Include="magosuya\light\LightStructure.h" />
@@ -356,7 +357,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="magosuya\object\3d\SphereModel.h" />
+    <ClInclude Include="magosuya\object\3d\SphereMesh.h" />
     <ClInclude Include="magosuya\object\2d\Sprite.h" />
     <ClInclude Include="general\struct.h" />
     <ClInclude Include="magosuya\object\3d\Model.h" />
@@ -384,7 +385,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\SceneManager.h" />
     <ClInclude Include="application\scene\TitleScene.h" />
     <ClInclude Include="application\scene\PlayScene.h" />
-    <ClInclude Include="magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />
     <ClInclude Include="magosuya\PSO\PSOManager.h" />
     <ClInclude Include="magosuya\mesh\Mesh.h" />

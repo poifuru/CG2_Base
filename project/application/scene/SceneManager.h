@@ -23,16 +23,6 @@ private:	//メンバ変数
 	std::unique_ptr<ClearScene> clearScene_;
 	std::unique_ptr<GameoverScene> gameoverScene_;
 
-	//天球はずっと置いておきたい
-	std::unique_ptr<Model> skydome_ = nullptr;
-	float rotate_ = 0.0f;
-
-	//平行光源のResourceを作成してデフォルト値を書き込む
-	ComPtr<ID3D12Resource> dierctionalLightResource_ = nullptr;
-	DirectionalLight* directionalLightData_ = nullptr;
-	//ライティング用の変数
-	Vector4 colorLight;
-
 	//現在のシーン
 	SceneLabel scene_;
 	//処理を共通化するためのポインタ

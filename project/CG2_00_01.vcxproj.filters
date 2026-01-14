@@ -30,7 +30,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="general\MathFunction.cpp" />
     <ClCompile Include="magosuya\utility\audio\Sound.cpp" />
-    <ClCompile Include="magosuya\object\3d\SphereModel.cpp" />
+    <ClCompile Include="magosuya\object\3d\SphereMesh.cpp" />
     <ClCompile Include="magosuya\object\2d\Sprite.cpp" />
     <ClCompile Include="magosuya\object\3d\Model.cpp" />
     <ClCompile Include="magosuya\utility\audio\SoundData.cpp" />
@@ -45,7 +45,6 @@
     <ClCompile Include="application\scene\SceneManager.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
     <ClCompile Include="application\scene\PlayScene.cpp" />
-    <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
     <ClCompile Include="magosuya\PSO\RootSignatureManager.cpp" />
     <ClCompile Include="magosuya\PSO\PSOManager.cpp" />
     <ClCompile Include="magosuya\mesh\Mesh.cpp" />
@@ -59,6 +58,7 @@
     <ClCompile Include="application\mapchip\mapChipRenderer.cpp" />
     <ClCompile Include="application\entity\player\Player.cpp" />
     <ClCompile Include="application\entity\boss\Boss.cpp" />
+    <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\Scene.h" />
@@ -95,7 +95,7 @@
     <ClInclude Include="general\function.h" />
     <ClInclude Include="general\MathFunction.h" />
     <ClInclude Include="magosuya\utility\audio\Sound.h" />
-    <ClInclude Include="magosuya\object\3d\SphereModel.h" />
+    <ClInclude Include="magosuya\object\3d\SphereMesh.h" />
     <ClInclude Include="magosuya\object\2d\Sprite.h" />
     <ClInclude Include="general\struct.h" />
     <ClInclude Include="magosuya\object\3d\Model.h" />
@@ -121,6 +121,7 @@
     <ClInclude Include="application\mapchip\mapChipRenderer.h" />
     <ClInclude Include="application\entity\player\Player.h" />
     <ClInclude Include="application\entity\boss\Boss.h" />
+    <ClInclude Include="magosuya\PSO\ShaderManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">
@@ -201,7 +202,6 @@
     <Filter Include="ヘッダーファイル\magosuya\utility\audio">
       <UniqueIdentifier>{457fd7ce-1080-4188-9b25-f8a794eb8700}</UniqueIdentifier>
     </Filter>
-    <ClInclude Include="magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />
     <ClInclude Include="magosuya\PSO\PSOManager.h" />
     <ClInclude Include="magosuya\mesh\Mesh.h" />

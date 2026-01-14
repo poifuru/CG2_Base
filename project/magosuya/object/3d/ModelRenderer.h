@@ -15,7 +15,7 @@ public:
 	~ModelRenderer ();
 
 	void Initialize ();
-	void Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform);
+	void Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform, Vector3 cameraWorld);
 	void Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light);
 	void ImGui (Transform& transform, Transform& uvTransform, const std::string& windowName);
 
@@ -37,10 +37,12 @@ private:
 	//GPUリソース
 	ComPtr<ID3D12Resource> matrixBuffer_;
 	ComPtr<ID3D12Resource> materialBuffer_;
+	ComPtr<ID3D12Resource> cameraBuffer_;
 
 	//GPUリソースにマッピングするデータ
 	TransformationMatrix* matrixData_ = nullptr;
 	Material* materialData_ = nullptr;
+	Vector3* cameraData_ = nullptr;
 
 	//ImGui用のラベル名
 	std::string tag_;

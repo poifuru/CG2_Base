@@ -4,19 +4,17 @@
 #include "ModelManager.h"
 #include "TextureManager.h"
 #include "Easing.h"
+#include "imgui.h"
 
 //デルタタイムを定義
 const float kDeltaTime = 1.0f / 60.0f;
 
-TitleScene::TitleScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
+TitleScene::TitleScene(CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
 	camera_ = camera;
 	input_ = inputManager;
 
-	//モデルのロード
-	title_ = std::make_unique<Model>(dxCommon);
-	ModelManager::GetInstance()->LoadModelData("Resources/pikopiko", "pikopiko");
-
-	camera_->AddCamera("main1", CameraType::FixedPontCamera);
+	sphere_ = std::make_unique<SphereMesh>(dxCommon);
+	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall.png", "monsterBall");
 }
 
 TitleScene::~TitleScene () {
@@ -27,15 +25,10 @@ void TitleScene::Initialize () {
 	nowScene_ = SceneLabel::Title;
 	isFinish_ = false;
 
-	title_->SetModelData("pikopiko");
-	title_->SetTexture("Dummy");
-	title_->Initialize();
-	title_->IsLighting(LightReflectionModel::HalfLambert);
-	title_->SetColor({ 1.0f, 0.80f, 0.0f, 1.0f });
+	sphere_->Initialize({0.0f, 0.0f, 0.0f}, 3.0f);
 
-	dierctionalLightResource_ = DxCommon::GetInstance()->CreateBufferResource(sizeof(DirectionalLight));
-
-	dierctionalLightResource_ = DxCommon::GetInstance()->CreateBufferResource(sizeof(DirectionalLight));
+	uint32_t sizeDirectionalLight = (sizeof(DirectionalLight) + 0xFF) & ~0xFF;
+	dierctionalLightResource_ = DxCommon::GetInstance()->CreateBufferResource(sizeDirectionalLight);
 	//書き込むためのアドレス取得
 	dierctionalLightResource_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
 	//実際に書き込み
@@ -43,27 +36,32 @@ void TitleScene::Initialize () {
 	directionalLightData_->direction = { 0.0f, -1.0f, 0.0f };
 	directionalLightData_->intensity = 1.0f;
 	//ライティング用の変数
-	colorLight = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-	camera_->SetActiveCamera("main1");
-	camera_->SetPosition({ 0.0f, 0.0f, -10.0f });
+	for(int i = 0; i < 4; ++i) {
+		colorLight[i] = 1.0f;
+	}
 }
 
 void TitleScene::Update () {
-	if(input_->GetRawInput()->Trigger(VK_SPACE)) {
-		nextScene_ = SceneLabel::Play;
-		isFinish_ = true;
-	}
-
 	camera_->Update();
-	
-	title_->Update(&camera_->GetVPMatrix());
-	//title_->ImGui("pikopiko");
+
+	sphere_->Update(camera_->GetPosition("Debug"), &camera_->GetVPMatrix());
+	sphere_->ImGui();
 
 	//光源のdirectionの正規化
 	directionalLightData_->direction = Math::Normalize (directionalLightData_->direction); 
+
+	//ライトのImGui
+	if(ImGui::ColorEdit4("light", colorLight)) {
+		// 色が変更されたらmaterialDataに反映
+		directionalLightData_->color.x = colorLight[0];
+		directionalLightData_->color.y = colorLight[1];
+		directionalLightData_->color.z = colorLight[2];
+		directionalLightData_->color.w = colorLight[3];
+	}
+	ImGui::DragFloat3("direction", &directionalLightData_->direction.x, 0.01f);
+	ImGui::DragFloat("intensity", &directionalLightData_->intensity, 0.01f);
 }
 
 void TitleScene::Draw () {
-	title_->Draw(dierctionalLightResource_.Get());
+	sphere_->Draw(TextureManager::GetInstance()->GetTextureHandle("monsterBall"), dierctionalLightResource_.Get());
 }

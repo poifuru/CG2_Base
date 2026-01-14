@@ -71,11 +71,11 @@ void Player::Update() {
 	Attack();
 
 	model_->SetTransform(transform_);
-	model_->Update(&camera_->GetVPMatrix());
+	model_->Update(camera_->GetPosition("Debug"), &camera_->GetVPMatrix());
 	model_->SetColor(Vector4{ 1.0f, 1.0f, 1.0f, 1.0f });
 	WeaponTransform();
 	weapon_->SetTransform(transformWep_);
-	weapon_->Update(&camera_->GetVPMatrix());
+	weapon_->Update(camera_->GetPosition("Debug"), &camera_->GetVPMatrix());
 	AABBPos();
 	Invincible();
 }

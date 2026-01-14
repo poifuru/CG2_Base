@@ -18,10 +18,10 @@ void Model::Initialize (Vector3 scale, Vector3 rotate, Vector3 position) {
 	renderer_->Initialize ();
 }
 
-void Model::Update (Matrix4x4* vp) {
+void Model::Update (Vector3 cameraWorld, Matrix4x4* vp) {
 	Matrix4x4 world = Math::MakeAffineMatrix (transform_.scale, transform_.rotate, transform_.translate);
 
-	renderer_->Update (world, *vp, uvTransform_);
+	renderer_->Update (world, *vp, uvTransform_, cameraWorld);
 }
 
 void Model::Draw (ID3D12Resource* light) {

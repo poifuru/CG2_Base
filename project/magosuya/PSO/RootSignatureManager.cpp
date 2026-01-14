@@ -16,11 +16,12 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	standard3DDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	//SRVを使う
 	standard3DDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	//Offsetを自動計算
 
-	//RootParameter
+	//RootParameter(b0)
 	standard3DRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	standard3DRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	//VertexShaderで使う
 	standard3DRootParameters[0].Descriptor.ShaderRegister = 0;
 
+	//(b1)
 	standard3DRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	standard3DRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
 	standard3DRootParameters[1].Descriptor.ShaderRegister = 1;						//レジスタ番号とバインド
@@ -31,10 +32,15 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	standard3DRootParameters[2].DescriptorTable.pDescriptorRanges = standard3DDescriptorRanges;	//Tableの中身の配列を指定
 	standard3DRootParameters[2].DescriptorTable.NumDescriptorRanges = _countof (standard3DDescriptorRanges);	//Tableで利用する数
 
-	//平行光源用のCBV
+	//平行光源用のCBV(b1)
 	standard3DRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	standard3DRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	standard3DRootParameters[3].Descriptor.ShaderRegister = 3;
+	standard3DRootParameters[3].Descriptor.ShaderRegister = 2;
+
+	//カメラのワールド座標を送る用(b2)
+	standard3DRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	standard3DRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	standard3DRootParameters[4].Descriptor.ShaderRegister = 3;
 
 	//Sampler
 	standard3DStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;	//バイリニアフィルタ

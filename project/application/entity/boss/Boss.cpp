@@ -83,7 +83,7 @@ void Boss::Update() {
 	}
 
 	model_->SetTransform(transform_);
-	model_->Update(&camera_->GetVPMatrix());
+	model_->Update(camera_->GetPosition("Debug"), &camera_->GetVPMatrix());
 	AABBPos();
 
 	//model_->ImGui("boss");
