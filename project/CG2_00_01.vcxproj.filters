@@ -59,6 +59,8 @@
     <ClCompile Include="application\entity\player\Player.cpp" />
     <ClCompile Include="application\entity\boss\Boss.cpp" />
     <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
+    <ClCompile Include="magosuya\object\3d\BaseObject3d.cpp" />
+    <ClCompile Include="magosuya\object\3d\BaseRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\Scene.h" />
@@ -122,6 +124,8 @@
     <ClInclude Include="application\entity\player\Player.h" />
     <ClInclude Include="application\entity\boss\Boss.h" />
     <ClInclude Include="magosuya\PSO\ShaderManager.h" />
+    <ClInclude Include="magosuya\object\3d\BaseObject3d.h" />
+    <ClInclude Include="magosuya\object\3d\BaseRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">

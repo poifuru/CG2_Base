@@ -176,6 +176,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\GameoverScene.cpp" />
     <ClCompile Include="application\entity\Entity.cpp" />
     <ClCompile Include="application\entity\boss\Boss.cpp" />
+    <ClCompile Include="magosuya\object\3d\BaseRenderer.cpp" />
+    <ClCompile Include="magosuya\object\3d\BaseObject3d.cpp" />
     <ClCompile Include="general\Easing.cpp" />
     <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
     <ClCompile Include="magosuya\utility\audio\Audio.cpp" />
@@ -317,6 +319,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\ClearScene.h" />
     <ClInclude Include="application\entity\Entity.h" />
     <ClInclude Include="application\entity\boss\Boss.h" />
+    <ClInclude Include="magosuya\object\3d\BaseRenderer.h" />
+    <ClInclude Include="magosuya\object\3d\BaseObject3d.h" />
     <ClInclude Include="general\Easing.h" />
     <ClInclude Include="magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="magosuya\utility\audio\Audio.h" />
