@@ -1,15 +1,15 @@
 #pragma once
-#include "Scene.h"
+#include "BaseScene.h"
 #include <memory>
 #include "Sprite.h"
 #include "Model.h"
 
-class ClearScene : public Scene {
+class ClearScene : public BaseScene {
 public:		//メンバ関数
-	ClearScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon);
+	ClearScene ();
 	~ClearScene () override;
 
-	void Initialize () override;
+	void Initialize (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) override;
 	void Update () override;
 	void Draw () override;
 

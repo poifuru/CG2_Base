@@ -316,10 +316,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="application\scene\Scene.h" />
+    <ClInclude Include="application\scene\BaseScene.h" />
     <ClInclude Include="application\scene\ClearScene.h" />
     <ClInclude Include="application\entity\Entity.h" />
     <ClInclude Include="application\entity\boss\Boss.h" />
+    <ClInclude Include="application\scene\SceneType.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="magosuya\object\3d\BaseRenderer.h" />
     <ClInclude Include="magosuya\object\3d\BaseObject3d.h" />

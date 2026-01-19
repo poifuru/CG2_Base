@@ -27,6 +27,8 @@ void MagosuyaEngine::Initialize () {
 	cubeRenderer_->Initialize (dxCommon_);
 	cameraOrganizer_ = CameraOrganizer::GetInstance ();
 	cameraOrganizer_->Initialize (inputManager_);
+	sceneManager_ = SceneManager::GetInstance();
+	sceneManager_->Initialize(cameraOrganizer_, inputManager_, dxCommon_);
 }
 
 void MagosuyaEngine::BeginFrame () {

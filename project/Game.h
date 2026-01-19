@@ -13,5 +13,5 @@ public:
 
 private:
 	MagosuyaEngine* magosuya_ = nullptr;
-	std::unique_ptr<SceneManager> sceneManager_ = nullptr;
+	SceneManager* sceneManager_ = nullptr;
 };

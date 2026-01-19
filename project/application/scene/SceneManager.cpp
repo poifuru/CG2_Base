@@ -2,70 +2,36 @@
 #include "CameraOrganizer.h"
 #include "ModelManager.h"
 
-SceneManager::SceneManager (CameraOrganizer* camera, InputManager* input, DxCommon* dxCommon) {
-	scene_ = SceneLabel::Title;
-	titleScene_ = std::make_unique<TitleScene> (camera, input, dxCommon);
-	playScene_ = std::make_unique<PlayScene> (camera, input, dxCommon);
-	clearScene_ = std::make_unique<ClearScene> (camera, input, dxCommon);
-	gameoverScene_ = std::make_unique<GameoverScene> (camera, input, dxCommon);
-	currentScene_ = titleScene_.get ();
-
-	camera_ = camera;
-}
-
 SceneManager::~SceneManager () {
-
+	delete scene_;
 }
 
-void SceneManager::Initialize (SceneLabel scene) {
-	//引数で初期化のシーンを選択
-	switch (scene) {
-	case SceneLabel::Title:
-		currentScene_ = titleScene_.get ();
-		break;
-
-	case SceneLabel::Play:
-		currentScene_ = playScene_.get ();
-		break;
-
-	case SceneLabel::Clear:
-		currentScene_ = clearScene_.get ();
-		break;
-
-	case SceneLabel::Gameover:
-		currentScene_ = gameoverScene_.get ();
-		break;
-	}
-	currentScene_->Initialize ();
+void SceneManager::Initialize(CameraOrganizer* camera, InputManager* input, DxCommon* dxCommon) {
+	camera_ = camera;
+	input_ = input;
+	dxCommon_ = dxCommon;
 }
 
 void SceneManager::Update () {
-	currentScene_->Update ();
-
-	if (currentScene_->GetIsFinish ()) {
-		switch (currentScene_->GetNextScene ()) {
-		case SceneLabel::Title:
-			currentScene_ = titleScene_.get ();
-			break;
-
-		case SceneLabel::Play:
-			currentScene_ = playScene_.get ();
-			break;
-
-		case SceneLabel::Clear:
-			currentScene_ = clearScene_.get ();
-			break;
-
-		case SceneLabel::Gameover:
-			currentScene_ = gameoverScene_.get ();
-			break;
+	//次のシーンの予約があるなら
+	if(nextScene_) {
+		//旧シーンを終了
+		if(scene_) {
+			delete scene_;
 		}
-		currentScene_->Initialize ();
+
+		//シーン切り替え
+		scene_ = nextScene_;
+		nextScene_ = nullptr;
+		//次シーンの初期化
+		scene_->Initialize(camera_, input_, dxCommon_);
 	}
 
-	//CameraOrganizer::GetInstance ()->ImGui ();
+	if(scene_) {
+		scene_->Update();
+	}
 }
 
 void SceneManager::Draw () {
-	currentScene_->Draw ();
+	scene_->Draw ();
 }

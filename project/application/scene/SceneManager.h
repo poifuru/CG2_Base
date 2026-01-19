@@ -1,32 +1,40 @@
 #pragma once
-#include "Scene.h"
+#include "BaseScene.h"
 #include <memory>
 #include <string>
-#include "TitleScene.h"
-#include "PlayScene.h"
-#include "ClearScene.h"
-#include "GameoverScene.h"
 
 class SceneManager {
 public:		//メンバ関数
-	SceneManager (CameraOrganizer* camera, InputManager* input, DxCommon* dxCommon);
+	static SceneManager* GetInstance() {
+		//初めて呼び出されたときに一回だけ初期化
+		static SceneManager instance;
+		return &instance;
+	}
 	~SceneManager ();
 
-	void Initialize (SceneLabel scene);
+	void Initialize(CameraOrganizer* camera, InputManager* input, DxCommon* dxCommon);
 	void Update ();
 	void Draw ();
+	
+	//次シーンの予約
+	void SetNextScene(BaseScene* nextScene) { nextScene_ = nextScene; }
+
+private:
+	//コンストラクタを禁止
+	SceneManager() = default;
+	// コピーコンストラクタと代入演算子を禁止
+	SceneManager(const SceneManager&) = delete;
+	SceneManager& operator=(const SceneManager&) = delete;
+	SceneManager(SceneManager&&) = delete;
+	SceneManager& operator=(SceneManager&&) = delete;
 
 private:	//メンバ変数
-	//それぞれのシーンのポインタ
-	std::unique_ptr<TitleScene> titleScene_;
-	std::unique_ptr<PlayScene> playScene_;
-	std::unique_ptr<ClearScene> clearScene_;
-	std::unique_ptr<GameoverScene> gameoverScene_;
-
-	//現在のシーン
-	SceneLabel scene_;
-	//処理を共通化するためのポインタ
-	Scene* currentScene_;
+	//実行中のシーン
+	BaseScene* scene_ = nullptr;
+	//次のシーン
+	BaseScene* nextScene_ = nullptr;
 
 	CameraOrganizer* camera_ = nullptr;
+	InputManager* input_ = nullptr;
+	DxCommon* dxCommon_ = nullptr;
 };

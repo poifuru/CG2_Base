@@ -2,14 +2,15 @@
 #include "CameraOrganizer.h"
 #include "InputManager.h"
 #include "DxCommon.h"
+#include "BaseScene.h"
+#include "SceneType.h"
 
 Game::Game() {
 	magosuya_ = MagosuyaEngine::GetInstance();
 	magosuya_->Initialize();
-	sceneManager_ = std::make_unique<SceneManager>(
-		CameraOrganizer::GetInstance(), InputManager::GetInstance(), DxCommon::GetInstance()
-	);
-	sceneManager_->Initialize(SceneLabel::Title);
+	BaseScene* scene = new TitleScene();
+	sceneManager_ = SceneManager::GetInstance();
+	sceneManager_->SetNextScene(scene);
 }
 
 Game::~Game() {

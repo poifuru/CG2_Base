@@ -1,5 +1,5 @@
 #pragma once
-#include "Scene.h"
+#include "BaseScene.h"
 #include <memory>
 #include "Sprite.h"
 #include "Model.h"
@@ -7,12 +7,12 @@
 #include "Mesh.h"
 #include "SphereMesh.h"
 
-class TitleScene : public Scene {
+class TitleScene : public BaseScene {
 public:		//メンバ関数
-	TitleScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon);
+	TitleScene ();
 	~TitleScene () override;
 
-	void Initialize () override;
+	void Initialize (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) override;
 	void Update () override;
 	void Draw () override;
 

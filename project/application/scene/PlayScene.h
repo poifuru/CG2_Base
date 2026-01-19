@@ -1,5 +1,5 @@
 #pragma once
-#include "Scene.h"
+#include "BaseScene.h"
 #include <memory>
 #include "Sprite.h"
 #include "Model.h"
@@ -8,12 +8,12 @@
 #include "Player.h"
 #include "Boss.h"
 
-class PlayScene : public Scene {
+class PlayScene : public BaseScene {
 public:		//メンバ関数
-	PlayScene (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon);
+	PlayScene ();
 	~PlayScene () override;
 
-	void Initialize () override;
+	void Initialize (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) override;
 	void Update () override;
 	void Draw () override;
 
