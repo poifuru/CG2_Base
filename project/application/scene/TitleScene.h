@@ -6,6 +6,7 @@
 #include "MeshParticle.h"
 #include "Mesh.h"
 #include "SphereMesh.h"
+#include "LightStructure.h"
 
 class TitleScene : public Scene {
 public:		//メンバ関数

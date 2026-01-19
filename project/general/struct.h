@@ -9,6 +9,8 @@ using namespace Microsoft::WRL;
 #include <Mmreg.h>
 #include "DirectXTex.h"
 
+//*** シェーダーに送るための構造体を作るときは16バイト境界を意識してパディングを入れてね ***//
+
 //Vector2構造体
 struct Vector2 {
 	float x;
@@ -192,13 +194,6 @@ struct SpriteData {
 	Transform uvTransform;	//uvのSRT
 	Material* material;		//紐づけるマテリアルポインタ
 	Matrix4x4 wvpMatrix;	//wvp行列ポインタ
-};
-
-//平行光源構造体
-struct DirectionalLight {
-	Vector4 color;				//ライトの色
-	Vector3 direction;			//ライトの向き
-	float intensity;			//輝度
 };
 
 //MaterialData構造体
