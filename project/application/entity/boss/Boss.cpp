@@ -114,7 +114,7 @@ void Boss::ShootBehavior() {
 }
 
 void Boss::Draw() {
-	model_->Draw(light_);
+	model_->Draw();
 }
 
 void Boss::IsHit(bool attackIsHit) {

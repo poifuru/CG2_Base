@@ -88,14 +88,14 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)general;$(SolutionDir)magosuya;$(SolutionDir)magosuya\engine;$(SolutionDir)magosuya\engine\SRV;$(SolutionDir)magosuya\object\2d;$(SolutionDir)magosuya\object\3d;$(SolutionDir)magosuya\utility\audio;$(SolutionDir)magosuya\utility\camera;$(SolutionDir)magosuya\utility\input;$(SolutionDir)magosuya\utility\imgui;$(SolutionDir)magosuya\utility\particle;$(SolutionDir)magosuya\PSO;$(SolutionDir)magosuya\mesh;$(SolutionDir)magosuya\mesh\line;$(SolutionDir)magosuya\mesh\cube;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)general;$(SolutionDir)magosuya;$(SolutionDir)magosuya\engine;$(SolutionDir)magosuya\engine\SRV;$(SolutionDir)magosuya\object\2d;$(SolutionDir)magosuya\object\3d;$(SolutionDir)magosuya\utility\audio;$(SolutionDir)magosuya\utility\camera;$(SolutionDir)magosuya\utility\input;$(SolutionDir)magosuya\utility\imgui;$(SolutionDir)magosuya\utility\particle;$(SolutionDir)magosuya\PSO;$(SolutionDir)magosuya\mesh;$(SolutionDir)magosuya\mesh\line;$(SolutionDir)magosuya\mesh\cube;$(SolutionDir)magosuya\light;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
-      <AdditionalDependencies>imgui.lib;DirectXTex.lib;$(CoreLibraryDependencies);%(AdditionalDependencies);</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration);%(AdditionalLibraryDirectories);$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration);$(SolutionDir);$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>imgui.lib;DirectXTex.lib;assimp-vc143-mtd.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration);$(SolutionDir)externals\assimp\lib\Debug;%(AdditionalLibraryDirectories);$(SolutionDir)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
@@ -117,15 +117,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)general;$(SolutionDir)magosuya;$(SolutionDir)magosuya\engine;$(SolutionDir)magosuya\engine\SRV;$(SolutionDir)magosuya\object\2d;$(SolutionDir)magosuya\object\3d;$(SolutionDir)magosuya\utility\audio;$(SolutionDir)magosuya\utility\camera;$(SolutionDir)magosuya\utility\input;$(SolutionDir)magosuya\utility\imgui;$(SolutionDir)magosuya\utility\particle;$(SolutionDir)magosuya\PSO;$(SolutionDir)magosuya\mesh;$(SolutionDir)magosuya\mesh\line;$(SolutionDir)magosuya\mesh\cube;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)general;$(SolutionDir)magosuya;$(SolutionDir)magosuya\engine;$(SolutionDir)magosuya\engine\SRV;$(SolutionDir)magosuya\object\2d;$(SolutionDir)magosuya\object\3d;$(SolutionDir)magosuya\utility\audio;$(SolutionDir)magosuya\utility\camera;$(SolutionDir)magosuya\utility\input;$(SolutionDir)magosuya\utility\imgui;$(SolutionDir)magosuya\utility\particle;$(SolutionDir)magosuya\PSO;$(SolutionDir)magosuya\mesh;$(SolutionDir)magosuya\mesh\line;$(SolutionDir)magosuya\mesh\cube;$(SolutionDir)magosuya\light;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)externals\DirectXTex\lib\$(Configuration)\;$(SolutionDir)externals\imgui\lib\$(Configuration)\;%(AdditionalLibraryDirectories);$(SolutionDir);$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>imgui.lib;DirectXTex.lib;$(CoreLibraryDependencies);%(AdditionalDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)externals\DirectXTex\lib\$(Configuration)\;$(SolutionDir)externals\imgui\lib\$(Configuration)\;$(SolutionDir)externals\assimp\lib\Release;%(AdditionalLibraryDirectories);$(SolutionDir);$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>imgui.lib;DirectXTex.lib;assimp-vc143-mt.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>
@@ -151,7 +151,7 @@ echo "MaoSuya Engine Builded"</Command>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)general;$(SolutionDir)magosuya;$(SolutionDir)magosuya\engine;$(SolutionDir)magosuya\engine\SRV;$(SolutionDir)magosuya\object\2d;$(SolutionDir)magosuya\object\3d;$(SolutionDir)magosuya\utility\audio;$(SolutionDir)magosuya\utility\camera;$(SolutionDir)magosuya\utility\input;$(SolutionDir)magosuya\utility\imgui;$(SolutionDir)magosuya\utility\particle;$(SolutionDir)magosuya\PSO;$(SolutionDir)magosuya\mesh;$(SolutionDir)magosuya\mesh\line;$(SolutionDir)magosuya\mesh\cube;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)general;$(SolutionDir)magosuya;$(SolutionDir)magosuya\engine;$(SolutionDir)magosuya\engine\SRV;$(SolutionDir)magosuya\object\2d;$(SolutionDir)magosuya\object\3d;$(SolutionDir)magosuya\utility\audio;$(SolutionDir)magosuya\utility\camera;$(SolutionDir)magosuya\utility\input;$(SolutionDir)magosuya\utility\imgui;$(SolutionDir)magosuya\utility\particle;$(SolutionDir)magosuya\PSO;$(SolutionDir)magosuya\mesh;$(SolutionDir)magosuya\mesh\line;$(SolutionDir)magosuya\mesh\cube;$(SolutionDir)magosuya\light;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -175,6 +175,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\ClearScene.cpp" />
     <ClCompile Include="application\scene\GameoverScene.cpp" />
     <ClCompile Include="application\entity\Entity.cpp" />
+    <ClCompile Include="magosuya\light\DirectionalLight.cpp" />
+    <ClCompile Include="magosuya\light\BaseLight.cpp" />
+    <ClCompile Include="magosuya\light\LightManager.cpp" />
     <ClCompile Include="application\entity\boss\Boss.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="magosuya\object\3d\BaseRenderer.cpp" />
@@ -245,7 +248,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="magosuya\engine\SRV\SRVManager.cpp" />
     <ClCompile Include="application\mapchip\mapchip.cpp" />
     <ClCompile Include="application\mapchip\mapChipRenderer.cpp" />
-    <ClCompile Include="application\entity\player\Player.cpp" />
+    <ClCompile Include="magosuya\light\PointLight.cpp" />
+    <ClCompile Include="magosuya\light\SpotLight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\Line.PS.hlsl">
@@ -320,6 +324,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\ClearScene.h" />
     <ClInclude Include="application\entity\Entity.h" />
     <ClInclude Include="application\entity\boss\Boss.h" />
+    <ClInclude Include="magosuya\light\DirectionalLight.h" />
+    <ClInclude Include="magosuya\light\BaseLight.h" />
+    <ClInclude Include="magosuya\light\LightManager.h" />
     <ClInclude Include="application\scene\SceneType.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="magosuya\object\3d\BaseRenderer.h" />
@@ -328,7 +335,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="magosuya\utility\audio\Audio.h" />
     <ClInclude Include="magosuya\utility\camera\LookAtCamera.h" />
-    <ClInclude Include="magosuya\light\LightStructure.h" />
     <ClInclude Include="magosuya\utility\camera\CameraOrganizer.h" />
     <ClInclude Include="magosuya\utility\camera\FixedPointCamera.h" />
     <ClInclude Include="magosuya\utility\camera\CameraComponent.h" />
@@ -400,6 +406,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\mapchip\mapchip.h" />
     <ClInclude Include="application\mapchip\mapChipRenderer.h" />
     <ClInclude Include="application\entity\player\Player.h" />
+    <ClInclude Include="magosuya\light\PointLight.h" />
+    <ClInclude Include="magosuya\light\SpotLight.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Cube.hlsli" />

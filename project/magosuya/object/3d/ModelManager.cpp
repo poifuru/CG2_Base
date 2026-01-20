@@ -4,6 +4,9 @@
 #include "MagosuyaEngine.h"
 #include "DxCommon.h"
 #include "TextureManager.h"
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 void ModelManager::Initialize (DxCommon* dxCommon, TextureManager* textureManager) {
 	dxCommon_ = dxCommon;
@@ -115,6 +118,10 @@ ModelData ModelManager::LoadObjFile (const std::string& directoryPath, const std
 	std::string line;				//ファイルから読んだ１行を格納するもの
 	// 複合インデックス文字列 ("v/vt/vn") をキーとし、ユニーク頂点リストのインデックスを値とする
 	std::map<std::string, uint32_t> uniqueVertices;
+
+	//あしんぽ
+	Assimp::Importer importer;
+	std::string filePath = directoryPath + "/" + id + ".png";
 
 	//ファイルを開く
 	std::ifstream file (directoryPath + "/" + id + ".obj");	//ファイルを開く

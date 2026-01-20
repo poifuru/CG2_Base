@@ -4,9 +4,12 @@
 #include <imgui.h>
 #include "function.h"
 #include "MathFunction.h"
+#include "LightManager.h"
+#include "SRVManager.h"
 
-SphereMesh::SphereMesh(DxCommon* dxCommon) {
+SphereMesh::SphereMesh(DxCommon* dxCommon, LightManager* lightManager) {
 	dxCommon_ = dxCommon;
+	lightManager_ = lightManager;
 
 	//球の分割数を決める
 	kSubdivision_ = 16;
@@ -37,7 +40,7 @@ SphereMesh::SphereMesh(DxCommon* dxCommon) {
 	materialBuffer_ = dxCommon_->CreateBufferResource(sizeof(Material));
 	materialBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	materialData_->enableLighting = LightReflectionModel::None;
+	materialData_->enableLighting = LightReflectionModel::HalfLambert;
 	materialData_->uvTransform = Math::MakeIdentity4x4();
 	materialData_->shininess = 50.0f;
 	materialData_->isSpecular = false;
@@ -183,19 +186,19 @@ void SphereMesh::Initialize(Vector3 position, float radius) {
 	desc_.BlendMode = BlendModeType::Opaque;
 }
 
-void SphereMesh::Update(Vector3 cameraWorld, Matrix4x4* vp) {
+void SphereMesh::Update(CameraData* camera) {
 	Matrix4x4 world = Math::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	matrixData_->World = world;
-	matrixData_->WVP = Math::Multiply(matrixData_->World, *vp);
+	matrixData_->WVP = Math::Multiply(matrixData_->World, camera->vp);
 	matrixData_->WorldInverseTranspose = Math::Transpose(Math::Inverse(matrixData_->World));
 
 	//uvTranform更新
 	materialData_->uvTransform = Math::MakeAffineMatrix(uvTransform_.scale, uvTransform_.rotate, uvTransform_.translate);
 
-	*cameraData_ = cameraWorld;
+	*cameraData_ = camera->transform.translate;
 }
 
-void SphereMesh::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light) {
+void SphereMesh::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	RootSignatureManager::GetInstance()->SetRootSignature(desc_.RootSignatureID);
 	PSOManager::GetInstance()->SetPSO(desc_);
 	//どんな形状で描画するのか
@@ -205,17 +208,30 @@ void SphereMesh::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource*
 	//定数バッファのルートパラメータを設定する	
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(0, matrixBuffer_->GetGPUVirtualAddress());
 	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(1, materialBuffer_->GetGPUVirtualAddress());
-	//テクスチャのSRVを設定
-	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(2, textureHandle);
-	//ライトをセット
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
 	//カメラのPositionをセット
-	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraBuffer_->GetGPUVirtualAddress());
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(2, cameraBuffer_->GetGPUVirtualAddress());
+	//ライトの個数のCVBをセット
+	dxCommon_->GetCommandList()->SetGraphicsRootConstantBufferView(3, lightManager_->GetLightCountBuffer().GetGPUVirtualAddress());
+	//テクスチャのSRVを設定
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(4, textureHandle);
+	//directionalLightのSRVをセット
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
+		5, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetDirLightSrvHandle())
+		);
+	//pointLightのSRVをセット
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
+		6, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetPointLightSrvHandle())
+	);
+	//spotLightのSRVをセット
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
+		7, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetSpotLightSrvHandle())
+	);
 	//実際に描画する(後々Index描画に変える)
 	dxCommon_->GetCommandList()->DrawInstanced((kSubdivision_ * kSubdivision_ * 6), 1, 0, 0);
 }
 
 void SphereMesh::ImGui() {
+#ifdef USEIMGUI
 	if(ImGui::ColorEdit4("Color##sphere", color_)) {
 		// 色が変更されたらmaterialDataに反映
 		materialData_->color.x = color_[0];
@@ -231,22 +247,13 @@ void SphereMesh::ImGui() {
 	ImGui::DragFloat3("UVtranslate##sphere", &uvTransform_.translate.x, 0.01f);
 	ImGui::DragFloat("shininess##sphere", &materialData_->shininess, 0.1f, 0.0f, 1000.0f);
 	//ライトの種類を選べるようにする
-	int currentNum = 0;
+	int currentNum = static_cast<int>(materialData_->enableLighting);
 	const char* lights[] = { "None", "lambert", "halfLambert" };
 	if(ImGui::Combo("ライティング", &currentNum, lights, IM_ARRAYSIZE(lights))) {
-		if(currentNum == 0) {
-			materialData_->enableLighting = LightReflectionModel::None;
-			currentNum = 0;
-		}
-		else if(currentNum == 1) {
-			materialData_->enableLighting = LightReflectionModel::Lambert;
-			currentNum = 1;
-		}
-		else if(currentNum == 2) {
-			materialData_->enableLighting = LightReflectionModel::HalfLambert;
-			currentNum = 2;
-		}
+		// 選ばれた番号をそのまま enum にキャストして戻せばOK！
+		materialData_->enableLighting = static_cast<LightReflectionModel>(currentNum);
 	}
 	ImGui::Checkbox("IsSpecular", &materialData_->isSpecular);
 	ImGui::Separator();
+#endif
 }

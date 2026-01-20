@@ -81,9 +81,9 @@ void Player::Update() {
 }
 
 void Player::Draw() {
-	model_->Draw(light_);
+	model_->Draw();
 	if(isAttack_) {
-		weapon_->Draw(light_);
+		weapon_->Draw();
 	}
 }
 

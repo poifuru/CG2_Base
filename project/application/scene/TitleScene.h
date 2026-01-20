@@ -6,6 +6,7 @@
 #include "MeshParticle.h"
 #include "Mesh.h"
 #include "SphereMesh.h"
+#include "LightManager.h"
 
 class TitleScene : public BaseScene {
 public:		//メンバ関数
@@ -17,11 +18,7 @@ public:		//メンバ関数
 	void Draw () override;
 
 private:	//メンバ変数
+	std::unique_ptr<LightManager> lightManager_ = nullptr;
 	std::unique_ptr<SphereMesh> sphere_ = nullptr;
-
-	//平行光源のResourceを作成してデフォルト値を書き込む
-	ComPtr<ID3D12Resource> dierctionalLightResource_ = nullptr;
-	DirectionalLight* directionalLightData_ = nullptr;
-	//ライティング用の変数
-	float colorLight[4];
+	std::unique_ptr<Model> terrain_ = nullptr;
 };

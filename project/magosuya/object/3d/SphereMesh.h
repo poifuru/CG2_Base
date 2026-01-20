@@ -8,16 +8,19 @@ using namespace Microsoft::WRL;
 #include "DxCommon.h"
 #include "struct.h"
 #include "PSOManager.h"
+#include "CameraComponent.h"
+
+class LightManager;
 
 class SphereMesh {
 public:		//メンバ関数
-	SphereMesh(DxCommon* dxCommon);
+	SphereMesh(DxCommon* dxCommon, LightManager* lightManager);
 
 	~SphereMesh();
 
 	void Initialize(Vector3 position, float radius);
-	void Update(Vector3 cameraWorld, Matrix4x4* vp);
-	void Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light);
+	void Update(CameraData* camera);
+	void Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
 
 	void ImGui();
 
@@ -61,5 +64,5 @@ private:	//メンバ変数
 
 	//dxCommonのポインタを持たせる
 	DxCommon* dxCommon_ = nullptr;
+	LightManager* lightManager_ = nullptr;
 };
-

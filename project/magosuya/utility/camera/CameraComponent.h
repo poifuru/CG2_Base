@@ -23,6 +23,8 @@ public:
 	//ImGui (純粋仮想関数)
 	virtual void ImGui () = 0;
 
+	//CameraData取得
+	CameraData& GetCameraData() { return camera_; }
 	//transform取得
 	const Transform& GetTransform () { return camera_.transform; }
 	//scale設定

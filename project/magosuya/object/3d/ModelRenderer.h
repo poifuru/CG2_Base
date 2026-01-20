@@ -9,14 +9,16 @@ using namespace Microsoft::WRL;
 #include "PSOManager.h"
 #include "DxCommon.h"
 
+class LightManager;
+
 class ModelRenderer {
 public:
-	ModelRenderer (DxCommon* dxCommon);
+	ModelRenderer (DxCommon* dxCommon, LightManager* lightManager);
 	~ModelRenderer ();
 
 	void Initialize ();
 	void Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform, Vector3 cameraWorld);
-	void Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light);
+	void Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
 	void ImGui (Transform& transform, Transform& uvTransform, const std::string& windowName);
 
 	//アクセッサ
@@ -55,4 +57,5 @@ private:
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;
 	ID3D12GraphicsCommandList* commandList_ = nullptr;
+	LightManager* lightManager_ = nullptr;
 };
