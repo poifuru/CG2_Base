@@ -17,10 +17,6 @@ Game::~Game() {
 
 }
 
-void Game::Initialize() {
-	
-}
-
 void Game::Run() {
 	/*メインループ！！！！！！！！！*/
 	//ウィンドウの×ボタンが押されるまでループ

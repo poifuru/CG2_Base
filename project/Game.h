@@ -7,8 +7,6 @@ public:
 	Game();
 	~Game();
 
-	void Initialize();
-
 	void Run();
 
 private:
