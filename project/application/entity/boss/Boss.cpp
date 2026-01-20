@@ -7,7 +7,7 @@
 #include "ModelManager.h"
 
 Boss::Boss(DxCommon* dxCommon, CameraOrganizer* camera) {
-	model_ = std::make_unique<Model>(dxCommon);
+	//model_ = std::make_unique<Model>(dxCommon);
 
 	ModelManager::GetInstance()->LoadModelData("Resources/boss", "boss");
 
@@ -83,7 +83,7 @@ void Boss::Update() {
 	}
 
 	model_->SetTransform(transform_);
-	model_->Update(camera_->GetPosition("Debug"), &camera_->GetVPMatrix());
+	//model_->Update(camera_->GetPosition("Debug"), &camera_->GetVPMatrix());
 	AABBPos();
 
 	//model_->ImGui("boss");
