@@ -56,14 +56,14 @@
     <ClCompile Include="application\entity\Entity.cpp" />
     <ClCompile Include="application\mapchip\mapchip.cpp" />
     <ClCompile Include="application\mapchip\mapChipRenderer.cpp" />
-    <ClCompile Include="application\entity\player\Player.cpp" />
-    <ClCompile Include="application\entity\boss\Boss.cpp" />
     <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
     <ClCompile Include="magosuya\object\3d\BaseObject3d.cpp" />
     <ClCompile Include="magosuya\object\3d\BaseRenderer.cpp" />
     <ClCompile Include="magosuya\light\LightManager.cpp" />
     <ClCompile Include="magosuya\light\BaseLight.cpp" />
     <ClCompile Include="magosuya\light\DirectionalLight.cpp" />
+    <ClCompile Include="magosuya\light\PointLight.cpp" />
+    <ClCompile Include="magosuya\light\SpotLight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\Scene.h" />
@@ -131,6 +131,8 @@
     <ClInclude Include="magosuya\light\LightManager.h" />
     <ClInclude Include="magosuya\light\BaseLight.h" />
     <ClInclude Include="magosuya\light\DirectionalLight.h" />
+    <ClInclude Include="magosuya\light\PointLight.h" />
+    <ClInclude Include="magosuya\light\SpotLight.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">

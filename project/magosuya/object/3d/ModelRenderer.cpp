@@ -1,10 +1,13 @@
 #include "ModelRenderer.h"
 #include <imgui.h>
 #include "mathFunction.h"
+#include "LightManager.h"
+#include "SRVManager.h"
 
-ModelRenderer::ModelRenderer (DxCommon* dxCommon) {
+ModelRenderer::ModelRenderer (DxCommon* dxCommon, LightManager* lightManager) {
 	dxCommon_ = dxCommon;
 	commandList_ = dxCommon->GetCommandList ();
+	lightManager_ = lightManager;
 	modelCount_++;
 	//その時のカウントをinstanceIDにコピー
 	instanceID_ = modelCount_;
@@ -29,9 +32,10 @@ void ModelRenderer::Initialize () {
 	materialBuffer_ = dxCommon_->CreateBufferResource (sizeof (Material));
 	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	materialData_->enableLighting = LightReflectionModel::None;
+	materialData_->enableLighting = LightReflectionModel::HalfLambert;
 	materialData_->uvTransform = Math::MakeIdentity4x4 ();
 	materialData_->shininess = 50.0f;
+	materialData_->isSpecular = false;
 
 	cameraBuffer_ = dxCommon_->CreateBufferResource(sizeof(Vector3));
 	cameraBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
@@ -56,7 +60,7 @@ void ModelRenderer::Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform
 	cameraData_ = &cameraWorld;
 }
 
-void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resource* light) {
+void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	// 共有データをロックして有効性をチェック
 	std::shared_ptr<ModelData> data = modelData_.lock ();
 	if (!data) {
@@ -74,17 +78,30 @@ void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle, ID3D12Resou
 	//定数バッファのルートパラメータを設定する	
 	commandList_->SetGraphicsRootConstantBufferView (0, matrixBuffer_->GetGPUVirtualAddress ());
 	commandList_->SetGraphicsRootConstantBufferView (1, materialBuffer_->GetGPUVirtualAddress ());
-	//テクスチャのSRVを設定
-	commandList_->SetGraphicsRootDescriptorTable (2, textureHandle);
-	//ライトをセット
-	commandList_->SetGraphicsRootConstantBufferView(3, light->GetGPUVirtualAddress());
 	//カメラのPositionをセット
-	commandList_->SetGraphicsRootConstantBufferView(4, cameraBuffer_->GetGPUVirtualAddress());
-	//実際に描画する(後々Index描画に変える)
+	commandList_->SetGraphicsRootConstantBufferView(2, cameraBuffer_->GetGPUVirtualAddress());
+	//ライトの個数をセット
+	commandList_->SetGraphicsRootConstantBufferView(3, lightManager_->GetLightCountBuffer().GetGPUVirtualAddress());
+	//テクスチャのSRVを設定
+	commandList_->SetGraphicsRootDescriptorTable (4, textureHandle);
+	//directionalLightのSRVをセット
+	commandList_->SetGraphicsRootDescriptorTable(
+		5, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetDirLightSrvHandle())
+	);
+	//pointLightのSRVをセット
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
+		6, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetPointLightSrvHandle())
+	);
+	//spotLightのSRVをセット
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
+		7, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetSpotLightSrvHandle())
+	);
+	//実際に描画する
 	commandList_->DrawIndexedInstanced (static_cast<UINT>(data->indexCount), 1, 0, 0, 0);
 }
 
 void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform, const std::string& windowName) {
+#ifdef USEIMGUI
 	std::string num = std::to_string (instanceID_);
 	std::string label = "##" + tag_ + num;
 	ImGui::Text (("obj : " + windowName).c_str ());
@@ -101,23 +118,15 @@ void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform, const s
 	ImGui::DragFloat3 (("UVscale" + label).c_str (), &uvTransform.scale.x, 0.01f);
 	ImGui::DragFloat3 (("UVrotate" + label).c_str (), &uvTransform.rotate.x, 0.01f);
 	ImGui::DragFloat3 (("UVtranslate" + label).c_str (), &uvTransform.translate.x, 0.01f);
-	ImGui::DragFloat(("shininess" + label).c_str(), &materialData_->shininess, 0.1f);
+	ImGui::DragFloat(("shininess" + label).c_str(), &materialData_->shininess, 0.1f, 0.0f, 1000.0f);
 	//ライトの種類を選べるようにする
-	int currentNum = 0;
-	const char* lights[] = { "None", "lambert", "halfLambert"};
-	if (ImGui::Combo (("ライティング" + label).c_str(), &currentNum, lights, IM_ARRAYSIZE (lights))) {
-		if (currentNum == 0) {
-			materialData_->enableLighting = LightReflectionModel::None;
-			currentNum = 0;
-		}
-		else if (currentNum == 1) {
-			materialData_->enableLighting = LightReflectionModel::Lambert;
-			currentNum = 1;
-		}
-		else if (currentNum == 2) {
-			materialData_->enableLighting = LightReflectionModel::HalfLambert;
-			currentNum = 2;
-		}
+	int currentNum = static_cast<int>(materialData_->enableLighting);
+	const char* lights[] = { "None", "lambert", "halfLambert" };
+	if(ImGui::Combo(("ライティング" + label).c_str(), &currentNum, lights, IM_ARRAYSIZE(lights))) {
+		// 選ばれた番号をそのまま enum にキャストして戻せばOK！
+		materialData_->enableLighting = static_cast<LightReflectionModel>(currentNum);
 	}
+	ImGui::Checkbox(("IsSpecular" + label).c_str(), &materialData_->isSpecular);
 	ImGui::Separator ();
+#endif
 }

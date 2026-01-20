@@ -48,6 +48,9 @@ public:
 	void SetLookAtPosition (const std::string& cameraName, const Vector3& pos);
 	void SetLookAtTarget (const std::string& cameraName, const Vector3& targetPos);
 
+	//CameraData取得用
+	CameraData& GetCameraData() { return activeCamera_->GetCameraData(); }
+
 	//描画用のvp行列取得関数
 	Matrix4x4& GetVPMatrix () { return vpMatrix_; }
 

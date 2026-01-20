@@ -52,7 +52,7 @@ void Particle::Initialize () {
 		instancingData_[i].color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		materialData_[i].color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		materialData_[i].enableLighting = LightReflectionModel::None;
-		materialData_[i].uvTranform = Math::MakeIdentity4x4 ();
+		materialData_[i].uvTransform = Math::MakeIdentity4x4 ();
 	}
 
 	//vertexData_に書き込み
@@ -133,7 +133,7 @@ void Particle::Update (Matrix4x4* cameraMatrix, Matrix4x4* vp) {
 			instancingData_[dstIndex].color.w = alpha;
 
 			//uvTranform更新
-			materialData_[dstIndex].uvTranform = Math::MakeAffineMatrix (
+			materialData_[dstIndex].uvTransform = Math::MakeAffineMatrix (
 				uvTransform_.scale,
 				uvTransform_.rotate,
 				uvTransform_.translate);

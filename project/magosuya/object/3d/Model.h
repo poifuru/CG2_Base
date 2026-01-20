@@ -7,6 +7,9 @@ using namespace Microsoft::WRL;
 #include <memory>
 #include "struct.h"
 #include "ModelRenderer.h"
+#include "CameraComponent.h"
+
+class LightManager;
 
 class Model {
 public:	//メンバ関数
@@ -16,7 +19,7 @@ public:	//メンバ関数
 	/// </summary>
 	/// <param name="directoryPath">3Dモデルファイルが存在するディレクトリのパス。</param>
 	/// <param name="filename">読み込む3Dモデルのファイル名。</param>
-	Model (DxCommon* dxCommon);
+	Model (DxCommon* dxCommon, LightManager* lightManager);
 
 	~Model ();
 
@@ -32,7 +35,7 @@ public:	//メンバ関数
 	/// 更新
 	/// </summary>
 	/// <param name="vp">vp行列</param>
-	void Update (Vector3 cameraWorld, Matrix4x4* vp);
+	void Update (CameraData* cameraData);
 
 	/// <summary>
 	/// 描画処理
@@ -40,7 +43,7 @@ public:	//メンバ関数
 	/// <param name="cmdList">コマンドリスト</param>
 	/// <param name="textureHandle">使うテクスチャ</param>
 	/// <param name="light">ライト</param>
-	void Draw (ID3D12Resource* light);
+	void Draw ();
 	
 	/// <summary>
 	/// ImGuiで編集できるよ

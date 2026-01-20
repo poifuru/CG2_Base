@@ -5,8 +5,8 @@
 #include "ModelManager.h"
 #include "TextureManager.h"
 
-Model::Model (DxCommon* dxCommon) {
-	renderer_ = std::make_unique<ModelRenderer> (dxCommon);
+Model::Model (DxCommon* dxCommon, LightManager* lightManager) {
+	renderer_ = std::make_unique<ModelRenderer> (dxCommon, lightManager);
 }
 
 Model::~Model () {
@@ -18,14 +18,14 @@ void Model::Initialize (Vector3 scale, Vector3 rotate, Vector3 position) {
 	renderer_->Initialize ();
 }
 
-void Model::Update (Vector3 cameraWorld, Matrix4x4* vp) {
+void Model::Update (CameraData* cameraData) {
 	Matrix4x4 world = Math::MakeAffineMatrix (transform_.scale, transform_.rotate, transform_.translate);
 
-	renderer_->Update (world, *vp, uvTransform_, cameraWorld);
+	renderer_->Update (world, cameraData->vp, uvTransform_, cameraData->transform.translate);
 }
 
-void Model::Draw (ID3D12Resource* light) {
-	renderer_->Draw (texture_, light);
+void Model::Draw () {
+	renderer_->Draw (texture_);
 }
 
 void Model::ImGui (const std::string& windowName) {
