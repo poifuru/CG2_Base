@@ -201,6 +201,12 @@ struct MaterialFile {
 	std::string textureFilePath;
 };
 
+struct Node {
+	Matrix4x4 localMatrix;
+	std::string name;
+	std::vector<Node> children;
+};
+
 //ModelData構造体
 struct ModelData {
 	//形状情報 (CPU側データ)
@@ -220,6 +226,9 @@ struct ModelData {
 	//インデックスバッファ
 	ComPtr<ID3D12Resource> indexBuffer;
 	D3D12_INDEX_BUFFER_VIEW ibView{};
+
+	//ルートノード(階層構造)
+	Node rootNode;
 };
 
 //エミッター構造体
