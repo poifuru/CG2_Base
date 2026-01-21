@@ -13,7 +13,8 @@ const float kDeltaTime = 1.0f / 60.0f;
 
 TitleScene::TitleScene() {
 	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall.png", "monsterBall");
-	ModelManager::GetInstance()->LoadModelData("Resources/terrain", "terrain");
+	ModelManager::GetInstance()->LoadModelData("Resources/terrain", "terrain.obj");
+	ModelManager::GetInstance()->LoadModelData("Resources/plane", "plane.gltf");
 }
 
 TitleScene::~TitleScene () {
@@ -39,6 +40,11 @@ void TitleScene::Initialize (CameraOrganizer* camera, InputManager* inputManager
 	terrain_->SetModelData("terrain");
 	terrain_->SetTexture("terrain");
 	terrain_->Initialize();
+
+	plane_ = std::make_unique<Model>(dxCommon, lightManager_.get());
+	plane_->SetModelData("plane");
+	plane_->SetTexture("plane");
+	plane_->Initialize();
 }
 
 void TitleScene::Update () {
@@ -55,11 +61,15 @@ void TitleScene::Update () {
 	terrain_->Update(&camera_->GetCameraData());
 	terrain_->ImGui("terrain");
 
+	plane_->Update(&camera_->GetCameraData());
+	plane_->ImGui("plane");
+
 	lightManager_->Update();
 	lightManager_->ImGui();
 }
 
 void TitleScene::Draw () {
-	sphere_->Draw(TextureManager::GetInstance()->GetTextureHandle("monsterBall"));
-	terrain_->Draw();
+	//sphere_->Draw(TextureManager::GetInstance()->GetTextureHandle("monsterBall"));
+	//terrain_->Draw();
+	plane_->Draw();
 }

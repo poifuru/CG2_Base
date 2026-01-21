@@ -50,8 +50,16 @@ void ModelRenderer::Initialize () {
 }
 
 void ModelRenderer::Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform, Vector3 cameraWorld) {
-	matrixData_->World = world;
-	matrixData_->WVP = Math::Multiply(matrixData_->World, vp);
+	// 共有データをロックして有効性をチェック
+	std::shared_ptr<ModelData> data = modelData_.lock ();
+	if (!data) {
+		// モデルデータが解放済みなら描画をスキップ
+		return;
+	}
+
+	//RootのMatrixを適用する
+	matrixData_->World = data->rootNode.localMatrix * world;
+	matrixData_->WVP = matrixData_->World * vp;
 	matrixData_->WorldInverseTranspose = Math::Transpose (Math::Inverse (matrixData_->World));
 
 	//uvTranform更新
@@ -63,10 +71,11 @@ void ModelRenderer::Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform
 void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	// 共有データをロックして有効性をチェック
 	std::shared_ptr<ModelData> data = modelData_.lock ();
-	if (!data) {
+	if(!data) {
 		// モデルデータが解放済みなら描画をスキップ
 		return;
 	}
+
 	RootSignatureManager::GetInstance ()->SetRootSignature (desc_.RootSignatureID);
 	PSOManager::GetInstance ()->SetPSO (desc_);
 	//どんな形状で描画するのか

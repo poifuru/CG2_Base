@@ -6,6 +6,9 @@ using namespace Microsoft::WRL;
 #include <string>
 #include <queue>
 #include <vector>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 #include "struct.h"
 
 class DxCommon;
@@ -21,7 +24,7 @@ public:		//メンバ関数
 
 	void Initialize (DxCommon* dxCommon, TextureManager* textureManager);
 
-	ModelData* LoadModelData (const std::string& directoryPath, const std::string& id, bool inversion = false);
+	ModelData* LoadModelData (const std::string& directoryPath, const std::string& fileName, bool inversion = false);
 	std::weak_ptr<ModelData> GetModelData (std::string id);
 	void UnloadModelData (const std::string& id);
 
@@ -39,7 +42,10 @@ private:	//内部関数
 	MaterialFile LoadMaterialTemplateFile (const std::string& directoryPath, const std::string& id);
 
 	//ファイル読み込みの関数
-	ModelData LoadObjFile (const std::string& directoryPath, const std::string& id, bool inversion = false);
+	ModelData LoadModelFile (const std::string& directoryPath, const std::string& fileName, bool inversion);
+
+	//assimpのノードからNode構造体に変換する関数
+	Node ReadNode(aiNode* node);
 
 private:	//メンバ変数
 	std::unordered_map<std::string, std::shared_ptr<ModelData>> map_;
