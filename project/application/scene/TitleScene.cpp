@@ -14,7 +14,7 @@ const float kDeltaTime = 1.0f / 60.0f;
 TitleScene::TitleScene() {
 	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall.png", "monsterBall");
 	ModelManager::GetInstance()->LoadModelData("Resources/terrain", "terrain.obj");
-	ModelManager::GetInstance()->LoadModelData("Resources/plane", "plane.gltf");
+	ModelManager::GetInstance()->LoadModelData("Resources/plane", "plane.gltf", true);
 }
 
 TitleScene::~TitleScene () {

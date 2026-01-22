@@ -146,12 +146,12 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 			VertexData vertex;
 			//aiProcess_MakeLeftHandedはz*-1	で、右手->左手に変換するので手動で対処
 			if(inversion) {
-				vertex.position = { -position.x, position.y, position.z, 1.0f };
-				vertex.normal = { -normal.x, normal.y, normal.z };
-			}
-			else {
 				vertex.position = { position.x, position.y, position.z, 1.0f };
 				vertex.normal = { normal.x, normal.y, normal.z };
+			}
+			else {
+				vertex.position = { -position.x, position.y, position.z, 1.0f };
+				vertex.normal = { -normal.x, normal.y, normal.z };
 			}
 			vertex.texcoord = { texcoord.x, texcoord.y };
 			modelData.vertices.push_back(vertex);
