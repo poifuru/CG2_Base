@@ -42,8 +42,8 @@ SphereMesh::SphereMesh(DxCommon* dxCommon, LightManager* lightManager) {
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = LightReflectionModel::HalfLambert;
 	materialData_->uvTransform = Math::MakeIdentity4x4();
-	materialData_->shininess = 50.0f;
-	materialData_->isSpecular = false;
+	materialData_->roughness = 0.3f;
+	materialData_->metallic = 0.0f;
 
 	cameraBuffer_ = dxCommon_->CreateBufferResource(sizeof(Vector3));
 	cameraBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
@@ -226,6 +226,10 @@ void SphereMesh::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
 		7, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetSpotLightSrvHandle())
 	);
+	//rectLightのSRVをセット
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
+		8, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetRectLightSrvHandle())
+	);
 	//実際に描画する(後々Index描画に変える)
 	dxCommon_->GetCommandList()->DrawInstanced((kSubdivision_ * kSubdivision_ * 6), 1, 0, 0);
 }
@@ -245,7 +249,8 @@ void SphereMesh::ImGui() {
 	ImGui::DragFloat3("UVscale##sphere", &uvTransform_.scale.x, 0.01f);
 	ImGui::DragFloat3("UVrotate##sphere", &uvTransform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("UVtranslate##sphere", &uvTransform_.translate.x, 0.01f);
-	ImGui::DragFloat("shininess##sphere", &materialData_->shininess, 0.1f, 0.0f, 1000.0f);
+	ImGui::DragFloat("roughness##sphere", &materialData_->roughness, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("metallic##sphere", &materialData_->metallic, 0.01f, 0.0f, 1.0f);
 	//ライトの種類を選べるようにする
 	int currentNum = static_cast<int>(materialData_->enableLighting);
 	const char* lights[] = { "None", "lambert", "halfLambert" };
@@ -253,7 +258,6 @@ void SphereMesh::ImGui() {
 		// 選ばれた番号をそのまま enum にキャストして戻せばOK！
 		materialData_->enableLighting = static_cast<LightReflectionModel>(currentNum);
 	}
-	ImGui::Checkbox("IsSpecular", &materialData_->isSpecular);
 	ImGui::Separator();
 #endif
 }

@@ -33,6 +33,11 @@ void LightManager::Initialize() {
 	//書き込むアドレスを取得してマッピング
 	spotLightBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&spotLightData_));
 
+	//バッファー確保
+	rectLightBuffer_ = dxCommon_->CreateBufferResource(sizeof(RectLightForGPU) * MaxCount);
+	//書き込むアドレスを取得してマッピング
+	rectLightBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&rectLightData_));
+
 	//DierctionalLightのSRVを作る
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = DXGI_FORMAT_UNKNOWN; // 構造化バッファの場合はUNKNOWN
@@ -53,11 +58,17 @@ void LightManager::Initialize() {
 	pointLightSRVIndex_ = SRVManager::GetInstance()->Allocate();
 	SRVManager::GetInstance()->CreateSRVStructuredBuffer(pointLightSRVIndex_, pointLightBuffer_.Get(), MaxCount, sizeof(PointLightForGPU));
 
-	//PointLight用のSRV作成
+	//SpotLight用のSRV作成
 	srvDesc.Buffer.StructureByteStride = sizeof(SpotLightForGPU);
 
 	spotLightSRVIndex_ = SRVManager::GetInstance()->Allocate();
 	SRVManager::GetInstance()->CreateSRVStructuredBuffer(spotLightSRVIndex_, spotLightBuffer_.Get(), MaxCount, sizeof(SpotLightForGPU));
+
+	//RectLight用のSRV作成
+	srvDesc.Buffer.StructureByteStride = sizeof(RectLightForGPU);
+
+	rectLightSRVIndex_ = SRVManager::GetInstance()->Allocate();
+	SRVManager::GetInstance()->CreateSRVStructuredBuffer(rectLightSRVIndex_, rectLightBuffer_.Get(), MaxCount, sizeof(RectLightForGPU));
 }
 
 void LightManager::Update() {
@@ -71,6 +82,10 @@ void LightManager::Update() {
 	}
 
 	for(auto& light : spotLights_) {
+		light->Update();
+	}
+
+	for(auto& light : rectLights_) {
 		light->Update();
 	}
 
@@ -108,6 +123,20 @@ void LightManager::Update() {
 		spotLightData_[i].distance = spotLights_[i]->GetDistance();
 		spotLightData_[i].decay = spotLights_[i]->GetDecay();
 		spotLightData_[i].cosAngle = spotLights_[i]->GetCosAngle();
+	}
+
+	count = (std::min)(rectLights_.size(), (size_t)MaxCount);
+
+	//データを集めてMap済みのメモリに書き込む
+	for(size_t i = 0; i < count; ++i) {
+		rectLightData_[i].color = rectLights_[i]->GetColor();
+		rectLightData_[i].position = rectLights_[i]->GetPosition();
+		rectLightData_[i].intensity = rectLights_[i]->GetIntensity();
+		rectLightData_[i].direction = rectLights_[i]->GetDirection();
+		rectLightData_[i].size = rectLights_[i]->GetSize();
+		rectLightData_[i].right = rectLights_[i]->GetRight();
+		rectLightData_[i].up = rectLights_[i]->GetUp();
+		rectLightData_[i].decay = rectLights_[i]->GetDecay();
 	}
 }
 
@@ -168,6 +197,23 @@ void LightManager::ImGui() {
 			ImGui::EndTabItem();
 		}
 
+		// --- RectLightタブ ---
+		if(ImGui::BeginTabItem("Rect")) {
+			if(rectLights_.empty()) {
+				ImGui::Text("No Rect Lights");
+			}
+			else {
+				// 点光源用のインデックス変数(selectPointLightIndex_)をメンバに追加しておくといいでやんす！
+				int maxIdx = static_cast<int>(rectLights_.size()) - 1;
+				ImGui::SliderInt("Select", &selectRectLightIndex_, 0, maxIdx);
+				ImGui::Separator();
+				if(selectRectLightIndex_ >= 0 && selectRectLightIndex_ < (int)rectLights_.size()) {
+					rectLights_[selectRectLightIndex_]->ImGui(selectRectLightIndex_);
+				}
+			}
+			ImGui::EndTabItem();
+		}
+
 		ImGui::EndTabBar(); // タブバーを終了
 	}
 
@@ -190,6 +236,11 @@ void LightManager::AddLight(LightType type) {
 	case SPOTLIGHT:
 		spotLights_.push_back(std::make_unique<SpotLight>());
 		lightCountData_->spotLight++;
+		break;
+
+	case RECTLIGHT:
+		rectLights_.push_back(std::make_unique<RectLight>());
+		lightCountData_->rectLight++;
 		break;
 
 	default:

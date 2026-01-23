@@ -34,6 +34,12 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	standard3DDescriptorRanges[3].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	standard3DDescriptorRanges[3].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
+	//RectLight用
+	standard3DDescriptorRanges[4].BaseShaderRegister = 4; // register(t4)に対応
+	standard3DDescriptorRanges[4].NumDescriptors = 1;
+	standard3DDescriptorRanges[4].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	standard3DDescriptorRanges[4].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
 	//RootParameter(b0)
 	standard3DRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	standard3DRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	//VertexShaderで使う
@@ -77,6 +83,12 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	standard3DRootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	standard3DRootParameters[7].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[3]; // Range[1]を指す
 	standard3DRootParameters[7].DescriptorTable.NumDescriptorRanges = 1;
+
+	//RectLight一覧用のディスクリプタテーブル(t4用)
+	standard3DRootParameters[8].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	standard3DRootParameters[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	standard3DRootParameters[8].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[4]; // Range[1]を指す
+	standard3DRootParameters[8].DescriptorTable.NumDescriptorRanges = 1;
 
 	//Sampler
 	standard3DStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;	//バイリニアフィルタ

@@ -4,6 +4,7 @@
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
+#include "RectLight.h"
 #include "DxCommon.h"
 
 //ライトの種類
@@ -11,12 +12,14 @@ enum LightType {
 	DIRECTIONALLIGHT,
 	POINTLIGHT,
 	SPOTLIGHT,
+	RECTLIGHT,
 };
 
 struct LightCount {
 	int32_t dirLight;
 	int32_t pointLight;
 	int32_t spotLight;
+	int32_t rectLight;
 };
 
 struct DirectionalLightForGPU {
@@ -45,6 +48,18 @@ struct SpotLightForGPU {
 	float padding[2];
 };
 
+struct RectLightForGPU {
+	Vector4 color;
+	Vector3 position;    // ライトの中心座標
+	float intensity;
+	Vector3 direction;   // ライトの正面方向（法線）
+	Vector2 size;        // Width(幅) と Height(高さ)
+	Vector3 right;       // ライトの右方向ベクトル
+	float padding;
+	Vector3 up;          // ライトの上方向ベクトル
+	float decay;        // 距離による減衰率（PointLightと同様）
+};
+
 class LightManager {
 public:
 	LightManager(DxCommon* dxCommon);
@@ -62,12 +77,14 @@ public:
 	uint32_t GetDirLightSrvHandle() const { return dirLightSRVIndex_; }
 	uint32_t GetPointLightSrvHandle() const { return pointLightSRVIndex_; }
 	uint32_t GetSpotLightSrvHandle() const { return spotLightSRVIndex_; }
+	uint32_t GetRectLightSrvHandle() const { return rectLightSRVIndex_; }
 
 private:
 	//ライトの種類ごとにリストを持つ
 	std::vector<std::unique_ptr<DirectionalLight>> dirLights_;
 	std::vector<std::unique_ptr<PointLight>> pointLights_;
 	std::vector<std::unique_ptr<SpotLight>> spotLights_;
+	std::vector < std::unique_ptr<RectLight>> rectLights_;
 
 	//ConstantBuffer用のリソース
 	ComPtr<ID3D12Resource> lightCountBuffer_;
@@ -83,15 +100,20 @@ private:
 	ComPtr<ID3D12Resource> spotLightBuffer_;	//SpotLight
 	SpotLightForGPU* spotLightData_ = nullptr;
 
+	ComPtr<ID3D12Resource> rectLightBuffer_;	//SpotLight
+	RectLightForGPU* rectLightData_ = nullptr;
+
 	// DescriptorHeap内での位置（SRV用）
 	uint32_t dirLightSRVIndex_;
 	uint32_t pointLightSRVIndex_;
 	uint32_t spotLightSRVIndex_;
+	uint32_t rectLightSRVIndex_;
 
 	//ImGui編集用の変数
 	int selectDirLightIndex_ = 0;
 	int selectPointLightIndex_ = 0;
 	int selectSpotLightIndex_ = 0;
+	int selectRectLightIndex_ = 0;
 
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;

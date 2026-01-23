@@ -66,6 +66,7 @@
     <ClCompile Include="magosuya\light\SpotLight.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="application\entity\boss\Boss.cpp" />
+    <ClCompile Include="magosuya\light\RectLight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -137,6 +138,7 @@
     <ClInclude Include="magosuya\light\SpotLight.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="application\scene\SceneType.h" />
+    <ClInclude Include="magosuya\light\RectLight.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">

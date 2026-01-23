@@ -35,8 +35,8 @@ void ModelRenderer::Initialize () {
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = LightReflectionModel::HalfLambert;
 	materialData_->uvTransform = Math::MakeIdentity4x4 ();
-	materialData_->shininess = 50.0f;
-	materialData_->isSpecular = false;
+	materialData_->roughness = 0.03;
+	materialData_->metallic = 0.0f;
 
 	cameraBuffer_ = dxCommon_->CreateBufferResource(sizeof(Vector3));
 	cameraBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
@@ -106,6 +106,10 @@ void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
 		7, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetSpotLightSrvHandle())
 	);
+	//rectLightのSRVをセット
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
+		8, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetRectLightSrvHandle())
+	);
 	//実際に描画する
 	commandList_->DrawIndexedInstanced (static_cast<UINT>(data->indexCount), 1, 0, 0, 0);
 }
@@ -128,7 +132,8 @@ void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform, const s
 	ImGui::DragFloat3 (("UVscale" + label).c_str (), &uvTransform.scale.x, 0.01f);
 	ImGui::DragFloat3 (("UVrotate" + label).c_str (), &uvTransform.rotate.x, 0.01f);
 	ImGui::DragFloat3 (("UVtranslate" + label).c_str (), &uvTransform.translate.x, 0.01f);
-	ImGui::DragFloat(("shininess" + label).c_str(), &materialData_->shininess, 0.1f, 0.0f, 1000.0f);
+	ImGui::DragFloat(("roughness" + label).c_str(), &materialData_->roughness, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat(("metallic" + label).c_str(), &materialData_->metallic, 0.01f, 0.0f, 1.0f);
 	//ライトの種類を選べるようにする
 	int currentNum = static_cast<int>(materialData_->enableLighting);
 	const char* lights[] = { "None", "lambert", "halfLambert" };
@@ -136,7 +141,6 @@ void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform, const s
 		// 選ばれた番号をそのまま enum にキャストして戻せばOK！
 		materialData_->enableLighting = static_cast<LightReflectionModel>(currentNum);
 	}
-	ImGui::Checkbox(("IsSpecular" + label).c_str(), &materialData_->isSpecular);
 	ImGui::Separator ();
 #endif
 }

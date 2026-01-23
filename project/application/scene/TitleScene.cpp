@@ -32,6 +32,7 @@ void TitleScene::Initialize (CameraOrganizer* camera, InputManager* inputManager
 	lightManager_->AddLight(LightType::DIRECTIONALLIGHT);
 	lightManager_->AddLight(LightType::POINTLIGHT);
 	lightManager_->AddLight(LightType::SPOTLIGHT);
+	lightManager_->AddLight(LightType::RECTLIGHT);
 
 	sphere_ = std::make_unique<SphereMesh>(dxCommon, lightManager_.get());
 	sphere_->Initialize({0.0f, 0.0f, 0.0f}, 3.0f);
