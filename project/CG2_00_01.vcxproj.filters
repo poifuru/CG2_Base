@@ -65,6 +65,7 @@
     <ClCompile Include="magosuya\light\PointLight.cpp" />
     <ClCompile Include="magosuya\light\SpotLight.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="application\entity\boss\Boss.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />

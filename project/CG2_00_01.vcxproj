@@ -159,8 +159,8 @@ echo "MaoSuya Engine Builded"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration />
-      <AdditionalLibraryDirectories>$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration);%(AdditionalLibraryDirectories);$(SolutionDir);$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>imgui.lib;DirectXTex.lib;$(CoreLibraryDependencies);%(AdditionalDependencies);</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)externals\imgui\lib\$(Configuration);$(SolutionDir)externals\DirectXTex\lib\$(Configuration);$(SolutionDir)externals\assimp\lib\Debug;%(AdditionalLibraryDirectories);$(SolutionDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>imgui.lib;DirectXTex.lib;assimp-vc143-mtd.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent>

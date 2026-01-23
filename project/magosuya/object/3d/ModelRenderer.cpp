@@ -29,7 +29,8 @@ void ModelRenderer::Initialize () {
 	matrixData_->WorldInverseTranspose = Math::MakeIdentity4x4 ();
 
 	//マテリアルデータ
-	materialBuffer_ = dxCommon_->CreateBufferResource (sizeof (Material));
+	//size_t size = (sizeof(Material) + 255) & ~255;
+	materialBuffer_ = dxCommon_->CreateBufferResource (sizeof(Material));
 	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = LightReflectionModel::HalfLambert;

@@ -69,7 +69,7 @@ void TitleScene::Update () {
 }
 
 void TitleScene::Draw () {
-	//sphere_->Draw(TextureManager::GetInstance()->GetTextureHandle("monsterBall"));
-	//terrain_->Draw();
-	plane_->Draw();
+	sphere_->Draw(TextureManager::GetInstance()->GetTextureHandle("monsterBall"));
+	terrain_->Draw();
+	//plane_->Draw();
 }

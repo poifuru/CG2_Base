@@ -9,7 +9,7 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	commandList_ = dxCommon->GetCommandList ();
 
 	//===RootSigTypeごとの定義===///
-	//***standard3D***//
+#pragma region standard3D
 	//Texture用
 	standard3DDescriptorRanges[0].BaseShaderRegister = 0;	//0から始まる
 	standard3DDescriptorRanges[0].NumDescriptors = 1;		//数は1つ
@@ -87,9 +87,9 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	standard3DStaticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;	//ありったけのmipmapを使う
 	standard3DStaticSamplers[0].ShaderRegister = 0;	//レジスタ番号0を使う
 	standard3DStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
-	//*******//
+#pragma endregion
 
-	//***Particle***//
+#pragma region Particle
 	//DescriptorRange(VSで使うt0レジスタ用)
 	particleDescriptorRanges[0].BaseShaderRegister = 0;	//0から始まる
 	particleDescriptorRanges[0].NumDescriptors = 1;		//数は1つ
@@ -129,9 +129,9 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	particleStaticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;							//ありったけのmipmapを使う
 	particleStaticSamplers[0].ShaderRegister = 0;									//s0を指定
 	particleStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
-	//*******//
+#pragma endregion
 
-	//***Mapchip***//
+#pragma region mapchip
 	// Index [0]: StructuredBuffer (t0)
 	mapchipRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	mapchipRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
@@ -158,8 +158,9 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	mapchipStaticSamplers[0].ShaderRegister = 0;									//s0を指定
 	mapchipStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
 	//*******//
+#pragma endregion
 
-	//***LineMesh***//
+#pragma region LineMesh
 	//DescriptorRange
 	//行列データのインスタンシング用(VSで使うt0レジスタ用)
 	lineMeshDescriptorRanges[0].BaseShaderRegister = 0;	//0から始まる
@@ -183,9 +184,9 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	lineMeshRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;							//VertexShaderで使う
 	lineMeshRootParameters[1].DescriptorTable.pDescriptorRanges = lineMeshDescriptorRanges;						//t0(SRV)を指定
 	lineMeshRootParameters[1].DescriptorTable.NumDescriptorRanges = _countof (lineMeshDescriptorRanges);		//Tableで利用する数
-	//*******//
+#pragma endregion
 
-	//***CubeMesh***//
+#pragma region CubeMesh
 	//DescriptorRange
 	//行列データのインスタンシング用(VSで使うt0レジスタ用)
 	cubeMeshDescriptorRanges[0].BaseShaderRegister = 0;	//0から始まる
@@ -209,7 +210,7 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	cubeMeshRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;							//VertexShaderで使う
 	cubeMeshRootParameters[1].DescriptorTable.pDescriptorRanges = cubeMeshDescriptorRanges;						//t0(SRV)を指定
 	cubeMeshRootParameters[1].DescriptorTable.NumDescriptorRanges = _countof (cubeMeshDescriptorRanges);		//Tableで利用する数
-	//*******//
+#pragma endregion
 }
 
 uint32_t RootSignatureManager::GetOrCreateRootSignature (RootSigType type) {
