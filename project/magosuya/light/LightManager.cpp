@@ -89,6 +89,12 @@ void LightManager::Update() {
 		light->Update();
 	}
 
+	//LightCountのデータを更新
+	lightCountData_->pointLight = static_cast<int>(pointLights_.size());
+	lightCountData_->dirLight = static_cast<int>(dirLights_.size());
+	lightCountData_->spotLight = static_cast<int>(spotLights_.size());
+	lightCountData_->rectLight = static_cast<int>(rectLights_.size());
+
 	// 書き込む数を制限
 	size_t count = (std::min)(dirLights_.size(), (size_t)MaxCount);
 
@@ -149,6 +155,15 @@ void LightManager::ImGui() {
 
 		// --- DirectionalLightタブ ---
 		if(ImGui::BeginTabItem("Directional")) {
+
+			//ライトを増やすボタン
+			if(ImGui::Button("Add DirectionalLight")) {
+				if(dirLights_.size() < MaxCount) {
+					AddLight(DIRECTIONALLIGHT); // 既存のAddLight関数を呼ぶ
+					selectDirLightIndex_ = static_cast<int>(dirLights_.size()) - 1; // 追加したやつを選択
+				}
+			}
+
 			if(dirLights_.empty()) {
 				ImGui::Text("No Directional Lights");
 			}
@@ -158,6 +173,19 @@ void LightManager::ImGui() {
 				ImGui::Separator();
 				if(selectDirLightIndex_ >= 0 && selectDirLightIndex_ < (int)dirLights_.size()) {
 					dirLights_[selectDirLightIndex_]->ImGui(selectDirLightIndex_);
+				
+					//ライトを消すボタン
+					ImGui::Spacing();
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.1f, 0.1f, 1.0f)); // 暗い赤
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.1f, 0.1f, 1.0f)); // 明るい赤
+					if(ImGui::Button("Delete This Light", ImVec2(-1, 0))) { // 横いっぱいのボタン
+						dirLights_.erase(dirLights_.begin() + selectDirLightIndex_);
+						// インデックスが範囲外にならないように調整
+						if(selectDirLightIndex_ > 0) {
+							selectDirLightIndex_--;
+						}
+					}
+					ImGui::PopStyleColor(2);
 				}
 			}
 			ImGui::EndTabItem(); // タブを閉じ忘れないように！
@@ -165,6 +193,15 @@ void LightManager::ImGui() {
 
 		// --- PointLightタブ ---
 		if(ImGui::BeginTabItem("Point")) {
+
+			//ライトを増やすボタン
+			if(ImGui::Button("Add PointLight")) {
+				if(pointLights_.size() < MaxCount) {
+					AddLight(POINTLIGHT); // 既存のAddLight関数を呼ぶ
+					selectPointLightIndex_ = static_cast<int>(pointLights_.size()) - 1; // 追加したやつを選択
+				}
+			}
+
 			if(pointLights_.empty()) {
 				ImGui::Text("No Point Lights");
 			}
@@ -175,6 +212,19 @@ void LightManager::ImGui() {
 				ImGui::Separator();
 				if(selectPointLightIndex_ >= 0 && selectPointLightIndex_ < (int)pointLights_.size()) {
 					pointLights_[selectPointLightIndex_]->ImGui(selectPointLightIndex_);
+				
+					//ライトを消すボタン
+					ImGui::Spacing();
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.1f, 0.1f, 1.0f)); // 暗い赤
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.1f, 0.1f, 1.0f)); // 明るい赤
+					if(ImGui::Button("Delete This Light", ImVec2(-1, 0))) { // 横いっぱいのボタン
+						pointLights_.erase(pointLights_.begin() + selectPointLightIndex_);
+						// インデックスが範囲外にならないように調整
+						if(selectPointLightIndex_ > 0) {
+							selectPointLightIndex_--;
+						}
+					}
+					ImGui::PopStyleColor(2);
 				}
 			}
 			ImGui::EndTabItem();
@@ -182,6 +232,15 @@ void LightManager::ImGui() {
 
 		// --- SpotLightタブ ---
 		if(ImGui::BeginTabItem("Spot")) {
+
+			//ライトを増やすボタン
+			if(ImGui::Button("Add SpotLight")) {
+				if(spotLights_.size() < MaxCount) {
+					AddLight(SPOTLIGHT); // 既存のAddLight関数を呼ぶ
+					selectSpotLightIndex_ = static_cast<int>(spotLights_.size()) - 1; // 追加したやつを選択
+				}
+			}
+
 			if(spotLights_.empty()) {
 				ImGui::Text("No Spot Lights");
 			}
@@ -192,6 +251,19 @@ void LightManager::ImGui() {
 				ImGui::Separator();
 				if(selectSpotLightIndex_ >= 0 && selectSpotLightIndex_ < (int)spotLights_.size()) {
 					spotLights_[selectSpotLightIndex_]->ImGui(selectSpotLightIndex_);
+
+					//ライトを消すボタン
+					ImGui::Spacing();
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.1f, 0.1f, 1.0f)); // 暗い赤
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.1f, 0.1f, 1.0f)); // 明るい赤
+					if(ImGui::Button("Delete This Light", ImVec2(-1, 0))) { // 横いっぱいのボタン
+						spotLights_.erase(spotLights_.begin() + selectSpotLightIndex_);
+						// インデックスが範囲外にならないように調整
+						if(selectSpotLightIndex_ > 0) {
+							selectSpotLightIndex_--;
+						}
+					}
+					ImGui::PopStyleColor(2);
 				}
 			}
 			ImGui::EndTabItem();
@@ -199,6 +271,15 @@ void LightManager::ImGui() {
 
 		// --- RectLightタブ ---
 		if(ImGui::BeginTabItem("Rect")) {
+
+			//ライトを増やすボタン
+			if(ImGui::Button("Add RectLight")) {
+				if(rectLights_.size() < MaxCount) {
+					AddLight(RECTLIGHT); // 既存のAddLight関数を呼ぶ
+					selectRectLightIndex_ = static_cast<int>(rectLights_.size()) - 1; // 追加したやつを選択
+				}
+			}
+
 			if(rectLights_.empty()) {
 				ImGui::Text("No Rect Lights");
 			}
@@ -209,6 +290,19 @@ void LightManager::ImGui() {
 				ImGui::Separator();
 				if(selectRectLightIndex_ >= 0 && selectRectLightIndex_ < (int)rectLights_.size()) {
 					rectLights_[selectRectLightIndex_]->ImGui(selectRectLightIndex_);
+
+					//ライトを消すボタン
+					ImGui::Spacing();
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.1f, 0.1f, 1.0f)); // 暗い赤
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.1f, 0.1f, 1.0f)); // 明るい赤
+					if(ImGui::Button("Delete This Light", ImVec2(-1, 0))) { // 横いっぱいのボタン
+						rectLights_.erase(rectLights_.begin() + selectRectLightIndex_);
+						// インデックスが範囲外にならないように調整
+						if(selectRectLightIndex_ > 0) {
+							selectRectLightIndex_--;
+						}
+					}
+					ImGui::PopStyleColor(2);
 				}
 			}
 			ImGui::EndTabItem();

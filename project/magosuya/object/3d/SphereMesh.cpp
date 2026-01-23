@@ -43,7 +43,7 @@ SphereMesh::SphereMesh(DxCommon* dxCommon, LightManager* lightManager) {
 	materialData_->enableLighting = LightReflectionModel::HalfLambert;
 	materialData_->uvTransform = Math::MakeIdentity4x4();
 	materialData_->roughness = 0.3f;
-	materialData_->metallic = 0.0f;
+	materialData_->metallic = 0.5f;
 
 	cameraBuffer_ = dxCommon_->CreateBufferResource(sizeof(Vector3));
 	cameraBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));

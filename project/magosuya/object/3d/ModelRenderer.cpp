@@ -35,8 +35,8 @@ void ModelRenderer::Initialize () {
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = LightReflectionModel::HalfLambert;
 	materialData_->uvTransform = Math::MakeIdentity4x4 ();
-	materialData_->roughness = 0.03;
-	materialData_->metallic = 0.0f;
+	materialData_->roughness = 0.3f;
+	materialData_->metallic = 0.5f;
 
 	cameraBuffer_ = dxCommon_->CreateBufferResource(sizeof(Vector3));
 	cameraBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));

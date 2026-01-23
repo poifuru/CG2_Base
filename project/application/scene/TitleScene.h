@@ -21,5 +21,6 @@ private:	//メンバ変数
 	std::unique_ptr<LightManager> lightManager_ = nullptr;
 	std::unique_ptr<SphereMesh> sphere_ = nullptr;
 	std::unique_ptr<Model> terrain_ = nullptr;
-	std::unique_ptr<Model> plane_ = nullptr;
+	std::unique_ptr<Model> plane1_ = nullptr;
+	std::unique_ptr<Model> plane2_ = nullptr;
 };
