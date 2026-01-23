@@ -161,8 +161,8 @@ struct Material {
 	LightReflectionModel enableLighting;
 	float padding[3];
 	Matrix4x4 uvTransform;
-	float shininess;
-	bool isSpecular;
+	float roughness; // 粗さ
+	float metallic; // 金属度
 };
 
 //TransformationMatrix構造体

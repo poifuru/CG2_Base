@@ -15,13 +15,10 @@ void ModelManager::Initialize(DxCommon* dxCommon, TextureManager* textureManager
 }
 
 ModelData* ModelManager::LoadModelData(const std::string& directoryPath, const std::string& fileName, bool inversion) {
-	//fileName引数からidを生成する
-	std::string ID = fs::path(fileName).stem().string();
-
 	//IDのモデルをすでに読み込んでいたら
-	if(map_.count(ID)) {
+	if(map_.count(fileName)) {
 		//既存データを取得
-		std::shared_ptr<ModelData> existingData = map_.at(ID);
+		std::shared_ptr<ModelData> existingData = map_.at(fileName);
 		//存在していたら既存のデータを返す
 		return existingData.get();
 	}
@@ -61,14 +58,14 @@ ModelData* ModelManager::LoadModelData(const std::string& directoryPath, const s
 	newData->ibView.Format = DXGI_FORMAT_R32_UINT;
 
 	//mapに登録
-	map_[ID] = newData;
+	map_[fileName] = newData;
 
 	// CPUメモリを解放（必要に応じて）
 	newData->vertices.clear();
 	newData->indices.clear();
 
 	//データ提供
-	return map_.at(ID).get();
+	return map_.at(fileName).get();
 }
 
 std::weak_ptr<ModelData> ModelManager::GetModelData(std::string id) {
@@ -111,12 +108,6 @@ MaterialFile ModelManager::LoadMaterialTemplateFile(const std::string& directory
 }
 
 ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const std::string& fileName, bool inversion) {
-	//fileName引数からidを生成する
-	std::string ID = fs::path(fileName).stem().string();
-
-	//モデルに貼り付けてるテクスチャも一緒にロード
-	textureManager_->LoadTexture(directoryPath + "/" + ID + ".png", ID);
-
 	//必要になる変数宣言
 	ModelData modelData;	//構築するModelData
 
