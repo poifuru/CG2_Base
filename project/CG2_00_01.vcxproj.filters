@@ -29,12 +29,9 @@
     <ClCompile Include="magosuya\utility\input\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="general\MathFunction.cpp" />
-    <ClCompile Include="magosuya\utility\audio\Sound.cpp" />
     <ClCompile Include="magosuya\object\3d\SphereMesh.cpp" />
     <ClCompile Include="magosuya\object\2d\Sprite.cpp" />
     <ClCompile Include="magosuya\object\3d\Model.cpp" />
-    <ClCompile Include="magosuya\utility\audio\SoundData.cpp" />
-    <ClCompile Include="magosuya\utility\audio\SoundManager.cpp" />
     <ClCompile Include="magosuya\utility\input\RawInput.cpp" />
     <ClCompile Include="magosuya\object\3d\ModelManager.cpp" />
     <ClCompile Include="magosuya\MagosuyaEngine.cpp" />
@@ -67,6 +64,9 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="application\entity\boss\Boss.cpp" />
     <ClCompile Include="magosuya\light\RectLight.cpp" />
+    <ClCompile Include="magosuya\utility\audio\AudioManager.cpp" />
+    <ClCompile Include="magosuya\utility\audio\SoundData.cpp" />
+    <ClCompile Include="magosuya\utility\audio\Sound.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -101,13 +101,10 @@
     <ClInclude Include="magosuya\utility\input\GamePad.h" />
     <ClInclude Include="general\function.h" />
     <ClInclude Include="general\MathFunction.h" />
-    <ClInclude Include="magosuya\utility\audio\Sound.h" />
     <ClInclude Include="magosuya\object\3d\SphereMesh.h" />
     <ClInclude Include="magosuya\object\2d\Sprite.h" />
     <ClInclude Include="general\struct.h" />
     <ClInclude Include="magosuya\object\3d\Model.h" />
-    <ClInclude Include="magosuya\utility\audio\SoundData.h" />
-    <ClInclude Include="magosuya\utility\audio\SoundManager.h" />
     <ClInclude Include="magosuya\utility\input\InputManager.h" />
     <ClInclude Include="magosuya\utility\input\RawInput.h" />
     <ClInclude Include="magosuya\object\3d\ModelManager.h" />
@@ -139,6 +136,9 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="application\scene\SceneType.h" />
     <ClInclude Include="magosuya\light\RectLight.h" />
+    <ClInclude Include="magosuya\utility\audio\AudioManager.h" />
+    <ClInclude Include="magosuya\utility\audio\SoundData.h" />
+    <ClInclude Include="magosuya\utility\audio\Sound.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">
