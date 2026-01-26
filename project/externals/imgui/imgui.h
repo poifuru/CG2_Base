@@ -25,6 +25,7 @@
 #define IMGUI_VERSION               "1.89.4"
 #define IMGUI_VERSION_NUM           18940
 #define IMGUI_HAS_TABLE
+#define IMGUI_MAX					99999
 
 /*
 

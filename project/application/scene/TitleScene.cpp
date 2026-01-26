@@ -13,6 +13,7 @@ const float kDeltaTime = 1.0f / 60.0f;
 
 TitleScene::TitleScene() {
 	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall.png", "monsterBall");
+	TextureManager::GetInstance()->LoadTexture("Resources/uvChecker.png", "uvChecker");
 	TextureManager::GetInstance()->LoadTexture("Resources/terrain/terrain.png", "terrain");
 	TextureManager::GetInstance()->LoadTexture("Resources/plane/plane.png", "plane");
 	ModelManager::GetInstance()->LoadModelData("Resources/terrain", "terrain.obj");
@@ -23,6 +24,7 @@ TitleScene::TitleScene() {
 TitleScene::~TitleScene () {
 	//リソースを解放する
 	TextureManager::GetInstance()->UnloadTexture("Resources/monsterBall.png");
+	TextureManager::GetInstance()->UnloadTexture("Resources/uvChecker.png");
 }
 
 void TitleScene::Initialize (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
@@ -77,7 +79,7 @@ void TitleScene::Update () {
 }
 
 void TitleScene::Draw () {
-	sphere_->Draw(TextureManager::GetInstance()->GetTextureHandle("monsterBall"));
+	sphere_->Draw(TextureManager::GetInstance()->GetTextureHandle("uvChecker"));
 	terrain_->Draw();
 	plane1_->Draw();
 	plane2_->Draw();

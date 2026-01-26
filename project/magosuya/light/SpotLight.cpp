@@ -36,11 +36,11 @@ void SpotLight::ImGui(int index) {
 	std::string label = "SpontLightSettings ##" + std::to_string(index);
 	if(ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::ColorEdit4("Color", &color_.x);
-		ImGui::DragFloat3("Position", &position_.x, 0.01f, -100.0f, 100.0f);
-		ImGui::DragFloat("Intensity", &intensity_, 0.01f, 0.0f, 10.0f);
+		ImGui::DragFloat3("Position", &position_.x, 0.01f);
+		ImGui::DragFloat("Intensity", &intensity_, 0.01f, 0.0f, IMGUI_MAX);
 		ImGui::DragFloat3("Direction", &direction_.x, 0.01f, -1.0f, 1.0f);
-		ImGui::DragFloat("Distance", &distance_, 0.01f, 0.0f, 10.0f);
-		ImGui::DragFloat("Decay", &decay_, 0.01f, 0.0f, 10.0f);
+		ImGui::DragFloat("Distance", &distance_, 0.01f, 0.0f, IMGUI_MAX);
+		ImGui::DragFloat("Decay", &decay_, 0.01f, 0.0f, IMGUI_MAX);
 		ImGui::DragFloat("CosAngle", &cosAngle_, 0.01f, -1.0f, 1.0f);
 	}
 #endif
