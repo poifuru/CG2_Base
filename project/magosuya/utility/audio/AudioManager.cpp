@@ -41,8 +41,35 @@ void AudioManager::Update() {
 	}
 }
 
+void AudioManager::Finalize() {
+	if(!xAudio2_) return; // すでにリセット済みなら何もしない
+
+	//まず再生中のボイスをすべて破棄する
+	for(auto& pair : activeVoices_) {
+		pair.second->Stop();
+		pair.second->DestroyVoice();
+	}
+	activeVoices_.clear();
+
+	//読み込んだリソース（データ）をクリアする
+	audioResources_.clear();
+
+	// マスターボイスを明示的に破壊するでやんす
+	if(masterVoice_) {
+		masterVoice_->DestroyVoice();
+		masterVoice_ = nullptr;
+	}
+
+	//XAudio2本体をリセットする
+	xAudio2_.Reset();
+
+	//最後にMedia Foundationをシャットダウンする
+	MFShutdown();
+}
+
 void AudioManager::Load(const std::string& filename, const std::string& name) {
 	if (audioResources_.count(name)) {
+		//重複読み込み回避
 		return;
 	}
 
@@ -129,7 +156,7 @@ void AudioManager::UnloadAll() {
 	audioResources_.clear();
 }
 
-uint32_t AudioManager::Play(const std::string& name, bool loop) {
+uint32_t AudioManager::Play(const std::string& name, AudioType type, bool loop) {
 	const AudioData& data = audioResources_[name];
 	IXAudio2SourceVoice* pSourceVoice = nullptr;
 
@@ -149,6 +176,17 @@ uint32_t AudioManager::Play(const std::string& name, bool loop) {
 	if (loop)buf.LoopCount = XAUDIO2_LOOP_INFINITE;
 
 	pSourceVoice->SubmitSourceBuffer(&buf);
+
+	switch(type) {
+	case BGM:
+		pSourceVoice->SetVolume(volumeBGM_);
+		break;
+
+	case SE:
+		pSourceVoice->SetVolume(volumeSE_);
+		break;
+	}
+
 	pSourceVoice->Start();
 
 	//再生中音声リストに追加
@@ -169,28 +207,16 @@ void AudioManager::Stop(uint32_t playID) {
 	}
 }
 
-void AudioManager::Finalize() {
-	if (!xAudio2_) return; // すでにリセット済みなら何もしない
-
-	//まず再生中のボイスをすべて破棄する
-	for (auto& pair : activeVoices_) {
-		pair.second->Stop();
-		pair.second->DestroyVoice();
+void AudioManager::SetVolume(uint32_t playID, float volume) {
+	// 指定したIDが再生中かチェック
+	if(activeVoices_.count(playID)) {
+		//IXAudio2SourceVoiceのSetVolumeを呼ぶ
+		activeVoices_[playID]->SetVolume(volume);
 	}
-	activeVoices_.clear();
+}
 
-	//読み込んだリソース（データ）をクリアする
-	audioResources_.clear();
-
-	// マスターボイスを明示的に破壊するでやんす
+void AudioManager::SetMasterVolume(float volume) {
 	if(masterVoice_) {
-		masterVoice_->DestroyVoice();
-		masterVoice_ = nullptr;
+		masterVoice_->SetVolume(volume);
 	}
-
-	//XAudio2本体をリセットする
-	xAudio2_.Reset();
-
-	//最後にMedia Foundationをシャットダウンする
-	MFShutdown();
 }

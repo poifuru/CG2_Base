@@ -23,4 +23,5 @@ private:	//メンバ変数
 	std::unique_ptr<Model> terrain_ = nullptr;
 	std::unique_ptr<Model> plane1_ = nullptr;
 	std::unique_ptr<Model> plane2_ = nullptr;
+	uint32_t bgm = 0;
 };

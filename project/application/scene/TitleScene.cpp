@@ -53,13 +53,17 @@ void TitleScene::Initialize (CameraOrganizer* camera, InputManager* inputManager
 	plane2_->SetTexture("plane");
 	plane2_->Initialize({ 3.0f, 3.0f, 1.0f }, {}, { 4.0f, 5.0f, 0.0f });
 
-	AudioManager::GetInstance()->Play("bgm");
+	bgm = AudioManager::GetInstance()->Play("bgm");
 }
 
 void TitleScene::Update () {
 	if(input_->GetRawInput()->Trigger(VK_F1)) {
 		nextScene_ = new PlayScene();
 		SceneManager::GetInstance()->SetNextScene(nextScene_);
+	}
+
+	if(input_->GetRawInput()->Trigger(VK_SPACE)) {
+		AudioManager::GetInstance()->SetVolume(bgm, 0.1f);
 	}
 
 	camera_->Update();

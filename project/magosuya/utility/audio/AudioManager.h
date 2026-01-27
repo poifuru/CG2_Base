@@ -38,6 +38,12 @@ struct AudioData {
 	std::vector<BYTE> buffer;
 };
 
+//音声の種類
+enum AudioType {
+	BGM,
+	SE,
+};
+
 class AudioManager {
 public:
 	static AudioManager* GetInstance() {
@@ -46,11 +52,17 @@ public:
 		return &instance;
 	}
 
+	//デストラクタ
 	~AudioManager();
 
+	//初期化
 	void Initialze();
 
+	//更新
 	void Update();
+
+	//終了処理
+	void Finalize();
 
 	//読み込み
 	void Load(const std::string& filename, const std::string& name);
@@ -62,13 +74,16 @@ public:
 	void UnloadAll();
 
 	//再生
-	uint32_t Play(const std::string& name, bool loop = false);
+	uint32_t Play(const std::string& name, AudioType type, bool loop = false);
 
 	//停止
 	void Stop(uint32_t playID);
 
-	//終了処理
-	void Finalize();
+	//音声ごとの音量調整(0.0f ~ 1.0f)
+	void SetVolume(uint32_t playID, float volume);
+
+	//全体の音量調整
+	void SetMasterVolume(float volume);
 
 private:
 	//コンストラクタを禁止
@@ -88,4 +103,8 @@ private:
 	uint32_t nextPlayID_ = 0;
 
 	VoiceCallback voiceCallback_;
+
+	//BGM・SE音量
+	float volumeBGM_ = 0.5f;
+	float volumeSE_ = 0.5f;
 };
