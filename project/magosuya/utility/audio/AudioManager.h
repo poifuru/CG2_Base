@@ -2,8 +2,15 @@
 #include <Windows.h>
 #include <Wrl.h>
 using namespace Microsoft::WRL;
-#include <xaudio2.h>
 #include <memory>
+#include <string>
+#include <map>
+#include <vector>
+#include <mfapi.h>
+#include <mfidl.h>      // これが足りないと IMFMediaSource が定義されないでやんす
+#include <mfreadwrite.h>
+#include <xaudio2.h>
+#include "VoiceCallback.h"
 
 //チャンクヘッダ
 struct ChunkHeader {
@@ -27,10 +34,8 @@ struct FormatChunk {
 struct AudioData {
 	//波形フォーマット
 	WAVEFORMATEX wfex;
-	//バッファの先頭アドレス
-	BYTE* pBuffer;
-	//バッファのサイズ
-	unsigned int bufferSize;
+	//バッファ
+	std::vector<BYTE> buffer;
 };
 
 class AudioManager {
@@ -41,13 +46,29 @@ public:
 		return &instance;
 	}
 
+	~AudioManager();
+
 	void Initialze();
 
-	AudioData AudioLoadWave(const char* filename);
+	void Update();
 
-	void AudioUnload(AudioData* soundData);
+	//読み込み
+	void Load(const std::string& filename, const std::string& name);
 
-	void AudioPlayWave(IXAudio2* xAudio2, const AudioData& soundData);
+	//解放
+	void Unload(const std::string& name);
+
+	//全解放
+	void UnloadAll();
+
+	//再生
+	uint32_t Play(const std::string& name, bool loop = false);
+
+	//停止
+	void Stop(uint32_t playID);
+
+	//終了処理
+	void Finalize();
 
 private:
 	//コンストラクタを禁止
@@ -60,5 +81,11 @@ private:
 
 private:
 	ComPtr<IXAudio2> xAudio2_;
-	std::unique_ptr<IXAudio2MasteringVoice> masterVoice_;
+	IXAudio2MasteringVoice* masterVoice_ = nullptr;
+
+	std::map<std::string, AudioData> audioResources_; // 読み込み済みデータ
+	std::map<uint32_t, IXAudio2SourceVoice*> activeVoices_; // 再生中のボイス
+	uint32_t nextPlayID_ = 0;
+
+	VoiceCallback voiceCallback_;
 };

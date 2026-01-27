@@ -47,7 +47,6 @@
     <ClCompile Include="magosuya\mesh\Mesh.cpp" />
     <ClCompile Include="magosuya\utility\particle\MeshParticle.cpp" />
     <ClCompile Include="magosuya\utility\camera\LookAtCamera.cpp" />
-    <ClCompile Include="magosuya\utility\audio\Audio.cpp" />
     <ClCompile Include="general\Easing.cpp" />
     <ClCompile Include="magosuya\engine\SRV\SRVManager.cpp" />
     <ClCompile Include="application\entity\Entity.cpp" />
@@ -65,8 +64,6 @@
     <ClCompile Include="application\entity\boss\Boss.cpp" />
     <ClCompile Include="magosuya\light\RectLight.cpp" />
     <ClCompile Include="magosuya\utility\audio\AudioManager.cpp" />
-    <ClCompile Include="magosuya\utility\audio\SoundData.cpp" />
-    <ClCompile Include="magosuya\utility\audio\Sound.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -117,7 +114,6 @@
     <ClInclude Include="application\scene\TitleScene.h" />
     <ClInclude Include="application\scene\PlayScene.h" />
     <ClInclude Include="magosuya\utility\camera\LookAtCamera.h" />
-    <ClInclude Include="magosuya\utility\audio\Audio.h" />
     <ClInclude Include="general\Easing.h" />
     <ClInclude Include="magosuya\engine\SRV\SRVManager.h" />
     <ClInclude Include="application\entity\Entity.h" />
@@ -137,8 +133,7 @@
     <ClInclude Include="application\scene\SceneType.h" />
     <ClInclude Include="magosuya\light\RectLight.h" />
     <ClInclude Include="magosuya\utility\audio\AudioManager.h" />
-    <ClInclude Include="magosuya\utility\audio\SoundData.h" />
-    <ClInclude Include="magosuya\utility\audio\Sound.h" />
+    <ClInclude Include="magosuya\utility\audio\VoiceCallback.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">

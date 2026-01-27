@@ -13,6 +13,7 @@
 #include "Mesh.h"
 #include "CameraOrganizer.h"
 #include "SceneManager.h"
+#include "AudioManager.h"
 
 class MagosuyaEngine {
 public:		//メンバ関数
@@ -49,4 +50,5 @@ private:
 	CubeRenderer* cubeRenderer_ = nullptr;
 	CameraOrganizer* cameraOrganizer_ = nullptr;
 	SceneManager* sceneManager_ = nullptr;
+	AudioManager* audioManager_ = nullptr;
 };

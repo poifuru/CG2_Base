@@ -184,9 +184,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="magosuya\object\3d\BaseObject3d.cpp" />
     <ClCompile Include="general\Easing.cpp" />
     <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
-    <ClCompile Include="magosuya\utility\audio\Audio.cpp" />
-    <ClCompile Include="magosuya\utility\audio\Sound.cpp" />
-    <ClCompile Include="magosuya\utility\audio\SoundData.cpp" />
     <ClCompile Include="magosuya\utility\audio\AudioManager.cpp" />
     <ClCompile Include="magosuya\utility\camera\LookAtCamera.cpp" />
     <ClCompile Include="magosuya\utility\camera\CameraOrganizer.cpp" />
@@ -322,9 +319,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="magosuya\object\3d\BaseObject3d.h" />
     <ClInclude Include="general\Easing.h" />
     <ClInclude Include="magosuya\PSO\ShaderManager.h" />
-    <ClInclude Include="magosuya\utility\audio\Audio.h" />
-    <ClInclude Include="magosuya\utility\audio\Sound.h" />
-    <ClInclude Include="magosuya\utility\audio\SoundData.h" />
     <ClInclude Include="magosuya\utility\audio\AudioManager.h" />
     <ClInclude Include="magosuya\utility\camera\LookAtCamera.h" />
     <ClInclude Include="magosuya\utility\camera\CameraOrganizer.h" />
@@ -386,6 +380,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="magosuya\light\PointLight.h" />
     <ClInclude Include="magosuya\light\SpotLight.h" />
     <ClInclude Include="magosuya\light\RectLight.h" />
+    <ClInclude Include="magosuya\utility\audio\VoiceCallback.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Cube.hlsli" />
