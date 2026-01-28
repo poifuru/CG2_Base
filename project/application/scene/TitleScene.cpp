@@ -7,6 +7,7 @@
 #include "imgui.h"
 #include "SceneManager.h"
 #include "SceneType.h"
+#include "AudioManager.h"
 
 //デルタタイムを定義
 const float kDeltaTime = 1.0f / 60.0f;
@@ -19,6 +20,7 @@ TitleScene::TitleScene() {
 	ModelManager::GetInstance()->LoadModelData("Resources/terrain", "terrain.obj");
 	ModelManager::GetInstance()->LoadModelData("Resources/plane", "plane.gltf", true);
 	ModelManager::GetInstance()->LoadModelData("Resources/plane", "plane.obj", true);
+	AudioManager::GetInstance()->Load("Resources/audio/ohirusugi.mp3", "bgm");
 }
 
 TitleScene::~TitleScene () {
@@ -52,12 +54,18 @@ void TitleScene::Initialize (CameraOrganizer* camera, InputManager* inputManager
 	plane2_->SetModelData("plane.obj");
 	plane2_->SetTexture("plane");
 	plane2_->Initialize({ 3.0f, 3.0f, 1.0f }, {}, { 4.0f, 5.0f, 0.0f });
+
+	bgm = AudioManager::GetInstance()->Play("bgm", BGM);
 }
 
 void TitleScene::Update () {
 	if(input_->GetRawInput()->Trigger(VK_F1)) {
 		nextScene_ = new PlayScene();
 		SceneManager::GetInstance()->SetNextScene(nextScene_);
+	}
+
+	if(input_->GetRawInput()->Trigger(VK_SPACE)) {
+		AudioManager::GetInstance()->SetVolume(bgm, 0.1f);
 	}
 
 	camera_->Update();

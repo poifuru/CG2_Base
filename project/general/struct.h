@@ -238,31 +238,3 @@ struct Emitter {
 	float frequency;		//発生頻度
 	float frequencyTime;	//頻度用時刻
 };
-
-////チャンクヘッダ
-//struct ChunkHeader {
-//	char id[4];		//チャンク毎のID
-//	int32_t size;	//チャンクサイズ
-//};
-//
-////RIFFヘッダチャンク
-//struct RiffHeader {
-//	ChunkHeader chunk;	//"RIFF"
-//	char type[4];		//"WAVE"
-//};
-//
-////FMTチャンク
-//struct FormatChunk {
-//	ChunkHeader chunk;	//"fmt"
-//	WAVEFORMATEX fmt;		//波形フォーマット
-//};
-//
-////サウンドデータ構造体
-//struct SoundData {
-//	//波形フォーマット
-//	WAVEFORMATEX wfex;
-//	//バッファの先頭アドレス
-//	BYTE* pBuffer;
-//	//バッファのサイズ
-//	unsigned int bufferSize;
-//};

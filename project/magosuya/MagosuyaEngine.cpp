@@ -1,7 +1,9 @@
 #include "MagosuyaEngine.h"
 
 MagosuyaEngine::~MagosuyaEngine () {
+	
 	dxCommon_->Finalize ();
+	audioManager_->Finalize();
 }
 
 void MagosuyaEngine::Initialize () {
@@ -29,6 +31,8 @@ void MagosuyaEngine::Initialize () {
 	cameraOrganizer_->Initialize (inputManager_);
 	sceneManager_ = SceneManager::GetInstance();
 	sceneManager_->Initialize(cameraOrganizer_, inputManager_, dxCommon_);
+	audioManager_ = AudioManager::GetInstance();
+	audioManager_->Initialze();
 }
 
 void MagosuyaEngine::BeginFrame () {
@@ -38,6 +42,7 @@ void MagosuyaEngine::BeginFrame () {
 
 	//ゲームパッドの更新
 	inputManager_->GetGamePad ()->Update ();
+	audioManager_->Update();
 }
 void MagosuyaEngine::EndFrame () {
 	Mesh::AllDrawing ();
