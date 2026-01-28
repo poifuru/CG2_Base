@@ -11,6 +11,7 @@ class DxCommon;
 //使いたい用途によって設定を変えるため
 enum class RootSigType : uint32_t {
 	Standard3D,			// あなたが定義したCBV x 3 + DescriptorTable x 1 の構成
+	Standard3DInstance,
 	Particle,			//パーティクル用
 	Mapchip,			//マップチップ用
 	LineMesh,
@@ -59,6 +60,10 @@ private:	// メンバ変数
 	D3D12_DESCRIPTOR_RANGE standard3DDescriptorRanges[5] = {};
 	D3D12_ROOT_PARAMETER standard3DRootParameters[9] = {};
 	D3D12_STATIC_SAMPLER_DESC standard3DStaticSamplers[1] = {};
+	//Standard3DInstance
+	D3D12_DESCRIPTOR_RANGE standard3DInstanceDescriptorRanges[6] = {};
+	D3D12_ROOT_PARAMETER standard3DInstanceRootParameters[9] = {};
+	D3D12_STATIC_SAMPLER_DESC standard3DInstanceStaticSamplers[1] = {};
 	//Particle
 	D3D12_DESCRIPTOR_RANGE particleDescriptorRanges[1] = {};
 	D3D12_DESCRIPTOR_RANGE textureDescriptorRanges[1] = {};

@@ -14,6 +14,30 @@ namespace {
 	};
 }
 
+MapChip::MapChip() {
+	renderer_ = std::make_unique<MapChipRenderer>();
+}
+
+MapChip::~MapChip() {
+
+}
+
+void MapChip::Initialize(DxCommon* dxCommon, LightManager* lightManager) {
+	renderer_->Initialize(dxCommon, lightManager);
+}
+
+void MapChip::Update(const Matrix4x4& vp, Vector3 cameraWorld) {
+	renderer_->Update(*this, vp, cameraWorld);
+}
+
+void MapChip::Draw() {
+	renderer_->Draw();
+}
+
+void MapChip::ImGui(const std::string& name) {
+	renderer_->ImGui(name);
+}
+
 void MapChip::ResetMapChipData() {
 	// 全体のサイズ分確保（縦 × 横）
 	mapData_.clear();
@@ -39,6 +63,11 @@ void MapChip::LoadMapChipCSV(const std::string& filePath) {
 			std::string word;
 			//行の終わりならfor文を抜ける
 			if(!std::getline(line_stream, word, ',')) break;
+
+			// 文字列の末尾に改行コード(\r や \n)があれば削除する
+			while(!word.empty() && (word.back() == '\r' || word.back() == '\n')) {
+				word.pop_back();
+			}
 
 			//wordに対応するマップチップ種類があるか確認
 			if(mapChipTable.contains(word)) {

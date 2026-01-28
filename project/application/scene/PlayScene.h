@@ -7,6 +7,7 @@
 #include "mapChipRenderer.h"
 #include "Player.h"
 #include "Boss.h"
+#include "LightManager.h"
 
 class PlayScene : public BaseScene {
 public:		//メンバ関数
@@ -18,5 +19,6 @@ public:		//メンバ関数
 	void Draw () override;
 
 private:	//メンバ変数
-	
+	std::unique_ptr<LightManager> lightManager_ = nullptr;
+	std::unique_ptr<MapChip> mapchip_ = nullptr;
 };

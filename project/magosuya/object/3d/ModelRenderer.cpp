@@ -40,7 +40,9 @@ void ModelRenderer::Initialize () {
 
 	cameraBuffer_ = dxCommon_->CreateBufferResource(sizeof(Vector3));
 	cameraBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
-	cameraData_ = {};
+	cameraData_->x = 0.0f;
+	cameraData_->y = 0.0f;
+	cameraData_->z = 0.0f;
 
 	//PSO設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::Standard3D);
@@ -66,7 +68,7 @@ void ModelRenderer::Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform
 	//uvTranform更新
 	materialData_->uvTransform = Math::MakeAffineMatrix (uvTransform.scale, uvTransform.rotate, uvTransform.translate);
 
-	cameraData_ = &cameraWorld;
+	*cameraData_ = cameraWorld;
 }
 
 void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {

@@ -7,6 +7,8 @@
     <FxCompile Include="Resources\shader\Object3d.VS.hlsl" />
     <FxCompile Include="Resources\shader\Particle.PS.hlsl" />
     <FxCompile Include="Resources\shader\Particle.VS.hlsl" />
+    <FxCompile Include="Resources\shader\Object3dInstance.VS.hlsl" />
+    <FxCompile Include="Resources\shader\Object3dInstance.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application\scene\ClearScene.cpp" />
@@ -134,6 +136,7 @@
     <ClInclude Include="magosuya\light\RectLight.h" />
     <ClInclude Include="magosuya\utility\audio\AudioManager.h" />
     <ClInclude Include="magosuya\utility\audio\VoiceCallback.h" />
+    <ClInclude Include="application\mapchip\MapchipStruct.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">

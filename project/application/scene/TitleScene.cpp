@@ -34,7 +34,6 @@ void TitleScene::Initialize (CameraOrganizer* camera, InputManager* inputManager
 	input_ = inputManager;
 
 	lightManager_ = std::make_unique<LightManager>(dxCommon);
-
 	lightManager_->Initialize();
 
 	sphere_ = std::make_unique<SphereMesh>(dxCommon, lightManager_.get());
@@ -60,12 +59,12 @@ void TitleScene::Initialize (CameraOrganizer* camera, InputManager* inputManager
 
 void TitleScene::Update () {
 	if(input_->GetRawInput()->Trigger(VK_F1)) {
+		//シーン遷移時のもろもろ
+		AudioManager::GetInstance()->SetVolume(bgm, 0.1f);
+
+		//最後にシーンを更新
 		nextScene_ = new PlayScene();
 		SceneManager::GetInstance()->SetNextScene(nextScene_);
-	}
-
-	if(input_->GetRawInput()->Trigger(VK_SPACE)) {
-		AudioManager::GetInstance()->SetVolume(bgm, 0.1f);
 	}
 
 	camera_->Update();

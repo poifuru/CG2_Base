@@ -47,6 +47,9 @@ SphereMesh::SphereMesh(DxCommon* dxCommon, LightManager* lightManager) {
 
 	cameraBuffer_ = dxCommon_->CreateBufferResource(sizeof(Vector3));
 	cameraBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
+	cameraData_->x = 0.0f;
+	cameraData_->y = 0.0f;
+	cameraData_->z = 0.0f;
 
 	transform_ = {};
 	uvTransform_ = {};

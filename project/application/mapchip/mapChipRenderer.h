@@ -5,30 +5,20 @@ using namespace Microsoft::WRL;
 #include <d3d12.h>
 #include <memory>
 #include <map>
-#include "mapchip.h"
-#include "struct.h"
+#include "MapchipStruct.h"
 #include "Model.h"
+#include "DxCommon.h"
 #include "PSOManager.h"
+#include "lightManager.h"
 
-struct MapforGPU {
-	Matrix4x4 wvp;
-	Matrix4x4 world;
-	Vector4 color;
-};
-
-struct InstancingResource {
-	ComPtr<ID3D12Resource> resource;
-	MapforGPU* mappedData;
-	std::vector<MapforGPU> cpuData;
-
-	int srvIndex;
-};
+class MapChip;
 
 class MapChipRenderer {
 public:
-	void Initialize();
-	void Update(MapChip& mapChip, const Matrix4x4& vp);
+	void Initialize(DxCommon* dxCommon, LightManager* lightManager);
+	void Update(MapChip& mapChip, const Matrix4x4& vp, Vector3 cameraWorld);
 	void Draw();
+	void ImGui(const std::string& windowName);
 
 private:
 	//マップの種類ごとのリソース
@@ -44,12 +34,19 @@ private:
 
 	//マテリアルバッファ
 	ComPtr<ID3D12Resource> materialBuffer_;
+	ComPtr<ID3D12Resource> cameraBuffer_;
 
 	//マッピング用のCPUデータ
 	VertexData* vertexData_ = nullptr;
 	uint32_t* indexData_ = nullptr;
 	Material* materialData_ = nullptr;
+	Vector3* cameraData_ = nullptr;
 
 	//PSOの設定
 	PSODescriptor desc_;
+
+	//ポインタ
+	DxCommon* dxCommon_ = nullptr;
+	ID3D12GraphicsCommandList* commandList_ = nullptr;
+	LightManager* lightManager_ = nullptr;
 };
