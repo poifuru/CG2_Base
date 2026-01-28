@@ -27,6 +27,12 @@ TitleScene::~TitleScene () {
 	//リソースを解放する
 	TextureManager::GetInstance()->UnloadTexture("Resources/monsterBall.png");
 	TextureManager::GetInstance()->UnloadTexture("Resources/uvChecker.png");
+	TextureManager::GetInstance()->UnloadTexture("Resources/terrain/terrain.png");
+	TextureManager::GetInstance()->UnloadTexture("Resources/plane/plane.png");
+	ModelManager::GetInstance()->UnloadModelData("terrain.obj");
+	ModelManager::GetInstance()->UnloadModelData("plane.gltf");
+	ModelManager::GetInstance()->UnloadModelData("plane.obj");
+	AudioManager::GetInstance()->Unload("bgm");
 }
 
 void TitleScene::Initialize (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
@@ -60,7 +66,7 @@ void TitleScene::Initialize (CameraOrganizer* camera, InputManager* inputManager
 void TitleScene::Update () {
 	if(input_->GetRawInput()->Trigger(VK_F1)) {
 		//シーン遷移時のもろもろ
-		AudioManager::GetInstance()->SetVolume(bgm, 0.1f);
+		AudioManager::GetInstance()->Stop(bgm);
 
 		//最後にシーンを更新
 		nextScene_ = new PlayScene();

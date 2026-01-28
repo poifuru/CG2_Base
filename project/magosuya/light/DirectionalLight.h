@@ -12,6 +12,7 @@ public:
 
 	//アクセッサ
 	const Vector3& GetDirection() const { return direction_; }
+	void SetDirection(const Vector3& dir) { direction_ = dir; }
 	
 private:
 	//向き

@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Boss.h"
 #include "LightManager.h"
+#include "Player.h"
 
 class PlayScene : public BaseScene {
 public:		//メンバ関数
@@ -21,4 +22,5 @@ public:		//メンバ関数
 private:	//メンバ変数
 	std::unique_ptr<LightManager> lightManager_ = nullptr;
 	std::unique_ptr<MapChip> mapchip_ = nullptr;
+	std::unique_ptr<Player> player_ = nullptr;
 };

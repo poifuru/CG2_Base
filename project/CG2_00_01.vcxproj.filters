@@ -66,6 +66,7 @@
     <ClCompile Include="application\entity\boss\Boss.cpp" />
     <ClCompile Include="magosuya\light\RectLight.cpp" />
     <ClCompile Include="magosuya\utility\audio\AudioManager.cpp" />
+    <ClCompile Include="application\entity\player\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />

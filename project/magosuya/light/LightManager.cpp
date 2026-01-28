@@ -341,3 +341,26 @@ void LightManager::AddLight(LightType type) {
 		break;
 	}
 }
+
+void LightManager::DeleteLight(LightType type, uint32_t index) {
+	switch (type) {
+		case DIRECTIONALLIGHT:
+		dirLights_.erase(dirLights_.begin() + index);
+		break;
+
+		case POINTLIGHT:
+		pointLights_.erase(pointLights_.begin() + index);
+		break;
+
+		case SPOTLIGHT:
+		spotLights_.erase(spotLights_.begin() + index);
+		break;
+
+		case RECTLIGHT:
+		rectLights_.erase(rectLights_.begin() + index);
+		break;
+
+		default:
+		break;
+	}
+}

@@ -2,6 +2,7 @@
 #include <memory>
 #include "struct.h"
 #include "Model.h"
+#include "Mapchip.h"
 
 class Entity {
 public:
@@ -10,8 +11,11 @@ public:
 	virtual void Draw() = 0;
 
 protected:
+	// マップチップとの当たり判定・座標補正
+	void CheckMapCollision(MapChip* mapChip);
+
 	std::unique_ptr<Model> model_;
-	AABB aabb_;
 	Transform transform_;
 	Vector3 velocity_;
+	AABB aabb_;
 };

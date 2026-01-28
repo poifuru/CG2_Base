@@ -8,11 +8,11 @@
 #include "SceneType.h"
 
 PlayScene::PlayScene () {
-	mapchip_ = std::make_unique<MapChip>();
-
 	TextureManager::GetInstance()->LoadTexture("Resources/map/map1.png", "map1");
 	TextureManager::GetInstance()->LoadTexture("Resources/map/map2.png", "map2");
 	TextureManager::GetInstance()->LoadTexture("Resources/map/map3.png", "map3");
+	ModelManager::GetInstance()->LoadModelData("Resources/player", "player.obj");
+	TextureManager::GetInstance()->LoadTexture("Resources/player/player.png", "player");
 }
 
 PlayScene::~PlayScene () {
@@ -29,10 +29,22 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 
 	lightManager_ = std::make_unique<LightManager>(dxCommon);
 	lightManager_->Initialize();
-	lightManager_->AddLight(LightType::DIRECTIONALLIGHT);
+	for(int i = 0; i < 5; ++i) {
+		lightManager_->AddLight(LightType::DIRECTIONALLIGHT);
+		lightManager_->SetDirectionalLightIntensity(i, 2.0f);
+	}
+	lightManager_->SetDirectionalLightDir(1, { 0.0f, 1.0f, 0.0f });
+	lightManager_->SetDirectionalLightDir(2, { 1.0f, 0.0f, 0.0f });
+	lightManager_->SetDirectionalLightDir(3, { 0.0f, -1.0f, 0.0f });
+	lightManager_->SetDirectionalLightDir(4, { -1.0f, 0.0f, 0.0f });
 
+	//オブジェクトたちの初期化
+	mapchip_ = std::make_unique<MapChip>();
 	mapchip_->Initialize(dxCommon, lightManager_.get());
 	mapchip_->LoadMapChipCSV("Resources/map/mapData.csv");
+
+	player_ = std::make_unique<Player>(dxCommon, camera, inputManager, lightManager_.get(), mapchip_.get());
+	player_->Initialize();
 }
 
 void PlayScene::Update () {
@@ -41,14 +53,18 @@ void PlayScene::Update () {
 		SceneManager::GetInstance()->SetNextScene(nextScene_);
 	}
 	camera_->Update();
+	lightManager_->Update();
+	lightManager_->ImGui();
 
 	mapchip_->Update(camera_->GetVPMatrix(), camera_->GetPosition("Debug"));
 	mapchip_->ImGui("mapchip");
 
-	lightManager_->Update();
-	lightManager_->ImGui();
+	player_->Update();
+	player_->ImGui();
+	
 }
 
 void PlayScene::Draw () {
 	mapchip_->Draw();
+	player_->Draw();
 }
