@@ -53,7 +53,7 @@ void TitleScene::Initialize (CameraOrganizer* camera, InputManager* inputManager
 	plane2_->SetTexture("plane");
 	plane2_->Initialize({ 3.0f, 3.0f, 1.0f }, {}, { 4.0f, 5.0f, 0.0f });
 
-	bgm = AudioManager::GetInstance()->Play("bgm");
+	bgm = AudioManager::GetInstance()->Play("bgm", BGM);
 }
 
 void TitleScene::Update () {
