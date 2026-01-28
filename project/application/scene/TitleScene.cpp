@@ -32,6 +32,7 @@ TitleScene::~TitleScene () {
 	ModelManager::GetInstance()->UnloadModelData("terrain.obj");
 	ModelManager::GetInstance()->UnloadModelData("plane.gltf");
 	ModelManager::GetInstance()->UnloadModelData("plane.obj");
+	AudioManager::GetInstance()->Stop(bgm);
 	AudioManager::GetInstance()->Unload("bgm");
 }
 
@@ -66,7 +67,7 @@ void TitleScene::Initialize (CameraOrganizer* camera, InputManager* inputManager
 void TitleScene::Update () {
 	if(input_->GetRawInput()->Trigger(VK_F1)) {
 		//シーン遷移時のもろもろ
-		AudioManager::GetInstance()->Stop(bgm);
+		
 
 		//最後にシーンを更新
 		nextScene_ = new PlayScene();

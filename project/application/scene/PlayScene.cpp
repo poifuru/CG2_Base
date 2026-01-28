@@ -25,7 +25,8 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	camera_ = camera;
 	input_ = inputManager;
 
-	//camera_->AddCamera("main2", CameraType::FixedPontCamera);
+	camera_->AddCamera("main2", CameraType::FollowCamera);
+	camera_->SetActiveCamera("main2");
 
 	lightManager_ = std::make_unique<LightManager>(dxCommon);
 	lightManager_->Initialize();
@@ -52,7 +53,6 @@ void PlayScene::Update () {
 		nextScene_ = new TitleScene();
 		SceneManager::GetInstance()->SetNextScene(nextScene_);
 	}
-	camera_->Update();
 	lightManager_->Update();
 	lightManager_->ImGui();
 
@@ -62,6 +62,9 @@ void PlayScene::Update () {
 	player_->Update();
 	player_->ImGui();
 	
+	camera_->SetFollowTarget("main2", player_->GetTransform());
+	camera_->Update();
+	camera_->ImGui();
 }
 
 void PlayScene::Draw () {
