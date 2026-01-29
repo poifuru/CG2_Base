@@ -1,72 +1,80 @@
 #include "Entity.h"
+#include <algorithm> // std::min, std::max 用
 
 void Entity::CheckMapCollision(MapChip* mapChip) {
-	// わずかなめり込みを許容するためのマージン
-	const float kMargin = 0.01f;
+	const float kMargin = 0.001f; // 完全に0にせず、ごくわずかな隙間を作る
 
 	// --- 1. X軸方向の移動と壁判定 ---
 	transform_.translate.x += velocity_.x;
 
-	// AABBの現在の範囲（ワールド座標）を算出
 	float worldLeft = transform_.translate.x + aabb_.min.x;
 	float worldRight = transform_.translate.x + aabb_.max.x;
 	float worldBottom = transform_.translate.y + aabb_.min.y;
 	float worldTop = transform_.translate.y + aabb_.max.y;
 
-	// AABBがカバーするタイルのインデックス範囲を算出
 	IndexSet minIdx = mapChip->GetMapChipIndexSetByPosition({ worldLeft, worldBottom, 0.0f });
 	IndexSet maxIdx = mapChip->GetMapChipIndexSetByPosition({ worldRight, worldTop, 0.0f });
 
-	// Yのインデックスは上下逆転しているので、ループの範囲に注意
-	uint32_t startY = maxIdx.yIndex; // 上端（インデックス小）
-	uint32_t endY = minIdx.yIndex; // 下端（インデックス大）
+	uint32_t loopStartY = (std::min)(minIdx.yIndex, maxIdx.yIndex);
+	uint32_t loopEndY = (std::max)(minIdx.yIndex, maxIdx.yIndex);
+	uint32_t loopStartX = (std::min)(minIdx.xIndex, maxIdx.xIndex);
+	uint32_t loopEndX = (std::max)(minIdx.xIndex, maxIdx.xIndex);
 
-	for (uint32_t x = minIdx.xIndex; x <= maxIdx.xIndex; ++x) {
-		for (uint32_t y = startY; y <= endY; ++y) {
-			if (mapChip->GetMapChipTypeByIndex(x, y) == MapChipType::kWall) {
-				// 壁に衝突した場合の押し戻し処理
-				if (velocity_.x > 0.0f) { // 右移動中
+	isTouchingWallLeft_ = false;
+	isTouchingWallRight_ = false;
+
+	for(uint32_t x = loopStartX; x <= loopEndX; ++x) {
+		for(uint32_t y = loopStartY; y <= loopEndY; ++y) {
+			MapChipType type = mapChip->GetMapChipTypeByIndex(x, y);
+			if(type == MapChipType::kWall || type == MapChipType::kFloor || type == MapChipType::kCeiling) {
+				if(velocity_.x > 0.0f) {
 					Rect tileRect = mapChip->GetRectByIndex(x, y);
 					transform_.translate.x = tileRect.left - aabb_.max.x - kMargin;
+					isTouchingWallRight_ = true; // ★右壁フラグ
 				}
-				else if (velocity_.x < 0.0f) { // 左移動中
+				else if(velocity_.x < 0.0f) {
 					Rect tileRect = mapChip->GetRectByIndex(x, y);
 					transform_.translate.x = tileRect.right - aabb_.min.x + kMargin;
+					isTouchingWallLeft_ = true; // ★左壁フラグ	
 				}
 				velocity_.x = 0.0f;
-				goto breakX; // X方向の補正が終わればこの軸のループは抜ける
+				goto breakX;
 			}
 		}
 	}
 breakX:
 
 	// --- 2. Y軸方向の移動と床・天井判定 ---
+	isGrounded_ = false; // 判定前にリセット
 	transform_.translate.y += velocity_.y;
 
-	// Y移動後の最新のAABB範囲を再計算
+	// ★ここで「X軸で押し戻された後」の最新のワールド座標を使い直すでやんす！
 	worldLeft = transform_.translate.x + aabb_.min.x;
 	worldRight = transform_.translate.x + aabb_.max.x;
 	worldBottom = transform_.translate.y + aabb_.min.y;
 	worldTop = transform_.translate.y + aabb_.max.y;
 
+	// インデックスも再計算！
 	minIdx = mapChip->GetMapChipIndexSetByPosition({ worldLeft, worldBottom, 0.0f });
 	maxIdx = mapChip->GetMapChipIndexSetByPosition({ worldRight, worldTop, 0.0f });
 
-	startY = maxIdx.yIndex;
-	endY = minIdx.yIndex;
+	loopStartY = (std::min)(minIdx.yIndex, maxIdx.yIndex);
+	loopEndY = (std::max)(minIdx.yIndex, maxIdx.yIndex);
+	loopStartX = (std::min)(minIdx.xIndex, maxIdx.xIndex);
+	loopEndX = (std::max)(minIdx.xIndex, maxIdx.xIndex);
 
-	for (uint32_t x = minIdx.xIndex; x <= maxIdx.xIndex; ++x) {
-		for (uint32_t y = startY; y <= endY; ++y) {
+	for(uint32_t x = loopStartX; x <= loopEndX; ++x) {
+		for(uint32_t y = loopStartY; y <= loopEndY; ++y) {
 			MapChipType type = mapChip->GetMapChipTypeByIndex(x, y);
-			if (type != MapChipType::kBlank) {
-				// 空白以外（床・壁・天井）に衝突
-				if (velocity_.y > 0.0f) { // 上昇（天井にヒット）
+			if(type != MapChipType::kBlank) {
+				if(velocity_.y > 0.0f) { // 天井ヒット
 					Rect tileRect = mapChip->GetRectByIndex(x, y);
 					transform_.translate.y = tileRect.bottom - aabb_.max.y - kMargin;
 				}
-				else if (velocity_.y < 0.0f) { // 下降（地面にヒット）
+				else if(velocity_.y < 0.0f) { // 地面ヒット
 					Rect tileRect = mapChip->GetRectByIndex(x, y);
 					transform_.translate.y = tileRect.top - aabb_.min.y + kMargin;
+					isGrounded_ = true;
 				}
 				velocity_.y = 0.0f;
 				goto breakY;

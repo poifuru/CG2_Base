@@ -20,8 +20,11 @@ public: // メンバ関数
     bool Release (unsigned short key)const;
 
     //マウスの入力関数
+	//0:左, 1:右, 2:中
     bool PushMouse (int button) const;
+	//0:左, 1:右, 2:中
     bool TriggerMouse (int button) const;
+	//0:左, 1:右, 2:中
     bool ReleaseMouse (int button) const;
 
     //デバッグ用

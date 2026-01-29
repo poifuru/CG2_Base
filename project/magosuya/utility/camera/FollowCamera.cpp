@@ -8,7 +8,7 @@ FollowCamera::FollowCamera () {
 	camera_.view = Math::MakeIdentity4x4 ();
 	camera_.proj = Math::MakeIdentity4x4 ();
 
-	offset_ = { 0.0f, 30.0f, -80.0f };
+	offset_ = { 0.0f, 0.0f, -50.0f };
 
 	instanceNum_++;
 }
@@ -36,7 +36,7 @@ void FollowCamera::Update () {
 	camera_.transform.translate = target_->translate + offset_;
 
 	//カメラの回転もターゲットに合わせる
-	camera_.transform.rotate = { 0.3f, 0.0f, 0.0f };
+	camera_.transform.rotate = { 0.0f, 0.0f, 0.0f };
 
 	//行列の計算
 	camera_.world = Math::MakeAffineMatrix (camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);

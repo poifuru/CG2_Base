@@ -12,10 +12,20 @@ public:		//メンバ関数
 	void Draw() override;
 	void ImGui();
 
+	//ゲッター
+	Transform GetTransform() { return transform_; }
+
 private:	//プレイヤーだけのメソッド
+	void Input();
 	void FreeFall();
+	void Acceleration();
+	//Entityクラスに合わせる状態変化
+	void EntityState();
 
 private:
+	//プレイヤー専用パラメータ
+	bool isDoubleJump_ = false;
+
 	CameraOrganizer* camera_ = nullptr;
 	InputManager* input_ = nullptr;
 	LightManager* light_ = nullptr;
