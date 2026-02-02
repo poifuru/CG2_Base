@@ -174,19 +174,19 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	//PointLight一覧用のディスクリプタテーブル(t2用)
 	standard3DInstanceRootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	standard3DInstanceRootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	standard3DInstanceRootParameters[6].DescriptorTable.pDescriptorRanges = &standard3DInstanceDescriptorRanges[2]; // Range[1]を指す
+	standard3DInstanceRootParameters[6].DescriptorTable.pDescriptorRanges = &standard3DInstanceDescriptorRanges[2]; // Range[2]を指す
 	standard3DInstanceRootParameters[6].DescriptorTable.NumDescriptorRanges = 1;
 
 	//PointLight一覧用のディスクリプタテーブル(t3用)
 	standard3DInstanceRootParameters[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	standard3DInstanceRootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	standard3DInstanceRootParameters[7].DescriptorTable.pDescriptorRanges = &standard3DInstanceDescriptorRanges[3]; // Range[1]を指す
+	standard3DInstanceRootParameters[7].DescriptorTable.pDescriptorRanges = &standard3DInstanceDescriptorRanges[3]; // Range[3]を指す
 	standard3DInstanceRootParameters[7].DescriptorTable.NumDescriptorRanges = 1;
 
 	//RectLight一覧用のディスクリプタテーブル(t4用)
 	standard3DInstanceRootParameters[8].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	standard3DInstanceRootParameters[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	standard3DInstanceRootParameters[8].DescriptorTable.pDescriptorRanges = &standard3DInstanceDescriptorRanges[4]; // Range[1]を指す
+	standard3DInstanceRootParameters[8].DescriptorTable.pDescriptorRanges = &standard3DInstanceDescriptorRanges[4]; // Range[4]を指す
 	standard3DInstanceRootParameters[8].DescriptorTable.NumDescriptorRanges = 1;
 
 	//Sampler
@@ -198,6 +198,40 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	standard3DInstanceStaticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;	//ありったけのmipmapを使う
 	standard3DInstanceStaticSamplers[0].ShaderRegister = 0;	//レジスタ番号0を使う
 	standard3DInstanceStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
+#pragma endregion
+
+#pragma region Sprite
+	//Texture用
+	spriteDescriptorRanges[0].BaseShaderRegister = 0;	//0から始まる
+	spriteDescriptorRanges[0].NumDescriptors = 1;		//数は1つ
+	spriteDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	//SRVを使う
+	spriteDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	//Offsetを自動計算
+
+	//matrixBuffer(b0)
+	spriteRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
+	spriteRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	//VertexShaderで使う
+	spriteRootParameters[0].Descriptor.ShaderRegister = 0;				//レジスタ番号とバインド
+
+	//materialBuffer(b1)
+	spriteRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
+	spriteRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
+	spriteRootParameters[1].Descriptor.ShaderRegister = 1;				//レジスタ番号とバインド
+
+	//Texture(t0)
+	spriteRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;		//ディスクリプタテーブルを使う
+	spriteRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
+	spriteRootParameters[2].DescriptorTable.pDescriptorRanges = &spriteDescriptorRanges[0];
+	spriteRootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
+
+	//Sampler(s0)
+	spriteStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;	//バイリニアフィルタ
+	spriteStaticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	spriteStaticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	spriteStaticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	spriteStaticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;	//比較しない
+	spriteStaticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;	//ありったけのmipmapを使う
+	spriteStaticSamplers[0].ShaderRegister = 0;	//レジスタ番号0を使う
+	spriteStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
 #pragma endregion
 
 #pragma region Particle
@@ -240,35 +274,6 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	particleStaticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;							//ありったけのmipmapを使う
 	particleStaticSamplers[0].ShaderRegister = 0;									//s0を指定
 	particleStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
-#pragma endregion
-
-#pragma region mapchip
-	// Index [0]: StructuredBuffer (t0)
-	mapchipRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	mapchipRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	mapchipRootParameters[0].DescriptorTable.pDescriptorRanges = particleDescriptorRanges; // t0用を流用
-	mapchipRootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
-
-	// Index [1]: Texture (t0)
-	mapchipRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	mapchipRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	mapchipRootParameters[1].DescriptorTable.pDescriptorRanges = textureDescriptorRanges; // t0用を流用
-	mapchipRootParameters[1].DescriptorTable.NumDescriptorRanges = 1;
-
-	// Index [2]: ConstantBuffer (b0) ※マテリアル用
-	mapchipRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	mapchipRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	mapchipRootParameters[2].Descriptor.ShaderRegister = 0; // b0
-
-	mapchipStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;				//バイリニアフィルタ
-	mapchipStaticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	mapchipStaticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	mapchipStaticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	mapchipStaticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;			//比較しない
-	mapchipStaticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;							//ありったけのmipmapを使う
-	mapchipStaticSamplers[0].ShaderRegister = 0;									//s0を指定
-	mapchipStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
-	//*******//
 #pragma endregion
 
 #pragma region LineMesh
@@ -328,17 +333,13 @@ uint32_t RootSignatureManager::GetOrCreateRootSignature (RootSigType type) {
 	std::ofstream os = Logger::Logtext ();
 	HRESULT hr;
 
-	//RootSigTypeからdescを作成
-	D3D12_ROOT_SIGNATURE_DESC desc = CreateRootSigDesc (type);
-
-	//ハッシュを計算する
-	uint64_t hash = ComputeHash (desc);
-
-	//ハッシュをチェック
-	if (m_HashTagID.count (hash)) {
-		//ヒットしたら既存のIDを返す
-		return m_HashTagID.at (hash);
+	//まずRootSigTypeをハッシュ代わりにチェック
+	if(m_TypeToID.count(type)) {
+		return m_TypeToID.at(type);
 	}
+
+	//無ければRootSigTypeからdescを作成
+	D3D12_ROOT_SIGNATURE_DESC desc = CreateRootSigDesc (type);
 
 	//ハッシュがヒットしなかったら新規作成
 	ComPtr<ID3DBlob> signatureBlob = nullptr;
@@ -361,6 +362,7 @@ uint32_t RootSignatureManager::GetOrCreateRootSignature (RootSigType type) {
 
 	//デバイスでRootSignatureを作成
 	ComPtr<ID3D12RootSignature> newRootSig;
+	assert(device_);	//デバイスがnullptrじゃないかチェック
 	hr = device_->CreateRootSignature (
 		0,		//ノードマスク(単一GPUなら0)
 		signatureBlob->GetBufferPointer (),
@@ -375,7 +377,7 @@ uint32_t RootSignatureManager::GetOrCreateRootSignature (RootSigType type) {
 	uint32_t newID = m_NextID++;
 
 	m_RootSigCache[newID] = newRootSig;	//実体データの登録
-	m_HashTagID[hash] = newID;			//逆引きハッシュの登録
+	m_TypeToID[type] = newID;			//逆引きハッシュの登録
 
 	return newID;
 }
@@ -394,64 +396,6 @@ ID3D12RootSignature* RootSignatureManager::GetRootSignature (uint32_t rootSigID)
 void RootSignatureManager::SetRootSignature (uint32_t rootSigID) {
 	auto rootSig = GetRootSignature (rootSigID);
 	commandList_->SetGraphicsRootSignature (rootSig);
-}
-
-uint64_t RootSignatureManager::ComputeHash (const D3D12_ROOT_SIGNATURE_DESC& desc) const {
-	//構造体の主要なメンバをハッシュの種
-	uint64_t hash = 0;
-
-	//フラグ、数などをハッシュ化
-	hash = (hash * 31) ^ desc.Flags;
-	hash = (hash * 31) ^ desc.NumParameters;
-	hash = (hash * 31) ^ desc.NumStaticSamplers;
-
-	//ルートパラメータの内容をハッシュ化
-	for (UINT i = 0; i < desc.NumParameters; ++i) {
-		const auto& param = desc.pParameters[i];
-
-		//パラメータタイプやシェーダーの可視性をハッシュ化
-		hash = (hash * 31) ^ param.ParameterType;
-		hash = (hash * 31) ^ param.ShaderVisibility;
-
-		//パラメータタイプがCBVorSRVorUAVなら
-		if (param.ParameterType == D3D12_ROOT_PARAMETER_TYPE_CBV ||
-			param.ParameterType == D3D12_ROOT_PARAMETER_TYPE_SRV ||
-			param.ParameterType == D3D12_ROOT_PARAMETER_TYPE_UAV) {
-
-			//Descriptor.ShaderRegisterやDescriptor.Register	Spaceをハッシュ化
-			hash = (hash * 31) ^ param.Descriptor.ShaderRegister;
-			hash = (hash * 31) ^ param.Descriptor.RegisterSpace;
-		}
-		//パラメータタイプがDescriptorTableなら
-		else if (param.ParameterType == D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE) {
-			//DescriptorTableの中身をハッシュ化
-			const auto& table = param.DescriptorTable;
-			hash = (hash * 31) ^ table.NumDescriptorRanges;
-			for (UINT j = 0; j < table.NumDescriptorRanges; ++j) {
-				const auto& range = table.pDescriptorRanges[j];
-				hash = (hash * 31) ^ range.RangeType;
-				hash = (hash * 31) ^ range.BaseShaderRegister;
-				hash = (hash * 31) ^ range.NumDescriptors;
-			}
-		}
-	}
-	//スタティックサンプラーの内容をハッシュ化
-	for (UINT i = 0; i < desc.NumStaticSamplers; ++i) {
-		const auto& sampler = desc.pStaticSamplers[i];
-		//主要な設定をハッシュの種にする
-		hash = (hash * 31) ^ sampler.Filter; // フィルタリングモード
-		hash = (hash * 31) ^ sampler.AddressU; // U座標のアドレスモード
-		hash = (hash * 31) ^ sampler.AddressV; // V座標のアドレスモード
-		hash = (hash * 31) ^ sampler.AddressW; // W座標のアドレスモード
-		hash = (hash * 31) ^ sampler.ShaderRegister; // シェーダーレジスタ
-		hash = (hash * 31) ^ sampler.ShaderVisibility; // 可視性
-		hash = (hash * 31) ^ sampler.ComparisonFunc; // 比較関数
-
-		//他の設定も必要に応じてハッシュ化
-		hash = (hash * 31) ^ (uint32_t)(sampler.MaxLOD * 100.0f);
-	}
-
-	return hash;
 }
 
 D3D12_ROOT_SIGNATURE_DESC RootSignatureManager::CreateRootSigDesc (RootSigType type) {
@@ -486,6 +430,19 @@ D3D12_ROOT_SIGNATURE_DESC RootSignatureManager::CreateRootSigDesc (RootSigType t
 		desc.NumStaticSamplers = _countof(standard3DInstanceStaticSamplers);
 		break;
 
+	case RootSigType::Sprite:
+		//RootSignature
+		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+		//RootParameter作成。複数設定できるので配列
+		desc.pParameters = spriteRootParameters;				//ルートパラメータ配列へのポインタ
+		desc.NumParameters = _countof(spriteRootParameters);	//配列の長さ
+
+		//Sampler
+		desc.pStaticSamplers = spriteStaticSamplers;
+		desc.NumStaticSamplers = _countof(spriteStaticSamplers);
+		break;
+
 	case RootSigType::Particle:
 		//RootSignature
 		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
@@ -497,19 +454,6 @@ D3D12_ROOT_SIGNATURE_DESC RootSignatureManager::CreateRootSigDesc (RootSigType t
 		//Sampler
 		desc.pStaticSamplers = particleStaticSamplers;
 		desc.NumStaticSamplers = _countof (particleStaticSamplers);
-		break;
-
-	case RootSigType::Mapchip:
-		//RootSignature
-		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
-		//RootParameter作成。複数設定できるので配列
-		desc.pParameters = mapchipRootParameters;				//ルートパラメータ配列へのポインタ
-		desc.NumParameters = _countof(mapchipRootParameters);	//配列の長さ
-
-		//Sampler
-		desc.pStaticSamplers = mapchipStaticSamplers;
-		desc.NumStaticSamplers = _countof(mapchipStaticSamplers);
 		break;
 
 	case RootSigType::LineMesh:

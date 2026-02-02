@@ -150,7 +150,7 @@ void LightManager::ImGui() {
 #ifdef USEIMGUI
 	ImGui::Begin("Light Manager");
 
-	// タブバーを開始するでやんす
+	// タブバーを開始する
 	if(ImGui::BeginTabBar("LightTabs")) {
 
 		// --- DirectionalLightタブ ---

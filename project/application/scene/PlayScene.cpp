@@ -71,3 +71,7 @@ void PlayScene::Draw () {
 	mapchip_->Draw();
 	player_->Draw();
 }
+
+void PlayScene::StopToResources() {
+
+}

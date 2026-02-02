@@ -18,13 +18,14 @@ public:		//メンバ関数
 private:	//プレイヤーだけのメソッド
 	void Input();
 	void FreeFall();
-	void Acceleration();
+	void WallKickTimer();
 	//Entityクラスに合わせる状態変化
 	void EntityState();
 
 private:
 	//プレイヤー専用パラメータ
 	bool isDoubleJump_ = false;
+	int wallKickTimer_ = 0; // 壁キック後の入力禁止タイマー
 
 	CameraOrganizer* camera_ = nullptr;
 	InputManager* input_ = nullptr;

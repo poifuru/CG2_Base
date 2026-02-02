@@ -41,11 +41,15 @@ private:
 	WindowsAPI* winApi_ = nullptr;
 	DxCommon* dxCommon_ = nullptr;
 	SRVManager* srvManager_ = nullptr;
+	ShaderManager* shaderManager_ = nullptr;
+	RootSignatureManager* rootSigManager_ = nullptr;
+	BlendModeManager* blendModeManager_ = nullptr;
+	InputLayoutManager* inputLayoutManager_ = nullptr;
+	PSOManager* psoManager_ = nullptr;
 	ImGuiManager* imguiManager_ = nullptr;
 	InputManager* inputManager_ = nullptr;
 	TextureManager* texManager_ = nullptr;
 	ModelManager* modelManager_ = nullptr;
-	PSOManager* psoManager_ = nullptr;
 	LineRenderer* lineRenderer_ = nullptr;
 	CubeRenderer* cubeRenderer_ = nullptr;
 	CameraOrganizer* cameraOrganizer_ = nullptr;

@@ -3,6 +3,7 @@
 #include "ModelManager.h"
 
 SceneManager::~SceneManager () {
+	scene_->StopToResources();
 	delete scene_;
 }
 
@@ -17,6 +18,7 @@ void SceneManager::Update () {
 	if(nextScene_) {
 		//旧シーンを終了
 		if(scene_) {
+			scene_->StopToResources();
 			delete scene_;
 		}
 

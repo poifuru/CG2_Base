@@ -35,10 +35,10 @@ void LineRenderer::Initialize (DxCommon* dxCommon) {
 	vertexIndex_ = srvManager_->Allocate();
 
 	//インスタンシング用のSRV作成
-	srvManager_->CreateSRVStructuredBuffer(instancingIndex_, instancingBuffer_.Get(), MaxMeshNum::Cube, sizeof(LineForGPU));
+	srvManager_->CreateSRVStructuredBuffer(instancingIndex_, instancingBuffer_.Get(), MaxMeshNum::Line, sizeof(LineForGPU));
 
 	//頂点バッファ用のSRV作成
-	srvManager_->CreateSRVStructuredBuffer(vertexIndex_, lineBuffer_->vertexBuffer.Get(), VertexNum::Cube, sizeof(LineVertexData));
+	srvManager_->CreateSRVStructuredBuffer(vertexIndex_, lineBuffer_->vertexBuffer.Get(), VertexNum::Line, sizeof(LineVertexData));
 
 	//PSOの設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::LineMesh);

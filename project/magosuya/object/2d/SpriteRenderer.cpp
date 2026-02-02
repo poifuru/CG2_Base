@@ -52,6 +52,13 @@ void SpriteRenderer::Initialize () {
 	indexData_[3] = 1;
 	indexData_[4] = 3;
 	indexData_[5] = 2;
+
+	//PSO設定
+	desc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Sprite);
+	desc_.VS_ID = ShaderManager::GetInstance()->CompileAndCasheShader(L"Resources/shader/Sprite.VS.hlsl", L"vs_6_0");
+	desc_.PS_ID = ShaderManager::GetInstance()->CompileAndCasheShader(L"Resources/shader/Sprite.PS.hlsl", L"ps_6_0");
+	desc_.InputLayoutID = InputLayoutType::Standard3D;
+	desc_.BlendMode = BlendModeType::Alpha;
 }
 
 void SpriteRenderer::Update (Matrix4x4 wvpData, Transform uvTransform, Vector2 anchorPoint, bool flipX, bool flipY, const std::string& id, Vector2 texLeftTop, Vector2 texSize) {
@@ -100,6 +107,9 @@ void SpriteRenderer::Update (Matrix4x4 wvpData, Transform uvTransform, Vector2 a
 }
 
 void SpriteRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
+	RootSignatureManager::GetInstance()->SetRootSignature(desc_.RootSignatureID);
+	PSOManager::GetInstance()->SetPSO(desc_);
+
 	commandList_->IASetPrimitiveTopology (D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList_->IASetVertexBuffers (0, 1, &vbView_);   //VBVを設定
 	commandList_->IASetIndexBuffer (&ibView_);	        //IBVを設定

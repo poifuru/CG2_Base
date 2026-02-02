@@ -109,9 +109,6 @@ ComPtr<IDxcBlob> ShaderManager::CompilerShader (const std::wstring& filePath, co
 	assert (SUCCEEDED (hr));
 	//成功したらログを出す
 	Logger::Log (os, String::ConvertString (std::format (L"Compile Succeeded, path:{}, profile:{}\n", filePath, profile)));
-	//もう使わないリソースを解放
-	shaderSource->Release ();
-	shaderResult->Release ();
 	//実行用のバイナリを返却
 	return shaderBlob.Get ();
 }

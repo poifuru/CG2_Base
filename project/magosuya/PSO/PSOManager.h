@@ -80,8 +80,4 @@ private:	//メンバ変数
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;
 	ID3D12GraphicsCommandList* commandList_ = nullptr;
-	ShaderManager* shaderManager_ = nullptr;
-	RootSignatureManager* rootSigManager_ = nullptr;
-	BlendModeManager* blendModeManager_ = nullptr;
-	InputLayoutManager* inputLayoutManager_ = nullptr;
 };

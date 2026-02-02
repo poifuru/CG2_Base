@@ -10,10 +10,10 @@ class DxCommon;
 
 //使いたい用途によって設定を変えるため
 enum class RootSigType : uint32_t {
-	Standard3D,			// あなたが定義したCBV x 3 + DescriptorTable x 1 の構成
-	Standard3DInstance,
+	Standard3D,			//基本的な3D描画物用
+	Standard3DInstance,	//インスタンス描画用
+	Sprite,				//スプライト用
 	Particle,			//パーティクル用
-	Mapchip,			//マップチップ用
 	LineMesh,
 	CubeMesh,			//メッシュ描画用
 	PostProcess,		// ポストエフェクト用（SRV中心）(未実装)
@@ -50,8 +50,6 @@ private:
 	RootSignatureManager& operator=(RootSignatureManager&&) = delete;
 
 private:	// ヘルパー関数
-	uint64_t ComputeHash (const D3D12_ROOT_SIGNATURE_DESC& desc) const;
-
 	D3D12_ROOT_SIGNATURE_DESC CreateRootSigDesc (RootSigType type);
 
 private:	// メンバ変数
@@ -64,16 +62,15 @@ private:	// メンバ変数
 	D3D12_DESCRIPTOR_RANGE standard3DInstanceDescriptorRanges[6] = {};
 	D3D12_ROOT_PARAMETER standard3DInstanceRootParameters[9] = {};
 	D3D12_STATIC_SAMPLER_DESC standard3DInstanceStaticSamplers[1] = {};
+	//Sprite
+	D3D12_DESCRIPTOR_RANGE spriteDescriptorRanges[1] = {};
+	D3D12_ROOT_PARAMETER spriteRootParameters[3] = {};
+	D3D12_STATIC_SAMPLER_DESC spriteStaticSamplers[1] = {};
 	//Particle
 	D3D12_DESCRIPTOR_RANGE particleDescriptorRanges[1] = {};
 	D3D12_DESCRIPTOR_RANGE textureDescriptorRanges[1] = {};
 	D3D12_ROOT_PARAMETER particleRootParameters[3] = {};
 	D3D12_STATIC_SAMPLER_DESC particleStaticSamplers[1] = {};
-	//Mapchip
-	D3D12_DESCRIPTOR_RANGE mapchipDescriptorRanges[1] = {};
-	D3D12_DESCRIPTOR_RANGE mapchipTextureDescriptorRanges[1] = {};
-	D3D12_ROOT_PARAMETER mapchipRootParameters[3] = {};
-	D3D12_STATIC_SAMPLER_DESC mapchipStaticSamplers[1] = {};
 	//Line
 	D3D12_DESCRIPTOR_RANGE lineMeshDescriptorRanges[2] = {};
 	D3D12_ROOT_PARAMETER lineMeshRootParameters[2] = {};
@@ -82,8 +79,8 @@ private:	// メンバ変数
 	D3D12_ROOT_PARAMETER cubeMeshRootParameters[2] = {};
 	//***ルートシグネチャの種類を増やしたいときに適宜追加***//
 
-	//ハッシュ値とIDのマップ(逆引き兼キャッシュチェック用)
-	std::unordered_map<uint64_t, uint32_t> m_HashTagID;
+	//RootSigTypeとIDのマップ(逆引き兼キャッシュチェック用)
+	std::unordered_map<RootSigType, uint32_t> m_TypeToID;
 
 	//IDとID3D12RootSignatureの実体データのマップ
 	std::unordered_map<uint32_t, ComPtr<ID3D12RootSignature>> m_RootSigCache;

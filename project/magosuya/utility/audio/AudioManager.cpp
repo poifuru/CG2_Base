@@ -42,6 +42,7 @@ void AudioManager::Update() {
 }
 
 void AudioManager::Finalize() {
+	if(isFinalized_) return;
 	if(!xAudio2_) return; // すでにリセット済みなら何もしない
 
 	//まず再生中のボイスをすべて破棄する
@@ -50,6 +51,7 @@ void AudioManager::Finalize() {
 		pair.second->DestroyVoice();
 	}
 	activeVoices_.clear();
+	isFinalized_ = true;   // 終わったことを記録
 
 	//読み込んだリソース（データ）をクリアする
 	audioResources_.clear();
@@ -197,6 +199,9 @@ uint32_t AudioManager::Play(const std::string& name, AudioType type, bool loop) 
 }
 
 void AudioManager::Stop(uint32_t playID) {
+	// 終了処理済みなら何もしない
+	if(isFinalized_) return;
+
 	if (activeVoices_.count(playID)) {
 		//ボイスを停止
 		activeVoices_[playID]->Stop();

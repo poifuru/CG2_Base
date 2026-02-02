@@ -9,6 +9,8 @@
     <FxCompile Include="Resources\shader\Particle.VS.hlsl" />
     <FxCompile Include="Resources\shader\Object3dInstance.VS.hlsl" />
     <FxCompile Include="Resources\shader\Object3dInstance.PS.hlsl" />
+    <FxCompile Include="Resources\shader\Sprite.VS.hlsl" />
+    <FxCompile Include="Resources\shader\Sprite.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application\scene\ClearScene.cpp" />
@@ -67,6 +69,7 @@
     <ClCompile Include="magosuya\light\RectLight.cpp" />
     <ClCompile Include="magosuya\utility\audio\AudioManager.cpp" />
     <ClCompile Include="application\entity\player\Player.cpp" />
+    <ClCompile Include="application\scene\DebugScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -138,6 +141,7 @@
     <ClInclude Include="magosuya\utility\audio\AudioManager.h" />
     <ClInclude Include="magosuya\utility\audio\VoiceCallback.h" />
     <ClInclude Include="application\mapchip\MapchipStruct.h" />
+    <ClInclude Include="application\scene\DebugScene.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">
@@ -228,6 +232,7 @@
     <None Include="Resources\shader\Line.hlsli" />
     <None Include="Resources\shader\Object3d.hlsli" />
     <None Include="Resources\shader\Particle.hlsli" />
+    <None Include="Resources\shader\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

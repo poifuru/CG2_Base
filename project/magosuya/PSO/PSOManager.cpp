@@ -3,14 +3,6 @@
 void PSOManager::Initialize (DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 	commandList_ = dxCommon->GetCommandList ();
-	shaderManager_ = ShaderManager::GetInstance ();
-	shaderManager_->Initialize (dxCommon);
-	rootSigManager_ = RootSignatureManager::GetInstance ();
-	rootSigManager_->Initialize (dxCommon);
-	blendModeManager_ = BlendModeManager::GetInstance ();
-	blendModeManager_->Initialize ();
-	inputLayoutManager_ = InputLayoutManager::GetInstance ();
-	inputLayoutManager_->Initialize ();
 }
 
 ID3D12PipelineState* PSOManager::GetOrCreratePSO (const PSODescriptor& desc) {
@@ -30,20 +22,20 @@ ID3D12PipelineState* PSOManager::GetOrCreratePSO (const PSODescriptor& desc) {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPieplineStateDesc = {};
 
 	//RootSignatureを取得(RootSigManagerから)
-	graphicsPieplineStateDesc.pRootSignature = rootSigManager_->GetRootSignature (desc.RootSignatureID);
+	graphicsPieplineStateDesc.pRootSignature = RootSignatureManager::GetInstance()->GetRootSignature(desc.RootSignatureID);
 
 	//Shaderを取得(ShaderManagerから)
-	graphicsPieplineStateDesc.VS = shaderManager_->GetShaderBytecode (desc.VS_ID);
-	graphicsPieplineStateDesc.PS = shaderManager_->GetShaderBytecode (desc.PS_ID);
+	graphicsPieplineStateDesc.VS = ShaderManager::GetInstance()->GetShaderBytecode(desc.VS_ID);
+	graphicsPieplineStateDesc.PS = ShaderManager::GetInstance()->GetShaderBytecode (desc.PS_ID);
 	assert (graphicsPieplineStateDesc.VS.BytecodeLength > 0 && "VS bytecode is empty!");
 	assert (graphicsPieplineStateDesc.PS.BytecodeLength > 0 && "PS bytecode is empty!");
 
 	//InputLayoutを取得(InputLayoutManagerから)
-	const D3D12_INPUT_LAYOUT_DESC* inputLayoutDesc = inputLayoutManager_->GetInputLayout (desc.InputLayoutID);
+	const D3D12_INPUT_LAYOUT_DESC* inputLayoutDesc = InputLayoutManager::GetInstance()->GetInputLayout(desc.InputLayoutID);
 	graphicsPieplineStateDesc.InputLayout = *inputLayoutDesc;
 
 	//ブレンドステートを取得(BlendModeManagerから)
-	graphicsPieplineStateDesc.BlendState = blendModeManager_->GetBlendDesc (desc.BlendMode);
+	graphicsPieplineStateDesc.BlendState = BlendModeManager::GetInstance()->GetBlendDesc(desc.BlendMode);
 
 	//ラスタライザーステート (Descriptorから直接設定)
 	D3D12_RASTERIZER_DESC rasterizerDesc = {};

@@ -17,7 +17,6 @@ protected:
 	std::unique_ptr<Model> model_;
 	Transform transform_;
 	Vector3 velocity_;
-	Vector3 acceleration_;
 	AABB aabb_;
 
 	float friction_ = 0.85f; // 摩擦係数（慣性の残り具合）

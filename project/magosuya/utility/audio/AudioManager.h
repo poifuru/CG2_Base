@@ -104,6 +104,9 @@ private:
 
 	VoiceCallback voiceCallback_;
 
+	//終了処理
+	bool isFinalized_ = false;
+
 	//BGM・SE音量
 	float volumeBGM_ = 0.5f;
 	float volumeSE_ = 0.5f;

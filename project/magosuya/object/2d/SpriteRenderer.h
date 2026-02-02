@@ -4,6 +4,7 @@
 using namespace Microsoft::WRL;
 #include <d3d12.h>
 #include "struct.h"
+#include "PSOManager.h"
 
 class DxCommon;
 class TextureManager;
@@ -25,6 +26,8 @@ public:		//外部公開メソッド
 	void SetID (const std::string& id) { id_ = id; }
 
 private:	//メンバ変数
+	PSODescriptor desc_ = {};
+
 	//GPUリソース
 	ComPtr<ID3D12Resource> vertexBuffer_;
 	ComPtr<ID3D12Resource> indexBuffer_;

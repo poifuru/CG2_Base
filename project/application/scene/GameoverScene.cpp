@@ -37,3 +37,7 @@ void GameoverScene::Update () {
 void GameoverScene::Draw () {
 
 }
+
+void GameoverScene::StopToResources() {
+
+}
