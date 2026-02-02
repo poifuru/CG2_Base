@@ -70,6 +70,7 @@
     <ClCompile Include="magosuya\utility\audio\AudioManager.cpp" />
     <ClCompile Include="application\entity\player\Player.cpp" />
     <ClCompile Include="application\scene\DebugScene.cpp" />
+    <ClCompile Include="application\entity\player\Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -142,6 +143,7 @@
     <ClInclude Include="magosuya\utility\audio\VoiceCallback.h" />
     <ClInclude Include="application\mapchip\MapchipStruct.h" />
     <ClInclude Include="application\scene\DebugScene.h" />
+    <ClInclude Include="application\entity\player\Weapon.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">

@@ -13,12 +13,18 @@ PlayScene::PlayScene () {
 	TextureManager::GetInstance()->LoadTexture("Resources/map/map3.png", "map3");
 	ModelManager::GetInstance()->LoadModelData("Resources/player", "player.obj");
 	TextureManager::GetInstance()->LoadTexture("Resources/player/player.png", "player");
+	ModelManager::GetInstance()->LoadModelData("Resources/hammer", "hammer.obj");
+	TextureManager::GetInstance()->LoadTexture("Resources/hammer/hammer.png", "hammer");
 }
 
 PlayScene::~PlayScene () {
 	TextureManager::GetInstance()->UnloadTexture("Resources/map/map1.png");
 	TextureManager::GetInstance()->UnloadTexture("Resources/map/map2.png");
 	TextureManager::GetInstance()->UnloadTexture("Resources/map/map3.png");
+	ModelManager::GetInstance()->UnloadModelData("player.obj");
+	TextureManager::GetInstance()->UnloadTexture("Resources/player/player.png");
+	ModelManager::GetInstance()->UnloadModelData("hammer.obj");
+	TextureManager::GetInstance()->UnloadTexture("Resources/hammer/hammer.png");
 }
 
 void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
@@ -57,7 +63,7 @@ void PlayScene::Update () {
 	lightManager_->ImGui();
 
 	mapchip_->Update(camera_->GetVPMatrix(), camera_->GetPosition("Debug"));
-	mapchip_->ImGui("mapchip");
+	//mapchip_->ImGui("mapchip");
 
 	player_->Update();
 	player_->ImGui();
