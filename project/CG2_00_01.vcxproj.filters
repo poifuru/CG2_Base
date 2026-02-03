@@ -71,6 +71,9 @@
     <ClCompile Include="application\entity\player\Player.cpp" />
     <ClCompile Include="application\scene\DebugScene.cpp" />
     <ClCompile Include="application\entity\player\Weapon.cpp" />
+    <ClCompile Include="application\entity\enemy\BaseEnemy.cpp" />
+    <ClCompile Include="application\entity\enemy\Korokoro.cpp" />
+    <ClCompile Include="application\entity\enemy\Fly.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -144,6 +147,9 @@
     <ClInclude Include="application\mapchip\MapchipStruct.h" />
     <ClInclude Include="application\scene\DebugScene.h" />
     <ClInclude Include="application\entity\player\Weapon.h" />
+    <ClInclude Include="application\entity\enemy\BaseEnemy.h" />
+    <ClInclude Include="application\entity\enemy\Korokoro.h" />
+    <ClInclude Include="application\entity\enemy\Fly.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ソースファイル">

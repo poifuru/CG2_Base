@@ -18,7 +18,7 @@ public:
 	void ImGui();
 
 	// 攻撃開始命令
-	void Attack();
+	void Attack(float currentDirX, float currentDirY);
 
 	// 敵との当たり判定チェック
 	bool CheckCollision(const AABB& enemyAABB);
@@ -37,4 +37,7 @@ private:
 	bool isAttacking_ = false;
 	int attackTimer_ = 0;
 	int attackCooldown_ = 0;
+
+	float lockedDirX_ = 1.0f; // 攻撃開始時のX方向を保存
+	float lockedDirY_ = 0.0f; // 攻撃開始時のY方向を保存
 };

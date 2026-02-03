@@ -1,5 +1,6 @@
 #include "Weapon.h"
 #include <numbers>
+#include "imgui.h"
 
 Weapon::Weapon(DxCommon* dxCommon, LightManager* light) {
 	model_ = std::make_unique<Model>(dxCommon, light);
@@ -15,11 +16,7 @@ void Weapon::Initialize() {
 	model_->SetTexture("hammer");
 
 	//角度調整
-	Vector3 rotate = {
-		0.0f,
-		std::numbers::pi_v<float> / 2.0f,
-		0.0f
-	};
+	Vector3 rotate = {};
 
 	model_->SetRotate(rotate);
 }
@@ -27,38 +24,48 @@ void Weapon::Initialize() {
 void Weapon::Update(const Vector3& playerPos, float dirX, float dirY, bool isGrounded, CameraData* camera) {
 	if(attackCooldown_ > 0) attackCooldown_--;
 
-	// 武器を配置するオフセット距離（重ならないように調整）
-	const float kOffsetDist = 1.5f;
+	// 使う方向を決定（攻撃中ならロックされた方向、そうでなければ今の入力方向）
+	float useDirX = isAttacking_ ? lockedDirX_ : dirX;
+	float useDirY = isAttacking_ ? lockedDirY_ : dirY;
+
+	// プレイヤーからどれくらい離すか（重ならない距離）
+	const float kOffsetDist = 2.5f;
 	Vector3 offset = { 0, 0, 0 };
-	Vector3 rotate = { 0, 0, 0 };
+	Vector3 rotate = { 
+		0.0f,
+		std::numbers::pi_v<float> / -2.0f,
+		0.0f
+	}; // ここで角度を決めるでやんす
 
 	float PI = std::numbers::pi_v<float>;
 
-	// 優先順位：上入力 > 下入力 > 左右入力
-	if(dirY > 0.1f) { // 上攻撃
+	// --- 向きと位置の計算 ---
+	if(useDirY > 0.1f) { // 上攻撃
 		offset.y = kOffsetDist;
-		rotate.z = PI / 2.0f; // 90度（上向き）
+		rotate.x = PI;
+		rotate.z = PI; // 90度（上を向く）
 	}
-	else if(dirY < -0.1f && !isGrounded) { // 下攻撃（空中の時だけとか）
+	else if(useDirY < -0.1f && !isGrounded) { // 下攻撃
 		offset.y = -kOffsetDist;
-		rotate.z = -PI / 2.0f; // -90度（下向き）
+		rotate.z = -PI; // -90度（下を向く）
 	}
 	else { // 左右攻撃
-		offset.x = dirX * kOffsetDist;
-		// 左向き(-1.0)なら180度回して反転させるでやんす
-		rotate.y = (dirX < 0) ? PI : 0.0f;
+		offset.x = useDirX * kOffsetDist;
+		// 右向きなら 0度、左向きなら 180度
+		rotate.z = (useDirX < 0) ? PI / 2.0f : PI / -2.0f;
 	}
 
-	// 攻撃中だけ当たり判定のワールド座標を計算
+	// --- 当たり判定 AABB の更新 ---
 	if(isAttacking_) {
-		attackAABB_.min = { playerPos.x + offset.x + localAABB_.min.x, playerPos.y + offset.y + localAABB_.min.y, -1.0f };
-		attackAABB_.max = { playerPos.x + offset.x + localAABB_.max.x, playerPos.y + offset.y + localAABB_.max.y,  1.0f };
+		// オフセットを足してプレイヤーの周りに配置
+		attackAABB_.min = { playerPos.x + offset.x - 1.0f, playerPos.y + offset.y - 1.0f, -1.0f };
+		attackAABB_.max = { playerPos.x + offset.x + 1.0f, playerPos.y + offset.y + 1.0f,  1.0f };
 
 		attackTimer_--;
 		if(attackTimer_ <= 0) isAttacking_ = false;
 	}
 
-	model_->SetPosition(playerPos);
+	model_->SetPosition({ playerPos.x + offset.x, playerPos.y + offset.y, playerPos.z });
 	model_->SetRotate(rotate);
 	model_->Update(camera);
 }
@@ -67,17 +74,36 @@ void Weapon::Draw() {
 }
 
 void Weapon::ImGui() {
+#ifdef USEIMGUI
 	model_->ImGui("hammer");
+	ImGui::Text("Attack AABB Min: %.2f, %.2f, %.2f", attackAABB_.min.x, attackAABB_.min.y, attackAABB_.min.z);
+	ImGui::Text("Attack AABB Max: %.2f, %.2f, %.2f", attackAABB_.max.x, attackAABB_.max.y, attackAABB_.max.z);
+	ImGui::Separator();
+#endif
 }
 
-void Weapon::Attack() {
+void Weapon::Attack(float currentDirX, float currentDirY) {
 	if(attackCooldown_ <= 0) {
 		isAttacking_ = true;
 		attackTimer_ = 8;     // 判定が出る時間は短めが「鋭い」でやんす！
 		attackCooldown_ = 15;
 	}
+
+	// ★攻撃を出した瞬間の向きをロックするでやんす！
+	lockedDirX_ = currentDirX;
+	lockedDirY_ = currentDirY;
 }
 
 bool Weapon::CheckCollision(const AABB& enemyAABB) {
+	// 攻撃中でなければ判定しない
+	if(!isAttacking_) return false;
+
+	// AABB同士の交差判定（X, Y, Zすべてが重なっているか）
+	if(attackAABB_.min.x <= enemyAABB.max.x && attackAABB_.max.x >= enemyAABB.min.x &&
+	   attackAABB_.min.y <= enemyAABB.max.y && attackAABB_.max.y >= enemyAABB.min.y &&
+	   attackAABB_.min.z <= enemyAABB.max.z && attackAABB_.max.z >= enemyAABB.min.z) {
+		return true;
+	}
+
 	return false;
 }

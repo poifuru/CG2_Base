@@ -7,7 +7,11 @@ enum class MapChipType {
 	kBlank,		//空白
 	kFloor,		//床
 	kWall,		//壁
-	kCeiling	//天井
+	kCeiling,	//天井
+	kDamage,	//ダメージ
+
+	kKorokoro = 8,	//コロコロ
+	kFly,			//フライ
 };
 
 struct IndexSet {

@@ -8,7 +8,7 @@
 #include "Player.h"
 #include "Boss.h"
 #include "LightManager.h"
-#include "Player.h"
+#include "BaseEnemy.h"
 
 class PlayScene : public BaseScene {
 public:		//メンバ関数
@@ -20,8 +20,17 @@ public:		//メンバ関数
 	void Draw () override;
 	void StopToResources() override;
 
+private:
+	// 敵を生成する関数
+	void GenerateEnemies();
+
 private:	//メンバ変数
 	std::unique_ptr<LightManager> lightManager_ = nullptr;
 	std::unique_ptr<MapChip> mapchip_ = nullptr;
 	std::unique_ptr<Player> player_ = nullptr;
+	
+	//敵のリスト
+	std::vector<std::unique_ptr<BaseEnemy>> enemies_;
+
+	DxCommon* dxCommon_ = nullptr;
 };

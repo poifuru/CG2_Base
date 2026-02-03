@@ -16,7 +16,12 @@ void MapChipRenderer::Initialize(DxCommon* dxCommon, LightManager* lightManager)
 	lightManager_ = lightManager;
 
 	// 種類リスト
-	std::vector<MapChipType> types = { MapChipType::kFloor, MapChipType::kWall, MapChipType::kCeiling }; // 床・壁・天井
+	std::vector<MapChipType> types = { 
+		MapChipType::kFloor,
+		MapChipType::kWall,
+		MapChipType::kCeiling,
+		MapChipType::kDamage,
+	}; // 床・壁・天井
 
 	for(auto type : types) {
 		InstancingResource& res = resources_[type];
@@ -196,6 +201,9 @@ void MapChipRenderer::Draw() {
 		}
 		else if(type == MapChipType::kCeiling) {
 			commandList_->SetGraphicsRootDescriptorTable(4, TextureManager::GetInstance()->TextureManager::GetTextureHandle("map3"));
+		}
+		else if(type == MapChipType::kDamage) {
+			commandList_->SetGraphicsRootDescriptorTable(4, TextureManager::GetInstance()->TextureManager::GetTextureHandle("map4"));
 		}
 		//directionalLightのSRVをセット
 		commandList_->SetGraphicsRootDescriptorTable(

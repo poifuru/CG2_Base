@@ -29,6 +29,9 @@ Player::Player(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input,
 	mapchip_ = mapchip;
 	model_ = std::make_unique<Model>(dxCommon, light);
 	weapon_ = std::make_unique<Weapon>(dxCommon, light);
+	for(uint32_t i = 0; i < 3; ++i) {
+		life_[i] = std::make_unique<Sprite>(dxCommon);
+	}
 }
 
 Player::~Player() {
@@ -39,12 +42,18 @@ void Player::Initialize() {
 	model_->Initialize();
 	model_->SetModelData("player.obj");
 	model_->SetTexture("player");
-	aabb_.min = { -kPlayerWidth, -kPlayerHeight, 0.0f };
-	aabb_.max = { kPlayerWidth, kPlayerHeight, 0.0f };
+	SetAABBSize({ kPlayerWidth, kPlayerHeight, 1.0f });
 
 	weapon_->Initialize();
+	transform_.translate = mapchip_->GetMapChipPositionByIndex(2, 19);
 
-	transform_.translate = mapchip_->GetMapChipPositionByIndex(3, 15);
+	for(uint32_t i = 0; i < 3; ++i) {
+		life_[i]->SetTexture("life");
+		life_[i]->Initialize({});
+	}
+
+	hp_ = 3;
+	lastHp_ = hp_;
 }
 
 void Player::Update() {
@@ -60,13 +69,44 @@ void Player::Update() {
 	CheckMapCollision(mapchip_);
 	EntityState();
 
+	// ★ダメージを受けている間（タイマーが動いている間）は紫にする
+	if(damageTimer_ > 0) {
+		model_->SetColor({ 1.0f, 0.0f, 1.0f, 0.5f });
+	}
+	else {
+		model_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+	}
+
 	model_->SetPosition(transform_.translate);
 	model_->Update(&camera_->GetCameraData());
+
+	for(uint32_t i = 0; i < 3; ++i) {
+		life_[i]->Update();
+	}
 }
 
 void Player::Draw() {
 	model_->Draw();
 	weapon_->Draw();
+
+	// ★HPの表示（画面左上などに並べる）
+	float startX = 20.0f;  // 開始X座標
+	float startY = 20.0f;  // 開始Y座標
+	float margin = 60.0f;  // スプライト間の間隔
+
+	for(int i = 0; i < hp_; ++i) {
+		Vector3 pos = { startX + (i * margin), startY, 0.0f };
+
+		// シェイクタイマーが動いている間、一番右（ダメージを受けた位置）のライフを震わせる
+		if(shakeTimer_ > 0 && i == hp_ - 1) {
+			float shakeIntensity = 5.0f; // 震えの強さ
+			pos.x += (float)(rand() % 11 - 5) * 0.1f * shakeIntensity;
+			pos.y += (float)(rand() % 11 - 5) * 0.1f * shakeIntensity;
+		}
+
+		life_[i]->SetPosition(pos);
+		life_[i]->Draw();
+	}
 }
 
 void Player::Input() {
@@ -80,6 +120,7 @@ void Player::Input() {
 	const float kKickPushPower = 0.25f; //壁から離れる方向への力
 
 	//上下の向き
+	updownDirection_ = 0.0f;
 	if(input_->GetRawInput()->Push('W')) updownDirection_ = 1.0f;
 	if(input_->GetRawInput()->Push('S')) updownDirection_ = -1.0f;
 
@@ -126,7 +167,7 @@ void Player::Input() {
 	}
 
 	if(input_->GetRawInput()->TriggerMouse(0)) {
-		weapon_->Attack();
+		weapon_->Attack(faceDirection_, updownDirection_);
 	}
 }
 
@@ -172,7 +213,7 @@ void Player::ProcessDash() {
 	if(!isDashing_ && dashCooldown_ <= 0) {
 		if(input_->GetRawInput()->TriggerMouse(1)) {
 			isDashing_ = true;
-			dashTimer_ = 10;    // ダッシュの持続フレーム数
+			dashTimer_ = 7;    // ダッシュの持続フレーム数
 			dashCooldown_ = 30; // 次に出せるまでの時間
 
 			// 向いている方向にダッシュ（A/D入力があればそれを優先）
@@ -209,6 +250,35 @@ void Player::EntityState() {
 	if(isGrounded_) {
 		isDoubleJump_ = false;
 	}
+
+	//ダメージ床の処理
+	if(isOnDamageFloor_) {
+		if(damageTimer_ <= 0) {
+			// ここでHPを減らす（例：hp_ -= 10;）
+			// 演出として少し上に跳ねさせるのもアリでやんす！
+			hp_--;
+			velocity_.y = 0.1f;
+			isGrounded_ = false;
+
+			damageTimer_ = 30; // 0.5秒間は無敵など
+		}
+	}
+
+	if(damageTimer_ > 0) {
+		isOnDamageFloor_ = false;
+		damageTimer_--;
+	}
+
+	// HPが減少した瞬間にシェイク開始
+	if(hp_ < lastHp_) {
+		shakeTimer_ = 20; // 20フレーム分震えさせる
+		lastHp_ = hp_;
+	}
+
+	// シェイクタイマーの更新
+	if(shakeTimer_ > 0) {
+		shakeTimer_--;
+	}
 }
 
 void Player::ImGui() {
@@ -219,6 +289,20 @@ void Player::ImGui() {
 	ImGui::Text("isWallTouchLeft : %d", isTouchingWallLeft_);
 	ImGui::Text("isWallTouchRight : %d", isTouchingWallRight_);
 	ImGui::Text("isDashing : %d", isDashing_);
+	ImGui::Text("hp_ : %d", hp_);
+
+	ImGui::Separator();
+	ImGui::Text("--- Debug Collision ---");
+	ImGui::Text("AABB Min: (%.3f, %.3f)", aabb_.min.x, aabb_.min.y);
+	ImGui::Text("AABB Max: (%.3f, %.3f)", aabb_.max.x, aabb_.max.y);
+
+	// Y軸判定（床判定）で使っているインデックスを再現して表示
+	const float kEpsilon = 0.001f;
+	IndexSet debugMin = mapchip_->GetMapChipIndexSetByPosition({ aabb_.min.x + kEpsilon, aabb_.min.y + kEpsilon, 0.0f });
+	IndexSet debugMax = mapchip_->GetMapChipIndexSetByPosition({ aabb_.max.x - kEpsilon, aabb_.max.y - kEpsilon, 0.0f });
+
+	ImGui::Text("Loop Range X: %u to %u", debugMin.xIndex, debugMax.xIndex);
+	ImGui::Text("On Damage Floor: %s", isOnDamageFloor_ ? "TRUE" : "FALSE");
 	weapon_->ImGui();
 #endif
 }

@@ -15,6 +15,10 @@ public:		//メンバ関数
 
 	//ゲッター
 	Transform GetTransform() { return transform_; }
+	Weapon* GetWeapon() { return weapon_.get(); }
+	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
+	void ResetDoubleJump() { isDoubleJump_ = false; }
+	float GetUpDownDir() { return updownDirection_; }
 
 private:	//プレイヤーだけのメソッド
 	void Input();
@@ -35,8 +39,16 @@ private:
 	float faceDirection_ = 1.0f; // 1.0fなら右、-1.0fなら左
 	float updownDirection_ = 0.0f;
 
+	//ダメージ
+	int damageTimer_ = 0; // 連続ダメージ防止用タイマー
+
+	//スプライト
+	int shakeTimer_ = 0;      // シェイク演出用のタイマー
+	int lastHp_ = 0;          // 前フレームのHPを覚えておく用
+
 	//武器
 	std::unique_ptr<Weapon> weapon_ = nullptr;
+	std::unique_ptr<Sprite> life_[3];
 
 	CameraOrganizer* camera_ = nullptr;
 	InputManager* input_ = nullptr;

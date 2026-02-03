@@ -68,6 +68,8 @@ public:	//メンバ関数
 	void SetUVTransform (Transform transform) { uvTransform_ = transform; }
 	void SetColor (const Vector4& color) { renderer_->SetColor (color); }
 	void SetAlpha(const float& alpha) { renderer_->SetAlpha(alpha); }
+	void SetRoughness(const float& roughness) { renderer_->SetRoughness(roughness); }
+	void SetMetallic(const float& metallic) { renderer_->SetMetallic(metallic); }
 	void IsLighting (const LightReflectionModel& lighting) { renderer_->IsLighting (lighting); }
 
 private:		//メンバ変数

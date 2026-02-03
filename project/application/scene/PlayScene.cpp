@@ -6,21 +6,31 @@
 #include "ModelManager.h"
 #include "SceneManager.h"
 #include "SceneType.h"
+#include "imgui.h"
+
+#include "Korokoro.h"
+#include "Fly.h"
 
 PlayScene::PlayScene () {
 	TextureManager::GetInstance()->LoadTexture("Resources/map/map1.png", "map1");
 	TextureManager::GetInstance()->LoadTexture("Resources/map/map2.png", "map2");
 	TextureManager::GetInstance()->LoadTexture("Resources/map/map3.png", "map3");
+	TextureManager::GetInstance()->LoadTexture("Resources/map/map4.png", "map4");
+	TextureManager::GetInstance()->LoadTexture("Resources/life.png", "life");
 	ModelManager::GetInstance()->LoadModelData("Resources/player", "player.obj");
 	TextureManager::GetInstance()->LoadTexture("Resources/player/player.png", "player");
 	ModelManager::GetInstance()->LoadModelData("Resources/hammer", "hammer.obj");
 	TextureManager::GetInstance()->LoadTexture("Resources/hammer/hammer.png", "hammer");
+	ModelManager::GetInstance()->LoadModelData("Resources/korokoro", "korokoro.obj");
+	TextureManager::GetInstance()->LoadTexture("Resources/korokoro/korokoro.png", "korokoro");
 }
 
 PlayScene::~PlayScene () {
 	TextureManager::GetInstance()->UnloadTexture("Resources/map/map1.png");
 	TextureManager::GetInstance()->UnloadTexture("Resources/map/map2.png");
 	TextureManager::GetInstance()->UnloadTexture("Resources/map/map3.png");
+	TextureManager::GetInstance()->UnloadTexture("Resources/map/map4.png");
+	TextureManager::GetInstance()->UnloadTexture("Resources/life.png");
 	ModelManager::GetInstance()->UnloadModelData("player.obj");
 	TextureManager::GetInstance()->UnloadTexture("Resources/player/player.png");
 	ModelManager::GetInstance()->UnloadModelData("hammer.obj");
@@ -30,6 +40,7 @@ PlayScene::~PlayScene () {
 void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
 	camera_ = camera;
 	input_ = inputManager;
+	dxCommon_ = dxCommon;
 
 	camera_->AddCamera("main2", CameraType::FollowCamera);
 	camera_->SetActiveCamera("main2");
@@ -52,6 +63,8 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 
 	player_ = std::make_unique<Player>(dxCommon, camera, inputManager, lightManager_.get(), mapchip_.get());
 	player_->Initialize();
+
+	GenerateEnemies();
 }
 
 void PlayScene::Update () {
@@ -67,17 +80,71 @@ void PlayScene::Update () {
 
 	player_->Update();
 	player_->ImGui();
+
+	// ★敵を一括更新し、当たり判定もチェックする
+	for(auto& enemy : enemies_) {
+		enemy->Update();
+
+		// プレイヤーの武器との当たり判定
+		if(enemy->IsAlive() && player_->GetWeapon()->IsAttacking()) {
+			if(player_->GetWeapon()->CheckCollision(enemy->GetAABB())) {
+				enemy->OnHit(1, player_->GetTransform().translate);
+
+				//下斬り時のホッピング
+				if(player_->GetUpDownDir() < -0.1f) {
+					player_->SetVelocity({ 0.0f, 0.2f, 0.0f });
+					player_->ResetDoubleJump();
+				}
+			}
+		}
+	}
+
+	// 完全に死亡（消滅演出終了）した敵をリストから削除する
+	enemies_.erase(std::remove_if(enemies_.begin(), enemies_.end(),
+								  [](const std::unique_ptr<BaseEnemy>& e) { return e->IsDead(); }), enemies_.end());
 	
 	camera_->SetFollowTarget("main2", player_->GetTransform());
 	camera_->Update();
 	camera_->ImGui();
 }
-
 void PlayScene::Draw () {
 	mapchip_->Draw();
 	player_->Draw();
+
+	//敵を一括描画
+	for(auto& enemy : enemies_) {
+		enemy->Draw();
+	}
 }
 
 void PlayScene::StopToResources() {
 
+}
+
+void PlayScene::GenerateEnemies() {
+	// マップチップに溜まったポップデータを元に生成
+	for(const auto& data : mapchip_->GetEnemyPopDatas()) {
+		std::unique_ptr<BaseEnemy> newEnemy = nullptr;
+
+		if(data.type == MapChipType::kFly) {
+			newEnemy = std::make_unique<Fly>(dxCommon_, lightManager_.get(), mapchip_.get());
+		}
+		else if(data.type == MapChipType::kKorokoro) {
+			newEnemy = std::make_unique<Korokoro>(dxCommon_, lightManager_.get(), mapchip_.get());
+		}
+
+
+		if(newEnemy) {
+			newEnemy->SetPosition(data.position);
+			newEnemy->Initialize();
+			enemies_.push_back(std::move(newEnemy));
+		}
+	}
+	// 生成し終わったらデータはクリアしておくでやんす
+	mapchip_->ClearEnemyPopDatas();
+
+	// デバッグ用に現在の敵の数を出力するでやんす
+	char buf[128];
+	sprintf_s(buf, "Enemies count: %d\n", (int)enemies_.size());
+	OutputDebugStringA(buf);
 }
