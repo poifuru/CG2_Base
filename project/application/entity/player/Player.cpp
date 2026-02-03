@@ -109,6 +109,20 @@ void Player::Draw() {
 	}
 }
 
+void Player::OnDamageFromEnemy() {
+	// 無敵時間中でなければダメージを受ける
+	if(damageTimer_ <= 0) {
+		hp_--;
+		damageTimer_ = 60; // 約1秒間の無敵時間
+
+		// 演出：少し上に跳ね飛ばされる（ノックバック）
+		velocity_.y = 0.2f;
+		isGrounded_ = false;
+
+		model_->SetColor({ 1.0f, 0.0f, 0.0f, 0.5f });
+	}
+}
+
 void Player::Input() {
 	//加速度の強さ
 	const float kAccelerationPower = 0.04f;

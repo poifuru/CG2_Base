@@ -16,6 +16,7 @@ PlayScene::PlayScene () {
 	TextureManager::GetInstance()->LoadTexture("Resources/map/map2.png", "map2");
 	TextureManager::GetInstance()->LoadTexture("Resources/map/map3.png", "map3");
 	TextureManager::GetInstance()->LoadTexture("Resources/map/map4.png", "map4");
+	TextureManager::GetInstance()->LoadTexture("Resources/map/map5.png", "map5");
 	TextureManager::GetInstance()->LoadTexture("Resources/life.png", "life");
 	ModelManager::GetInstance()->LoadModelData("Resources/player", "player.obj");
 	TextureManager::GetInstance()->LoadTexture("Resources/player/player.png", "player");
@@ -23,6 +24,9 @@ PlayScene::PlayScene () {
 	TextureManager::GetInstance()->LoadTexture("Resources/hammer/hammer.png", "hammer");
 	ModelManager::GetInstance()->LoadModelData("Resources/korokoro", "korokoro.obj");
 	TextureManager::GetInstance()->LoadTexture("Resources/korokoro/korokoro.png", "korokoro");
+	TextureManager::GetInstance()->LoadTexture("Resources/sousa.png", "sousa");
+	ModelManager::GetInstance()->LoadModelData("Resources/skydome", "skydome.obj");
+	TextureManager::GetInstance()->LoadTexture("Resources/skydome/skydome.png", "skydome");
 }
 
 PlayScene::~PlayScene () {
@@ -30,11 +34,15 @@ PlayScene::~PlayScene () {
 	TextureManager::GetInstance()->UnloadTexture("Resources/map/map2.png");
 	TextureManager::GetInstance()->UnloadTexture("Resources/map/map3.png");
 	TextureManager::GetInstance()->UnloadTexture("Resources/map/map4.png");
+	TextureManager::GetInstance()->UnloadTexture("Resources/map/map5.png");
 	TextureManager::GetInstance()->UnloadTexture("Resources/life.png");
 	ModelManager::GetInstance()->UnloadModelData("player.obj");
 	TextureManager::GetInstance()->UnloadTexture("Resources/player/player.png");
 	ModelManager::GetInstance()->UnloadModelData("hammer.obj");
 	TextureManager::GetInstance()->UnloadTexture("Resources/hammer/hammer.png");
+	TextureManager::GetInstance()->UnloadTexture("Resources/sousa.png");
+	//ModelManager::GetInstance()->UnloadModelData("skydome.obj");
+	//TextureManager::GetInstance()->UnloadTexture("Resources/skydome/skydome.png");
 }
 
 void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) {
@@ -64,6 +72,16 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	player_ = std::make_unique<Player>(dxCommon, camera, inputManager, lightManager_.get(), mapchip_.get());
 	player_->Initialize();
 
+	sousa_ = std::make_unique<Sprite>(dxCommon);
+	sousa_->SetTexture("sousa");
+	sousa_->Initialize({ 5.0f, 650.0f, 0.0f });
+
+	skydome_ = std::make_unique<Model>(dxCommon, lightManager_.get());
+	skydome_->SetModelData("skydome.obj");
+	skydome_->SetTexture("skydome");
+	skydome_->Initialize();
+	skydome_->IsLighting(LightReflectionModel::None);
+
 	GenerateEnemies();
 }
 
@@ -84,6 +102,11 @@ void PlayScene::Update () {
 	// ★敵を一括更新し、当たり判定もチェックする
 	for(auto& enemy : enemies_) {
 		enemy->Update();
+
+		if(CheckCollisionAABB(player_->GetAABB(), enemy->GetAABB())) {
+			// プレイヤーにダメージを与えるメソッドを呼ぶでやんす！
+			player_->OnDamageFromEnemy();
+		}
 
 		// プレイヤーの武器との当たり判定
 		if(enemy->IsAlive() && player_->GetWeapon()->IsAttacking()) {
@@ -106,8 +129,25 @@ void PlayScene::Update () {
 	camera_->SetFollowTarget("main2", player_->GetTransform());
 	camera_->Update();
 	camera_->ImGui();
+
+	sousa_->Update();
+
+	// 死亡検知
+	if(!player_->IsAlive()) {
+		nextScene_ = new GameoverScene();
+		SceneManager::GetInstance()->SetNextScene(nextScene_);
+	}
+
+	if(player_->IsGoalReached()) {
+		// ここで次のシーンへ切り替える処理を呼ぶでやんす！
+		nextScene_ = new ClearScene();
+		SceneManager::GetInstance()->SetNextScene(nextScene_);
+	}
+
+	skydome_->Update(&camera_->GetCameraData());
 }
 void PlayScene::Draw () {
+	skydome_->Draw();
 	mapchip_->Draw();
 	player_->Draw();
 
@@ -115,6 +155,8 @@ void PlayScene::Draw () {
 	for(auto& enemy : enemies_) {
 		enemy->Draw();
 	}
+
+	sousa_->Draw();
 }
 
 void PlayScene::StopToResources() {
@@ -142,9 +184,4 @@ void PlayScene::GenerateEnemies() {
 	}
 	// 生成し終わったらデータはクリアしておくでやんす
 	mapchip_->ClearEnemyPopDatas();
-
-	// デバッグ用に現在の敵の数を出力するでやんす
-	char buf[128];
-	sprintf_s(buf, "Enemies count: %d\n", (int)enemies_.size());
-	OutputDebugStringA(buf);
 }

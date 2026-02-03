@@ -12,6 +12,7 @@ namespace {
 		{"2", MapChipType::kWall},		//壁
 		{"3", MapChipType::kCeiling},	//天井
 		{"4", MapChipType::kDamage},	//天井
+		{"5", MapChipType::kGoal},
 		{"8", MapChipType::kKorokoro },
 		{"9", MapChipType::kFly },
 	};

@@ -121,6 +121,7 @@ void SpriteRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 }
 
 void SpriteRenderer::ImGui (Transform& transform, Transform& uvTransform) {
+#ifdef USEIMGUI
 	if (ImGui::ColorEdit4 ("Color##SpriteColor", color_)) {
 		// 色が変更されたらmaterialDataに反映
 		materialData_->color.x = color_[0];
@@ -135,4 +136,5 @@ void SpriteRenderer::ImGui (Transform& transform, Transform& uvTransform) {
 	ImGui::DragFloat ("UVRotate", &uvTransform.rotate.z, 0.01f);
 	ImGui::DragFloat2 ("UVTranslate", &uvTransform.translate.x, 0.01f);
 	ImGui::Separator ();
+#endif
 }

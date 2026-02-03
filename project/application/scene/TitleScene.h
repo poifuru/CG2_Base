@@ -21,4 +21,5 @@ public:		//メンバ関数
 private:	//メンバ変数
 	std::unique_ptr<LightManager> lightManager_ = nullptr;
 	std::unique_ptr<Sprite> title_ = nullptr;
+	std::unique_ptr<Model> skydome_ = nullptr;
 };

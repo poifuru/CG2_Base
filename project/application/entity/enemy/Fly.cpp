@@ -1,5 +1,7 @@
 #include "Fly.h"
-#include <cmath> // sinを使うために必要でやんす
+#include <cmath>
+#include <numbers>
+#include "CameraOrganizer.h"
 
 Fly::Fly(DxCommon* dxCommon, LightManager* light, MapChip* mapchip)
 	: BaseEnemy(dxCommon, light, mapchip) {
@@ -10,6 +12,14 @@ void Fly::Initialize() {
 	baseHeight_ = transform_.translate.y;
 	hp_ = 1; // 体力の設定
 	SetAABBSize({ 0.5f, 0.5f, 0.5f }); // 当たり判定のサイズ
+
+	model_->Initialize();
+	model_->SetModelData("korokoro.obj"); // 敵のモデル
+	model_->SetTexture("korokoro");
+	model_->SetRoughness(0.6f);
+	model_->SetMetallic(0.0f);
+
+	model_->SetRotate({ 0.0f, std::numbers::pi_v<float> / -2.0f, 0.0f });
 }
 
 void Fly::Update() {
@@ -31,5 +41,9 @@ void Fly::Update() {
 
 		// AABB（当たり判定）の更新を忘れずに！
 		UpdateAABB();
+
+		// モデルの更新
+		model_->SetPosition(transform_.translate);
+		model_->Update(&CameraOrganizer::GetInstance()->GetCameraData());
 	}
 }

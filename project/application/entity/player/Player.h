@@ -19,6 +19,8 @@ public:		//メンバ関数
 	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
 	void ResetDoubleJump() { isDoubleJump_ = false; }
 	float GetUpDownDir() { return updownDirection_; }
+	AABB GetAABB() { return aabb_; }
+	void OnDamageFromEnemy();
 
 private:	//プレイヤーだけのメソッド
 	void Input();

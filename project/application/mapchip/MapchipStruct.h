@@ -9,6 +9,7 @@ enum class MapChipType {
 	kWall,		//壁
 	kCeiling,	//天井
 	kDamage,	//ダメージ
+	kGoal,		//ゴール
 
 	kKorokoro = 8,	//コロコロ
 	kFly,			//フライ

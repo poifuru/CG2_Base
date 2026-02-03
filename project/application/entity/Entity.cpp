@@ -86,6 +86,10 @@ breakX:
 					if(type == MapChipType::kDamage) {
 						isOnDamageFloor_ = true;
 					}
+
+					if(type == MapChipType::kGoal) {
+						isGoalReached_ = true;
+					}
 				}
 				velocity_.y = 0.0f;
 				goto breakY;

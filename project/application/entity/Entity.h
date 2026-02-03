@@ -15,6 +15,7 @@ public:
 	//アクセッサ
 	bool IsAlive() const { return hp_ > 0; }
 	void SetAABBSize(const Vector3& size) { aabbSize_ = size; }
+	bool IsGoalReached() const { return isGoalReached_; }
 
 protected:
 	// マップチップとの当たり判定・座標補正
@@ -32,4 +33,5 @@ protected:
 	bool isTouchingWallRight_ = false; // 右の壁に触れているか
 	bool isOnDamageFloor_ = false; // ダメージ床に乗っているかフラグ
 	int hp_ = 0;
+	bool isGoalReached_ = false; // ゴールに到達したかフラグ
 };

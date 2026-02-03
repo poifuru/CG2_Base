@@ -15,4 +15,7 @@ public:		//メンバ関数
 	void StopToResources() override;
 
 private:	//メンバ変数
+	std::unique_ptr<LightManager> lightManager_ = nullptr;
+	std::unique_ptr<Sprite> clear_ = nullptr;
+	std::unique_ptr<Model> skydome_ = nullptr;
 };
