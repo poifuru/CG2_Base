@@ -20,16 +20,16 @@ void BaseEnemy::Update() {
 		if(alpha_ < 0.0f) alpha_ = 0.0f;
 
 		// モデルに透明度を反映
-		// SetColorの第4引数がアルファ値（A）でやんす！
+		// SetColorの第4引数がアルファ値（A）
 		model_->SetColor({ 1.0f, 1.0f, 1.0f, alpha_ });
-		return; // 死亡演出中は移動などの処理はさせないでやんす
+		return; // 死亡演出中は移動などの処理はさせない
 	}
 
 	// 無敵タイマーが動いていたら減らす
 	if(invincibleTimer_ > 0) {
 		invincibleTimer_--;
 
-		// 無敵中はモデルを点滅させると分かりやすいでやんす！
+		// 無敵中はモデルを点滅させると分かりやすい
 		if(invincibleTimer_ % 10 < 5) {
 			model_->SetColor({ 1.0f, 0.0f, 0.0f, 0.4f }); // 透けさせる
 		}
@@ -60,7 +60,7 @@ void BaseEnemy::OnHit(int damage, const Vector3& playerPos) {
 	if(hp_ <= 0) {
 		hp_ = 0;
 		isDead_ = true; // 死亡演出スタート！
-		// 倒した瞬間に少し上に跳ねさせると「やられた感」が出るでやんす
+		// 倒した瞬間に少し上に跳ねさせると「やられた感」が出る
 		velocity_.y = 0.2f;
 		velocity_.x = (transform_.translate.x > playerPos.x) ? 0.1f : -0.1f;
 	}

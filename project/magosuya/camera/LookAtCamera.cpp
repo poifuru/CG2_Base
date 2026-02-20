@@ -51,7 +51,7 @@ void LookAtCamera::Update () {
 	}
 
 	// === 🌟 LookAtカメラの視点位置計算 🌟 ===
-	// Y軸回転（水平方向）を yaw_、X軸回転（垂直方向）を pitch_ として扱うでやんす
+	// Y軸回転（水平方向）を yaw_、X軸回転（垂直方向）を pitch_ として扱う
 	float yaw_ = camera_.transform.rotate.y;
 	float pitch_ = camera_.transform.rotate.x;
 

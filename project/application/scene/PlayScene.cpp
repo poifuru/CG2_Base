@@ -87,8 +87,8 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 
 void PlayScene::Update () {
 	if(input_->GetRawInput()->Trigger(VK_F1)) {
-		nextScene_ = new TitleScene();
-		SceneManager::GetInstance()->SetNextScene(nextScene_);
+		nextScene_ = std::make_unique<TitleScene>();
+		SceneManager::GetInstance()->SetNextScene(nextScene_.get());
 	}
 	lightManager_->Update();
 	lightManager_->ImGui();
@@ -104,7 +104,7 @@ void PlayScene::Update () {
 		enemy->Update();
 
 		if(CheckCollisionAABB(player_->GetAABB(), enemy->GetAABB())) {
-			// プレイヤーにダメージを与えるメソッドを呼ぶでやんす！
+			// プレイヤーにダメージを与えるメソッドを呼ぶ
 			player_->OnDamageFromEnemy();
 		}
 
@@ -134,14 +134,14 @@ void PlayScene::Update () {
 
 	// 死亡検知
 	if(!player_->IsAlive()) {
-		nextScene_ = new GameoverScene();
-		SceneManager::GetInstance()->SetNextScene(nextScene_);
+		nextScene_ = std::make_unique<GameoverScene>();
+		SceneManager::GetInstance()->SetNextScene(nextScene_.get());
 	}
 
 	if(player_->IsGoalReached()) {
-		// ここで次のシーンへ切り替える処理を呼ぶでやんす！
-		nextScene_ = new ClearScene();
-		SceneManager::GetInstance()->SetNextScene(nextScene_);
+		// ここで次のシーンへ切り替える処理を呼ぶ
+		nextScene_ = std::make_unique<ClearScene>();
+		SceneManager::GetInstance()->SetNextScene(nextScene_.get());
 	}
 
 	skydome_->Update(&camera_->GetCameraData());
@@ -182,6 +182,6 @@ void PlayScene::GenerateEnemies() {
 			enemies_.push_back(std::move(newEnemy));
 		}
 	}
-	// 生成し終わったらデータはクリアしておくでやんす
+	// 生成し終わったらデータはクリアしておく
 	mapchip_->ClearEnemyPopDatas();
 }

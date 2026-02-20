@@ -35,7 +35,7 @@ void Weapon::Update(const Vector3& playerPos, float dirX, float dirY, bool isGro
 		0.0f,
 		std::numbers::pi_v<float> / -2.0f,
 		0.0f
-	}; // ここで角度を決めるでやんす
+	}; // ここで角度を決める
 
 	float PI = std::numbers::pi_v<float>;
 
@@ -85,11 +85,11 @@ void Weapon::ImGui() {
 void Weapon::Attack(float currentDirX, float currentDirY) {
 	if(attackCooldown_ <= 0) {
 		isAttacking_ = true;
-		attackTimer_ = 8;     // 判定が出る時間は短めが「鋭い」でやんす！
+		attackTimer_ = 8;     // 判定が出る時間は短めが鋭い
 		attackCooldown_ = 15;
 	}
 
-	// ★攻撃を出した瞬間の向きをロックするでやんす！
+	// ★攻撃を出した瞬間の向きをロックする
 	lockedDirX_ = currentDirX;
 	lockedDirY_ = currentDirY;
 }

@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include <vector>  
 
-// マウスボタンのインデックスを分かりやすくするために定義しとくでやんす！
+// マウスボタンのインデックスを分かりやすくするために定義しとく
 enum MouseButton {
     LEFT = 0,
     RIGHT = 1,

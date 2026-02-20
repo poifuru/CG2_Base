@@ -6,7 +6,7 @@
 #include <iostream>
 #include <chrono>
 #include <filesystem>
-#include "Logger.h"
+#include "LogManager.h"
 #include "String.h"
 
 //クラッシュハンドルを登録するための関数

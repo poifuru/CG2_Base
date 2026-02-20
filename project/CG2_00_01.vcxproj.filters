@@ -15,28 +15,28 @@
   <ItemGroup>
     <ClCompile Include="application\scene\ClearScene.cpp" />
     <ClCompile Include="application\scene\GameoverScene.cpp" />
-    <ClCompile Include="magosuya\utility\camera\CameraOrganizer.cpp" />
-    <ClCompile Include="magosuya\utility\camera\FixedPointCamera.cpp" />
-    <ClCompile Include="magosuya\mesh\cube\CubeRenderer.cpp" />
-    <ClCompile Include="magosuya\mesh\line\LineRenderer.cpp" />
+    <ClCompile Include="magosuya\camera\CameraOrganizer.cpp" />
+    <ClCompile Include="magosuya\camera\FixedPointCamera.cpp" />
+    <ClCompile Include="magosuya\primitive\cube\CubeRenderer.cpp" />
+    <ClCompile Include="magosuya\primitive\line\LineRenderer.cpp" />
     <ClCompile Include="magosuya\PSO\BlendModeManager.cpp" />
-    <ClCompile Include="general\Logger.cpp" />
-    <ClCompile Include="general\ChangeString.cpp" />
+    <ClCompile Include="magosuya\general\LogManager.cpp" />
+    <ClCompile Include="magosuya\general\ChangeString.cpp" />
     <ClCompile Include="magosuya\PSO\InputLayoutManager.cpp" />
-    <ClCompile Include="magosuya\utility\camera\FollowCamera.cpp" />
-    <ClCompile Include="magosuya\utility\imgui\ImGuiManager.cpp" />
+    <ClCompile Include="magosuya\camera\FollowCamera.cpp" />
+    <ClCompile Include="magosuya\imgui\ImGuiManager.cpp" />
     <ClCompile Include="magosuya\engine\LeakChecker.cpp" />
     <ClCompile Include="magosuya\engine\DxCommon.cpp" />
-    <ClCompile Include="magosuya\utility\camera\DebugCamera.cpp" />
-    <ClCompile Include="general\function.cpp" />
-    <ClCompile Include="magosuya\utility\input\GamePad.cpp" />
-    <ClCompile Include="magosuya\utility\input\InputManager.cpp" />
+    <ClCompile Include="magosuya\camera\DebugCamera.cpp" />
+    <ClCompile Include="magosuya\general\function.cpp" />
+    <ClCompile Include="magosuya\input\GamePad.cpp" />
+    <ClCompile Include="magosuya\input\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="general\MathFunction.cpp" />
+    <ClCompile Include="magosuya\general\MathFunction.cpp" />
     <ClCompile Include="magosuya\object\3d\SphereMesh.cpp" />
     <ClCompile Include="magosuya\object\2d\Sprite.cpp" />
     <ClCompile Include="magosuya\object\3d\Model.cpp" />
-    <ClCompile Include="magosuya\utility\input\RawInput.cpp" />
+    <ClCompile Include="magosuya\input\RawInput.cpp" />
     <ClCompile Include="magosuya\object\3d\ModelManager.cpp" />
     <ClCompile Include="magosuya\MagosuyaEngine.cpp" />
     <ClCompile Include="magosuya\engine\WindowsAPI.cpp" />
@@ -48,10 +48,10 @@
     <ClCompile Include="application\scene\PlayScene.cpp" />
     <ClCompile Include="magosuya\PSO\RootSignatureManager.cpp" />
     <ClCompile Include="magosuya\PSO\PSOManager.cpp" />
-    <ClCompile Include="magosuya\mesh\Mesh.cpp" />
-    <ClCompile Include="magosuya\utility\particle\MeshParticle.cpp" />
-    <ClCompile Include="magosuya\utility\camera\LookAtCamera.cpp" />
-    <ClCompile Include="general\Easing.cpp" />
+    <ClCompile Include="magosuya\primitive\Mesh.cpp" />
+    <ClCompile Include="magosuya\particle\MeshParticle.cpp" />
+    <ClCompile Include="magosuya\camera\LookAtCamera.cpp" />
+    <ClCompile Include="magosuya\general\Easing.cpp" />
     <ClCompile Include="magosuya\engine\SRV\SRVManager.cpp" />
     <ClCompile Include="application\entity\Entity.cpp" />
     <ClCompile Include="application\mapchip\mapchip.cpp" />
@@ -67,7 +67,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="application\entity\boss\Boss.cpp" />
     <ClCompile Include="magosuya\light\RectLight.cpp" />
-    <ClCompile Include="magosuya\utility\audio\AudioManager.cpp" />
+    <ClCompile Include="magosuya\audio\AudioManager.cpp" />
     <ClCompile Include="application\entity\player\Player.cpp" />
     <ClCompile Include="application\scene\DebugScene.cpp" />
     <ClCompile Include="application\entity\player\Weapon.cpp" />
@@ -78,14 +78,14 @@
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
     <ClInclude Include="application\scene\ClearScene.h" />
-    <ClInclude Include="magosuya\utility\camera\CameraOrganizer.h" />
-    <ClInclude Include="magosuya\utility\camera\FixedPointCamera.h" />
-    <ClInclude Include="magosuya\utility\camera\CameraComponent.h" />
-    <ClInclude Include="magosuya\mesh\cube\CubeRenderer.h" />
-    <ClInclude Include="magosuya\mesh\cube\CubeRenderData.h" />
-    <ClInclude Include="magosuya\mesh\line\LineRenderData.h" />
-    <ClInclude Include="magosuya\mesh\line\LineRenderer.h" />
-    <ClInclude Include="magosuya\mesh\MaxMeshNum.h" />
+    <ClInclude Include="magosuya\camera\CameraOrganizer.h" />
+    <ClInclude Include="magosuya\camera\FixedPointCamera.h" />
+    <ClInclude Include="magosuya\camera\CameraComponent.h" />
+    <ClInclude Include="magosuya\primitive\cube\CubeRenderer.h" />
+    <ClInclude Include="magosuya\primitive\cube\CubeRenderData.h" />
+    <ClInclude Include="magosuya\primitive\line\LineRenderData.h" />
+    <ClInclude Include="magosuya\primitive\line\LineRenderer.h" />
+    <ClInclude Include="magosuya\primitive\MaxMeshNum.h" />
     <ClInclude Include="magosuya\PSO\BlendModeManager.h" />
     <ClInclude Include="externals\externals.h" />
     <ClInclude Include="application\scene\GameoverScene.h" />
@@ -97,23 +97,23 @@
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="general\Logger.h" />
-    <ClInclude Include="general\ChangeString.h" />
+    <ClInclude Include="magosuya\general\LogManager.h" />
+    <ClInclude Include="magosuya\general\ChangeString.h" />
     <ClInclude Include="magosuya\PSO\InputLayoutManager.h" />
-    <ClInclude Include="magosuya\utility\camera\FollowCamera.h" />
-    <ClInclude Include="magosuya\utility\imgui\ImGuiManager.h" />
+    <ClInclude Include="magosuya\camera\FollowCamera.h" />
+    <ClInclude Include="magosuya\imgui\ImGuiManager.h" />
     <ClInclude Include="magosuya\engine\LeakChecker.h" />
     <ClInclude Include="magosuya\engine\DxCommon.h" />
-    <ClInclude Include="magosuya\utility\camera\DebugCamera.h" />
-    <ClInclude Include="magosuya\utility\input\GamePad.h" />
-    <ClInclude Include="general\function.h" />
-    <ClInclude Include="general\MathFunction.h" />
+    <ClInclude Include="magosuya\camera\DebugCamera.h" />
+    <ClInclude Include="magosuya\input\GamePad.h" />
+    <ClInclude Include="magosuya\general\function.h" />
+    <ClInclude Include="magosuya\general\MathFunction.h" />
     <ClInclude Include="magosuya\object\3d\SphereMesh.h" />
     <ClInclude Include="magosuya\object\2d\Sprite.h" />
-    <ClInclude Include="general\struct.h" />
+    <ClInclude Include="magosuya\general\struct.h" />
     <ClInclude Include="magosuya\object\3d\Model.h" />
-    <ClInclude Include="magosuya\utility\input\InputManager.h" />
-    <ClInclude Include="magosuya\utility\input\RawInput.h" />
+    <ClInclude Include="magosuya\input\InputManager.h" />
+    <ClInclude Include="magosuya\input\RawInput.h" />
     <ClInclude Include="magosuya\object\3d\ModelManager.h" />
     <ClInclude Include="magosuya\MagosuyaEngine.h" />
     <ClInclude Include="magosuya\engine\WindowsAPI.h" />
@@ -123,8 +123,8 @@
     <ClInclude Include="application\scene\SceneManager.h" />
     <ClInclude Include="application\scene\TitleScene.h" />
     <ClInclude Include="application\scene\PlayScene.h" />
-    <ClInclude Include="magosuya\utility\camera\LookAtCamera.h" />
-    <ClInclude Include="general\Easing.h" />
+    <ClInclude Include="magosuya\camera\LookAtCamera.h" />
+    <ClInclude Include="magosuya\general\Easing.h" />
     <ClInclude Include="magosuya\engine\SRV\SRVManager.h" />
     <ClInclude Include="application\entity\Entity.h" />
     <ClInclude Include="application\mapchip\mapchip.h" />
@@ -142,8 +142,8 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="application\scene\SceneType.h" />
     <ClInclude Include="magosuya\light\RectLight.h" />
-    <ClInclude Include="magosuya\utility\audio\AudioManager.h" />
-    <ClInclude Include="magosuya\utility\audio\VoiceCallback.h" />
+    <ClInclude Include="magosuya\audio\AudioManager.h" />
+    <ClInclude Include="magosuya\audio\VoiceCallback.h" />
     <ClInclude Include="application\mapchip\MapchipStruct.h" />
     <ClInclude Include="application\scene\DebugScene.h" />
     <ClInclude Include="application\entity\player\Weapon.h" />
@@ -152,88 +152,46 @@
     <ClInclude Include="application\entity\enemy\Fly.h" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="ソースファイル">
-      <UniqueIdentifier>{d9429fbc-a45c-4a09-accd-7d639b3f1204}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル">
-      <UniqueIdentifier>{7be6bd21-6bb5-434f-b59f-2bf5a2ea2d85}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="外部ファイル">
-      <UniqueIdentifier>{10a88c8f-860b-4156-bce4-27bc63e0df11}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="シェーダー">
-      <UniqueIdentifier>{d00e7eef-e698-44cf-820e-da4c2ae980d4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\magosuya">
-      <UniqueIdentifier>{2f6a1d5f-0a7f-438c-b0aa-d0bf96c43ba0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\magosuya\engine">
-      <UniqueIdentifier>{272283cd-e2df-4bc6-a28f-dfdd8cf66693}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\magosuya\object">
-      <UniqueIdentifier>{2a89f171-a0e7-4e8f-896f-8a6fb1373d95}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\magosuya\utility">
-      <UniqueIdentifier>{68d7c6c6-196f-46d9-9d63-da40278cc47e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\magosuya\object\2d">
-      <UniqueIdentifier>{e0948fee-20e5-4aa8-9350-025ef1981440}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\magosuya\object\3d">
-      <UniqueIdentifier>{e22d1c64-6799-4529-be1d-d5260554f9ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\magosuya\utility\audio">
-      <UniqueIdentifier>{fbc6c45d-9f1b-4e68-be7a-5a881df9f9ff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\magosuya\utility\camera">
-      <UniqueIdentifier>{d80154bf-3be6-4d69-8f92-08a0316d0269}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\magosuya\utility\input">
-      <UniqueIdentifier>{8acba643-37e2-46e8-9adf-fe880630c96b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\magosuya\utility\manager">
-      <UniqueIdentifier>{a7b841e9-39d8-40d4-8220-d56c979f6d07}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\general">
-      <UniqueIdentifier>{3e5e4c26-2402-409b-9ddb-c94548049e20}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\general">
-      <UniqueIdentifier>{f4051e4e-3868-44fd-82a7-adb5287b54d3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\magosuya">
-      <UniqueIdentifier>{ad062e45-9d4e-481e-a879-dd3a8c5cae57}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\magosuya\engine">
-      <UniqueIdentifier>{43229519-ce23-4416-bf5b-09e304dc3418}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\magosuya\utility">
-      <UniqueIdentifier>{2868ef4d-0e95-4781-b0f4-e1e164fa53bd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\magosuya\object">
-      <UniqueIdentifier>{829cf9a4-8cc4-48d5-8dbc-c4a14fd974a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\magosuya\object\2d">
-      <UniqueIdentifier>{bb2018e7-7b99-4f8e-890d-965275393f32}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\magosuya\object\3d">
-      <UniqueIdentifier>{95eae0ef-733e-485b-829e-1dd0db913abf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\magosuya\utility\camera">
-      <UniqueIdentifier>{e075de14-080f-45a8-bf10-0d385afae3df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\magosuya\utility\input">
-      <UniqueIdentifier>{f696b3c0-0344-47c7-88a4-58bfed422508}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\magosuya\utility\manager">
-      <UniqueIdentifier>{ad0fc355-0c4e-4fc6-84b2-13b10b7c50fc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\magosuya\utility\audio">
-      <UniqueIdentifier>{457fd7ce-1080-4188-9b25-f8a794eb8700}</UniqueIdentifier>
-    </Filter>
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />
     <ClInclude Include="magosuya\PSO\PSOManager.h" />
-    <ClInclude Include="magosuya\mesh\Mesh.h" />
-    <ClInclude Include="magosuya\utility\particle\MeshParticle.h" />
+    <ClInclude Include="magosuya\primitive\Mesh.h" />
+    <ClInclude Include="magosuya\particle\MeshParticle.h" />
+    <Filter Include="general">
+      <UniqueIdentifier>{3e5e4c26-2402-409b-9ddb-c94548049e20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="magosuya">
+      <UniqueIdentifier>{2f6a1d5f-0a7f-438c-b0aa-d0bf96c43ba0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine">
+      <UniqueIdentifier>{272283cd-e2df-4bc6-a28f-dfdd8cf66693}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="object">
+      <UniqueIdentifier>{2a89f171-a0e7-4e8f-896f-8a6fb1373d95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2d">
+      <UniqueIdentifier>{e0948fee-20e5-4aa8-9350-025ef1981440}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="3d">
+      <UniqueIdentifier>{e22d1c64-6799-4529-be1d-d5260554f9ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="audio">
+      <UniqueIdentifier>{fbc6c45d-9f1b-4e68-be7a-5a881df9f9ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="camera">
+      <UniqueIdentifier>{d80154bf-3be6-4d69-8f92-08a0316d0269}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="input">
+      <UniqueIdentifier>{8acba643-37e2-46e8-9adf-fe880630c96b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="manager">
+      <UniqueIdentifier>{a7b841e9-39d8-40d4-8220-d56c979f6d07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{d00e7eef-e698-44cf-820e-da4c2ae980d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals">
+      <UniqueIdentifier>{10a88c8f-860b-4156-bce4-27bc63e0df11}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Cube.hlsli" />

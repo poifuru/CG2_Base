@@ -5,7 +5,7 @@
 class VoiceCallback : public IXAudio2VoiceCallback {
 public:
 	void STDMETHODCALLTYPE OnBufferEnd(void* pBufferContext) override {
-		// 中身を見ようとせず、ポインタの値をそのまま数値に戻すでやんす！
+		// 中身を見ようとせず、ポインタの値をそのまま数値に戻す
 		uint32_t id = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(pBufferContext));
 	}
 

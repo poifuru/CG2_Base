@@ -111,7 +111,7 @@ void CameraOrganizer::ImGui () {
 	}
 
 	// ImGui::Comboを使ってリストからカメラを選択
-	if (ImGui::BeginCombo ("##CameraList", current_item)) { // "##CameraList"はラベルを非表示にするテクニックでやんす
+	if (ImGui::BeginCombo ("##CameraList", current_item)) { // "##CameraList"はラベルを非表示にするテクニック
 		for (const char* name : cameraNames) {
 			// 現在選択されているアイテムかチェック
 			bool is_selected = (current_item == name);

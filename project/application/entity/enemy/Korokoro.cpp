@@ -29,7 +29,7 @@ void Korokoro::Update() {
 
 	BaseEnemy::Update();
 
-	// 重力（Player.cppのkGravityと同じ値を推奨でやんす）
+	// 重力
 	velocity_.y += -0.01f;
 
 	// 壁に当たったら反転

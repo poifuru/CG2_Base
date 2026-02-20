@@ -3,7 +3,7 @@
 
 class Fly : public BaseEnemy {
 public:
-	// 親クラスと同じ引数のコンストラクタを用意するでやんす
+	// 親クラスと同じ引数のコンストラクタを用意する
 	Fly(DxCommon* dxCommon, LightManager* light, MapChip* mapchip);
 
 	void Initialize() override;

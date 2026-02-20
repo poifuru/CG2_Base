@@ -15,7 +15,7 @@ public:		//メンバ関数
 
 protected:	//メンバ変数
 	//次に行きたいシーンを持たせる
-	BaseScene* nextScene_ = nullptr;
+	std::unique_ptr<BaseScene> nextScene_ = nullptr;
 
 	//ポインタを借りる
 	CameraOrganizer* camera_ = nullptr;

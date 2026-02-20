@@ -136,7 +136,7 @@ void RawInput::EndFrame () {
     //preKeysの状態を更新
     preKeys_ = keys_;
 
-    // preMouseButtonsの状態を更新するでやんす！
+    // preMouseButtonsの状態を更新する
     preMouseButtons_ = mouseButtons_;
 
     mouseDeltaX_ = 0;

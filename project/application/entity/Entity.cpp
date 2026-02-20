@@ -54,7 +54,7 @@ breakX:
 	transform_.translate.y += velocity_.y;
 	UpdateAABB();
 
-	// ★ここで「X軸で押し戻された後」の最新のワールド座標を使い直すでやんす！
+	// ★ここで「X軸で押し戻された後」の最新のワールド座標を使い直す
 	worldLeft = aabb_.min.x;
 	worldRight = aabb_.max.x;
 	worldBottom = aabb_.min.y;

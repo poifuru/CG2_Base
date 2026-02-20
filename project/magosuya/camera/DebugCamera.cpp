@@ -89,8 +89,8 @@ void DebugCamera::Update() {
 		RECT clientRect;
 		GetClientRect (WindowsAPI::GetInstance ()->GetHwnd(), &clientRect);
 
-		// クライアント領域の座標をスクリーン座標に変換するでやんす
-		// ClipCursorはスクリーン座標を要求するからでやんす
+		// クライアント領域の座標をスクリーン座標に変換する
+		// ClipCursorはスクリーン座標を要求するから
 		POINT pt = { clientRect.left, clientRect.top };
 		ClientToScreen (WindowsAPI::GetInstance ()->GetHwnd (), &pt);
 		clientRect.left = pt.x;
@@ -102,7 +102,7 @@ void DebugCamera::Update() {
 		clientRect.right = pt.x;
 		clientRect.bottom = pt.y;
 
-		// カーソルをウィンドウのクライアント領域に制限するでやんす！
+		// カーソルをウィンドウのクライアント領域に制限する
 		ClipCursor (&clientRect);
 	}
 	if (input_->GetRawInput ()->ReleaseMouse (MouseButton::MIDDLE)) {

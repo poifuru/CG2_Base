@@ -105,13 +105,13 @@ uint64_t PSOManager::ComputeHash (const PSODescriptor& desc) const {
 	uint64_t hash = 0;
 
 	// --- マネージャー管理のIDをハッシュ化（最重要）---
-	// IDが変われば、シェーダーやルートシグネチャも変わるのでハッシュは必ず変えるでやんす
+	// IDが変われば、シェーダーやルートシグネチャも変わるのでハッシュは必ず変える
 	hash = hash_combine_simple (hash, desc.VS_ID);
 	hash = hash_combine_simple (hash, desc.PS_ID);
 	hash = hash_combine_simple (hash, desc.RootSignatureID);
-	// InputLayoutIDの型をInputLayoutType(enum class)に合わせた場合も、uint32_tに変換してOKでやんす
+	// InputLayoutIDの型をInputLayoutType(enum class)に合わせた場合も、uint32_tに変換してOK
 	hash = hash_combine_simple (hash, (uint32_t)desc.InputLayoutID);
-	// BlendModeType (enum class)は、ManagerでD3D12_BLEND_DESCに変換されるので、IDをハッシュ化するでやんす
+	// BlendModeType (enum class)は、ManagerでD3D12_BLEND_DESCに変換されるので、IDをハッシュ化する
 	hash = hash_combine_simple (hash, (uint32_t)desc.BlendMode);
 
 	// --- ラスタライザーステート ---
@@ -119,7 +119,7 @@ uint64_t PSOManager::ComputeHash (const PSODescriptor& desc) const {
 	hash = hash_combine_simple (hash, (uint32_t)desc.FillMode);
 
 	// --- デプス/ステンシルステート ---
-	// BOOLはTRUE(1)かFALSE(0)なのでそのままハッシュ化できるでやんす
+	// BOOLはTRUE(1)かFALSE(0)なのでそのままハッシュ化できる
 	hash = hash_combine_simple (hash, desc.DepthEnable);
 	hash = hash_combine_simple (hash, (uint32_t)desc.DepthWriteMask);
 	hash = hash_combine_simple (hash, (uint32_t)desc.DepthFunc);
@@ -132,7 +132,7 @@ uint64_t PSOManager::ComputeHash (const PSODescriptor& desc) const {
 
 	// --- サンプリング ---
 	hash = hash_combine_simple (hash, desc.SampleCount);
-	// SampleMaskは32bit値なので、uint32_tでキャストするだけで十分でやんす
+	// SampleMaskは32bit値なので、uint32_tでキャストするだけで十分
 	hash = hash_combine_simple (hash, desc.SampleMask);
 
 	return hash;

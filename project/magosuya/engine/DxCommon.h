@@ -26,18 +26,6 @@ public:		//メンバ関数(mainで呼び出すよう)
 	void EndFrame();
 	void Finalize();
 
-	//Textureデータを読みこむ関数
-	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
-
-	/// <summary>
-	/// シェーダーをコンパイルする関数
-	/// </summary>
-	/// <param name="filePath">shaderファイルへのパス</param>
-	/// <param name="profile">使用するプロファイル</param>
-	/// <param name="os">ログストリーム</param>
-	/// <returns>shader</returns>
-	ComPtr<IDxcBlob> CompilerShader(const std::wstring& filePath, const wchar_t* profile, std::ofstream& os);
-
 	/// <summary>
 	/// Resource作成関数
 	/// </summary>

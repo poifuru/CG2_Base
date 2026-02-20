@@ -7,7 +7,7 @@ using namespace Microsoft::WRL;
 #include <map>
 #include <vector>
 #include <mfapi.h>
-#include <mfidl.h>      // これが足りないと IMFMediaSource が定義されないでやんす
+#include <mfidl.h>
 #include <mfreadwrite.h>
 #include <xaudio2.h>
 #include "VoiceCallback.h"

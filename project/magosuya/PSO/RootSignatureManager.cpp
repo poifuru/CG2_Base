@@ -2,7 +2,7 @@
 #include <fstream>
 #include "RootSignatureManager.h"
 #include "DxCommon.h"
-#include "Logger.h"
+#include "LogManager.h"
 
 void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	device_ = dxCommon->GetDevice ();
@@ -330,7 +330,6 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 }
 
 uint32_t RootSignatureManager::GetOrCreateRootSignature (RootSigType type) {
-	std::ofstream os = Logger::Logtext ();
 	HRESULT hr;
 
 	//まずRootSigTypeをハッシュ代わりにチェック
@@ -355,7 +354,7 @@ uint32_t RootSignatureManager::GetOrCreateRootSignature (RootSigType type) {
 	//失敗したら
 	if (FAILED (hr)) {
 		//ログを出力
-		Logger::Log (os, reinterpret_cast<char*>(errorBlob->GetBufferPointer ()));
+		LogManager::GetInstance()->LogManager::Log (reinterpret_cast<char*>(errorBlob->GetBufferPointer ()));
 		assert (false && "RootSignature serialization failed!");
 		return 0;
 	}

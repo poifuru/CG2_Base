@@ -6,6 +6,7 @@ using namespace Microsoft::WRL;
 #include <dxcapi.h>
 #include <string>
 #include <unordered_map>
+#include <fstream>
 
 class DxCommon;
 
@@ -60,6 +61,9 @@ private:	// メンバ変数
 
 	//IDとShaderInfoの実体データのマップ
 	std::unordered_map<uint32_t, ShaderInfo> m_ShaderCashe;
+
+	//ログ用の変数
+	std::ofstream os_;
 
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;

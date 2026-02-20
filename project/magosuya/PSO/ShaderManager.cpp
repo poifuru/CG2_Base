@@ -1,8 +1,7 @@
 #include "ShaderManager.h"
 #include <cassert>
 #include <format>
-#include <fstream>
-#include "Logger.h"
+#include "LogManager.h"
 #include "ChangeString.h"
 #include "DxCommon.h"
 
@@ -55,11 +54,9 @@ D3D12_SHADER_BYTECODE ShaderManager::GetShaderBytecode (uint32_t shaderID) const
 }
 
 ComPtr<IDxcBlob> ShaderManager::CompilerShader (const std::wstring& filePath, const wchar_t* profile) {
-	std::ofstream os = Logger::Logtext ();
-
 	/*1.hlslファイルを読み込む*/
 	//これからシェーダーをコンパイルする旨をログに出力する
-	Logger::Log (os, String::ConvertString (std::format (L"Begin CompileShader, path:{}, profile:{}\n", filePath, profile)));
+	LogManager::GetInstance()->LogManager::Log (String::ConvertString (std::format (L"Begin CompileShader, path:{}, profile:{}\n", filePath, profile)));
 	//hlslファイルを読む
 	ComPtr<IDxcBlobEncoding> shaderSource = nullptr;
 	HRESULT hr = dxCommon_->GetDxcUtils()->LoadFile (filePath.c_str (), nullptr, &shaderSource);
@@ -97,7 +94,7 @@ ComPtr<IDxcBlob> ShaderManager::CompilerShader (const std::wstring& filePath, co
 	ComPtr<IDxcBlobUtf8> shaderError = nullptr;
 	shaderResult->GetOutput (DXC_OUT_ERRORS, IID_PPV_ARGS (shaderError.GetAddressOf ()), nullptr);
 	if (shaderError != nullptr && shaderError->GetStringLength () != 0) {
-		Logger::Log (os, shaderError->GetStringPointer ());
+		LogManager::GetInstance()->LogManager::Log (shaderError->GetStringPointer ());
 		//警告・エラーダメゼッタイ
 		assert (false);
 	}
@@ -108,7 +105,7 @@ ComPtr<IDxcBlob> ShaderManager::CompilerShader (const std::wstring& filePath, co
 	hr = shaderResult->GetOutput (DXC_OUT_OBJECT, IID_PPV_ARGS (shaderBlob.GetAddressOf ()), nullptr);
 	assert (SUCCEEDED (hr));
 	//成功したらログを出す
-	Logger::Log (os, String::ConvertString (std::format (L"Compile Succeeded, path:{}, profile:{}\n", filePath, profile)));
+	LogManager::GetInstance()->LogManager::Log (String::ConvertString (std::format (L"Compile Succeeded, path:{}, profile:{}\n", filePath, profile)));
 	//実行用のバイナリを返却
 	return shaderBlob.Get ();
 }

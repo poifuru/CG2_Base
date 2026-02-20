@@ -254,7 +254,7 @@ void Player::ProcessDash() {
 		dashTimer_--;
 		if(dashTimer_ <= 0) {
 			isDashing_ = false;
-			// 終わった瞬間に慣性を少し残すとスムーズでやんす
+			// 終わった瞬間に慣性を少し残すとスムーズ
 			velocity_.x *= 0.5f;
 		}
 	}
@@ -269,7 +269,6 @@ void Player::EntityState() {
 	if(isOnDamageFloor_) {
 		if(damageTimer_ <= 0) {
 			// ここでHPを減らす（例：hp_ -= 10;）
-			// 演出として少し上に跳ねさせるのもアリでやんす！
 			hp_--;
 			velocity_.y = 0.1f;
 			isGrounded_ = false;

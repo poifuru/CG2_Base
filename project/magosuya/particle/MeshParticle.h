@@ -45,7 +45,7 @@ private:	//内部関数
 	void FieldLinePosUpdate();
 	void FieldLineDraw ();
 
-public:
+private:
 	const uint32_t kMaxParticleNum_ = 5000;
 	uint32_t numInstance_ = 0; //描画すべきインスタンス数
 

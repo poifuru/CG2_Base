@@ -206,7 +206,6 @@ void LightManager::ImGui() {
 				ImGui::Text("No Point Lights");
 			}
 			else {
-				// 点光源用のインデックス変数(selectPointLightIndex_)をメンバに追加しておくといいでやんす！
 				int maxIdx = static_cast<int>(pointLights_.size()) - 1;
 				ImGui::SliderInt("Select", &selectPointLightIndex_, 0, maxIdx);
 				ImGui::Separator();
@@ -245,7 +244,6 @@ void LightManager::ImGui() {
 				ImGui::Text("No Spot Lights");
 			}
 			else {
-				// 点光源用のインデックス変数(selectPointLightIndex_)をメンバに追加しておくといいでやんす！
 				int maxIdx = static_cast<int>(spotLights_.size()) - 1;
 				ImGui::SliderInt("Select", &selectSpotLightIndex_, 0, maxIdx);
 				ImGui::Separator();
@@ -284,7 +282,6 @@ void LightManager::ImGui() {
 				ImGui::Text("No Rect Lights");
 			}
 			else {
-				// 点光源用のインデックス変数(selectPointLightIndex_)をメンバに追加しておくといいでやんす！
 				int maxIdx = static_cast<int>(rectLights_.size()) - 1;
 				ImGui::SliderInt("Select", &selectRectLightIndex_, 0, maxIdx);
 				ImGui::Separator();

@@ -1,4 +1,5 @@
 #include "MagosuyaEngine.h"
+#include "LogManager.h"
 
 MagosuyaEngine::~MagosuyaEngine () {
 	audioManager_->Finalize();
@@ -56,6 +57,8 @@ void MagosuyaEngine::Initialize () {
 
 	audioManager_ = AudioManager::GetInstance();
 	audioManager_->Initialze();
+
+	LogManager::GetInstance()->Initialize();
 }
 
 void MagosuyaEngine::BeginFrame () {

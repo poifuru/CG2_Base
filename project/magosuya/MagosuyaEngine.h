@@ -17,24 +17,24 @@
 
 class MagosuyaEngine {
 public:		//メンバ関数
-	static MagosuyaEngine* GetInstance () {
+	static MagosuyaEngine* GetInstance() {
 		//初めて呼び出されたときに一回だけ初期化
 		static MagosuyaEngine instance;
 		return &instance;
 	}
-	~MagosuyaEngine ();
+	~MagosuyaEngine();
 
-	void Initialize ();
-	void BeginFrame ();
-	void EndFrame ();
+	void Initialize();
+	void BeginFrame();
+	void EndFrame();
 
 private:
 	//コンストラクタを禁止
-	MagosuyaEngine () = default;
+	MagosuyaEngine() = default;
 	// コピーコンストラクタと代入演算子を禁止
-	MagosuyaEngine (const MagosuyaEngine&) = delete;
+	MagosuyaEngine(const MagosuyaEngine&) = delete;
 	MagosuyaEngine& operator=(const MagosuyaEngine&) = delete;
-	MagosuyaEngine (MagosuyaEngine&&) = delete;
+	MagosuyaEngine(MagosuyaEngine&&) = delete;
 	MagosuyaEngine& operator=(MagosuyaEngine&&) = delete;
 
 private:

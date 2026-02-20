@@ -334,17 +334,17 @@ namespace Math {
 		Vector3 f = Math::Normalize (Math::Subtract (target, eye)); // f = normalize(target - eye)
 
 		//右方向ベクトルrの計算(X軸)
-		//fとUpの外積を取るでやんす
+		//fとUpの外積を取る
 		Vector3 r = Math::Normalize (Math::Cross (up, f)); // r = normalize(Up x f)
 
 		//上方向ベクトルuの計算(Y軸)
-		//fとrの外積を取るでやんす
+		//fとrの外積を取る
 		Vector3 u = Math::Cross (f, r);
 
-		//f,r,uを使ってビュー行列M_viewを構築するでやんす
+		//f,r,uを使ってビュー行列M_viewを構築する
 		// ビュー行列は、回転と平行移動を兼ねた行列でワールド座標をカメラ座標へ変換する
 
-		// 平行移動成分tの計算(内積を使うでやんす)
+		// 平行移動成分tの計算(内積を使う)
 		float t_x = -Math::Dot (r, eye);
 		float t_y = -Math::Dot (u, eye);
 		float t_z = -Math::Dot (f, eye);
