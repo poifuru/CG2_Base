@@ -4,7 +4,6 @@
 
 SceneManager::~SceneManager () {
 	scene_->StopToResources();
-	delete scene_;
 }
 
 void SceneManager::Initialize(CameraOrganizer* camera, InputManager* input, DxCommon* dxCommon) {
@@ -19,12 +18,10 @@ void SceneManager::Update () {
 		//旧シーンを終了
 		if(scene_) {
 			scene_->StopToResources();
-			delete scene_;
 		}
 
 		//シーン切り替え
-		scene_ = nextScene_;
-		nextScene_ = nullptr;
+		scene_ = std::move(nextScene_);
 		//次シーンの初期化
 		scene_->Initialize(camera_, input_, dxCommon_);
 	}

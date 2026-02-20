@@ -45,7 +45,7 @@ void GameoverScene::Initialize (CameraOrganizer* camera, InputManager* inputMana
 void GameoverScene::Update () {
 	if(input_->GetRawInput()->Trigger(VK_SPACE)) {
 		nextScene_ = std::make_unique<TitleScene>();
-		SceneManager::GetInstance()->SetNextScene(nextScene_.get());
+		SceneManager::GetInstance()->SetNextScene(std::move(nextScene_));
 	}
 
 	camera_->Update();

@@ -24,7 +24,7 @@ public:		//メンバ関数(mainで呼び出すよう)
 	void Initialize();
 	void BeginFrame();
 	void EndFrame();
-	void Finalize();
+	void Finalize() const;
 
 	/// <summary>
 	/// Resource作成関数
@@ -60,7 +60,7 @@ private:	//プライベート関数
 	void CreateFence();
 	void CreateDescriptorHeap();
 	void CreateSwapChain();
-	void CreateDepthBaffer();
+	void CreateDepthBuffer();
 	void CreateRTV();
 	void CreateDSV();
 	void ViewportRectInit();
@@ -68,9 +68,6 @@ private:	//プライベート関数
 	void UpdateFixFPS();
 
 public:		//アクセッサ
-	//DescriptorHandleを取得する関数(CPUとGPU)
-	static D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(const ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index);
-	static D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(const ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index);
 	ID3D12Device* GetDevice() { return device.Get(); }
 	ID3D12GraphicsCommandList* GetCommandList() { return commandList.Get(); }
 	IDxcUtils* GetDxcUtils() { return dxcUtils.Get(); }
