@@ -56,7 +56,7 @@ void MagosuyaEngine::Initialize () {
 	sceneManager_->Initialize(cameraOrganizer_, inputManager_, dxCommon_);
 
 	audioManager_ = AudioManager::GetInstance();
-	audioManager_->Initialze();
+	audioManager_->Initialize();
 
 	LogManager::GetInstance()->Initialize();
 }

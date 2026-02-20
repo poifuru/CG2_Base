@@ -63,7 +63,7 @@ namespace Math {
 	}
 
 	Vector4 Multiply (const Matrix4x4& mat, const Vector4& vec) {
-		Vector4 result;
+		Vector4 result = {};
 
 		result.x = mat.m[0][0] * vec.x + mat.m[0][1] * vec.y + mat.m[0][2] * vec.z + mat.m[0][3] * vec.w;
 		result.y = mat.m[1][0] * vec.x + mat.m[1][1] * vec.y + mat.m[1][2] * vec.z + mat.m[1][3] * vec.w;
@@ -74,7 +74,7 @@ namespace Math {
 	}
 
 	Matrix4x4 Add (const Matrix4x4& m1, const Matrix4x4& m2) {
-		Matrix4x4 result;
+		Matrix4x4 result = {};
 		for (int i = 0; i < 4; ++i) {
 			for (int j = 0; j < 4; ++j) {
 				result.m[i][j] = m1.m[i][j] + m2.m[i][j];
@@ -84,7 +84,7 @@ namespace Math {
 	}
 
 	Matrix4x4 Subtract (const Matrix4x4& m1, const Matrix4x4& m2) {
-		Matrix4x4 result;
+		Matrix4x4 result = {};
 		for (int i = 0; i < 4; ++i) {
 			for (int j = 0; j < 4; ++j) {
 				result.m[i][j] = m1.m[i][j] - m2.m[i][j];
@@ -94,7 +94,7 @@ namespace Math {
 	}
 
 	Matrix4x4 Multiply (const Matrix4x4& m1, const Matrix4x4& m2) {
-		Matrix4x4 result;
+		Matrix4x4 result = {};
 
 		for (int i = 0; i < 4; ++i) {         // 行
 			for (int j = 0; j < 4; ++j) {     // 列
@@ -110,7 +110,7 @@ namespace Math {
 
 	//逆行列補助用の関数
 	float Minor (const Matrix4x4& mat, int row, int col) {
-		float sub[3][3];
+		float sub[3][3] = {};
 		int r = 0, c = 0;
 
 		for (int i = 0; i < 4; ++i) {
@@ -142,7 +142,7 @@ namespace Math {
 	}
 
 	Matrix4x4 Inverse (const Matrix4x4& m) {
-		Matrix4x4 result;
+		Matrix4x4 result = {};
 		float det = Determinant (m);
 
 		// ゼロ除算防止（特異行列）
@@ -158,7 +158,7 @@ namespace Math {
 		for (int i = 0; i < 4; ++i) {
 			for (int j = 0; j < 4; ++j) {
 				float sign = ((i + j) % 2 == 0) ? 1.0f : -1.0f;
-				result.m[j][i] = sign * Minor (m, i, j); // 転置して代入（adjugate）
+				result.m[j][i] = sign * Minor (m, i, j); // 転置して代入（adjugated）
 			}
 		}
 
@@ -172,7 +172,7 @@ namespace Math {
 	}
 
 	Matrix4x4 Transpose (const Matrix4x4& m) {
-		Matrix4x4 result;
+		Matrix4x4 result = {};
 		for (int i = 0; i < 4; ++i) {
 			for (int j = 0; j < 4; ++j) {
 				result.m[i][j] = m.m[j][i];
@@ -218,7 +218,7 @@ namespace Math {
 	}
 
 	Vector3 ChangeTransform (const Vector3& vector, const Matrix4x4& matrix) {
-		Vector3 result;
+		Vector3 result = {};
 
 		float x = vector.x;
 		float y = vector.y;
@@ -349,7 +349,7 @@ namespace Math {
 		float t_y = -Math::Dot (u, eye);
 		float t_z = -Math::Dot (f, eye);
 
-		Matrix4x4 result;
+		Matrix4x4 result = {};
 
 		//X軸(右ベクトル r)
 		result.m[0][0] = r.x;
@@ -379,7 +379,7 @@ namespace Math {
 	}
 
 	Vector3 Transform (const Vector3& v, const Matrix4x4& m) {
-		Vector3 result;
+		Vector3 result = {};
 
 		// v.x の分だけ M の X軸を進める
 		result.x = v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0];
@@ -589,36 +589,6 @@ namespace Math {
 		return { 0.0f, -vector.z, vector.y };
 	}
 
-	//void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
-	//	Vector3 center = Multiply(plane.distance, plane.normal);	//1
-	//	Vector3 prependiculars[4];
-	//	prependiculars[0] = Normalize(Perpendicular(plane.normal));	//2
-	//	prependiculars[1] = { -prependiculars[0].x, -prependiculars[0].y, -prependiculars[0].z };	//3
-	//	prependiculars[2] = Cross(plane.normal, prependiculars[0]);	//4
-	//	prependiculars[3] = { -prependiculars[2].x, -prependiculars[2].y, -prependiculars[2].z };	//5
-	//	//6
-	//	Vector3 points[4];
-	//	for (uint32_t index = 0; index < 4; ++index) {
-	//		Vector3 extend = Multiply(2.0f, prependiculars[index]);
-	//		Vector3 point = Add(center, extend);
-	//		points[index] = Transform(Transform(point, viewProjectionMatrix), viewportMatrix);
-	//	}
-	//	//pointをそれぞれ結んでDrawLineで矩形を描画する。DrawTriangleを使って塗りつぶしてもよいが、DepthがないのでMT3では分かりづらい
-	//	Novice::DrawLine(static_cast<int>(points[0].x), static_cast<int>(points[0].y), static_cast<int>(points[2].x), static_cast<int>(points[2].y), color);
-	//	Novice::DrawLine(static_cast<int>(points[1].x), static_cast<int>(points[1].y), static_cast<int>(points[3].x), static_cast<int>(points[3].y), color);
-	//	Novice::DrawLine(static_cast<int>(points[0].x), static_cast<int>(points[0].y), static_cast<int>(points[3].x), static_cast<int>(points[3].y), color);
-	//	Novice::DrawLine(static_cast<int>(points[1].x), static_cast<int>(points[1].y), static_cast<int>(points[2].x), static_cast<int>(points[2].y), color);
-	//}
-
-	//bool IsCollision(const Line& line, const Plane& plane) {
-	//
-	//	return false;
-	//}
-	//
-	//bool IsCollision(const Ray& ray, const Plane& plane) {
-	//	return false;
-	//}
-	//
 	bool IsCollision (const Segment& segment, const Plane& plane) {
 		float dot = Dot (plane.normal, segment.diff);
 
@@ -828,7 +798,7 @@ namespace Math {
 	}
 
 	Vector3 Lerp(const Vector3& start, const Vector3& end, float t) {
-		Vector3 v;
+		Vector3 v = {};
 
 		v.x = t * end.x + (1 - t) * start.x;
 		v.y = t * end.y + (1 - t) * start.y;

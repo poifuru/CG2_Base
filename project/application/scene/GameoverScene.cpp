@@ -27,7 +27,7 @@ void GameoverScene::Initialize (CameraOrganizer* camera, InputManager* inputMana
 	lightManager_ = std::make_unique<LightManager>(dxCommon);
 	lightManager_->Initialize();
 
-	camera_->AddCamera ("main3", CameraType::FixedPontCamera);
+	camera_->AddCamera ("main3", CameraType::FixedPointCamera);
 	camera_->SetActiveCamera("main3");
 	camera_->SetPosition({ 0.0f, 100.0f, -10.0f });
 
@@ -44,8 +44,8 @@ void GameoverScene::Initialize (CameraOrganizer* camera, InputManager* inputMana
 
 void GameoverScene::Update () {
 	if(input_->GetRawInput()->Trigger(VK_SPACE)) {
-		nextScene_ = new TitleScene();
-		SceneManager::GetInstance()->SetNextScene(nextScene_);
+		nextScene_ = std::make_unique<TitleScene>();
+		SceneManager::GetInstance()->SetNextScene(nextScene_.get());
 	}
 
 	camera_->Update();

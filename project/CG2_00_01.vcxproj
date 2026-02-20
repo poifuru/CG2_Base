@@ -64,17 +64,17 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)..\generated\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)..\generated\outputs\$(Configuration)</IntDir>
+    <IntDir>$(SolutionDir)..\generated\outputs\$(ProjectName)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
     <OutDir>$(SolutionDir)..\generated\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)..\generated\outputs\$(ProjectName)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\generated\$(Configuration)\1_Game\</OutDir>
-    <IntDir>$(SolutionDir)..\generated\outputs\$(Configuration)</IntDir>
+    <IntDir>$(SolutionDir)..\generated\outputs\$(ProjectName)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

@@ -9,21 +9,21 @@ void ShaderManager::Initialize (DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 }
 
-uint32_t ShaderManager::CompileAndCasheShader (const std::wstring& filePath, const wchar_t* profile) {
+uint32_t ShaderManager::CompileAndCacheShader (const std::wstring& filePath, const wchar_t* profile) {
 	//ファイルパスとプロファイルを組み合わせたキーを生成
 	std::wstring key = filePath + L"_" + profile;
 
 	//キーと結びついたものがあるかチェック
-	if (m_PathProfileToID.count (key)) {
+	if (pathProfileToID_.count (key)) {
 		//存在していればそのキーを返す
-		return m_PathProfileToID.at(key);
+		return pathProfileToID_.at(key);
 	}
 
 	//無かったらシェーダーをコンパイル
 	ComPtr<IDxcBlob> newBlob = CompilerShader (filePath, profile);
 
 	//キーと結びつけるIDを新規生成した後インクリメント
-	uint32_t newID = m_NextID++;
+	uint32_t newID = nextID_++;
 
 	//IDと実体データをキャッシュに登録する
 	ShaderInfo newInfo;
@@ -32,10 +32,10 @@ uint32_t ShaderManager::CompileAndCasheShader (const std::wstring& filePath, con
 	newInfo.Profile = profile;
 
 	//IDと実体を結びつける
-	m_ShaderCashe[newID] = std::move (newInfo);
+	shaderCache_[newID] = std::move (newInfo);
 
 	//逆引き用のマップに登録する
-	m_PathProfileToID[key] = newID;
+	pathProfileToID_[key] = newID;
 
 	//生成したIDを返す
 	return newID;
@@ -43,7 +43,7 @@ uint32_t ShaderManager::CompileAndCasheShader (const std::wstring& filePath, con
 
 D3D12_SHADER_BYTECODE ShaderManager::GetShaderBytecode (uint32_t shaderID) const {
 	// GetShaderBytecodeの内部処理
-	const auto& info = m_ShaderCashe.at (shaderID);
+	const auto& info = shaderCache_.at (shaderID);
 
 	D3D12_SHADER_BYTECODE bytecode = {};
 	// Blobから直接ポインタとサイズを取得
@@ -63,7 +63,7 @@ ComPtr<IDxcBlob> ShaderManager::CompilerShader (const std::wstring& filePath, co
 	//読めなかったらあきらめる
 	assert (SUCCEEDED (hr));
 	//読み込んだファイルの内容を設定する
-	DxcBuffer shaderSourceBuffer;
+	DxcBuffer shaderSourceBuffer = {};
 	shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer ();
 	shaderSourceBuffer.Size = shaderSource->GetBufferSize ();
 	shaderSourceBuffer.Encoding = DXC_CP_UTF8;//UTF_8の文字コードであることを通知

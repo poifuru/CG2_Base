@@ -21,7 +21,7 @@ public:
 	void Attack(float currentDirX, float currentDirY);
 
 	// 敵との当たり判定チェック
-	bool CheckCollision(const AABB& enemyAABB);
+	bool CheckCollision(const AABB& enemyAABB) const;
 
 	//アクセッサー
 	bool IsAttacking() const { return isAttacking_; }

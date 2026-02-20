@@ -4,7 +4,7 @@
 
 void RawInput::Initialize (HWND hwnd) {
     OutputDebugStringA ("RawInput 登録\n");
-    RAWINPUTDEVICE rid[2];
+	RAWINPUTDEVICE rid[2] = {};
 
     // キーボード
     rid[0].usUsagePage = 0x01; // 汎用デスクトップコントロール

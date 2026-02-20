@@ -55,8 +55,8 @@ void SpriteRenderer::Initialize () {
 
 	//PSO設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Sprite);
-	desc_.VS_ID = ShaderManager::GetInstance()->CompileAndCasheShader(L"Resources/shader/Sprite.VS.hlsl", L"vs_6_0");
-	desc_.PS_ID = ShaderManager::GetInstance()->CompileAndCasheShader(L"Resources/shader/Sprite.PS.hlsl", L"ps_6_0");
+	desc_.VS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Sprite.VS.hlsl", L"vs_6_0");
+	desc_.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Sprite.PS.hlsl", L"ps_6_0");
 	desc_.InputLayoutID = InputLayoutType::Standard3D;
 	desc_.BlendMode = BlendModeType::Alpha;
 }

@@ -42,12 +42,12 @@ void LineRenderer::Initialize (DxCommon* dxCommon) {
 
 	//PSOの設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::LineMesh);
-	desc_.VS_ID = ShaderManager::GetInstance ()->CompileAndCasheShader (L"Resources/shader/Line.VS.hlsl", L"vs_6_0");
-	desc_.PS_ID = ShaderManager::GetInstance ()->CompileAndCasheShader (L"Resources/shader/Line.PS.hlsl", L"ps_6_0");
+	desc_.VS_ID = ShaderManager::GetInstance ()->CompileAndCacheShader (L"Resources/shader/Line.VS.hlsl", L"vs_6_0");
+	desc_.PS_ID = ShaderManager::GetInstance ()->CompileAndCacheShader (L"Resources/shader/Line.PS.hlsl", L"ps_6_0");
 	desc_.InputLayoutID = InputLayoutType::LineMesh;
 	desc_.BlendMode = BlendModeType::Opaque;
 	desc_.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;	//線を描画
-	PSOManager::GetInstance ()->GetOrCreratePSO (desc_);
+	PSOManager::GetInstance ()->GetOrCreatePSO (desc_);
 }
 
 void LineRenderer::UpdateVertexData (const LineVertexData* data) {

@@ -5,7 +5,7 @@ void PSOManager::Initialize (DxCommon* dxCommon) {
 	commandList_ = dxCommon->GetCommandList ();
 }
 
-ID3D12PipelineState* PSOManager::GetOrCreratePSO (const PSODescriptor& desc) {
+ID3D12PipelineState* PSOManager::GetOrCreatePSO (const PSODescriptor& desc) {
 	HRESULT hr;
 
 	//引数からハッシュ計算
@@ -92,7 +92,7 @@ ID3D12PipelineState* PSOManager::GetOrCreratePSO (const PSODescriptor& desc) {
 }
 
 void PSOManager::SetPSO (const PSODescriptor& desc) {
-	auto pso = GetOrCreratePSO (desc);
+	auto pso = GetOrCreatePSO (desc);
 	commandList_->SetPipelineState (pso);
 }
 

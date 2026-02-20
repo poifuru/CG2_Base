@@ -69,8 +69,8 @@ void DebugScene::Update() {
 		StopToResources();
 
 		//最後にシーンを更新
-		nextScene_ = new PlayScene();
-		SceneManager::GetInstance()->SetNextScene(nextScene_);
+		nextScene_ = std::make_unique<PlayScene>();
+		SceneManager::GetInstance()->SetNextScene(nextScene_.get());
 	}
 
 	camera_->Update();

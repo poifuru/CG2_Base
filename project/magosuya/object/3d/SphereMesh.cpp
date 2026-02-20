@@ -183,8 +183,8 @@ void SphereMesh::Initialize(Vector3 position, float radius) {
 
 	//PSO設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Standard3D);
-	desc_.VS_ID = ShaderManager::GetInstance()->CompileAndCasheShader(L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
-	desc_.PS_ID = ShaderManager::GetInstance()->CompileAndCasheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
+	desc_.VS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
+	desc_.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
 	desc_.InputLayoutID = InputLayoutType::Standard3D;
 	desc_.BlendMode = BlendModeType::Opaque;
 }

@@ -35,7 +35,7 @@ void CameraOrganizer::AddCamera (const std::string& name, CameraType type) {
 	CameraComponent* camera = nullptr;
 
 	switch (type) {
-	case::CameraType::FixedPontCamera: {
+	case::CameraType::FixedPointCamera: {
 		FixedPointCamera* fixedCam = new FixedPointCamera ();
 		camera = fixedCam;
 		break;
@@ -80,7 +80,7 @@ void CameraOrganizer::SetActiveCamera (const std::string& cameraName) {
 					//ポインタが一致しているか
 					if (val == activeCamera_) {
 						//一致する名前を保存
-						lastAcriveCamera_ = key;
+						lastActiveCamera_ = key;
 						break;
 					}
 				}

@@ -27,7 +27,7 @@ void ClearScene::Initialize (CameraOrganizer* camera, InputManager* inputManager
 	lightManager_ = std::make_unique<LightManager>(dxCommon);
 	lightManager_->Initialize();
 
-	camera_->AddCamera ("main2", CameraType::FixedPontCamera);
+	camera_->AddCamera ("main2", CameraType::FixedPointCamera);
 	camera_->SetActiveCamera("main2");
 	camera_->SetPosition({ 0.0f, 100.0f, -10.0f });
 
@@ -44,8 +44,8 @@ void ClearScene::Initialize (CameraOrganizer* camera, InputManager* inputManager
 
 void ClearScene::Update () {
 	if(input_->GetRawInput()->Trigger(VK_SPACE)) {
-		nextScene_ = new TitleScene();
-		SceneManager::GetInstance()->SetNextScene(nextScene_);
+		nextScene_ = std::make_unique<TitleScene>();
+		SceneManager::GetInstance()->SetNextScene(nextScene_.get());
 	}
 
 	camera_->Update();

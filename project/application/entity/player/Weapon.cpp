@@ -2,7 +2,11 @@
 #include <numbers>
 #include "imgui.h"
 
-Weapon::Weapon(DxCommon* dxCommon, LightManager* light) {
+Weapon::Weapon(DxCommon* dxCommon, LightManager* light)
+	: transform_{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} }
+	, localAABB_{ {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} }
+	, attackAABB_{ {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} }
+{
 	model_ = std::make_unique<Model>(dxCommon, light);
 }
 
@@ -94,7 +98,7 @@ void Weapon::Attack(float currentDirX, float currentDirY) {
 	lockedDirY_ = currentDirY;
 }
 
-bool Weapon::CheckCollision(const AABB& enemyAABB) {
+bool Weapon::CheckCollision(const AABB& enemyAABB) const {
 	// 攻撃中でなければ判定しない
 	if(!isAttacking_) return false;
 

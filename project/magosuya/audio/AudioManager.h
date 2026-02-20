@@ -56,7 +56,7 @@ public:
 	~AudioManager();
 
 	//初期化
-	void Initialze();
+	void Initialize();
 
 	//更新
 	void Update();

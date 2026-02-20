@@ -4,6 +4,8 @@
 
 LookAtCamera::LookAtCamera (InputManager* inputManager) {
 	input_ = inputManager;
+	sensitivity_ = 0.0f;
+	pitchOver_ = 0.0f;
 }
 
 LookAtCamera::~LookAtCamera () {
@@ -55,7 +57,7 @@ void LookAtCamera::Update () {
 	float yaw_ = camera_.transform.rotate.y;
 	float pitch_ = camera_.transform.rotate.x;
 
-	Vector3 eyePosition;
+	Vector3 eyePosition = {};
 	// 極座標/球面座標で視点を計算
 	// Y成分（高さ）
 	eyePosition.y = target_.y + distance_ * std::sin (pitch_);

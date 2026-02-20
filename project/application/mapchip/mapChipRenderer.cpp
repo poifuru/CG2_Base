@@ -130,13 +130,13 @@ void MapChipRenderer::Initialize(DxCommon* dxCommon, LightManager* lightManager)
 
 	//PSO設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Standard3DInstance);
-	desc_.VS_ID = ShaderManager::GetInstance()->CompileAndCasheShader(L"Resources/shader/Object3dInstance.VS.hlsl", L"vs_6_0");
-	desc_.PS_ID = ShaderManager::GetInstance()->CompileAndCasheShader(L"Resources/shader/Object3dInstance.PS.hlsl", L"ps_6_0");
+	desc_.VS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Object3dInstance.VS.hlsl", L"vs_6_0");
+	desc_.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Object3dInstance.PS.hlsl", L"ps_6_0");
 	desc_.InputLayoutID = InputLayoutType::Standard3D;
 	desc_.BlendMode = BlendModeType::Opaque;
 	desc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 	desc_.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;	//三角形で描画
-	PSOManager::GetInstance()->GetOrCreratePSO(desc_);
+	PSOManager::GetInstance()->GetOrCreatePSO(desc_);
 }
 
 void MapChipRenderer::Update(MapChip& mapChip, const Matrix4x4& vp, Vector3 cameraWorld) {

@@ -11,7 +11,7 @@
 #include "InputManager.h"
 
 enum class CameraType {
-	FixedPontCamera,
+	FixedPointCamera,
 	FollowCamera,
 	LookAtCamera,
 	DebugCamera,
@@ -80,7 +80,7 @@ private:
 	Matrix4x4 vpMatrix_ = {};
 
 	//最後にアクティブだったカメラの名前
-	std::string lastAcriveCamera_;
+	std::string lastActiveCamera_;
 
 	//現在アクティブなカメラの名前
 	std::string activeCameraName_;

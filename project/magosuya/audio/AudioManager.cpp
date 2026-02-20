@@ -10,7 +10,7 @@
 AudioManager::~AudioManager() {
 }
 
-void AudioManager::Initialze() {
+void AudioManager::Initialize() {
 	HRESULT hr;
 	//XAudio2を初期化
 	hr = XAudio2Create(&xAudio2_, 0, XAUDIO2_DEFAULT_PROCESSOR);
