@@ -14,7 +14,7 @@ public:		//メンバ関数
 	void ImGui();
 
 	//ゲッター
-	Transform GetTransform() { return transform_; }
+	EulerTransform GetTransform() { return transform_; }
 	Weapon* GetWeapon() { return weapon_.get(); }
 	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
 	void ResetDoubleJump() { isDoubleJump_ = false; }

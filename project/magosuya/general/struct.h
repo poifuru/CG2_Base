@@ -181,17 +181,24 @@ struct Quaternion {
 	Quaternion operator-() const { return { -x, -y, -z, -w }; }
 };
 
-// Transform構造体
-struct Transform {
+// EulerTransform構造体
+struct EulerTransform {
 	Vector3 scale;
 	Vector3 rotate;
 	Vector3 translate;
 };
 
+// Quaternion
+struct QuaternionTransform {
+	Vector3 scale;
+	Quaternion rotate;
+	Vector3 translate;
+};
+
 // SpriteRendererが参照する最小限の情報構造体
 struct TransformData {
-	Transform transform;
-	Transform uvTransform;
+	EulerTransform transform;
+	EulerTransform uvTransform;
 	Matrix4x4 wvpMatrix;
 };
 
@@ -244,8 +251,8 @@ struct TextureData {
 // Sprite構造体
 struct SpriteData {
 	Vector2 size;			//幅と高さ
-	Transform transform;	//SRT
-	Transform uvTransform;	//uvのSRT
+	EulerTransform transform;	//SRT
+	EulerTransform uvTransform;	//uvのSRT
 	Material* material;		//紐づけるマテリアルポインタ
 	Matrix4x4 wvpMatrix;	//wvp行列ポインタ
 };
@@ -288,7 +295,7 @@ struct ModelData {
 
 // エミッター構造体
 struct Emitter {
-	Transform transform;	//transform
+	EulerTransform transform;	//transform
 	uint32_t count;			//発生数
 	float frequency;		//発生頻度
 	float frequencyTime;	//頻度用時刻

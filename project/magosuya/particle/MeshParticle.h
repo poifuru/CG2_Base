@@ -14,7 +14,7 @@ struct MeshParticleData {
 };
 
 struct AccelerationField {
-	Transform transform;
+	EulerTransform transform;
 	Vector3 acceleration;
 	AABB aabb;
 };

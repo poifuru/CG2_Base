@@ -30,7 +30,7 @@ public:
 private:
 	std::unique_ptr<Model> model_ = nullptr;
 
-	Transform transform_;
+	EulerTransform transform_;
 	AABB localAABB_;      // 武器自体の当たり判定（大きさ）
 	AABB attackAABB_;     // ワールド空間での当たり判定（計算結果）
 

@@ -18,7 +18,7 @@ public:
 
 	// ゲッター
 	const AABB& GetAABB() const { return aabb_; }
-	Transform GetTransform() { return transform_; }
+	EulerTransform GetTransform() { return transform_; }
 	void SetPosition(const Vector3& pos) { transform_.translate = pos; }
 	void SetAABBSize(const Vector3& size) { aabbSize_ = size; }
 	// 完全に消滅したか（PlaySceneでリストから消す用）

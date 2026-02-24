@@ -16,7 +16,7 @@ FixedPointCamera::~FixedPointCamera () {
 
 }
 
-void FixedPointCamera::Initialize (const Transform& transform) {
+void FixedPointCamera::Initialize (const EulerTransform& transform) {
 	camera_.transform = transform;
 	camera_.proj = Math::MakePerspectiveFOVMatrix (0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, 0.1f, 1000.0f);
 }

@@ -73,10 +73,10 @@ public:	//メンバ関数
 	void SetPosition (const Vector3& position) { transform_.translate = position; }
 	Vector3 GetRotate () { return transform_.rotate; }
 	void SetRotate (const Vector3& rotate) { transform_.rotate = rotate; }
-	const Transform& GetTransform () { return transform_; }
-	void SetTransform (Transform transform) { transform_ = transform; }
-	Transform GetUVTransform () { return uvTransform_; }
-	void SetUVTransform (Transform transform) { uvTransform_ = transform; }
+	const EulerTransform& GetTransform () { return transform_; }
+	void SetTransform (EulerTransform transform) { transform_ = transform; }
+	EulerTransform GetUVTransform () { return uvTransform_; }
+	void SetUVTransform (EulerTransform transform) { uvTransform_ = transform; }
 	void SetColor (const Vector4& color) { renderer_->SetColor (color); }
 	void SetAlpha(const float& alpha) { renderer_->SetAlpha(alpha); }
 	void SetRoughness(const float& roughness) { renderer_->SetRoughness(roughness); }
@@ -87,8 +87,8 @@ private:		//メンバ変数
 	//貼り付けるテクスチャーのハンドル
 	D3D12_GPU_DESCRIPTOR_HANDLE texture_;
 
-	Transform transform_ = {};
-	Transform uvTransform_ = {};
+	EulerTransform transform_ = {};
+	EulerTransform uvTransform_ = {};
 
 	//レンダラークラス
 	std::unique_ptr<ModelRenderer> renderer_ = nullptr;

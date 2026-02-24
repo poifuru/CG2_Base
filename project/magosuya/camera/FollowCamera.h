@@ -6,9 +6,9 @@ public:
 	FollowCamera ();
 	~FollowCamera () override;
 
-	void Initialize (const Transform& transform) override;
+	void Initialize (const EulerTransform& transform) override;
 
-	void SetTarget (const Transform* target);
+	void SetTarget (const EulerTransform* target);
 
 	void Update () override;
 
@@ -19,7 +19,7 @@ public:
 
 private:
 	//追従する対象のポインタ
-	Transform* target_ = nullptr;
+	EulerTransform* target_ = nullptr;
 
 	//対象とカメラの距離を一定に保つためのオフセット
 	Vector3 offset_ = {};

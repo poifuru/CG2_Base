@@ -195,7 +195,7 @@ void SphereMesh::Update(CameraData* camera) {
 	matrixData_->WVP = Math::Multiply(matrixData_->World, camera->vp);
 	matrixData_->WorldInverseTranspose = Math::Transpose(Math::Inverse(matrixData_->World));
 
-	//uvTranform更新
+	//uvTransform更新
 	materialData_->uvTransform = Math::MakeAffineMatrix(uvTransform_.scale, uvTransform_.rotate, uvTransform_.translate);
 
 	*cameraData_ = camera->transform.translate;

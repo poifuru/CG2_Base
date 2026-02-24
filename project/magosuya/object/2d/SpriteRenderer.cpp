@@ -61,7 +61,7 @@ void SpriteRenderer::Initialize () {
 	desc_.BlendMode = BlendModeType::Alpha;
 }
 
-void SpriteRenderer::Update (Matrix4x4 wvpData, Transform uvTransform, Vector2 anchorPoint, bool flipX, bool flipY, const std::string& id, Vector2 texLeftTop, Vector2 texSize) {
+void SpriteRenderer::Update (Matrix4x4 wvpData, EulerTransform uvTransform, Vector2 anchorPoint, bool flipX, bool flipY, const std::string& id, Vector2 texLeftTop, Vector2 texSize) {
 	//vertexData_に初期の四角形座標を書く（size_を使って計算）
 	float left = 0.0f - anchorPoint.x;
 	float right = 1.0f - anchorPoint.x;
@@ -120,7 +120,7 @@ void SpriteRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	commandList_->DrawIndexedInstanced (6, 1, 0, 0, 0);
 }
 
-void SpriteRenderer::ImGui (Transform& transform, Transform& uvTransform) {
+void SpriteRenderer::ImGui (EulerTransform& transform, EulerTransform& uvTransform) {
 #ifdef USEIMGUI
 	if (ImGui::ColorEdit4 ("Color##SpriteColor", color_)) {
 		// 色が変更されたらmaterialDataに反映
