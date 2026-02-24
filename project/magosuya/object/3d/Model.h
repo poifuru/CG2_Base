@@ -51,11 +51,22 @@ public:	//メンバ関数
 	void ImGui (const std::string& windowName);
 
 	/// <summary>
-	/// どのモデルを使うのか
+	/// 使うModelをセット
 	/// </summary>
+	/// /// <param name="ID">ModelのID</param>
 	void SetModelData (const std::string& ID);
 
+	/// <summary>
+	/// 使うTextureをセット
+	/// </summary>
+	/// <param name="ID">TextureのID</param>
 	void SetTexture (const std::string& ID);
+
+	/// <summary>
+	/// 使うAnimationをセット
+	/// </summary>
+	/// <param name="animation">ロードしたAnimation</param>
+	void SetAnimation(const std::string& ID);
 
 	//アクセッサ
 	Vector3 GetPosition () { return transform_.translate; }
@@ -73,8 +84,6 @@ public:	//メンバ関数
 	void IsLighting (const LightReflectionModel& lighting) { renderer_->IsLighting (lighting); }
 
 private:		//メンバ変数
-	//マネージャーから受け取るモデルデータ
-	std::weak_ptr<ModelData> modelData_;
 	//貼り付けるテクスチャーのハンドル
 	D3D12_GPU_DESCRIPTOR_HANDLE texture_;
 

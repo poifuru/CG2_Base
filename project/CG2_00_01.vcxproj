@@ -242,6 +242,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="magosuya\light\SpotLight.cpp" />
     <ClCompile Include="magosuya\light\RectLight.cpp" />
     <ClCompile Include="application\entity\player\Weapon.cpp" />
+    <ClCompile Include="application\scene\TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\Line.PS.hlsl">
@@ -413,6 +414,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="magosuya\light\RectLight.h" />
     <ClInclude Include="magosuya\audio\VoiceCallback.h" />
     <ClInclude Include="application\entity\player\Weapon.h" />
+    <ClInclude Include="application\scene\TestScene.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Cube.hlsli" />

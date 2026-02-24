@@ -16,9 +16,9 @@ void ModelManager::Initialize(DxCommon* dxCommon, TextureManager* textureManager
 
 ModelData* ModelManager::LoadModelData(const std::string& directoryPath, const std::string& fileName, bool inversion) {
 	//IDのモデルをすでに読み込んでいたら
-	if(map_.count(fileName)) {
+	if(modelMap_.count(fileName)) {
 		//既存データを取得
-		std::shared_ptr<ModelData> existingData = map_.at(fileName);
+		std::shared_ptr<ModelData> existingData = modelMap_.at(fileName);
 		//存在していたら既存のデータを返す
 		return existingData.get();
 	}
@@ -58,25 +58,57 @@ ModelData* ModelManager::LoadModelData(const std::string& directoryPath, const s
 	newData->ibView.Format = DXGI_FORMAT_R32_UINT;
 
 	//mapに登録
-	map_[fileName] = newData;
+	modelMap_[fileName] = newData;
 
 	// CPUメモリを解放（必要に応じて）
 	newData->vertices.clear();
 	newData->indices.clear();
 
 	//データ提供
-	return map_.at(fileName).get();
+	return modelMap_.at(fileName).get();
 }
 
 std::weak_ptr<ModelData> ModelManager::GetModelData(std::string id) {
 	//ID指定してmapから持ってくる
-	assert(map_.count(id));
-	return map_.at(id);
+	assert(modelMap_.count(id));
+	return modelMap_.at(id);
 }
 
 void ModelManager::UnloadModelData(const std::string& id) {
 	//キャッシュマップからデータを削除
-	map_.erase(id);
+	modelMap_.erase(id);
+}
+
+Animation* ModelManager::LoadAnimationData(const std::string& directoryPath, const std::string& fileName) {
+	//IDのAnimationをすでに読み込んでいたら
+	if(animationMap_.count(fileName)) {
+		//既存データを取得
+		std::shared_ptr<Animation> existingData = animationMap_.at(fileName);
+		//存在していたら既存のデータを返す
+		return existingData.get();
+	}
+
+	// 読み込んでいなければ新規読み込み
+	Animation loadData = LoadAnimation(directoryPath, fileName);
+	// shared_ptrに入れる
+	std::shared_ptr<Animation> newData = std::make_shared<Animation>(std::move(loadData));
+
+	// newDataをmapに登録
+	animationMap_[fileName] = newData;
+
+	// データ提供
+	return animationMap_.at(fileName).get();
+}
+
+std::weak_ptr<Animation> ModelManager::GetAnimationData(std::string id) {
+	//ID指定してmapから持ってくる
+	assert(animationMap_.count(id));
+	return animationMap_.at(id);
+}
+
+void ModelManager::UnloadAnimationData(const std::string& id) {
+	//キャッシュマップからデータを削除
+	animationMap_.erase(id);
 }
 
 MaterialFile ModelManager::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& id) {
@@ -94,7 +126,7 @@ MaterialFile ModelManager::LoadMaterialTemplateFile(const std::string& directory
 		std::istringstream s(line);
 		s >> identifier;
 
-		//identfierに応じた処理
+		//identifierに応じた処理
 		if(identifier == "map_Kd") {
 			std::string textureFilename;
 			s >> textureFilename;
@@ -200,4 +232,50 @@ Node ModelManager::ReadNode(aiNode* node) {
 	}
 
 	return result;
+}
+
+Animation ModelManager::LoadAnimation(const std::string& directoryPath, const std::string& fileName) {
+	Animation animation = {};	// 今回作るアニメーション
+	Assimp::Importer importer;
+	std::string filePath = directoryPath + "/" + fileName;
+	const aiScene* scene = importer.ReadFile(filePath.c_str(), 0);
+	// アニメーションがなかったらassert
+	assert(scene->mNumAnimations != 0);
+	// ひとまず最初のアニメーションだけ採用(後から複数対応可)
+	aiAnimation* animationAssimp = scene->mAnimations[0];
+	// Animationの長さを秒単位に変換する
+	// mTickPerSecond : 周波数, mDuration : mTickPerSecondで指定された周波数に置ける長さ
+	animation.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond);
+
+	//NodeAnimationの解析
+	//assimpでは個々のnodeのanimationをchannelと呼んでいるのでchannelを回して情報をとる
+	// translate
+	for(uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
+		aiNodeAnim* nodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
+		NodeAnimation& nodeAnimation = animation.nodeAnimaitons[nodeAnimationAssimp->mNodeName.C_Str()];
+		for(uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {
+			aiVectorKey& keyAssimp = nodeAnimationAssimp->mPositionKeys[keyIndex];
+			KeyframeVector3 keyframe;
+			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);	// 秒単位に変換
+			keyframe.value = { -keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z };	// 右手->左手
+			nodeAnimation.translate.keyframes.push_back(keyframe);
+		}
+		// rotate
+		for(uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumRotationKeys; ++keyIndex) {
+			aiQuatKey& keyAssimp = nodeAnimationAssimp->mRotationKeys[keyIndex];
+			KeyframeQuaternion keyframe;
+			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);	// 秒単位に変換
+			keyframe.value = { -keyAssimp.mValue.x, -keyAssimp.mValue.y, keyAssimp.mValue.z, keyAssimp.mValue.w };	// 右手->左手
+			nodeAnimation.rotate.keyframes.push_back(keyframe);
+		}
+		// scale
+		for(uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumScalingKeys; ++keyIndex) {
+			aiVectorKey& keyAssimp = nodeAnimationAssimp->mScalingKeys[keyIndex];
+			KeyframeVector3 keyframe;
+			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);	// 秒単位に変換
+			keyframe.value = { keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z };
+			nodeAnimation.scale.keyframes.push_back(keyframe);
+		}
+	}
+	return animation;
 }

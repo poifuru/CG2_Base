@@ -8,7 +8,7 @@
 Game::Game() {
 	magosuya_ = MagosuyaEngine::GetInstance();
 	magosuya_->Initialize();
-	std::unique_ptr<BaseScene> scene = std::make_unique<TitleScene>();
+	std::unique_ptr<BaseScene> scene = std::make_unique<TestScene>();
 	sceneManager_ = SceneManager::GetInstance();
 	sceneManager_->SetNextScene(std::move(scene));
 }

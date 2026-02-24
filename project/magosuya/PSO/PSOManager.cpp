@@ -19,23 +19,23 @@ ID3D12PipelineState* PSOManager::GetOrCreatePSO (const PSODescriptor& desc) {
 
 	//===無ければ新しく作ってキャッシュ登録===//
 	//***設定する***//
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPieplineStateDesc = {};
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc = {};
 
 	//RootSignatureを取得(RootSigManagerから)
-	graphicsPieplineStateDesc.pRootSignature = RootSignatureManager::GetInstance()->GetRootSignature(desc.RootSignatureID);
+	graphicsPipelineStateDesc.pRootSignature = RootSignatureManager::GetInstance()->GetRootSignature(desc.RootSignatureID);
 
 	//Shaderを取得(ShaderManagerから)
-	graphicsPieplineStateDesc.VS = ShaderManager::GetInstance()->GetShaderBytecode(desc.VS_ID);
-	graphicsPieplineStateDesc.PS = ShaderManager::GetInstance()->GetShaderBytecode (desc.PS_ID);
-	assert (graphicsPieplineStateDesc.VS.BytecodeLength > 0 && "VS bytecode is empty!");
-	assert (graphicsPieplineStateDesc.PS.BytecodeLength > 0 && "PS bytecode is empty!");
+	graphicsPipelineStateDesc.VS = ShaderManager::GetInstance()->GetShaderBytecode(desc.VS_ID);
+	graphicsPipelineStateDesc.PS = ShaderManager::GetInstance()->GetShaderBytecode (desc.PS_ID);
+	assert (graphicsPipelineStateDesc.VS.BytecodeLength > 0 && "VS bytecode is empty!");
+	assert (graphicsPipelineStateDesc.PS.BytecodeLength > 0 && "PS bytecode is empty!");
 
 	//InputLayoutを取得(InputLayoutManagerから)
 	const D3D12_INPUT_LAYOUT_DESC* inputLayoutDesc = InputLayoutManager::GetInstance()->GetInputLayout(desc.InputLayoutID);
-	graphicsPieplineStateDesc.InputLayout = *inputLayoutDesc;
+	graphicsPipelineStateDesc.InputLayout = *inputLayoutDesc;
 
 	//ブレンドステートを取得(BlendModeManagerから)
-	graphicsPieplineStateDesc.BlendState = BlendModeManager::GetInstance()->GetBlendDesc(desc.BlendMode);
+	graphicsPipelineStateDesc.BlendState = BlendModeManager::GetInstance()->GetBlendDesc(desc.BlendMode);
 
 	//ラスタライザーステート (Descriptorから直接設定)
 	D3D12_RASTERIZER_DESC rasterizerDesc = {};
@@ -46,7 +46,7 @@ ID3D12PipelineState* PSOManager::GetOrCreatePSO (const PSODescriptor& desc) {
 	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
 	rasterizerDesc.DepthClipEnable = TRUE;
 	rasterizerDesc.ForcedSampleCount = 0;
-	graphicsPieplineStateDesc.RasterizerState = rasterizerDesc;
+	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc;
 
 	//デプス/ステンシルステート (Descriptorから直接設定)
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
@@ -54,17 +54,17 @@ ID3D12PipelineState* PSOManager::GetOrCreatePSO (const PSODescriptor& desc) {
 	depthStencilDesc.DepthWriteMask = desc.DepthWriteMask;
 	depthStencilDesc.DepthFunc = desc.DepthFunc;
 	depthStencilDesc.StencilEnable = FALSE; // ステンシルは使わない前提
-	graphicsPieplineStateDesc.DepthStencilState = depthStencilDesc;
+	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
 
 	//出力ターゲットの設定 (Descriptorから直接設定)
-	graphicsPieplineStateDesc.NumRenderTargets = desc.NumRenderTargets;
-	graphicsPieplineStateDesc.RTVFormats[0] = desc.RTVFormat; // 複数のRTが必要ならDescを配列にする
-	graphicsPieplineStateDesc.DSVFormat = desc.DSVFormat;
+	graphicsPipelineStateDesc.NumRenderTargets = desc.NumRenderTargets;
+	graphicsPipelineStateDesc.RTVFormats[0] = desc.RTVFormat; // 複数のRTが必要ならDescを配列にする
+	graphicsPipelineStateDesc.DSVFormat = desc.DSVFormat;
 
 	//その他
-	graphicsPieplineStateDesc.PrimitiveTopologyType = desc.PrimitiveTopologyType;
-	graphicsPieplineStateDesc.SampleDesc.Count = desc.SampleCount;
-	graphicsPieplineStateDesc.SampleMask = desc.SampleMask;
+	graphicsPipelineStateDesc.PrimitiveTopologyType = desc.PrimitiveTopologyType;
+	graphicsPipelineStateDesc.SampleDesc.Count = desc.SampleCount;
+	graphicsPipelineStateDesc.SampleMask = desc.SampleMask;
 	//******//
 
 	//***実際にPSOを生成***//
@@ -73,7 +73,7 @@ ID3D12PipelineState* PSOManager::GetOrCreatePSO (const PSODescriptor& desc) {
 	assert (device != nullptr && "D3D12Device is null!");
 
 	hr = device->CreateGraphicsPipelineState (
-		&graphicsPieplineStateDesc,
+		&graphicsPipelineStateDesc,
 		IID_PPV_ARGS (newPSO.GetAddressOf ())
 	);
 

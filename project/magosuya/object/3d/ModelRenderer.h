@@ -31,9 +31,24 @@ public:
 	void SetImGuiID (const std::string& id) { tag_ = id; }
 	void SetModelData (const std::weak_ptr<ModelData>& data){ modelData_ = data; }
 
+	/// <summary>
+	/// 使うAnimationをセット
+	/// </summary>
+	/// <param name="animation">ロードしたAnimation</param>
+	void SetAnimation(const std::weak_ptr<Animation>& animation) { animationData_ = animation; }
+
+private: // 内部関数
+	Matrix4x4 AnimationUpdate(ModelData* modelData);
+	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
+	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);
+
 private:
 	//モデルデータ
 	std::weak_ptr<ModelData> modelData_;
+	// アニメーションデータ
+	std::weak_ptr<Animation> animationData_;
+	float animationTime_ = 0.0f;
+	Matrix4x4 animationLocalMat_ = {};
 
 	//PSO
 	PSODescriptor desc_ = {};

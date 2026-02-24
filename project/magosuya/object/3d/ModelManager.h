@@ -28,6 +28,10 @@ public:		//メンバ関数
 	std::weak_ptr<ModelData> GetModelData (std::string id);
 	void UnloadModelData (const std::string& id);
 
+	Animation* LoadAnimationData(const std::string& directoryPath, const std::string& fileName);
+	std::weak_ptr<Animation> GetAnimationData(std::string id);
+	void UnloadAnimationData(const std::string& id);
+
 private:
 	//コンストラクタを禁止
 	ModelManager () = default;
@@ -41,14 +45,18 @@ private:	//内部関数
 	//マテリアルファイルの読み込み関数
 	MaterialFile LoadMaterialTemplateFile (const std::string& directoryPath, const std::string& id);
 
-	//ファイル読み込みの関数
+	//モデル読み込みの関数
 	ModelData LoadModelFile (const std::string& directoryPath, const std::string& fileName, bool inversion);
 
 	//assimpのノードからNode構造体に変換する関数
 	Node ReadNode(aiNode* node);
 
+	//アニメーション読み込み関数
+	Animation LoadAnimation(const std::string& directoryPath, const std::string& fileName);
+
 private:	//メンバ変数
-	std::unordered_map<std::string, std::shared_ptr<ModelData>> map_;
+	std::unordered_map<std::string, std::shared_ptr<ModelData>> modelMap_;
+	std::unordered_map<std::string, std::shared_ptr<Animation>> animationMap_;
 
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;

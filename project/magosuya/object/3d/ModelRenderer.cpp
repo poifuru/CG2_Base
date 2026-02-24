@@ -60,12 +60,14 @@ void ModelRenderer::Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform
 		return;
 	}
 
-	//RootのMatrixを適用する
-	matrixData_->World = data->rootNode.localMatrix * world;
+	Matrix4x4 localMatrix = AnimationUpdate(data.get());
+
+	// RootのMatrixを適用する
+	matrixData_->World = localMatrix * world;
 	matrixData_->WVP = matrixData_->World * vp;
 	matrixData_->WorldInverseTranspose = Math::Transpose (Math::Inverse (matrixData_->World));
 
-	//uvTranform更新
+	// uvTransform更新
 	materialData_->uvTransform = Math::MakeAffineMatrix (uvTransform.scale, uvTransform.rotate, uvTransform.translate);
 
 	*cameraData_ = cameraWorld;
@@ -131,9 +133,9 @@ void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform, const s
 	ImGui::DragFloat3 (("scale" + label).c_str (), &transform.scale.x, 0.01f);
 	ImGui::DragFloat3 (("rotate" + label).c_str (), &transform.rotate.x, 0.01f);
 	ImGui::DragFloat3 (("translate" + label).c_str (), &transform.translate.x, 0.01f);
-	ImGui::DragFloat3 (("UVscale" + label).c_str (), &uvTransform.scale.x, 0.01f);
-	ImGui::DragFloat3 (("UVrotate" + label).c_str (), &uvTransform.rotate.x, 0.01f);
-	ImGui::DragFloat3 (("UVtranslate" + label).c_str (), &uvTransform.translate.x, 0.01f);
+	ImGui::DragFloat3 (("uvScale" + label).c_str (), &uvTransform.scale.x, 0.01f);
+	ImGui::DragFloat3 (("uvRotate" + label).c_str (), &uvTransform.rotate.x, 0.01f);
+	ImGui::DragFloat3 (("uvTranslate" + label).c_str (), &uvTransform.translate.x, 0.01f);
 	ImGui::DragFloat(("roughness" + label).c_str(), &materialData_->roughness, 0.01f, 0.0f, 1.0f);
 	ImGui::DragFloat(("metallic" + label).c_str(), &materialData_->metallic, 0.01f, 0.0f, 1.0f);
 	//ライトの種類を選べるようにする
@@ -145,4 +147,69 @@ void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform, const s
 	}
 	ImGui::Separator ();
 #endif
+}
+
+Matrix4x4 ModelRenderer::AnimationUpdate(ModelData* modelData) {
+	// 共有データをロックして有効性をチェック
+	std::shared_ptr<Animation> data = animationData_.lock ();
+	if(!data) {
+		// モデルデータが解放済みなら描画をスキップ
+		return Math::MakeIdentity4x4();
+	}
+
+	// Animationの再生
+	animationTime_ += 1.0f / 60.0f;
+	animationTime_ = std::fmod(animationTime_, data->duration);	// 最後まで行ったらリピート
+	NodeAnimation& rootNodeAnimation = data->nodeAnimaitons[modelData->rootNode.name];	// rootNodeのアニメーションを取得
+	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_);
+	Quaternion rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime_);
+	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);
+
+	return Math::MakeAffineMatrix(scale, rotate, translate);
+}
+
+Vector3 ModelRenderer::CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time) {
+	//***特殊なケースを除外する***//
+	// キーが無いものは返す値がわからないのでassert
+	assert(!keyframes.empty());
+	// キーが1つか、時刻がキーフレーム前なら最初の値とする
+	if(keyframes.size() == 1 || time <= keyframes[0].time) {
+		return keyframes[0].value;
+	}
+
+	//ここから実際に計算
+	for(size_t index = 0; index < keyframes.size() - 1; ++index) {
+		size_t newIndex = index + 1;
+		// indexとnewIndexの2つのkeyframeを取得して範囲内に時刻があるかを判定
+		if(keyframes[index].time <= time && time <= keyframes[newIndex].time) {
+			//範囲内を補間する
+			float t = (time - keyframes[index].time) / (keyframes[newIndex].time - keyframes[index].time);
+			return Math::Lerp(keyframes[index].value, keyframes[newIndex].value, t);
+		}
+	}
+	//	ここまで来た場合は一番後の時刻よりも後ろなので最後の値を返すことにする
+	return (*keyframes.rbegin()).value;
+}
+
+Quaternion ModelRenderer::CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time) {
+	//***特殊なケースを除外する***//
+	// キーが無いものは返す値がわからないのでassert
+	assert(!keyframes.empty());
+	// キーが1つか、時刻がキーフレーム前なら最初の値とする
+	if(keyframes.size() == 1 || time <= keyframes[0].time) {
+		return keyframes[0].value;
+	}
+
+	//ここから実際に計算
+	for(size_t index = 0; index < keyframes.size() - 1; ++index) {
+		size_t newIndex = index + 1;
+		// indexとnewIndexの2つのkeyframeを取得して範囲内に時刻があるかを判定
+		if(keyframes[index].time <= time && time <= keyframes[newIndex].time) {
+			//範囲内を補間する
+			float t = (time - keyframes[index].time) / (keyframes[newIndex].time - keyframes[index].time);
+			return Math::Lerp(keyframes[index].value, keyframes[newIndex].value, t);
+		}
+	}
+	//	ここまで来た場合は一番後の時刻よりも後ろなので最後の値を返すことにする
+	return (*keyframes.rbegin()).value;
 }

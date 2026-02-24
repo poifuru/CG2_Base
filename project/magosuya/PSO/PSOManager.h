@@ -54,7 +54,7 @@ public:		//メンバ関数
 
 	void Initialize (DxCommon* dxCommon);
 
-	//PSODesctiptorを受けとってID3D12PipelineState*を返す
+	//PSODescriptorを受けとってID3D12PipelineState*を返す
 	ID3D12PipelineState* GetOrCreatePSO (const PSODescriptor& desc);
 
 	void SetPSO (const PSODescriptor& desc);
