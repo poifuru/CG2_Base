@@ -264,6 +264,7 @@ struct MaterialFile {
 
 // Node構造体
 struct Node {
+	QuaternionTransform transform;
 	Matrix4x4 localMatrix;
 	std::string name;
 	std::vector<Node> children;

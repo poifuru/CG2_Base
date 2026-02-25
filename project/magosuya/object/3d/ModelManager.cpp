@@ -217,8 +217,13 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 
 Node ModelManager::ReadNode(aiNode* node) {
 	Node result;
-	aiMatrix4x4 aiLocalMatrix = node->mTransformation;	//nodeのlocalMatrixを取得
-	//aiLocalMatrix.Transpose();	//列ベクトル形式を行ベクトル形式に転置
+	
+	aiVector3D scale;
+	aiQuaternion rotate;
+	aiVector3D translate;
+
+	aiMatrix4x4 aiLocalMatrix = node->mTransformation; //nodeのlocalMatrixを取得
+
 	for(int i = 0; i < 4; ++i) {
 		for(int j = 0; j < 4; ++j) {
 			result.localMatrix.m[i][j] = aiLocalMatrix[i][j];
