@@ -8,6 +8,7 @@ TestScene::TestScene() {
 	TextureManager::GetInstance()->TextureManager::LoadTexture(
 		"Resources/AnimatedCube/AnimatedCube_BaseColor.png", "Cube"
 	);
+
 }
 
 TestScene::~TestScene() {
@@ -25,8 +26,11 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 	cube_ = std::make_unique<Model>(dxCommon, lightManager_.get());
 	cube_->SetModelData("AnimatedCube.gltf");
 	cube_->SetTexture("Cube");
-	cube_->Initialize();
 	cube_->SetAnimation("AnimatedCube.gltf");
+	cube_->Initialize({ 1.0f, 1.0f, 1.0f }, {}, { -5.0f, 0.0f, 0.0f });
+
+	human_ = std::make_unique<Model>(dxCommon, lightManager_.get());
+
 }
 
 void TestScene::Update() {

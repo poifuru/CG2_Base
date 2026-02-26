@@ -166,7 +166,7 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 			aiVector3D& normal = mesh->mNormals[i];
 			aiVector3D& texcoord = mesh->mTextureCoords[0][i];
 
-			VertexData vertex;
+			VertexData vertex = {};
 			//aiProcess_MakeLeftHandedはz*-1	で、右手->左手に変換するので手動で対処
 			if(inversion) {
 				vertex.position = { position.x, position.y, position.z, 1.0f };
@@ -221,14 +221,14 @@ Node ModelManager::ReadNode(aiNode* node) {
 	aiVector3D scale;
 	aiQuaternion rotate;
 	aiVector3D translate;
-
-	aiMatrix4x4 aiLocalMatrix = node->mTransformation; //nodeのlocalMatrixを取得
-
-	for(int i = 0; i < 4; ++i) {
-		for(int j = 0; j < 4; ++j) {
-			result.localMatrix.m[i][j] = aiLocalMatrix[i][j];
-		}
-	}
+	node->mTransformation.Decompose(scale, rotate, translate);	// assimpの行列からSRTを抽出する関数を使う
+	result.transform.scale = { scale.x, scale.y, scale.z };	// Scaleはそのまま
+	result.transform.rotate = { rotate.x, -rotate.y, -rotate.z, rotate.w };
+	result.transform.translate = { -translate.x, translate.y, translate.z };
+	result.localMatrix = Math::MakeAffineMatrix(
+		result.transform.scale, result.transform.rotate, result.transform.translate
+	);
+	
 	result.name = node->mName.C_Str();	//Node名を格納
 	result.children.resize(node->mNumChildren);	//子供の数だけサイズを確保
 	for(uint32_t childIndex = 0; childIndex < node->mNumChildren; ++childIndex) {
@@ -257,10 +257,10 @@ Animation ModelManager::LoadAnimation(const std::string& directoryPath, const st
 	// translate
 	for(uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
 		aiNodeAnim* nodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
-		NodeAnimation& nodeAnimation = animation.nodeAnimaitons[nodeAnimationAssimp->mNodeName.C_Str()];
+		NodeAnimation& nodeAnimation = animation.nodeAnimations[nodeAnimationAssimp->mNodeName.C_Str()];
 		for(uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {
 			aiVectorKey& keyAssimp = nodeAnimationAssimp->mPositionKeys[keyIndex];
-			KeyframeVector3 keyframe;
+			KeyframeVector3 keyframe = {};
 			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);	// 秒単位に変換
 			keyframe.value = { -keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z };	// 右手->左手
 			nodeAnimation.translate.keyframes.push_back(keyframe);
@@ -268,7 +268,7 @@ Animation ModelManager::LoadAnimation(const std::string& directoryPath, const st
 		// rotate
 		for(uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumRotationKeys; ++keyIndex) {
 			aiQuatKey& keyAssimp = nodeAnimationAssimp->mRotationKeys[keyIndex];
-			KeyframeQuaternion keyframe;
+			KeyframeQuaternion keyframe = {};
 			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);	// 秒単位に変換
 			keyframe.value = { -keyAssimp.mValue.x, -keyAssimp.mValue.y, keyAssimp.mValue.z, keyAssimp.mValue.w };	// 右手->左手
 			nodeAnimation.rotate.keyframes.push_back(keyframe);
@@ -276,7 +276,7 @@ Animation ModelManager::LoadAnimation(const std::string& directoryPath, const st
 		// scale
 		for(uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumScalingKeys; ++keyIndex) {
 			aiVectorKey& keyAssimp = nodeAnimationAssimp->mScalingKeys[keyIndex];
-			KeyframeVector3 keyframe;
+			KeyframeVector3 keyframe = {};
 			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);	// 秒単位に変換
 			keyframe.value = { keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z };
 			nodeAnimation.scale.keyframes.push_back(keyframe);

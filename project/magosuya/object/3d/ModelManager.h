@@ -6,6 +6,7 @@ using namespace Microsoft::WRL;
 #include <string>
 #include <queue>
 #include <vector>
+#include <optional>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -31,6 +32,8 @@ public:		//メンバ関数
 	Animation* LoadAnimationData(const std::string& directoryPath, const std::string& fileName);
 	std::weak_ptr<Animation> GetAnimationData(std::string id);
 	void UnloadAnimationData(const std::string& id);
+
+	
 
 private:
 	//コンストラクタを禁止

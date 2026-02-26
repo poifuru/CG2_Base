@@ -4,37 +4,37 @@
 #include "LightManager.h"
 #include "SRVManager.h"
 
-ModelRenderer::ModelRenderer (DxCommon* dxCommon, LightManager* lightManager) {
+ModelRenderer::ModelRenderer(DxCommon* dxCommon, LightManager* lightManager) {
 	dxCommon_ = dxCommon;
-	commandList_ = dxCommon->GetCommandList ();
+	commandList_ = dxCommon->GetCommandList();
 	lightManager_ = lightManager;
 	modelCount_++;
 	//その時のカウントをinstanceIDにコピー
 	instanceID_ = modelCount_;
-	for (int i = 0; i < 4; ++i) {
+	for(int i = 0; i < 4; ++i) {
 		color_[i] = 1.0f;
 	}
 }
 
-ModelRenderer::~ModelRenderer () {
+ModelRenderer::~ModelRenderer() {
 }
 
-void ModelRenderer::Initialize () {
+void ModelRenderer::Initialize() {
 	//===リソースの初期化===//
-	//行列データ
-	matrixBuffer_ = dxCommon_->CreateBufferResource (sizeof (TransformationMatrix));
-	matrixBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&matrixData_));
-	matrixData_->World = Math::MakeIdentity4x4 ();
-	matrixData_->WVP = Math::MakeIdentity4x4 ();
-	matrixData_->WorldInverseTranspose = Math::MakeIdentity4x4 ();
+	// 行列データ
+	matrixBuffer_ = dxCommon_->CreateBufferResource(sizeof(TransformationMatrix));
+	matrixBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&matrixData_));
+	matrixData_->World = Math::MakeIdentity4x4();
+	matrixData_->WVP = Math::MakeIdentity4x4();
+	matrixData_->WorldInverseTranspose = Math::MakeIdentity4x4();
 
-	//マテリアルデータ
-	//size_t size = (sizeof(Material) + 255) & ~255;
-	materialBuffer_ = dxCommon_->CreateBufferResource (sizeof(Material));
-	materialBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&materialData_));
+	// マテリアルデータ
+	// size_t size = (sizeof(Material) + 255) & ~255;
+	materialBuffer_ = dxCommon_->CreateBufferResource(sizeof(Material));
+	materialBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	materialData_->enableLighting = LightReflectionModel::HalfLambert;
-	materialData_->uvTransform = Math::MakeIdentity4x4 ();
+	materialData_->uvTransform = Math::MakeIdentity4x4();
 	materialData_->roughness = 0.3f;
 	materialData_->metallic = 0.5f;
 
@@ -44,114 +44,124 @@ void ModelRenderer::Initialize () {
 	cameraData_->y = 0.0f;
 	cameraData_->z = 0.0f;
 
-	//PSO設定
-	desc_.RootSignatureID = RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::Standard3D);
-	desc_.VS_ID = ShaderManager::GetInstance ()->CompileAndCacheShader (L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
-	desc_.PS_ID = ShaderManager::GetInstance ()->CompileAndCacheShader (L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
+	// 共有データをロックして有効性をチェック
+	std::shared_ptr<ModelData> data = modelData_.lock();
+	// モデルデータが解放済みなら止める
+	assert(data);
+
+	// skeletonの初期化
+	skeleton_ = CreateSkeleton(data->rootNode);
+
+
+	// PSO設定
+	desc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Standard3D);
+	desc_.VS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
+	desc_.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
 	desc_.InputLayoutID = InputLayoutType::Standard3D;
 	desc_.BlendMode = BlendModeType::Alpha;
 }
 
-void ModelRenderer::Update (Matrix4x4 world, Matrix4x4 vp, EulerTransform uvTransform, Vector3 cameraWorld) {
+void ModelRenderer::Update(Matrix4x4 world, Matrix4x4 vp, EulerTransform uvTransform, Vector3 cameraWorld) {
 	// 共有データをロックして有効性をチェック
-	std::shared_ptr<ModelData> data = modelData_.lock ();
-	if (!data) {
-		// モデルデータが解放済みなら描画をスキップ
+	std::shared_ptr<ModelData> data = modelData_.lock();
+	if(!data) {
+		// モデルデータが解放済みなら更新をスキップ
 		return;
 	}
 
 	Matrix4x4 localMatrix = AnimationUpdate(data.get());
+	ApplyAnimation();
 
 	// RootのMatrixを適用する
 	matrixData_->World = localMatrix * world;
 	matrixData_->WVP = matrixData_->World * vp;
-	matrixData_->WorldInverseTranspose = Math::Transpose (Math::Inverse (matrixData_->World));
+	matrixData_->WorldInverseTranspose = Math::Transpose(Math::Inverse(matrixData_->World));
 
 	// uvTransform更新
-	materialData_->uvTransform = Math::MakeAffineMatrix (uvTransform.scale, uvTransform.rotate, uvTransform.translate);
+	materialData_->uvTransform = Math::MakeAffineMatrix(uvTransform.scale, uvTransform.rotate, uvTransform.translate);
 
 	*cameraData_ = cameraWorld;
 }
 
-void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
+void ModelRenderer::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	// 共有データをロックして有効性をチェック
-	std::shared_ptr<ModelData> data = modelData_.lock ();
+	std::shared_ptr<ModelData> data = modelData_.lock();
 	if(!data) {
 		// モデルデータが解放済みなら描画をスキップ
 		return;
 	}
 
-	RootSignatureManager::GetInstance ()->SetRootSignature (desc_.RootSignatureID);
-	PSOManager::GetInstance ()->SetPSO (desc_);
-	//どんな形状で描画するのか
-	commandList_->IASetPrimitiveTopology (D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//頂点バッファをセットする
-	commandList_->IASetVertexBuffers (0, 1, &data->vbView);
-	//インデックスバッファをセットする
-	commandList_->IASetIndexBuffer (&data->ibView);
-	//定数バッファのルートパラメータを設定する	
-	commandList_->SetGraphicsRootConstantBufferView (0, matrixBuffer_->GetGPUVirtualAddress ());
-	commandList_->SetGraphicsRootConstantBufferView (1, materialBuffer_->GetGPUVirtualAddress ());
-	//カメラのPositionをセット
+	RootSignatureManager::GetInstance()->SetRootSignature(desc_.RootSignatureID);
+	PSOManager::GetInstance()->SetPSO(desc_);
+	// どんな形状で描画するのか
+	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// 頂点バッファをセットする
+	commandList_->IASetVertexBuffers(0, 1, &data->vbView);
+	// インデックスバッファをセットする
+	commandList_->IASetIndexBuffer(&data->ibView);
+	// 定数バッファのルートパラメータを設定する	
+	commandList_->SetGraphicsRootConstantBufferView(0, matrixBuffer_->GetGPUVirtualAddress());
+	commandList_->SetGraphicsRootConstantBufferView(1, materialBuffer_->GetGPUVirtualAddress());
+	// カメラのPositionをセット
 	commandList_->SetGraphicsRootConstantBufferView(2, cameraBuffer_->GetGPUVirtualAddress());
-	//ライトの個数をセット
+	// ライトの個数をセット
 	commandList_->SetGraphicsRootConstantBufferView(3, lightManager_->GetLightCountBuffer().GetGPUVirtualAddress());
-	//テクスチャのSRVを設定
-	commandList_->SetGraphicsRootDescriptorTable (4, textureHandle);
-	//directionalLightのSRVをセット
+	// テクスチャのSRVを設定
+	commandList_->SetGraphicsRootDescriptorTable(4, textureHandle);
+	// directionalLightのSRVをセット
 	commandList_->SetGraphicsRootDescriptorTable(
 		5, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetDirLightSrvHandle())
 	);
-	//pointLightのSRVをセット
+	// pointLightのSRVをセット
 	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
 		6, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetPointLightSrvHandle())
 	);
-	//spotLightのSRVをセット
+	// spotLightのSRVをセット
 	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
 		7, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetSpotLightSrvHandle())
 	);
-	//rectLightのSRVをセット
+	// rectLightのSRVをセット
 	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
 		8, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetRectLightSrvHandle())
 	);
-	//実際に描画する
-	commandList_->DrawIndexedInstanced (static_cast<UINT>(data->indexCount), 1, 0, 0, 0);
+	// 実際に描画する
+	commandList_->DrawIndexedInstanced(static_cast<UINT>(data->indexCount), 1, 0, 0, 0);
 }
 
-void ModelRenderer::ImGui (EulerTransform& transform, EulerTransform& uvTransform, const std::string& windowName) {
+void ModelRenderer::ImGui(EulerTransform& transform, EulerTransform& uvTransform, const std::string& windowName) {
 #ifdef USEIMGUI
-	std::string num = std::to_string (instanceID_);
+	std::string num = std::to_string(instanceID_);
 	std::string label = "##" + tag_ + num;
-	ImGui::Text (("obj : " + windowName).c_str ());
-	if (ImGui::ColorEdit4 (("Color" + label).c_str (), color_)) {
+	ImGui::Text(("obj : " + windowName).c_str());
+	if(ImGui::ColorEdit4(("Color" + label).c_str(), color_)) {
 		// 色が変更されたらmaterialDataに反映
 		materialData_->color.x = color_[0];
 		materialData_->color.y = color_[1];
 		materialData_->color.z = color_[2];
 		materialData_->color.w = color_[3];
 	}
-	ImGui::DragFloat3 (("scale" + label).c_str (), &transform.scale.x, 0.01f);
-	ImGui::DragFloat3 (("rotate" + label).c_str (), &transform.rotate.x, 0.01f);
-	ImGui::DragFloat3 (("translate" + label).c_str (), &transform.translate.x, 0.01f);
-	ImGui::DragFloat3 (("uvScale" + label).c_str (), &uvTransform.scale.x, 0.01f);
-	ImGui::DragFloat3 (("uvRotate" + label).c_str (), &uvTransform.rotate.x, 0.01f);
-	ImGui::DragFloat3 (("uvTranslate" + label).c_str (), &uvTransform.translate.x, 0.01f);
+	ImGui::DragFloat3(("scale" + label).c_str(), &transform.scale.x, 0.01f);
+	ImGui::DragFloat3(("rotate" + label).c_str(), &transform.rotate.x, 0.01f);
+	ImGui::DragFloat3(("translate" + label).c_str(), &transform.translate.x, 0.01f);
+	ImGui::DragFloat3(("uvScale" + label).c_str(), &uvTransform.scale.x, 0.01f);
+	ImGui::DragFloat3(("uvRotate" + label).c_str(), &uvTransform.rotate.x, 0.01f);
+	ImGui::DragFloat3(("uvTranslate" + label).c_str(), &uvTransform.translate.x, 0.01f);
 	ImGui::DragFloat(("roughness" + label).c_str(), &materialData_->roughness, 0.01f, 0.0f, 1.0f);
 	ImGui::DragFloat(("metallic" + label).c_str(), &materialData_->metallic, 0.01f, 0.0f, 1.0f);
-	//ライトの種類を選べるようにする
+	// ライトの種類を選べるようにする
 	int currentNum = static_cast<int>(materialData_->enableLighting);
 	const char* lights[] = { "None", "lambert", "halfLambert" };
 	if(ImGui::Combo(("ライティング" + label).c_str(), &currentNum, lights, IM_ARRAYSIZE(lights))) {
 		// 選ばれた番号をそのまま enum にキャストして戻せばOK！
 		materialData_->enableLighting = static_cast<LightReflectionModel>(currentNum);
 	}
-	ImGui::Separator ();
+	ImGui::Separator();
 #endif
 }
 
 Matrix4x4 ModelRenderer::AnimationUpdate(ModelData* modelData) {
 	// 共有データをロックして有効性をチェック
-	std::shared_ptr<Animation> data = animationData_.lock ();
+	std::shared_ptr<Animation> data = animationData_.lock();
 	if(!data) {
 		// モデルデータが解放済みなら描画をスキップ
 		return Math::MakeIdentity4x4();
@@ -160,7 +170,7 @@ Matrix4x4 ModelRenderer::AnimationUpdate(ModelData* modelData) {
 	// Animationの再生
 	animationTime_ += 1.0f / 60.0f;
 	animationTime_ = std::fmod(animationTime_, data->duration);	// 最後まで行ったらリピート
-	NodeAnimation& rootNodeAnimation = data->nodeAnimaitons[modelData->rootNode.name];	// rootNodeのアニメーションを取得
+	NodeAnimation& rootNodeAnimation = data->nodeAnimations[modelData->rootNode.name];	// rootNodeのアニメーションを取得
 	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_);
 	Quaternion rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime_);
 	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);
@@ -212,4 +222,71 @@ Quaternion ModelRenderer::CalculateValue(const std::vector<KeyframeQuaternion>& 
 	}
 	//	ここまで来た場合は一番後の時刻よりも後ろなので最後の値を返すことにする
 	return (*keyframes.rbegin()).value;
+}
+
+Skeleton ModelRenderer::CreateSkeleton(const Node& rootNode) {
+	Skeleton skeleton;
+	skeleton.root = CreateJoint(rootNode, {}, skeleton.joints);
+
+	// 名前とindexのマッピングを行いアクセスしやすくする
+	for(const Joint& joint : skeleton.joints) {
+		skeleton.jointMap.emplace(joint.name, joint.index);
+	}
+
+	//作った際に一回だけ呼ぶ
+	SkeletonUpdate(skeleton);
+
+	return skeleton;
+}
+
+int32_t ModelRenderer::CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints) {
+	Joint joint;
+	joint.name = node.name;
+	joint.localMatrix = node.localMatrix;
+	joint.skeletonSpaceMatrix = Math::MakeIdentity4x4();
+	joint.transform = node.transform;
+	joint.index = int32_t(joints.size());	// 現在登録されている数をIndexに
+	joint.parent = parent;
+	joints.push_back(joint);	// SkeletonのJoint列に追加
+	for(const Node& child : node.children) {
+		// 子Jointを作成し、そのIndexを登録
+		int32_t childIndex = CreateJoint(child, joint.index, joints);
+		joints[joint.index].children.push_back(childIndex);
+	}
+	// 自身のIndexを返す
+	return joint.index;
+}
+
+void ModelRenderer::SkeletonUpdate(Skeleton& skeleton) {
+	// すべてのJointを更新。親が若いので通常ループで処理可能
+	for(Joint& joint : skeleton.joints) {
+		joint.localMatrix = Math::MakeAffineMatrix(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
+		// そのJointに親がいれば親の行列をかけてあげる
+		if(joint.parent) {
+			joint.skeletonSpaceMatrix = joint.localMatrix * skeleton.joints[*joint.parent].skeletonSpaceMatrix;
+		}
+		// 親がいなければlocalMatrixとskeletonSpaceMatrixは一致する
+		else {
+			joint.skeletonSpaceMatrix = joint.localMatrix;
+		}
+	}
+}
+
+void ModelRenderer::ApplyAnimation() {
+	// 共有データをロックして有効性をチェック
+	std::shared_ptr<Animation> data = animationData_.lock();
+	if(!data) {
+		// データが解放済みなら早期リターン
+		return;
+	}
+
+	for(Joint& joint : skeleton_.joints) {
+		// 対象のJointのAnimationがあれば値の適用を行う。下記のif文はC++17から可能になった初期化付きif文
+		if(auto it = data->nodeAnimations.find(joint.name); it != data->nodeAnimations.end()) {
+			const NodeAnimation& rootNodeAnimation = (*it).second;
+			joint.transform.translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_);
+			joint.transform.rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime_);
+			joint.transform.scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);	
+		}
+	}
 }
