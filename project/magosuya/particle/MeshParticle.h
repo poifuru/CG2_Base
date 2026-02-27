@@ -60,7 +60,7 @@ private:
 	AccelerationField field_ = {};
 	Vector3 fieldPos[8] = {};
 
-	LineVertexData lineData_[2] = {};
+	LineData lineData_[2] = {};
 
 	//頂点カラー
 	Vector4 color_ = {};

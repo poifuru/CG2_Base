@@ -234,7 +234,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="magosuya\PSO\RootSignatureManager.cpp" />
     <ClCompile Include="magosuya\PSO\PSOManager.cpp" />
     <ClCompile Include="magosuya\primitive\Mesh.cpp" />
-    <ClCompile Include="magosuya\particle\MeshParticle.cpp" />
     <ClCompile Include="magosuya\engine\SRV\SRVManager.cpp" />
     <ClCompile Include="application\mapchip\mapchip.cpp" />
     <ClCompile Include="application\mapchip\mapChipRenderer.cpp" />
@@ -404,7 +403,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />
     <ClInclude Include="magosuya\PSO\PSOManager.h" />
     <ClInclude Include="magosuya\primitive\Mesh.h" />
-    <ClInclude Include="magosuya\particle\MeshParticle.h" />
     <ClInclude Include="magosuya\engine\SRV\SRVManager.h" />
     <ClInclude Include="application\mapchip\mapchip.h" />
     <ClInclude Include="application\mapchip\mapChipRenderer.h" />

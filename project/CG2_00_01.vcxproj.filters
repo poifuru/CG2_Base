@@ -49,7 +49,6 @@
     <ClCompile Include="magosuya\PSO\RootSignatureManager.cpp" />
     <ClCompile Include="magosuya\PSO\PSOManager.cpp" />
     <ClCompile Include="magosuya\primitive\Mesh.cpp" />
-    <ClCompile Include="magosuya\particle\MeshParticle.cpp" />
     <ClCompile Include="magosuya\camera\LookAtCamera.cpp" />
     <ClCompile Include="magosuya\general\Easing.cpp" />
     <ClCompile Include="magosuya\engine\SRV\SRVManager.cpp" />
@@ -157,7 +156,6 @@
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />
     <ClInclude Include="magosuya\PSO\PSOManager.h" />
     <ClInclude Include="magosuya\primitive\Mesh.h" />
-    <ClInclude Include="magosuya\particle\MeshParticle.h" />
     <Filter Include="general">
       <UniqueIdentifier>{3e5e4c26-2402-409b-9ddb-c94548049e20}</UniqueIdentifier>
     </Filter>

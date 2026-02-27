@@ -13,14 +13,14 @@ void LineRenderer::Initialize (DxCommon* dxCommon) {
 	commandList_ = dxCommon->GetCommandList ();
 	srvManager_ = SRVManager::GetInstance();
 
-	lineBuffer_ = std::make_unique<LineData> ();
+	lineBuffer_ = std::make_unique<LineVertexData> ();
 
 	//頂点バッファー作成とマッピング
-	lineBuffer_->vertexBuffer = dxCommon_->CreateBufferResource (sizeof (LineVertexData) * VertexNum::Line * MaxMeshNum::Line);
+	lineBuffer_->vertexBuffer = dxCommon_->CreateBufferResource (sizeof (LineData) * VertexNum::Line * MaxMeshNum::Line);
 	lineBuffer_->vertexBuffer->Map (0, nullptr, reinterpret_cast<void**>(&vertexData_));
 	lineBuffer_->vbView.BufferLocation = lineBuffer_->vertexBuffer->GetGPUVirtualAddress ();
-	lineBuffer_->vbView.SizeInBytes = sizeof (LineVertexData) * VertexNum::Line * MaxMeshNum::Line;
-	lineBuffer_->vbView.StrideInBytes = sizeof (LineVertexData);
+	lineBuffer_->vbView.SizeInBytes = sizeof (LineData) * VertexNum::Line * MaxMeshNum::Line;
+	lineBuffer_->vbView.StrideInBytes = sizeof (LineData);
 
 	//行列バッファー作成とマッピング(頂点2つにつき1つ)
 	instancingBuffer_ = dxCommon_->CreateBufferResource (sizeof (LineForGPU) * MaxMeshNum::Line);
@@ -38,7 +38,7 @@ void LineRenderer::Initialize (DxCommon* dxCommon) {
 	srvManager_->CreateSRVStructuredBuffer(instancingIndex_, instancingBuffer_.Get(), MaxMeshNum::Line, sizeof(LineForGPU));
 
 	//頂点バッファ用のSRV作成
-	srvManager_->CreateSRVStructuredBuffer(vertexIndex_, lineBuffer_->vertexBuffer.Get(), VertexNum::Line, sizeof(LineVertexData));
+	srvManager_->CreateSRVStructuredBuffer(vertexIndex_, lineBuffer_->vertexBuffer.Get(), VertexNum::Line, sizeof(LineData));
 
 	//PSOの設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::LineMesh);
@@ -50,7 +50,7 @@ void LineRenderer::Initialize (DxCommon* dxCommon) {
 	PSOManager::GetInstance ()->GetOrCreatePSO (desc_);
 }
 
-void LineRenderer::UpdateVertexData (const LineVertexData* data) {
+void LineRenderer::UpdateVertexData (const LineData* data) {
 	//currentLineNumが最大数を超えていないか
 	if (currentLineCount_ >= MaxMeshNum::Line) {
 		//超えてたら早期リターン

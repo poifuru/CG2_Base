@@ -9,7 +9,10 @@ namespace Mesh {
 	/// </summary>
 	/// <param name="data">線の頂点と色</param>
 	/// <param name="vp">vp行列</param>
-	void DrawLine (LineVertexData* data, const Matrix4x4& vp);
+	void DrawLine (
+		float posX1, float posY1, float posZ1, float posX2, float posY2, float posZ2,
+		Vector4 color, const Matrix4x4& vp
+	);
 
 	/// <summary>
 	/// キューブを描画

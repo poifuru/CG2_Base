@@ -46,7 +46,7 @@ void TestScene::Update() {
 
 void TestScene::Draw() {
 	cube_->Draw();
-	
+	Mesh::DrawLine(-5.0f, 0.0f, 0.0f, 5.0f, 0.0f, 0.0f, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix());
 }
 
 void TestScene::StopToResources() {

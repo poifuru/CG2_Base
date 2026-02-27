@@ -4,13 +4,22 @@
 #include "CubeRenderer.h"
 #include "MaxMeshNum.h"
 
-void Mesh::DrawLine (LineVertexData* data, const Matrix4x4& vp) {
+void Mesh::DrawLine (
+	float posX1, float posY1, float posZ1, float posX2, float posY2, float posZ2,
+	Vector4 color, const Matrix4x4& vp
+) {
 	//=========================//
 	//ここでやるのはデータの転送だけ//
 	//=========================//
 
 	//rendererのインスタンスを取得
 	LineRenderer* renderer_ = LineRenderer::GetInstance ();
+
+	LineData data[2];
+	data[0].position = { posX1, posY1, posZ1 };
+	data[0].color = color;
+	data[1].position = { posX2, posY2, posZ2 };
+	data[1].color = color;
 
 	//頂点データを送信
 	renderer_->UpdateVertexData (data);

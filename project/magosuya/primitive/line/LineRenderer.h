@@ -21,7 +21,7 @@ public:
 	~LineRenderer();
 
 	void Initialize(DxCommon* dxCommon);
-	void UpdateVertexData(const LineVertexData* data);
+	void UpdateVertexData(const LineData* data);
 	void TransferData(const LineForGPU& data);
 	void Draw();
 
@@ -52,8 +52,8 @@ private:
 	PSODescriptor desc_ = {};
 
 	//GPUリソースとマッピング用データ
-	std::unique_ptr<LineData> lineBuffer_ = nullptr;
-	LineVertexData* vertexData_ = nullptr;
+	std::unique_ptr<LineVertexData> lineBuffer_ = nullptr;
+	LineData* vertexData_ = nullptr;
 
 	ComPtr<ID3D12Resource> instancingBuffer_ = nullptr;
 	LineForGPU* instancingData_ = nullptr;

@@ -1,12 +1,12 @@
 #pragma once
 #include "struct.h"
 
-struct LineVertexData {
+struct LineData {
 	Vector3 position;
 	Vector4 color;
 };
 
-struct LineData {
+struct LineVertexData {
 	//頂点バッファ
 	ComPtr<ID3D12Resource> vertexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW vbView{};
