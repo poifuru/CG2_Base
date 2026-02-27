@@ -1,6 +1,7 @@
 #include "TestScene.h"
 #include "ModelManager.h"
 #include "TextureManager.h"
+#include "Mesh.h"
 
 TestScene::TestScene() {
 	ModelManager::GetInstance()->LoadModelData("Resources/AnimatedCube", "AnimatedCube.gltf");
@@ -45,6 +46,7 @@ void TestScene::Update() {
 
 void TestScene::Draw() {
 	cube_->Draw();
+	
 }
 
 void TestScene::StopToResources() {
