@@ -364,3 +364,11 @@ struct Skeleton {
 	std::map<std::string, int32_t> jointMap;	// joint名とIndexとの辞書
 	std::vector<Joint> joints;	// 所属しているジョイント
 };
+
+// SkinCluster構造体
+struct SkinCluster {
+	std::vector<Matrix4x4> inverseBinePoseMatrices;
+
+	ComPtr<ID3D12Resource> influenceResource;
+	D3D12_VERTEX_BUFFER_VIEW influenceBufferView;
+};
