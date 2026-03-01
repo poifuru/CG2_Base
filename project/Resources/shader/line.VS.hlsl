@@ -16,6 +16,7 @@ StructuredBuffer<LineForGPU> gLine : register(t0);
 struct LineVertexData
 {
     float3 position;
+    float padding;
     float4 color;
 };
 StructuredBuffer<LineVertexData> gLineVertices : register(t1);

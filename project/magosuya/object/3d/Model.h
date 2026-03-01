@@ -68,6 +68,11 @@ public:	//メンバ関数
 	/// <param name="animation">ロードしたAnimation</param>
 	void SetAnimation(const std::string& ID);
 
+	/// <summary>
+	/// スケルトンの初期化
+	/// </summary>
+	void SkeletonInit();
+
 	//アクセッサ
 	Vector3 GetPosition () { return transform_.translate; }
 	void SetPosition (const Vector3& position) { transform_.translate = position; }

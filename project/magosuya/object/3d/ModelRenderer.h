@@ -37,6 +37,8 @@ public:
 	/// <param name="animation">ロードしたAnimation</param>
 	void SetAnimation(const std::weak_ptr<Animation>& animation) { animationData_ = animation; }
 
+	void SkeletonInit();
+
 private: // 内部関数
 	Matrix4x4 AnimationUpdate(ModelData* modelData);
 	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
@@ -45,6 +47,7 @@ private: // 内部関数
 	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
 	void SkeletonUpdate(Skeleton& skeleton);
 	void ApplyAnimation();
+	void DrawSkeleton();
 
 private:
 	// モデルデータ
@@ -56,6 +59,9 @@ private:
 
 	// スケルトンデータ
 	Skeleton skeleton_ = {};
+	// スケルトンデバッグ描画用
+	Matrix4x4 vp_ = {};
+	Matrix4x4 world_ = {};
 
 	//PSO
 	PSODescriptor desc_ = {};
@@ -77,6 +83,7 @@ private:
 
 	//ImGuiで色をいじる変数
 	float color_[4];
+	bool drawSkeleton_ = false;
 
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;

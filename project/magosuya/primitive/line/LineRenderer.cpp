@@ -38,7 +38,7 @@ void LineRenderer::Initialize (DxCommon* dxCommon) {
 	srvManager_->CreateSRVStructuredBuffer(instancingIndex_, instancingBuffer_.Get(), MaxMeshNum::Line, sizeof(LineForGPU));
 
 	//頂点バッファ用のSRV作成
-	srvManager_->CreateSRVStructuredBuffer(vertexIndex_, lineBuffer_->vertexBuffer.Get(), VertexNum::Line, sizeof(LineData));
+	srvManager_->CreateSRVStructuredBuffer(vertexIndex_, lineBuffer_->vertexBuffer.Get(), VertexNum::Line * MaxMeshNum::Line, sizeof(LineData));
 
 	//PSOの設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::LineMesh);
@@ -47,6 +47,7 @@ void LineRenderer::Initialize (DxCommon* dxCommon) {
 	desc_.InputLayoutID = InputLayoutType::LineMesh;
 	desc_.BlendMode = BlendModeType::Opaque;
 	desc_.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;	//線を描画
+	desc_.DepthEnable = FALSE; // モデルに隠されないようにZテストを切る
 	PSOManager::GetInstance ()->GetOrCreatePSO (desc_);
 }
 

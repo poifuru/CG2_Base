@@ -48,7 +48,7 @@ void CubeRenderer::Initialize (DxCommon* dxCommon) {
 	srvManager_->CreateSRVStructuredBuffer(instancingIndex_, instancingBuffer_.Get(), MaxMeshNum::Cube, sizeof(CubeForGPU));
 
 	//頂点バッファ用のSRV作成
-	srvManager_->CreateSRVStructuredBuffer(vertexIndex_ + 1, cubeBuffer_->vertexBuffer.Get(), VertexNum::Cube, sizeof(CubeVertexData));
+	srvManager_->CreateSRVStructuredBuffer(vertexIndex_, cubeBuffer_->vertexBuffer.Get(), VertexNum::Cube, sizeof(CubeVertexData));
 
 	//PSOの設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::CubeMesh);

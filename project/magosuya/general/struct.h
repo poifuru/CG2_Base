@@ -271,6 +271,18 @@ struct Node {
 	std::vector<Node> children;
 };
 
+// 頂点のウェイトデータ
+struct VertexWeightData {
+	float weight;
+	uint32_t vertexIndex;
+};
+
+// ジョイントのウェイトデータ
+struct JointWeightData {
+	Matrix4x4 inverseBindPoseMatrix;
+	std::vector<VertexWeightData> vertexWeights;
+};
+
 // ModelData構造体
 struct ModelData {
 	// 形状情報 (CPU側データ)
@@ -293,6 +305,9 @@ struct ModelData {
 
 	// ルートノード(階層構造)
 	Node rootNode;
+
+	// スキンクラスターのデータ
+	std::map<std::string, JointWeightData> skinClusterData;
 };
 
 // エミッター構造体

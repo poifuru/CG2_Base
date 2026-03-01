@@ -217,7 +217,7 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 
 Node ModelManager::ReadNode(aiNode* node) {
 	Node result;
-	
+
 	aiVector3D scale;
 	aiQuaternion rotate;
 	aiVector3D translate;
@@ -228,7 +228,7 @@ Node ModelManager::ReadNode(aiNode* node) {
 	result.localMatrix = Math::MakeAffineMatrix(
 		result.transform.scale, result.transform.rotate, result.transform.translate
 	);
-	
+
 	result.name = node->mName.C_Str();	//Node名を格納
 	result.children.resize(node->mNumChildren);	//子供の数だけサイズを確保
 	for(uint32_t childIndex = 0; childIndex < node->mNumChildren; ++childIndex) {
@@ -270,7 +270,7 @@ Animation ModelManager::LoadAnimation(const std::string& directoryPath, const st
 			aiQuatKey& keyAssimp = nodeAnimationAssimp->mRotationKeys[keyIndex];
 			KeyframeQuaternion keyframe = {};
 			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);	// 秒単位に変換
-			keyframe.value = { -keyAssimp.mValue.x, -keyAssimp.mValue.y, keyAssimp.mValue.z, keyAssimp.mValue.w };	// 右手->左手
+			keyframe.value = { keyAssimp.mValue.x, -keyAssimp.mValue.y, -keyAssimp.mValue.z, keyAssimp.mValue.w };	// 右手->左手
 			nodeAnimation.rotate.keyframes.push_back(keyframe);
 		}
 		// scale

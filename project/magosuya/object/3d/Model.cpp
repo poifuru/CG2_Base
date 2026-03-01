@@ -49,3 +49,7 @@ void Model::SetAnimation(const std::string& ID) {
 	std::weak_ptr<Animation> animationData = ModelManager::GetInstance()->GetAnimationData(ID);
 	renderer_->SetAnimation(animationData);
 }
+
+void Model::SkeletonInit() {
+	renderer_->SkeletonInit();
+}

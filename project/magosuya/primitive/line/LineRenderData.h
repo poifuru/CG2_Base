@@ -3,6 +3,7 @@
 
 struct LineData {
 	Vector3 position;
+	float padding;
 	Vector4 color;
 };
 

@@ -3,6 +3,7 @@
 #include "mathFunction.h"
 #include "LightManager.h"
 #include "SRVManager.h"
+#include "Mesh.h"
 
 ModelRenderer::ModelRenderer(DxCommon* dxCommon, LightManager* lightManager) {
 	dxCommon_ = dxCommon;
@@ -51,7 +52,8 @@ void ModelRenderer::Initialize() {
 
 	// skeletonの初期化
 	skeleton_ = CreateSkeleton(data->rootNode);
-
+	vp_ = Math::MakeIdentity4x4();
+	world_ = Math::MakeIdentity4x4();
 
 	// PSO設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Standard3D);
@@ -71,6 +73,7 @@ void ModelRenderer::Update(Matrix4x4 world, Matrix4x4 vp, EulerTransform uvTrans
 
 	Matrix4x4 localMatrix = AnimationUpdate(data.get());
 	ApplyAnimation();
+	SkeletonUpdate(skeleton_);
 
 	// RootのMatrixを適用する
 	matrixData_->World = localMatrix * world;
@@ -81,6 +84,8 @@ void ModelRenderer::Update(Matrix4x4 world, Matrix4x4 vp, EulerTransform uvTrans
 	materialData_->uvTransform = Math::MakeAffineMatrix(uvTransform.scale, uvTransform.rotate, uvTransform.translate);
 
 	*cameraData_ = cameraWorld;
+	vp_ = vp;
+	world_ = localMatrix * world;
 }
 
 void ModelRenderer::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
@@ -126,6 +131,10 @@ void ModelRenderer::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	);
 	// 実際に描画する
 	commandList_->DrawIndexedInstanced(static_cast<UINT>(data->indexCount), 1, 0, 0, 0);
+
+	if(drawSkeleton_) {
+		DrawSkeleton();
+	}
 }
 
 void ModelRenderer::ImGui(EulerTransform& transform, EulerTransform& uvTransform, const std::string& windowName) {
@@ -155,8 +164,20 @@ void ModelRenderer::ImGui(EulerTransform& transform, EulerTransform& uvTransform
 		// 選ばれた番号をそのまま enum にキャストして戻せばOK！
 		materialData_->enableLighting = static_cast<LightReflectionModel>(currentNum);
 	}
+	ImGui::Checkbox(("drawSkeleton" + label).c_str(), &drawSkeleton_);
 	ImGui::Separator();
 #endif
+}
+
+void ModelRenderer::SkeletonInit() {
+	// 共有データをロックして有効性をチェック
+	std::shared_ptr<ModelData> data = modelData_.lock();
+	if(!data) {
+		// モデルデータが解放済みなら描画をスキップ
+		return;
+	}
+
+	CreateSkeleton(data->rootNode);
 }
 
 Matrix4x4 ModelRenderer::AnimationUpdate(ModelData* modelData) {
@@ -170,10 +191,23 @@ Matrix4x4 ModelRenderer::AnimationUpdate(ModelData* modelData) {
 	// Animationの再生
 	animationTime_ += 1.0f / 60.0f;
 	animationTime_ = std::fmod(animationTime_, data->duration);	// 最後まで行ったらリピート
-	NodeAnimation& rootNodeAnimation = data->nodeAnimations[modelData->rootNode.name];	// rootNodeのアニメーションを取得
-	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_);
-	Quaternion rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime_);
-	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);
+
+	Vector3 translate = modelData->rootNode.transform.translate;
+	Quaternion rotate = modelData->rootNode.transform.rotate;
+	Vector3 scale = modelData->rootNode.transform.scale;
+
+	if(auto it = data->nodeAnimations.find(modelData->rootNode.name); it != data->nodeAnimations.end()) {
+		const NodeAnimation& rootNodeAnimation = (*it).second;
+		if(!rootNodeAnimation.translate.keyframes.empty()) {
+			translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_);
+		}
+		if(!rootNodeAnimation.rotate.keyframes.empty()) {
+			rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime_);
+		}
+		if(!rootNodeAnimation.scale.keyframes.empty()) {
+			scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);
+		}
+	}
 
 	return Math::MakeAffineMatrix(scale, rotate, translate);
 }
@@ -284,9 +318,35 @@ void ModelRenderer::ApplyAnimation() {
 		// 対象のJointのAnimationがあれば値の適用を行う。下記のif文はC++17から可能になった初期化付きif文
 		if(auto it = data->nodeAnimations.find(joint.name); it != data->nodeAnimations.end()) {
 			const NodeAnimation& rootNodeAnimation = (*it).second;
-			joint.transform.translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_);
-			joint.transform.rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime_);
-			joint.transform.scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);	
+			if(!rootNodeAnimation.translate.keyframes.empty()) {
+				joint.transform.translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_);
+			}
+			if(!rootNodeAnimation.rotate.keyframes.empty()) {
+				joint.transform.rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime_);
+			}
+			if(!rootNodeAnimation.scale.keyframes.empty()) {
+				joint.transform.scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);
+			}
+		}
+	}
+}
+
+void ModelRenderer::DrawSkeleton() {
+	for(const Joint& joint : skeleton_.joints) {
+		if(joint.parent) { // 親ジョイントが存在するか確認
+			// 親ジョイントの参照
+			const Joint& parentJoint = skeleton_.joints[*joint.parent];
+			// それぞれの行列の平行移動成分（第4行目）からローカル座標系での位置ベクトルを抽出
+			Vector3 myLocalPos = { joint.skeletonSpaceMatrix.m[3][0], joint.skeletonSpaceMatrix.m[3][1], joint.skeletonSpaceMatrix.m[3][2] };
+			Vector3 parentLocalPos = { parentJoint.skeletonSpaceMatrix.m[3][0], parentJoint.skeletonSpaceMatrix.m[3][1], parentJoint.skeletonSpaceMatrix.m[3][2] };
+			// 計算用の関数を使って myLocalPos と parentLocalPos に `world_` を掛ける (localMatrixはJoint内に既に含まれているため二重適用を避ける)
+			// ワールド座標に変換してから、その2点に対してDrawLineする
+			Vector3 myWorldPos = Math::Transform(myLocalPos, world_);
+			Vector3 parentWorldPos = Math::Transform(parentLocalPos, world_);
+
+			Mesh::DrawLine(
+				parentWorldPos.x, parentWorldPos.y, parentWorldPos.z,
+				myWorldPos.x, myWorldPos.y, myWorldPos.z, {1.0f, 1.0f, 1.0f, 1.0f}, vp_);
 		}
 	}
 }
