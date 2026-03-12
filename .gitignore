@@ -337,8 +337,6 @@ x64/
 
 desktop.ini
 
-project/$
-ini
 pdb
 /project/imgui.ini
 /project/externals/imgui/lib/Debug/
@@ -349,3 +347,14 @@ pdb
 /project/externals/DirectXTex/lib/Release/
 /project/externals/DirectXTex/Shaders/Compiled/
 /logs
+/project/externals/imgui/lib/Debug/imgui.idb
+/project/externals/imgui/lib/Development/ImGui/imgui.pdb
+/project/externals/imgui/lib/Release/ImGui/imgui.pdb
+/project/externals/DirectXTex/lib/Debug/DirectXTex/DirectXTex.pdb
+/project/externals/DirectXTex/lib/Development/DirectXTex/DirectXTex.lib
+/project/externals/DirectXTex/lib/Development/DirectXTex/DirectXTex.pdb
+/project/externals/DirectXTex/lib/Release/DirectXTex/DirectXTex.lib
+/project/externals/DirectXTex/lib/Release/DirectXTex/DirectXTex.pdb
+/project/externals/imgui/lib/Debug/ImGui/imgui.idb
+/project/externals/imgui/lib/Development/ImGui/imgui.lib
+/project/externals/imgui/lib/Release/ImGui/imgui.lib
