@@ -48,6 +48,7 @@ private: // 内部関数
 	void SkeletonUpdate(Skeleton& skeleton);
 	void ApplyAnimation();
 	void DrawSkeleton();
+	SkinCluster CreateSkinCluster();
 
 private:
 	// モデルデータ
@@ -62,6 +63,9 @@ private:
 	// スケルトンデバッグ描画用
 	Matrix4x4 vp_ = {};
 	Matrix4x4 world_ = {};
+
+	// スキンクラスター
+	SkinCluster skinCluster_ = {};
 
 	//PSO
 	PSODescriptor desc_ = {};
@@ -87,6 +91,7 @@ private:
 
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;
+	ID3D12Device* device_ = nullptr;
 	ID3D12GraphicsCommandList* commandList_ = nullptr;
 	LightManager* lightManager_ = nullptr;
 };

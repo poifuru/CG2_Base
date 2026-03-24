@@ -7,6 +7,7 @@
 
 ModelRenderer::ModelRenderer(DxCommon* dxCommon, LightManager* lightManager) {
 	dxCommon_ = dxCommon;
+	device_ = dxCommon->GetDevice();
 	commandList_ = dxCommon->GetCommandList();
 	lightManager_ = lightManager;
 	modelCount_++;
@@ -30,7 +31,6 @@ void ModelRenderer::Initialize() {
 	matrixData_->WorldInverseTranspose = Math::MakeIdentity4x4();
 
 	// マテリアルデータ
-	// size_t size = (sizeof(Material) + 255) & ~255;
 	materialBuffer_ = dxCommon_->CreateBufferResource(sizeof(Material));
 	materialBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&materialData_));
 	materialData_->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -349,4 +349,41 @@ void ModelRenderer::DrawSkeleton() {
 				myWorldPos.x, myWorldPos.y, myWorldPos.z, {1.0f, 1.0f, 1.0f, 1.0f}, vp_);
 		}
 	}
+}
+
+SkinCluster ModelRenderer::CreateSkinCluster() {
+	SkinCluster skinCluster;
+
+	// palette用のResourceを確保
+	skinCluster.paletteResource = dxCommon_->CreateBufferResource(sizeof(WellForGPU) * skeleton_.joints.size());
+	WellForGPU* mappedPalette = nullptr;
+	skinCluster.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
+	skinCluster.mappedPalette = { mappedPalette, skeleton_.joints.size() };	// std::spanを使ってアクセスするようにする
+	// DescriptorHeapの空きIndexを確保(CPU,GPU)
+	uint32_t CPUDescriptorFreeIndex = SRVManager::GetInstance()->Allocate();
+	skinCluster.paletteSrvHandle.first = SRVManager::GetInstance()->GetCPUDescriptorHandle(CPUDescriptorFreeIndex);
+	uint32_t GPUDescriptorFreeIndex = SRVManager::GetInstance()->Allocate();
+	skinCluster.paletteSrvHandle.second = SRVManager::GetInstance()->GetGPUDescriptorHandle(GPUDescriptorFreeIndex);
+
+	// palette用のsrvを作成
+	D3D12_SHADER_RESOURCE_VIEW_DESC paletteSrvDesc{};
+	paletteSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
+	paletteSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	paletteSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	paletteSrvDesc.Buffer.FirstElement = 0;
+	paletteSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+	paletteSrvDesc.Buffer.NumElements = UINT(skeleton_.joints.size());
+	paletteSrvDesc.Buffer.StructureByteStride = sizeof(WellForGPU);
+	device_->CreateShaderResourceView(skinCluster.paletteResource.Get(), &paletteSrvDesc, skinCluster.paletteSrvHandle.first);
+
+	// influence用のResourceを確保
+
+
+	// influence用のVBVを作成
+
+	// InverseBindPoseMatrixの保存領域を作成
+
+	// ModelDataのSkinCluster情報を解析してinfluenceの中身を埋める
+
+	return skinCluster;
 }
