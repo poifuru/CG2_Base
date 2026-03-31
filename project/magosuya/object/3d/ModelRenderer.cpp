@@ -1,5 +1,6 @@
 #include "ModelRenderer.h"
 #include <imgui.h>
+#include <algorithm>
 #include "mathFunction.h"
 #include "LightManager.h"
 #include "SRVManager.h"
@@ -46,7 +47,7 @@ void ModelRenderer::Initialize() {
 	cameraData_->z = 0.0f;
 
 	// 共有データをロックして有効性をチェック
-	std::shared_ptr<ModelData> data = modelData_.lock();
+	std::shared_ptr<ModelData> data = wp_modelData_.lock();
 	// モデルデータが解放済みなら止める
 	assert(data);
 
@@ -64,14 +65,7 @@ void ModelRenderer::Initialize() {
 }
 
 void ModelRenderer::Update(Matrix4x4 world, Matrix4x4 vp, EulerTransform uvTransform, Vector3 cameraWorld) {
-	// 共有データをロックして有効性をチェック
-	std::shared_ptr<ModelData> data = modelData_.lock();
-	if(!data) {
-		// モデルデータが解放済みなら更新をスキップ
-		return;
-	}
-
-	Matrix4x4 localMatrix = AnimationUpdate(data.get());
+	Matrix4x4 localMatrix = AnimationUpdate(sp_modelData_.get());
 	ApplyAnimation();
 	SkeletonUpdate(skeleton_);
 
@@ -89,21 +83,14 @@ void ModelRenderer::Update(Matrix4x4 world, Matrix4x4 vp, EulerTransform uvTrans
 }
 
 void ModelRenderer::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
-	// 共有データをロックして有効性をチェック
-	std::shared_ptr<ModelData> data = modelData_.lock();
-	if(!data) {
-		// モデルデータが解放済みなら描画をスキップ
-		return;
-	}
-
 	RootSignatureManager::GetInstance()->SetRootSignature(desc_.RootSignatureID);
 	PSOManager::GetInstance()->SetPSO(desc_);
 	// どんな形状で描画するのか
 	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// 頂点バッファをセットする
-	commandList_->IASetVertexBuffers(0, 1, &data->vbView);
+	commandList_->IASetVertexBuffers(0, 1, &sp_modelData_->vbView);
 	// インデックスバッファをセットする
-	commandList_->IASetIndexBuffer(&data->ibView);
+	commandList_->IASetIndexBuffer(&sp_modelData_->ibView);
 	// 定数バッファのルートパラメータを設定する	
 	commandList_->SetGraphicsRootConstantBufferView(0, matrixBuffer_->GetGPUVirtualAddress());
 	commandList_->SetGraphicsRootConstantBufferView(1, materialBuffer_->GetGPUVirtualAddress());
@@ -130,7 +117,7 @@ void ModelRenderer::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 		8, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetRectLightSrvHandle())
 	);
 	// 実際に描画する
-	commandList_->DrawIndexedInstanced(static_cast<UINT>(data->indexCount), 1, 0, 0, 0);
+	commandList_->DrawIndexedInstanced(static_cast<UINT>(sp_modelData_->indexCount), 1, 0, 0, 0);
 
 	if(drawSkeleton_) {
 		DrawSkeleton();
@@ -170,14 +157,7 @@ void ModelRenderer::ImGui(EulerTransform& transform, EulerTransform& uvTransform
 }
 
 void ModelRenderer::SkeletonInit() {
-	// 共有データをロックして有効性をチェック
-	std::shared_ptr<ModelData> data = modelData_.lock();
-	if(!data) {
-		// モデルデータが解放済みなら描画をスキップ
-		return;
-	}
-
-	CreateSkeleton(data->rootNode);
+	CreateSkeleton(sp_modelData_->rootNode);
 }
 
 Matrix4x4 ModelRenderer::AnimationUpdate(ModelData* modelData) {
@@ -377,13 +357,40 @@ SkinCluster ModelRenderer::CreateSkinCluster() {
 	device_->CreateShaderResourceView(skinCluster.paletteResource.Get(), &paletteSrvDesc, skinCluster.paletteSrvHandle.first);
 
 	// influence用のResourceを確保
-
+	skinCluster.influenceResource = dxCommon_->CreateBufferResource(sizeof(VertexInfluence) * sp_modelData_->vertices.size());
+	VertexInfluence* mappedInfluence = nullptr;
+	skinCluster.influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluence));
+	std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * sp_modelData_->vertices.size());	// 0埋め。weightを0にしておく
+	skinCluster.mappedInfluence = { mappedInfluence, sp_modelData_->vertices.size() };
 
 	// influence用のVBVを作成
+	skinCluster.influenceBufferView.BufferLocation = skinCluster.influenceResource->GetGPUVirtualAddress();
+	skinCluster.influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * sp_modelData_->vertices.size());
+	skinCluster.influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
 
 	// InverseBindPoseMatrixの保存領域を作成
+	skinCluster.inverseBinePoseMatrices.resize(skeleton_.joints.size());
+	std::generate(skinCluster_.inverseBinePoseMatrices.begin(), skinCluster_.inverseBinePoseMatrices.end(), Math::MakeIdentity4x4());
 
 	// ModelDataのSkinCluster情報を解析してinfluenceの中身を埋める
+	for(const auto& jointWeight : sp_modelData_->skinClusterData) {	// ModelのSkinClusterの情報を解析
+		auto it = skeleton_.jointMap.find(jointWeight.first);	// jointWeight.firstはjoint名なので、skeletonに対象となるjointが含まれているか判断
+		if(it == skeleton_.jointMap.end()) {	// そんなな目のjointは存在しないので次に回す。
+			continue;
+		}
+		// (*it).secondにはjointのindexが入っているので、該当のindexのinverseBindPoseMatrixを代入
+		skinCluster.inverseBinePoseMatrices[(*it).second] = jointWeight.second.inverseBindPoseMatrix;
+		for(const auto& vertexWeight : jointWeight.second.vertexWeights) {
+			auto& currentInfluence = skinCluster.mappedInfluence[vertexWeight.vertexIndex];	// 該当のvertexIndexのinfluence情報を参照しておく
+			for(uint32_t index = 0; index < kNumMaxInfluence; ++index) {	// 空いているところに入れる
+				if(currentInfluence.weights[index] == 0.0f) {	// weight==0が空いている状態なので、その場所にweightとjointのindexを代入
+					currentInfluence.weights[index] = vertexWeight.weight;
+					currentInfluence.jointIndices[index] = (*it).second;
+					break;
+				}
+			}
+		}
+	}
 
 	return skinCluster;
 }
