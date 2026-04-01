@@ -49,6 +49,7 @@ private: // 内部関数
 	void ApplyAnimation();
 	void DrawSkeleton();
 	SkinCluster CreateSkinCluster();
+	void SkinClusterUpdate();
 
 private:
 	// モデルデータ

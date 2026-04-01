@@ -68,6 +68,7 @@ void ModelRenderer::Update(Matrix4x4 world, Matrix4x4 vp, EulerTransform uvTrans
 	Matrix4x4 localMatrix = AnimationUpdate(sp_modelData_.get());
 	ApplyAnimation();
 	SkeletonUpdate(skeleton_);
+	SkinClusterUpdate();
 
 	// RootのMatrixを適用する
 	matrixData_->World = localMatrix * world;
@@ -393,4 +394,14 @@ SkinCluster ModelRenderer::CreateSkinCluster() {
 	}
 
 	return skinCluster;
+}
+
+void ModelRenderer::SkinClusterUpdate() {
+	for(size_t jointIndex = 0; jointIndex < skeleton_.joints.size(); ++jointIndex) {
+		assert(jointIndex < skinCluster_.inverseBinePoseMatrices.size());
+		skinCluster_.mappedPalette[jointIndex].skeletonSpaceMatrix =
+			skinCluster_.inverseBinePoseMatrices[jointIndex] * skeleton_.joints[jointIndex].skeletonSpaceMatrix;
+		skinCluster_.mappedPalette[jointIndex].skeletonSpaceInverseTransposeMatrix =
+			Math::Transpose(Math::Inverse(skinCluster_.mappedPalette[jointIndex].skeletonSpaceMatrix));
+	}
 }
