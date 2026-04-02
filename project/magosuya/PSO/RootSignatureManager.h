@@ -12,6 +12,7 @@ class DxCommon;
 enum class RootSigType : uint32_t {
 	Standard3D,			//基本的な3D描画物用
 	Standard3DInstance,	//インスタンス描画用
+	SkinningStandard3D, //スキニング対応の3D描画用
 	Sprite,				//スプライト用
 	Particle,			//パーティクル用
 	LineMesh,
@@ -62,6 +63,10 @@ private:	// メンバ変数
 	D3D12_DESCRIPTOR_RANGE standard3DInstanceDescriptorRanges[6] = {};
 	D3D12_ROOT_PARAMETER standard3DInstanceRootParameters[9] = {};
 	D3D12_STATIC_SAMPLER_DESC standard3DInstanceStaticSamplers[1] = {};
+	//SkinningStanderd3D
+	D3D12_DESCRIPTOR_RANGE skinningStandard3DDescriptorRanges[6] = {};
+	D3D12_ROOT_PARAMETER skinningStandard3DRootParameters[10] = {};
+	D3D12_STATIC_SAMPLER_DESC skinningStandard3DStaticSamplers[1] = {};
 	//Sprite
 	D3D12_DESCRIPTOR_RANGE spriteDescriptorRanges[1] = {};
 	D3D12_ROOT_PARAMETER spriteRootParameters[3] = {};

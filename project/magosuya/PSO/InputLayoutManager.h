@@ -7,6 +7,7 @@
 // 頂点レイアウトを識別するためのID
 enum class InputLayoutType : uint32_t {
     Standard3D, //POSITION, TEXCOORD, NORMALを持つレイアウト
+	SkinningStandard3D,	// Standard3Dの設定にSkinning用の設定を足したもの
     Particle,   //Particle用
     LineMesh,   //LineMesh描画用
     CubeMesh,   //CubeMesh描画用

@@ -29,7 +29,7 @@ public:
 	void SetRoughness(const float& roughness) { materialData_->roughness = roughness; }
 	void SetMetallic(const float& metallic) { materialData_->metallic = metallic; }
 	void SetImGuiID (const std::string& id) { tag_ = id; }
-	void SetModelData (const std::weak_ptr<ModelData>& data){ wp_modelData_ = data; }
+	void SetModelData (const std::weak_ptr<ModelData>& data){ modelData_ = data; }
 
 	/// <summary>
 	/// 使うAnimationをセット
@@ -48,13 +48,12 @@ private: // 内部関数
 	void SkeletonUpdate(Skeleton& skeleton);
 	void ApplyAnimation();
 	void DrawSkeleton();
-	SkinCluster CreateSkinCluster();
+	SkinCluster CreateSkinCluster(std::shared_ptr<ModelData> modelData);
 	void SkinClusterUpdate();
 
 private:
 	// モデルデータ
-	std::weak_ptr<ModelData> wp_modelData_;
-	std::shared_ptr<ModelData> sp_modelData_;
+	std::weak_ptr<ModelData> modelData_;
 	// アニメーションデータ
 	std::weak_ptr<Animation> animationData_;
 	float animationTime_ = 0.0f;

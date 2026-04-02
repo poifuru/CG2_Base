@@ -47,7 +47,7 @@ void ModelRenderer::Initialize() {
 	cameraData_->z = 0.0f;
 
 	// 共有データをロックして有効性をチェック
-	std::shared_ptr<ModelData> data = wp_modelData_.lock();
+	std::shared_ptr<ModelData> data = modelData_.lock();
 	// モデルデータが解放済みなら止める
 	assert(data);
 
@@ -56,16 +56,26 @@ void ModelRenderer::Initialize() {
 	vp_ = Math::MakeIdentity4x4();
 	world_ = Math::MakeIdentity4x4();
 
+	// SkinCluster生成
+	CreateSkinCluster(data);
+
 	// PSO設定
-	desc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Standard3D);
-	desc_.VS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
-	desc_.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
-	desc_.InputLayoutID = InputLayoutType::Standard3D;
+	desc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::SkinningStandard3D);
+	desc_.VS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/SkinningObject3d.VS.hlsl", L"vs_6_0");
+	desc_.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/SkinningObject3d.PS.hlsl", L"ps_6_0");
+	desc_.InputLayoutID = InputLayoutType::SkinningStandard3D;
 	desc_.BlendMode = BlendModeType::Alpha;
 }
 
 void ModelRenderer::Update(Matrix4x4 world, Matrix4x4 vp, EulerTransform uvTransform, Vector3 cameraWorld) {
-	Matrix4x4 localMatrix = AnimationUpdate(sp_modelData_.get());
+	// 共有データをロックして有効性をチェック
+	std::shared_ptr<ModelData> data = modelData_.lock();
+	if(!data) {
+		// モデルデータが解放済みなら更新をスキップ
+		return;
+	}
+	
+	Matrix4x4 localMatrix = AnimationUpdate(data.get());
 	ApplyAnimation();
 	SkeletonUpdate(skeleton_);
 	SkinClusterUpdate();
@@ -84,14 +94,26 @@ void ModelRenderer::Update(Matrix4x4 world, Matrix4x4 vp, EulerTransform uvTrans
 }
 
 void ModelRenderer::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
+	// 共有データをロックして有効性をチェック
+	std::shared_ptr<ModelData> data = modelData_.lock();
+	if(!data) {
+		// モデルデータが解放済みなら更新をスキップ
+		return;
+	}
+
 	RootSignatureManager::GetInstance()->SetRootSignature(desc_.RootSignatureID);
 	PSOManager::GetInstance()->SetPSO(desc_);
 	// どんな形状で描画するのか
 	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// 頂点バッファをセットする
-	commandList_->IASetVertexBuffers(0, 1, &sp_modelData_->vbView);
+	// 2種類のVBVをまとめてセット
+	D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
+		data->vbView,
+		skinCluster_.influenceBufferView
+	};
+	commandList_->IASetVertexBuffers(0, 2, vbvs);
 	// インデックスバッファをセットする
-	commandList_->IASetIndexBuffer(&sp_modelData_->ibView);
+	commandList_->IASetIndexBuffer(&data->ibView);
 	// 定数バッファのルートパラメータを設定する	
 	commandList_->SetGraphicsRootConstantBufferView(0, matrixBuffer_->GetGPUVirtualAddress());
 	commandList_->SetGraphicsRootConstantBufferView(1, materialBuffer_->GetGPUVirtualAddress());
@@ -118,7 +140,7 @@ void ModelRenderer::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 		8, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetRectLightSrvHandle())
 	);
 	// 実際に描画する
-	commandList_->DrawIndexedInstanced(static_cast<UINT>(sp_modelData_->indexCount), 1, 0, 0, 0);
+	commandList_->DrawIndexedInstanced(static_cast<UINT>(data->indexCount), 1, 0, 0, 0);
 
 	if(drawSkeleton_) {
 		DrawSkeleton();
@@ -158,7 +180,14 @@ void ModelRenderer::ImGui(EulerTransform& transform, EulerTransform& uvTransform
 }
 
 void ModelRenderer::SkeletonInit() {
-	CreateSkeleton(sp_modelData_->rootNode);
+	// 共有データをロックして有効性をチェック
+	std::shared_ptr<ModelData> data = modelData_.lock();
+	if(!data) {
+		// モデルデータが解放済みなら更新をスキップ
+		return;
+	}
+
+	CreateSkeleton(data->rootNode);
 }
 
 Matrix4x4 ModelRenderer::AnimationUpdate(ModelData* modelData) {
@@ -332,7 +361,7 @@ void ModelRenderer::DrawSkeleton() {
 	}
 }
 
-SkinCluster ModelRenderer::CreateSkinCluster() {
+SkinCluster ModelRenderer::CreateSkinCluster(std::shared_ptr<ModelData> modelData) {
 	SkinCluster skinCluster;
 
 	// palette用のResourceを確保
@@ -358,23 +387,23 @@ SkinCluster ModelRenderer::CreateSkinCluster() {
 	device_->CreateShaderResourceView(skinCluster.paletteResource.Get(), &paletteSrvDesc, skinCluster.paletteSrvHandle.first);
 
 	// influence用のResourceを確保
-	skinCluster.influenceResource = dxCommon_->CreateBufferResource(sizeof(VertexInfluence) * sp_modelData_->vertices.size());
+	skinCluster.influenceResource = dxCommon_->CreateBufferResource(sizeof(VertexInfluence) * modelData->vertices.size());
 	VertexInfluence* mappedInfluence = nullptr;
 	skinCluster.influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluence));
-	std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * sp_modelData_->vertices.size());	// 0埋め。weightを0にしておく
-	skinCluster.mappedInfluence = { mappedInfluence, sp_modelData_->vertices.size() };
+	std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * modelData->vertices.size());	// 0埋め。weightを0にしておく
+	skinCluster.mappedInfluence = { mappedInfluence, modelData->vertices.size() };
 
 	// influence用のVBVを作成
 	skinCluster.influenceBufferView.BufferLocation = skinCluster.influenceResource->GetGPUVirtualAddress();
-	skinCluster.influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * sp_modelData_->vertices.size());
+	skinCluster.influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * modelData->vertices.size());
 	skinCluster.influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
 
 	// InverseBindPoseMatrixの保存領域を作成
 	skinCluster.inverseBinePoseMatrices.resize(skeleton_.joints.size());
-	std::generate(skinCluster_.inverseBinePoseMatrices.begin(), skinCluster_.inverseBinePoseMatrices.end(), Math::MakeIdentity4x4());
+	std::generate(skinCluster_.inverseBinePoseMatrices.begin(), skinCluster_.inverseBinePoseMatrices.end(), Math::MakeIdentity4x4);
 
 	// ModelDataのSkinCluster情報を解析してinfluenceの中身を埋める
-	for(const auto& jointWeight : sp_modelData_->skinClusterData) {	// ModelのSkinClusterの情報を解析
+	for(const auto& jointWeight : modelData->skinClusterData) {	// ModelのSkinClusterの情報を解析
 		auto it = skeleton_.jointMap.find(jointWeight.first);	// jointWeight.firstはjoint名なので、skeletonに対象となるjointが含まれているか判断
 		if(it == skeleton_.jointMap.end()) {	// そんなな目のjointは存在しないので次に回す。
 			continue;
