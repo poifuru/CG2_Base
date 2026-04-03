@@ -19,6 +19,8 @@ void Model::Initialize (Vector3 scale, Vector3 rotate, Vector3 position) {
 }
 
 void Model::Update (CameraData* cameraData) {
+
+
 	Matrix4x4 world = Math::MakeAffineMatrix (transform_.scale, transform_.rotate, transform_.translate);
 
 	renderer_->Update (world, cameraData->vp, uvTransform_, cameraData->transform.translate);
@@ -33,11 +35,21 @@ void Model::ImGui (const std::string& windowName) {
 }
 
 void Model::SetModelData (const std::string& ID) {
-	modelData_ = ModelManager::GetInstance()->GetModelData (ID);
-	renderer_->SetModelData (modelData_);
+	//マネージャーから受け取るモデルデータ
+	std::weak_ptr<ModelData> modelData = ModelManager::GetInstance()->GetModelData (ID);
+	renderer_->SetModelData (modelData);
 	renderer_->SetImGuiID (ID); 
 }
 
 void Model::SetTexture (const std::string& ID) {
 	texture_ = TextureManager::GetInstance()->GetTextureHandle (ID);
+}
+
+void Model::SetAnimation(const std::string& ID) {
+	std::weak_ptr<Animation> animationData = ModelManager::GetInstance()->GetAnimationData(ID);
+	renderer_->SetAnimation(animationData);
+}
+
+void Model::SkeletonInit() {
+	renderer_->SkeletonInit();
 }

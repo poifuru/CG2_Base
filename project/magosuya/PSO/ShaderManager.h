@@ -6,6 +6,7 @@ using namespace Microsoft::WRL;
 #include <dxcapi.h>
 #include <string>
 #include <unordered_map>
+#include <fstream>
 
 class DxCommon;
 
@@ -27,7 +28,7 @@ public:		// メンバ関数
 	void Initialize (DxCommon* dxCommon);
 
 	// ファイルパスとプロファイルを受け取ってコンパイルしてIDを返す
-	uint32_t CompileAndCasheShader (const std::wstring& filePath, const wchar_t* profile);
+	uint32_t CompileAndCacheShader (const std::wstring& filePath, const wchar_t* profile);
 
 	// IDに基づいてD3D12_SHADER_BYTECODEを返す
 	D3D12_SHADER_BYTECODE GetShaderBytecode (uint32_t shaderID) const;
@@ -53,13 +54,16 @@ private:	// ヘルパー関数
 
 private:	// メンバ変数
 	//ファイルパスとプロファイルのマップ(ShaderInfoの逆引き用)
-	std::unordered_map<std::wstring, uint32_t> m_PathProfileToID;
+	std::unordered_map<std::wstring, uint32_t> pathProfileToID_;
 
 	//逆引きマップに入れるID(0は無効なリソースとして扱われてしまう可能性があるので1から連番)
-	uint32_t m_NextID = 1;
+	uint32_t nextID_ = 1;
 
 	//IDとShaderInfoの実体データのマップ
-	std::unordered_map<uint32_t, ShaderInfo> m_ShaderCashe;
+	std::unordered_map<uint32_t, ShaderInfo> shaderCache_;
+
+	//ログ用の変数
+	std::ofstream os_;
 
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;

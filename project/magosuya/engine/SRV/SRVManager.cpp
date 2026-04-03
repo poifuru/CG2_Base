@@ -50,13 +50,13 @@ void SRVManager::SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_
 
 D3D12_CPU_DESCRIPTOR_HANDLE SRVManager::GetCPUDescriptorHandle(uint32_t index) {
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap_->GetCPUDescriptorHandleForHeapStart();
-	handleCPU.ptr += (descriptorSize_ * index);
+	handleCPU.ptr += static_cast<UINT64>(descriptorSize_) * static_cast<UINT64>(index);
 	return handleCPU;
 }
 
 D3D12_GPU_DESCRIPTOR_HANDLE SRVManager::GetGPUDescriptorHandle(uint32_t index) {
 	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap_->GetGPUDescriptorHandleForHeapStart();
-	handleGPU.ptr += (descriptorSize_ * index);
+	handleGPU.ptr += static_cast<UINT64>(descriptorSize_) * static_cast<UINT64>(index);
 	return handleGPU;
 }
 

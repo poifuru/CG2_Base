@@ -59,15 +59,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)externals\imgui\lib\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)..\generated\outputs\$(Configuration)\ImGui\</IntDir>
+    <IntDir>$(SolutionDir)..\generated\outputs\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)externals\imgui\lib\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)..\generated\outputs\$(Configuration)\ImGui\</IntDir>
+    <IntDir>$(SolutionDir)..\generated\outputs\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
     <OutDir>$(SolutionDir)externals\imgui\lib\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)..\generated\outputs\$(Configuration)\ImGui\</IntDir>
+    <IntDir>$(SolutionDir)..\generated\outputs\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -130,6 +130,15 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="imgui.cpp" />
+    <ClCompile Include="imgui_demo.cpp" />
+    <ClCompile Include="imgui_draw.cpp" />
+    <ClCompile Include="imgui_impl_dx12.cpp" />
+    <ClCompile Include="imgui_impl_win32.cpp" />
+    <ClCompile Include="imgui_tables.cpp" />
+    <ClCompile Include="imgui_widgets.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -17,7 +17,7 @@ public:		//メンバ関数
 	void Draw ();
 	
 	//次シーンの予約
-	void SetNextScene(BaseScene* nextScene) { nextScene_ = nextScene; }
+	void SetNextScene(std::unique_ptr<BaseScene> nextScene) { nextScene_ = std::move(nextScene); }
 
 private:
 	//コンストラクタを禁止
@@ -30,9 +30,9 @@ private:
 
 private:	//メンバ変数
 	//実行中のシーン
-	BaseScene* scene_ = nullptr;
+	std::unique_ptr<BaseScene> scene_ = nullptr;
 	//次のシーン
-	BaseScene* nextScene_ = nullptr;
+	std::unique_ptr<BaseScene> nextScene_ = nullptr;
 
 	CameraOrganizer* camera_ = nullptr;
 	InputManager* input_ = nullptr;

@@ -10,7 +10,9 @@ public:
 
 	//アクセッサー
 	const Vector4& GetColor() const { return color_; }
+	void SetColor(const Vector4& color) { color_ = color; }
 	const float& GetIntensity() const { return intensity_; }
+	void SetIntensity(float intensity) { intensity_ = intensity; }
 
 protected:
 	Vector4 color_;		//ライトの色

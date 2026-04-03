@@ -12,13 +12,12 @@
 #include <cassert>
 #include <thread>
 #include "function.h"
-#include "Logger.h"
+#include "LogManager.h"
 #include "ChangeString.h"
 #include "InputManager.h"
 
 void DxCommon::Initialize() {
 	HRESULT hr;
-	std::ofstream logStream = Logger::Logtext();
 
 	// 1.システムレベルの初期化
 	//誰も補足しなかった場合に(Unhandled)、補足する関数を登録
@@ -40,15 +39,13 @@ void DxCommon::Initialize() {
 	// 4.リソースとヒープの初期化
 	CreateDescriptorHeap();
 	CreateSwapChain();
-	CreateDepthBaffer();
+	CreateDepthBuffer();
 
 	// 5.ビューと設定の初期化
 	CreateRTV();
 	CreateDSV();
 	ViewportRectInit();
 	ScissorRectInit();
-
-
 }
 
 void DxCommon::BeginFrame() {
@@ -126,93 +123,11 @@ void DxCommon::EndFrame() {
 	assert(SUCCEEDED(hr));
 }
 
-void DxCommon::Finalize() {
+void DxCommon::Finalize() const {
 	CloseHandle(fenceEvent);
 
 	WindowsAPI::GetInstance()->Finalize();
 	CoUninitialize();
-}
-
-DirectX::ScratchImage DxCommon::LoadTexture(const std::string& filePath) {
-	//テクスチャファイルを読み込んでプログラムで扱えるようにする
-	DirectX::ScratchImage image{};
-	std::wstring filePathW = String::ConvertString(filePath);
-	OutputDebugStringW((L"探してるファイル: " + filePathW + L"\n").c_str());
-	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
-	if(FAILED(hr)) {
-		std::wstringstream ss;
-		ss << L"[エラー] テクスチャ読み込み失敗！HRESULT: 0x" << std::hex << hr << std::endl;
-		OutputDebugStringW(ss.str().c_str());
-	}
-	assert(SUCCEEDED(hr));
-
-	//ミップマップの作成
-	DirectX::ScratchImage mipImages{};
-	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
-	assert(SUCCEEDED(hr));
-
-	//ミップマップ付きのデータを返す
-	return mipImages;
-}
-
-ComPtr<IDxcBlob> DxCommon::CompilerShader(const std::wstring& filePath, const wchar_t* profile, std::ofstream& os) {
-	/*1.hlslファイルを読み込む*/
-	//これからシェーダーをコンパイルする旨をログに出力する
-	Logger::Log(os, String::ConvertString(std::format(L"Begin CompileShader, path:{}, profile:{}\n", filePath, profile)));
-	//hlslファイルを読む
-	ComPtr<IDxcBlobEncoding> shaderSource = nullptr;
-	HRESULT hr = dxcUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource);
-	//読めなかったらあきらめる
-	assert(SUCCEEDED(hr));
-	//読み込んだファイルの内容を設定する
-	DxcBuffer shaderSourceBuffer;
-	shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer();
-	shaderSourceBuffer.Size = shaderSource->GetBufferSize();
-	shaderSourceBuffer.Encoding = DXC_CP_UTF8;//UTF_8の文字コードであることを通知
-
-	/*2.compileする*/
-	LPCWSTR arguments[] = {
-		filePath.c_str(),			//コンパイル対象のhlslファイル名
-		L"-E", L"main",				//エントリーポイントの指定。基本的にmain以外にはしない
-		L"-T", profile,				//ShaderProfileの設定
-		L"-Zi", L"-Qembed_debug",	//デバッグ用の情報を埋め込む
-		L"-Od",						//最適化を外しておく
-		L"-Zpr",					//メモリレイアウトは最優先
-	};
-	//実際にshaderをコンパイルする
-	ComPtr<IDxcResult> shaderResult = nullptr;
-	hr = dxcCompiler->Compile(
-		&shaderSourceBuffer,		//読み込んだファイル
-		arguments,					//コンパイルオプション
-		_countof(arguments),		//コンパイルオプションの数
-		includeHandler.Get(),				//includeが含まれた諸々
-		IID_PPV_ARGS(shaderResult.GetAddressOf())	//コンパイル結果
-	);
-	//コンパイルエラーではなくdxcが起動できないなど致命的な状況
-	assert(SUCCEEDED(hr));
-
-	/*3.警告・エラーが出ていないか確認する*/
-	//警告・エラーが出てたらログに出して止める
-	ComPtr<IDxcBlobUtf8> shaderError = nullptr;
-	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(shaderError.GetAddressOf()), nullptr);
-	if(shaderError != nullptr && shaderError->GetStringLength() != 0) {
-		Logger::Log(os, shaderError->GetStringPointer());
-		//警告・エラーダメゼッタイ
-		assert(false);
-	}
-
-	/*4.compile結果を受け取って返す*/
-	//コンパイル結果から実行用のバイナリ部分を取得
-	ComPtr<IDxcBlob> shaderBlob = nullptr;
-	hr = shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(shaderBlob.GetAddressOf()), nullptr);
-	assert(SUCCEEDED(hr));
-	//成功したらログを出す
-	Logger::Log(os, String::ConvertString(std::format(L"Compile Succeeded, path:{}, profile:{}\n", filePath, profile)));
-	//もう使わないリソースを解放
-	shaderSource->Release();
-	shaderResult->Release();
-	//実行用のバイナリを返却
-	return shaderBlob.Get();
 }
 
 ComPtr<ID3D12Resource> DxCommon::CreateBufferResource(size_t sizeInBytes) {
@@ -272,7 +187,6 @@ void DxCommon::InitializeFixFPS() {
 
 void DxCommon::CreateDevice() {
 	HRESULT hr;
-	std::ofstream logStream = Logger::Logtext();
 
 	//デバイス生成の前にデバッグレイヤーを有効化する
 #if defined USEIMGUI
@@ -305,7 +219,7 @@ void DxCommon::CreateDevice() {
 		//ソフトウェアアダプタでなければ採用！
 		if(!(adapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)) {
 			//採用したアダプタの情報をログに出力。wstringの方なので注意
-			Logger::Log(logStream, String::ConvertString(std::format(L"Use Adapter:{}\n", adapterDesc.Description)));
+			LogManager::GetInstance()->LogManager::Log(String::ConvertString(std::format(L"Use Adapter:{}\n", adapterDesc.Description)));
 			break;
 		}
 		useAdapter = nullptr;	//ソフトウェアアダプタの場合は見なかったことにする
@@ -325,14 +239,14 @@ void DxCommon::CreateDevice() {
 		//指定した機能レベルでデバイスが生成できたかを確認
 		if(SUCCEEDED(hr)) {
 			//生成できたのでログ出力を行ってループを抜ける
-			Logger::Log(logStream, std::format("FeatureLevel : {}\n", featureLevelString[i]));
+			LogManager::GetInstance()->LogManager::Log(std::format("FeatureLevel : {}\n", featureLevelString[i]));
 			break;
 		}
 	}
 	//デバイスの生成がうまくいかなかったので起動できない
 	assert(device != nullptr);
 	//初期化完了のログを出す
-	Logger::Log(logStream, "Complete create D3D12Device!!!\n");
+	LogManager::GetInstance()->LogManager::Log("Complete create D3D12Device!!!\n");
 
 	//警告とかエラーとかが出たら出力ログに出してくれるらしい
 #if defined USEIMGUI
@@ -436,7 +350,7 @@ void DxCommon::CreateSwapChain() {
 	assert(SUCCEEDED(hr));
 }
 
-void DxCommon::CreateDepthBaffer() {
+void DxCommon::CreateDepthBuffer() {
 	//DepthStencilTextureをウィンドウサイズで作成
 	depthStencilResource = CreateDepthStencilTextureResource(device.Get(), WindowsAPI::GetInstance()->kClientWidth, WindowsAPI::GetInstance()->kClientHeight);
 }
@@ -525,16 +439,4 @@ void DxCommon::UpdateFixFPS() {
 	}
 	//現在の時間を記録する
 	reference_ = std::chrono::steady_clock::now();
-}
-
-D3D12_CPU_DESCRIPTOR_HANDLE DxCommon::GetCPUDescriptorHandle(const ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index) {
-	D3D12_CPU_DESCRIPTOR_HANDLE    handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	handleCPU.ptr += (descriptorSize * index);
-	return handleCPU;
-}
-
-D3D12_GPU_DESCRIPTOR_HANDLE DxCommon::GetGPUDescriptorHandle(const ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index) {
-	D3D12_GPU_DESCRIPTOR_HANDLE    handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	handleGPU.ptr += (descriptorSize * index);
-	return handleGPU;
 }

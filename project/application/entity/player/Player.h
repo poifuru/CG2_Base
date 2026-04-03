@@ -1,74 +1,59 @@
 #pragma once
 #include "Entity.h"
 #include "CameraOrganizer.h"
-
-//旋回時間(秒)
-static inline const float kTimeTurn = 0.16f;
+#include "Weapon.h"
 
 class Player : public Entity {
 public:		//メンバ関数
-	enum Direction {
-		Left,
-		Right
-	};
-
-	Player(DxCommon* dxCommon, CameraOrganizer* camera);
+	Player(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input, LightManager* light, MapChip* mapchip);
 	~Player();
 
 	void Initialize() override;
 	void Update() override;
 	void Draw() override;
-	void IsHit();
-	void SetLight(ID3D12Resource* light) { light_ = light; }
+	void ImGui();
+
+	//ゲッター
+	EulerTransform GetTransform() { return transform_; }
+	Weapon* GetWeapon() { return weapon_.get(); }
+	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
+	void ResetDoubleJump() { isDoubleJump_ = false; }
+	float GetUpDownDir() { return updownDirection_; }
+	AABB GetAABB() { return aabb_; }
+	void OnDamageFromEnemy();
+
+private:	//プレイヤーだけのメソッド
+	void Input();
+	void FreeFall();
+	void WallKickTimer();
+	void ProcessDash();
+	//Entityクラスに合わせる状態変化
+	void EntityState();
 
 private:
-	void move();
-	void Jump();
-	void Avoid();
-	void Attack();
-	void WeaponTransform();
-	void AABBPos();
-	void Invincible();
-	void TurnControll();
+	//プレイヤー専用パラメータ
+	bool isDoubleJump_ = false;
+	int wallKickTimer_ = 0; // 壁キック後の入力禁止タイマー
+	bool isDashing_ = false;     // ダッシュ中か
+	int dashTimer_ = 0;          // ダッシュ持続タイマー
+	int dashCooldown_ = 0;       // クールタイム
+	float dashDirection_ = 1.0f; // ダッシュする方向（1.0f か -1.0f）
+	float faceDirection_ = 1.0f; // 1.0fなら右、-1.0fなら左
+	float updownDirection_ = 0.0f;
 
-public:
-	//アクセッサ
-	Transform GetTransform() { return model_->GetTransform(); }
-	int GetHp() { return hp_; }
-	int SetHp(int hp) { return hp_ += hp; }
-	AABB GetAABBModel() { return aabb_; }
-	AABB GetAABBWeapon_() { return aabb_weapon_; }
-	bool GetIsAttack() { return isAttack_; }
-	bool GetAttackIsHit() { return attackIsHit_; }
-	void SetAttackIsHit(bool flag) { attackIsHit_ = flag; }
+	//ダメージ
+	int damageTimer_ = 0; // 連続ダメージ防止用タイマー
 
-private:	//メンバ変数
-	std::unique_ptr<Model> weapon_ = nullptr;
-	Transform transformWep_ = {};
-	AABB aabb_weapon_ = {};
-	Direction dir_ = Direction::Right;
-	Direction attackDir_ = Direction::Right;
-	int hp_ = 0;
-	bool isInvincible_ = false;
-	float invincibleTime_ = 0.0f;
-	bool isAir_ = false;
-	bool airJump_ = false;
-	bool isAvoid_ = false;
-	float avoidTimer_ = 0.0f;
-	bool coolTime_ = false;
-	float avoidCoolTime_ = 0.0f;
-	bool isAttack_ = false;
-	float attackTime_ = 0.0f;
-	bool attackIsHit_ = false;
+	//スプライト
+	int shakeTimer_ = 0;      // シェイク演出用のタイマー
+	int lastHp_ = 0;          // 前フレームのHPを覚えておく用
 
-	//旋回開始時の角度
-	float turnFirstRotationY_ = 0.0f;
-	//旋回タイマー
-	float turnTimer_ = 0.0f;
-
-	bool isUpperAttack_ = false; // 上攻撃かどうかを判定
+	//武器
+	std::unique_ptr<Weapon> weapon_ = nullptr;
+	std::unique_ptr<Sprite> life_[3];
 
 	CameraOrganizer* camera_ = nullptr;
-	ID3D12Resource* light_ = nullptr;
 	InputManager* input_ = nullptr;
+	LightManager* light_ = nullptr;
+	MapChip* mapchip_ = nullptr;
 };

@@ -16,9 +16,9 @@ void ModelManager::Initialize(DxCommon* dxCommon, TextureManager* textureManager
 
 ModelData* ModelManager::LoadModelData(const std::string& directoryPath, const std::string& fileName, bool inversion) {
 	//IDのモデルをすでに読み込んでいたら
-	if(map_.count(fileName)) {
+	if(modelMap_.count(fileName)) {
 		//既存データを取得
-		std::shared_ptr<ModelData> existingData = map_.at(fileName);
+		std::shared_ptr<ModelData> existingData = modelMap_.at(fileName);
 		//存在していたら既存のデータを返す
 		return existingData.get();
 	}
@@ -58,25 +58,57 @@ ModelData* ModelManager::LoadModelData(const std::string& directoryPath, const s
 	newData->ibView.Format = DXGI_FORMAT_R32_UINT;
 
 	//mapに登録
-	map_[fileName] = newData;
+	modelMap_[fileName] = newData;
 
 	// CPUメモリを解放（必要に応じて）
-	newData->vertices.clear();
-	newData->indices.clear();
+	//newData->vertices.clear();
+	//newData->indices.clear();
 
 	//データ提供
-	return map_.at(fileName).get();
+	return modelMap_.at(fileName).get();
 }
 
 std::weak_ptr<ModelData> ModelManager::GetModelData(std::string id) {
 	//ID指定してmapから持ってくる
-	assert(map_.count(id));
-	return map_.at(id);
+	assert(modelMap_.count(id));
+	return modelMap_.at(id);
 }
 
 void ModelManager::UnloadModelData(const std::string& id) {
 	//キャッシュマップからデータを削除
-	map_.erase(id);
+	modelMap_.erase(id);
+}
+
+Animation* ModelManager::LoadAnimationData(const std::string& directoryPath, const std::string& fileName) {
+	//IDのAnimationをすでに読み込んでいたら
+	if(animationMap_.count(fileName)) {
+		//既存データを取得
+		std::shared_ptr<Animation> existingData = animationMap_.at(fileName);
+		//存在していたら既存のデータを返す
+		return existingData.get();
+	}
+
+	// 読み込んでいなければ新規読み込み
+	Animation loadData = LoadAnimation(directoryPath, fileName);
+	// shared_ptrに入れる
+	std::shared_ptr<Animation> newData = std::make_shared<Animation>(std::move(loadData));
+
+	// newDataをmapに登録
+	animationMap_[fileName] = newData;
+
+	// データ提供
+	return animationMap_.at(fileName).get();
+}
+
+std::weak_ptr<Animation> ModelManager::GetAnimationData(std::string id) {
+	//ID指定してmapから持ってくる
+	assert(animationMap_.count(id));
+	return animationMap_.at(id);
+}
+
+void ModelManager::UnloadAnimationData(const std::string& id) {
+	//キャッシュマップからデータを削除
+	animationMap_.erase(id);
 }
 
 MaterialFile ModelManager::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& id) {
@@ -94,7 +126,7 @@ MaterialFile ModelManager::LoadMaterialTemplateFile(const std::string& directory
 		std::istringstream s(line);
 		s >> identifier;
 
-		//identfierに応じた処理
+		//identifierに応じた処理
 		if(identifier == "map_Kd") {
 			std::string textureFilename;
 			s >> textureFilename;
@@ -122,6 +154,8 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 	);
 	assert(scene->HasMeshes());	//メッシュが無ければ対応しない
 
+	OutputDebugStringA(("NumMeshes: " + std::to_string(scene->mNumMeshes) + "\n").c_str());
+
 	//Meshを解析する
 	for(uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
@@ -134,7 +168,7 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 			aiVector3D& normal = mesh->mNormals[i];
 			aiVector3D& texcoord = mesh->mTextureCoords[0][i];
 
-			VertexData vertex;
+			VertexData vertex = {};
 			//aiProcess_MakeLeftHandedはz*-1	で、右手->左手に変換するので手動で対処
 			if(inversion) {
 				vertex.position = { position.x, position.y, position.z, 1.0f };
@@ -158,6 +192,29 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 				modelData.indices.push_back(face.mIndices[i]);
 			}
 		}
+
+		// Boneの解析
+		for(uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+			// Jointごとの格納領域を作る
+			aiBone* bone = mesh->mBones[boneIndex];
+			std::string jointName = bone->mName.C_Str();
+			JointWeightData& jointWeightData = modelData.skinClusterData[jointName];
+
+			const aiMatrix4x4& ai = bone->mOffsetMatrix;
+			Matrix4x4 ibp;
+			ibp.m[0][0] = ai.a1; ibp.m[0][1] = -ai.b1; ibp.m[0][2] = -ai.c1; ibp.m[0][3] = -ai.d1;
+			ibp.m[1][0] = -ai.a2; ibp.m[1][1] = ai.b2; ibp.m[1][2] = ai.c2; ibp.m[1][3] = ai.d2;
+			ibp.m[2][0] = -ai.a3; ibp.m[2][1] = ai.b3; ibp.m[2][2] = ai.c3; ibp.m[2][3] = ai.d3;
+			ibp.m[3][0] = -ai.a4; ibp.m[3][1] = ai.b4; ibp.m[3][2] = ai.c4; ibp.m[3][3] = ai.d4;
+			jointWeightData.inverseBindPoseMatrix = ibp;
+
+			// Weight情報を取り出す
+			for(uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+				jointWeightData.vertexWeights.push_back(
+					{ bone->mWeights[weightIndex].mWeight, bone->mWeights[weightIndex].mVertexId }
+				);
+			}
+		}	
 	}
 
 	//materialの解析
@@ -185,13 +242,18 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 
 Node ModelManager::ReadNode(aiNode* node) {
 	Node result;
-	aiMatrix4x4 aiLocalMatrix = node->mTransformation;	//nodeのlocalMatrixを取得
-	//aiLocalMatrix.Transpose();	//列ベクトル形式を行ベクトル形式に転置
-	for(int i = 0; i < 4; ++i) {
-		for(int j = 0; j < 4; ++j) {
-			result.localMatrix.m[i][j] = aiLocalMatrix[i][j];
-		}
-	}
+
+	aiVector3D scale;
+	aiQuaternion rotate;
+	aiVector3D translate;
+	node->mTransformation.Decompose(scale, rotate, translate);	// assimpの行列からSRTを抽出する関数を使う
+	result.transform.scale = { scale.x, scale.y, scale.z };	// Scaleはそのまま
+	result.transform.rotate = { rotate.x, -rotate.y, -rotate.z, rotate.w };
+	result.transform.translate = { -translate.x, translate.y, translate.z };
+	result.localMatrix = Math::MakeAffineMatrix(
+		result.transform.scale, result.transform.rotate, result.transform.translate
+	);
+
 	result.name = node->mName.C_Str();	//Node名を格納
 	result.children.resize(node->mNumChildren);	//子供の数だけサイズを確保
 	for(uint32_t childIndex = 0; childIndex < node->mNumChildren; ++childIndex) {
@@ -200,4 +262,50 @@ Node ModelManager::ReadNode(aiNode* node) {
 	}
 
 	return result;
+}
+
+Animation ModelManager::LoadAnimation(const std::string& directoryPath, const std::string& fileName) {
+	Animation animation = {};	// 今回作るアニメーション
+	Assimp::Importer importer;
+	std::string filePath = directoryPath + "/" + fileName;
+	const aiScene* scene = importer.ReadFile(filePath.c_str(), 0);
+	// アニメーションがなかったらassert
+	assert(scene->mNumAnimations != 0);
+	// ひとまず最初のアニメーションだけ採用(後から複数対応可)
+	aiAnimation* animationAssimp = scene->mAnimations[0];
+	// Animationの長さを秒単位に変換する
+	// mTickPerSecond : 周波数, mDuration : mTickPerSecondで指定された周波数に置ける長さ
+	animation.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond);
+
+	//NodeAnimationの解析
+	//assimpでは個々のnodeのanimationをchannelと呼んでいるのでchannelを回して情報をとる
+	// translate
+	for(uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
+		aiNodeAnim* nodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
+		NodeAnimation& nodeAnimation = animation.nodeAnimations[nodeAnimationAssimp->mNodeName.C_Str()];
+		for(uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {
+			aiVectorKey& keyAssimp = nodeAnimationAssimp->mPositionKeys[keyIndex];
+			KeyframeVector3 keyframe = {};
+			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);	// 秒単位に変換
+			keyframe.value = { -keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z };	// 右手->左手
+			nodeAnimation.translate.keyframes.push_back(keyframe);
+		}
+		// rotate
+		for(uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumRotationKeys; ++keyIndex) {
+			aiQuatKey& keyAssimp = nodeAnimationAssimp->mRotationKeys[keyIndex];
+			KeyframeQuaternion keyframe = {};
+			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);	// 秒単位に変換
+			keyframe.value = { keyAssimp.mValue.x, -keyAssimp.mValue.y, -keyAssimp.mValue.z, keyAssimp.mValue.w };	// 右手->左手
+			nodeAnimation.rotate.keyframes.push_back(keyframe);
+		}
+		// scale
+		for(uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumScalingKeys; ++keyIndex) {
+			aiVectorKey& keyAssimp = nodeAnimationAssimp->mScalingKeys[keyIndex];
+			KeyframeVector3 keyframe = {};
+			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);	// 秒単位に変換
+			keyframe.value = { keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z };
+			nodeAnimation.scale.keyframes.push_back(keyframe);
+		}
+	}
+	return animation;
 }

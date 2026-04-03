@@ -3,17 +3,9 @@
 void PSOManager::Initialize (DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 	commandList_ = dxCommon->GetCommandList ();
-	shaderManager_ = ShaderManager::GetInstance ();
-	shaderManager_->Initialize (dxCommon);
-	rootSigManager_ = RootSignatureManager::GetInstance ();
-	rootSigManager_->Initialize (dxCommon);
-	blendModeManager_ = BlendModeManager::GetInstance ();
-	blendModeManager_->Initialize ();
-	inputLayoutManager_ = InputLayoutManager::GetInstance ();
-	inputLayoutManager_->Initialize ();
 }
 
-ID3D12PipelineState* PSOManager::GetOrCreratePSO (const PSODescriptor& desc) {
+ID3D12PipelineState* PSOManager::GetOrCreatePSO (const PSODescriptor& desc) {
 	HRESULT hr;
 
 	//引数からハッシュ計算
@@ -27,23 +19,23 @@ ID3D12PipelineState* PSOManager::GetOrCreratePSO (const PSODescriptor& desc) {
 
 	//===無ければ新しく作ってキャッシュ登録===//
 	//***設定する***//
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPieplineStateDesc = {};
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc = {};
 
 	//RootSignatureを取得(RootSigManagerから)
-	graphicsPieplineStateDesc.pRootSignature = rootSigManager_->GetRootSignature (desc.RootSignatureID);
+	graphicsPipelineStateDesc.pRootSignature = RootSignatureManager::GetInstance()->GetRootSignature(desc.RootSignatureID);
 
 	//Shaderを取得(ShaderManagerから)
-	graphicsPieplineStateDesc.VS = shaderManager_->GetShaderBytecode (desc.VS_ID);
-	graphicsPieplineStateDesc.PS = shaderManager_->GetShaderBytecode (desc.PS_ID);
-	assert (graphicsPieplineStateDesc.VS.BytecodeLength > 0 && "VS bytecode is empty!");
-	assert (graphicsPieplineStateDesc.PS.BytecodeLength > 0 && "PS bytecode is empty!");
+	graphicsPipelineStateDesc.VS = ShaderManager::GetInstance()->GetShaderBytecode(desc.VS_ID);
+	graphicsPipelineStateDesc.PS = ShaderManager::GetInstance()->GetShaderBytecode (desc.PS_ID);
+	assert (graphicsPipelineStateDesc.VS.BytecodeLength > 0 && "VS bytecode is empty!");
+	assert (graphicsPipelineStateDesc.PS.BytecodeLength > 0 && "PS bytecode is empty!");
 
 	//InputLayoutを取得(InputLayoutManagerから)
-	const D3D12_INPUT_LAYOUT_DESC* inputLayoutDesc = inputLayoutManager_->GetInputLayout (desc.InputLayoutID);
-	graphicsPieplineStateDesc.InputLayout = *inputLayoutDesc;
+	const D3D12_INPUT_LAYOUT_DESC* inputLayoutDesc = InputLayoutManager::GetInstance()->GetInputLayout(desc.InputLayoutID);
+	graphicsPipelineStateDesc.InputLayout = *inputLayoutDesc;
 
 	//ブレンドステートを取得(BlendModeManagerから)
-	graphicsPieplineStateDesc.BlendState = blendModeManager_->GetBlendDesc (desc.BlendMode);
+	graphicsPipelineStateDesc.BlendState = BlendModeManager::GetInstance()->GetBlendDesc(desc.BlendMode);
 
 	//ラスタライザーステート (Descriptorから直接設定)
 	D3D12_RASTERIZER_DESC rasterizerDesc = {};
@@ -54,7 +46,7 @@ ID3D12PipelineState* PSOManager::GetOrCreratePSO (const PSODescriptor& desc) {
 	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
 	rasterizerDesc.DepthClipEnable = TRUE;
 	rasterizerDesc.ForcedSampleCount = 0;
-	graphicsPieplineStateDesc.RasterizerState = rasterizerDesc;
+	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc;
 
 	//デプス/ステンシルステート (Descriptorから直接設定)
 	D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
@@ -62,17 +54,17 @@ ID3D12PipelineState* PSOManager::GetOrCreratePSO (const PSODescriptor& desc) {
 	depthStencilDesc.DepthWriteMask = desc.DepthWriteMask;
 	depthStencilDesc.DepthFunc = desc.DepthFunc;
 	depthStencilDesc.StencilEnable = FALSE; // ステンシルは使わない前提
-	graphicsPieplineStateDesc.DepthStencilState = depthStencilDesc;
+	graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
 
 	//出力ターゲットの設定 (Descriptorから直接設定)
-	graphicsPieplineStateDesc.NumRenderTargets = desc.NumRenderTargets;
-	graphicsPieplineStateDesc.RTVFormats[0] = desc.RTVFormat; // 複数のRTが必要ならDescを配列にする
-	graphicsPieplineStateDesc.DSVFormat = desc.DSVFormat;
+	graphicsPipelineStateDesc.NumRenderTargets = desc.NumRenderTargets;
+	graphicsPipelineStateDesc.RTVFormats[0] = desc.RTVFormat; // 複数のRTが必要ならDescを配列にする
+	graphicsPipelineStateDesc.DSVFormat = desc.DSVFormat;
 
 	//その他
-	graphicsPieplineStateDesc.PrimitiveTopologyType = desc.PrimitiveTopologyType;
-	graphicsPieplineStateDesc.SampleDesc.Count = desc.SampleCount;
-	graphicsPieplineStateDesc.SampleMask = desc.SampleMask;
+	graphicsPipelineStateDesc.PrimitiveTopologyType = desc.PrimitiveTopologyType;
+	graphicsPipelineStateDesc.SampleDesc.Count = desc.SampleCount;
+	graphicsPipelineStateDesc.SampleMask = desc.SampleMask;
 	//******//
 
 	//***実際にPSOを生成***//
@@ -81,7 +73,7 @@ ID3D12PipelineState* PSOManager::GetOrCreratePSO (const PSODescriptor& desc) {
 	assert (device != nullptr && "D3D12Device is null!");
 
 	hr = device->CreateGraphicsPipelineState (
-		&graphicsPieplineStateDesc,
+		&graphicsPipelineStateDesc,
 		IID_PPV_ARGS (newPSO.GetAddressOf ())
 	);
 
@@ -100,7 +92,7 @@ ID3D12PipelineState* PSOManager::GetOrCreratePSO (const PSODescriptor& desc) {
 }
 
 void PSOManager::SetPSO (const PSODescriptor& desc) {
-	auto pso = GetOrCreratePSO (desc);
+	auto pso = GetOrCreatePSO (desc);
 	commandList_->SetPipelineState (pso);
 }
 
@@ -113,13 +105,13 @@ uint64_t PSOManager::ComputeHash (const PSODescriptor& desc) const {
 	uint64_t hash = 0;
 
 	// --- マネージャー管理のIDをハッシュ化（最重要）---
-	// IDが変われば、シェーダーやルートシグネチャも変わるのでハッシュは必ず変えるでやんす
+	// IDが変われば、シェーダーやルートシグネチャも変わるのでハッシュは必ず変える
 	hash = hash_combine_simple (hash, desc.VS_ID);
 	hash = hash_combine_simple (hash, desc.PS_ID);
 	hash = hash_combine_simple (hash, desc.RootSignatureID);
-	// InputLayoutIDの型をInputLayoutType(enum class)に合わせた場合も、uint32_tに変換してOKでやんす
+	// InputLayoutIDの型をInputLayoutType(enum class)に合わせた場合も、uint32_tに変換してOK
 	hash = hash_combine_simple (hash, (uint32_t)desc.InputLayoutID);
-	// BlendModeType (enum class)は、ManagerでD3D12_BLEND_DESCに変換されるので、IDをハッシュ化するでやんす
+	// BlendModeType (enum class)は、ManagerでD3D12_BLEND_DESCに変換されるので、IDをハッシュ化する
 	hash = hash_combine_simple (hash, (uint32_t)desc.BlendMode);
 
 	// --- ラスタライザーステート ---
@@ -127,7 +119,7 @@ uint64_t PSOManager::ComputeHash (const PSODescriptor& desc) const {
 	hash = hash_combine_simple (hash, (uint32_t)desc.FillMode);
 
 	// --- デプス/ステンシルステート ---
-	// BOOLはTRUE(1)かFALSE(0)なのでそのままハッシュ化できるでやんす
+	// BOOLはTRUE(1)かFALSE(0)なのでそのままハッシュ化できる
 	hash = hash_combine_simple (hash, desc.DepthEnable);
 	hash = hash_combine_simple (hash, (uint32_t)desc.DepthWriteMask);
 	hash = hash_combine_simple (hash, (uint32_t)desc.DepthFunc);
@@ -140,7 +132,7 @@ uint64_t PSOManager::ComputeHash (const PSODescriptor& desc) const {
 
 	// --- サンプリング ---
 	hash = hash_combine_simple (hash, desc.SampleCount);
-	// SampleMaskは32bit値なので、uint32_tでキャストするだけで十分でやんす
+	// SampleMaskは32bit値なので、uint32_tでキャストするだけで十分
 	hash = hash_combine_simple (hash, desc.SampleMask);
 
 	return hash;

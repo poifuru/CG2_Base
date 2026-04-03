@@ -17,35 +17,39 @@
 
 class MagosuyaEngine {
 public:		//メンバ関数
-	static MagosuyaEngine* GetInstance () {
+	static MagosuyaEngine* GetInstance() {
 		//初めて呼び出されたときに一回だけ初期化
 		static MagosuyaEngine instance;
 		return &instance;
 	}
-	~MagosuyaEngine ();
+	~MagosuyaEngine();
 
-	void Initialize ();
-	void BeginFrame ();
-	void EndFrame ();
+	void Initialize();
+	void BeginFrame();
+	void EndFrame();
 
 private:
 	//コンストラクタを禁止
-	MagosuyaEngine () = default;
+	MagosuyaEngine() = default;
 	// コピーコンストラクタと代入演算子を禁止
-	MagosuyaEngine (const MagosuyaEngine&) = delete;
+	MagosuyaEngine(const MagosuyaEngine&) = delete;
 	MagosuyaEngine& operator=(const MagosuyaEngine&) = delete;
-	MagosuyaEngine (MagosuyaEngine&&) = delete;
+	MagosuyaEngine(MagosuyaEngine&&) = delete;
 	MagosuyaEngine& operator=(MagosuyaEngine&&) = delete;
 
 private:
 	WindowsAPI* winApi_ = nullptr;
 	DxCommon* dxCommon_ = nullptr;
 	SRVManager* srvManager_ = nullptr;
+	ShaderManager* shaderManager_ = nullptr;
+	RootSignatureManager* rootSigManager_ = nullptr;
+	BlendModeManager* blendModeManager_ = nullptr;
+	InputLayoutManager* inputLayoutManager_ = nullptr;
+	PSOManager* psoManager_ = nullptr;
 	ImGuiManager* imguiManager_ = nullptr;
 	InputManager* inputManager_ = nullptr;
 	TextureManager* texManager_ = nullptr;
 	ModelManager* modelManager_ = nullptr;
-	PSOManager* psoManager_ = nullptr;
 	LineRenderer* lineRenderer_ = nullptr;
 	CubeRenderer* cubeRenderer_ = nullptr;
 	CameraOrganizer* cameraOrganizer_ = nullptr;

@@ -54,8 +54,8 @@ public:		//メンバ関数
 
 	void Initialize (DxCommon* dxCommon);
 
-	//PSODesctiptorを受けとってID3D12PipelineState*を返す
-	ID3D12PipelineState* GetOrCreratePSO (const PSODescriptor& desc);
+	//PSODescriptorを受けとってID3D12PipelineState*を返す
+	ID3D12PipelineState* GetOrCreatePSO (const PSODescriptor& desc);
 
 	void SetPSO (const PSODescriptor& desc);
 
@@ -80,8 +80,4 @@ private:	//メンバ変数
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;
 	ID3D12GraphicsCommandList* commandList_ = nullptr;
-	ShaderManager* shaderManager_ = nullptr;
-	RootSignatureManager* rootSigManager_ = nullptr;
-	BlendModeManager* blendModeManager_ = nullptr;
-	InputLayoutManager* inputLayoutManager_ = nullptr;
 };

@@ -10,10 +10,15 @@ public:
 	void ImGui(int index);
 
 	const Vector3& GetPosition() { return position_; }
+	void SetPosition(const Vector3& pos) { position_ = pos; }
 	const Vector3& GetDirection() { return direction_; }
+	void SetDirection(const Vector3& dir) { direction_ = dir; }
 	const float& GetDistance() { return distance_; }
+	void SetDistance(const float& dis) { distance_ = dis; }
 	const float& GetDecay() { return decay_; }
+	void SetDecay(const float& decay) { decay_ = decay; }
 	const float& GetCosAngle() { return cosAngle_; }
+	void SetCosAngle(const float& cosAngle) { cosAngle_ = cosAngle; }
 
 private:
 	Vector3 position_;

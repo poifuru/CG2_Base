@@ -16,6 +16,7 @@ StructuredBuffer<CubeForGPU> gCube : register(t0);
 struct CubeVertexData
 {
     float3 position;
+    float padding;
     float4 color;
 };
 StructuredBuffer<CubeVertexData> gCubeVertices : register(t1);

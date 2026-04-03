@@ -11,10 +11,11 @@ public:		//メンバ関数
 	virtual void Initialize (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) = 0;
 	virtual void Update () = 0;
 	virtual void Draw () = 0;
+	virtual void StopToResources() = 0;
 
 protected:	//メンバ変数
 	//次に行きたいシーンを持たせる
-	BaseScene* nextScene_ = nullptr;
+	std::unique_ptr<BaseScene> nextScene_ = nullptr;
 
 	//ポインタを借りる
 	CameraOrganizer* camera_ = nullptr;

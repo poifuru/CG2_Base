@@ -7,7 +7,7 @@
 DirectionalLight::DirectionalLight() {
 	color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 	intensity_ = 1.0f;
-	direction_ = {0.0f, -1.0f, 0.0f};
+	direction_ = {0.0f, 0.0f, 1.0f};
 }
 
 DirectionalLight::~DirectionalLight() {

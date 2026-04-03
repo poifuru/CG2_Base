@@ -4,7 +4,7 @@
 PointLight::PointLight() {
 	color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 	intensity_ = 1.0f;
-	position_ = { 0.0f, 4.0f, 0.0f };
+	position_ = { 0.0f, 0.0f, -5.0f };
 	radius_ = 10.0f;
 	decay_ = 1.0f;
 }
@@ -16,7 +16,7 @@ PointLight::~PointLight() {
 void PointLight::Initialize() {
 	color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 	intensity_ = 1.0f;
-	position_ = { 0.0f, 4.0f, 0.0f };
+	position_ = { 0.0f, 0.0f, -5.0f };
 	radius_ = 10.0f;
 	decay_ = 1.0f;
 }

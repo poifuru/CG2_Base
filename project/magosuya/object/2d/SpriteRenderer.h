@@ -4,6 +4,7 @@
 using namespace Microsoft::WRL;
 #include <d3d12.h>
 #include "struct.h"
+#include "PSOManager.h"
 
 class DxCommon;
 class TextureManager;
@@ -14,10 +15,10 @@ public:		//外部公開メソッド
 	~SpriteRenderer ();
 
 	void Initialize ();
-	void Update (Matrix4x4 wvpData, Transform uvTransform, Vector2 anchorPoint,
+	void Update (Matrix4x4 wvpData, EulerTransform uvTransform, Vector2 anchorPoint,
 				 bool flipX, bool flipY, const std::string& id, Vector2 texLeftTop, Vector2 texSize);
 	void Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
-	void ImGui (Transform& transform, Transform& uvTransform);
+	void ImGui (EulerTransform& transform, EulerTransform& uvTransform);
 
 	//アクセッサ
 	Material* GetMaterial () { return materialData_; }
@@ -25,6 +26,8 @@ public:		//外部公開メソッド
 	void SetID (const std::string& id) { id_ = id; }
 
 private:	//メンバ変数
+	PSODescriptor desc_ = {};
+
 	//GPUリソース
 	ComPtr<ID3D12Resource> vertexBuffer_;
 	ComPtr<ID3D12Resource> indexBuffer_;

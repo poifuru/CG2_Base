@@ -31,6 +31,7 @@ void Sprite::Initialize (Vector3 position) {
 }
 
 void Sprite::SetTexture (std::string ID) {
+	id_ = ID;
 	handle_ = TextureManager::GetInstance ()->GetTextureHandle(ID);
 }
 

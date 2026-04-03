@@ -10,8 +10,36 @@ namespace {
 		{"0", MapChipType::kBlank},		//空白
 		{"1", MapChipType::kFloor},		//床
 		{"2", MapChipType::kWall},		//壁
-		{"3", MapChipType::kCeiling},		//天井
+		{"3", MapChipType::kCeiling},	//天井
+		{"4", MapChipType::kDamage},	//天井
+		{"5", MapChipType::kGoal},
+		{"8", MapChipType::kKorokoro },
+		{"9", MapChipType::kFly },
 	};
+}
+
+MapChip::MapChip() {
+	renderer_ = std::make_unique<MapChipRenderer>();
+}
+
+MapChip::~MapChip() {
+
+}
+
+void MapChip::Initialize(DxCommon* dxCommon, LightManager* lightManager) {
+	renderer_->Initialize(dxCommon, lightManager);
+}
+
+void MapChip::Update(const Matrix4x4& vp, Vector3 cameraWorld) {
+	renderer_->Update(*this, vp, cameraWorld);
+}
+
+void MapChip::Draw() {
+	renderer_->Draw();
+}
+
+void MapChip::ImGui(const std::string& name) {
+	renderer_->ImGui(name);
 }
 
 void MapChip::ResetMapChipData() {
@@ -23,6 +51,7 @@ void MapChip::ResetMapChipData() {
 void MapChip::LoadMapChipCSV(const std::string& filePath) {
 	//マップチップデータをリセット
 	ResetMapChipData();
+	enemyPopDatas_.clear();
 
 	//ファイルを開く
 	std::ifstream file(filePath);
@@ -33,18 +62,43 @@ void MapChip::LoadMapChipCSV(const std::string& filePath) {
 		std::string line;
 		//ファイルの終わりならfor文を抜ける
 		if(!std::getline(file, line)) break;
-
 		std::istringstream line_stream(line);
+
 		for(uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
 			std::string word;
 			//行の終わりならfor文を抜ける
 			if(!std::getline(line_stream, word, ',')) break;
 
+			const char* trimChars = " \t\v\r\n";
+			size_t left = word.find_first_not_of(trimChars);
+			if(left != std::string::npos) {
+				size_t right = word.find_last_not_of(trimChars);
+				word = word.substr(left, right - left + 1);
+			}
+			else {
+				word = "";
+			}
+
 			//wordに対応するマップチップ種類があるか確認
 			if(mapChipTable.contains(word)) {
-				//iが縦方向(y)、jが横方向(x)
-				uint32_t index = i * kNumBlockHorizontal + j;
-				mapData_[index] = mapChipTable[word];
+				MapChipType type = mapChipTable[word];
+
+				// ★ここから追加
+				if(type == MapChipType::kKorokoro || type == MapChipType::kFly) {
+					// 敵の場合は座標を計算してポップリストに入れる
+					Vector3 pos = GetMapChipPositionByIndex(j, i);
+					enemyPopDatas_.push_back({ type, pos });
+
+					// マップ自体には「空白」として登録しておく（描画させないため）
+					uint32_t index = i * kNumBlockHorizontal + j;
+					mapData_[index] = MapChipType::kBlank;
+				}
+				else {
+					// 通常のブロックは今まで通り
+					uint32_t index = i * kNumBlockHorizontal + j;
+					mapData_[index] = type;
+				}
+				// ★ここまで追加
 			}
 		}
 	}

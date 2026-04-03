@@ -47,6 +47,9 @@ SphereMesh::SphereMesh(DxCommon* dxCommon, LightManager* lightManager) {
 
 	cameraBuffer_ = dxCommon_->CreateBufferResource(sizeof(Vector3));
 	cameraBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
+	cameraData_->x = 0.0f;
+	cameraData_->y = 0.0f;
+	cameraData_->z = 0.0f;
 
 	transform_ = {};
 	uvTransform_ = {};
@@ -180,8 +183,8 @@ void SphereMesh::Initialize(Vector3 position, float radius) {
 
 	//PSO設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Standard3D);
-	desc_.VS_ID = ShaderManager::GetInstance()->CompileAndCasheShader(L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
-	desc_.PS_ID = ShaderManager::GetInstance()->CompileAndCasheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
+	desc_.VS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
+	desc_.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
 	desc_.InputLayoutID = InputLayoutType::Standard3D;
 	desc_.BlendMode = BlendModeType::Opaque;
 }
@@ -192,7 +195,7 @@ void SphereMesh::Update(CameraData* camera) {
 	matrixData_->WVP = Math::Multiply(matrixData_->World, camera->vp);
 	matrixData_->WorldInverseTranspose = Math::Transpose(Math::Inverse(matrixData_->World));
 
-	//uvTranform更新
+	//uvTransform更新
 	materialData_->uvTransform = Math::MakeAffineMatrix(uvTransform_.scale, uvTransform_.rotate, uvTransform_.translate);
 
 	*cameraData_ = camera->transform.translate;

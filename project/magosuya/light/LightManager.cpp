@@ -150,7 +150,7 @@ void LightManager::ImGui() {
 #ifdef USEIMGUI
 	ImGui::Begin("Light Manager");
 
-	// タブバーを開始するでやんす
+	// タブバーを開始する
 	if(ImGui::BeginTabBar("LightTabs")) {
 
 		// --- DirectionalLightタブ ---
@@ -206,7 +206,6 @@ void LightManager::ImGui() {
 				ImGui::Text("No Point Lights");
 			}
 			else {
-				// 点光源用のインデックス変数(selectPointLightIndex_)をメンバに追加しておくといいでやんす！
 				int maxIdx = static_cast<int>(pointLights_.size()) - 1;
 				ImGui::SliderInt("Select", &selectPointLightIndex_, 0, maxIdx);
 				ImGui::Separator();
@@ -245,7 +244,6 @@ void LightManager::ImGui() {
 				ImGui::Text("No Spot Lights");
 			}
 			else {
-				// 点光源用のインデックス変数(selectPointLightIndex_)をメンバに追加しておくといいでやんす！
 				int maxIdx = static_cast<int>(spotLights_.size()) - 1;
 				ImGui::SliderInt("Select", &selectSpotLightIndex_, 0, maxIdx);
 				ImGui::Separator();
@@ -284,7 +282,6 @@ void LightManager::ImGui() {
 				ImGui::Text("No Rect Lights");
 			}
 			else {
-				// 点光源用のインデックス変数(selectPointLightIndex_)をメンバに追加しておくといいでやんす！
 				int maxIdx = static_cast<int>(rectLights_.size()) - 1;
 				ImGui::SliderInt("Select", &selectRectLightIndex_, 0, maxIdx);
 				ImGui::Separator();
@@ -338,6 +335,29 @@ void LightManager::AddLight(LightType type) {
 		break;
 
 	default:
+		break;
+	}
+}
+
+void LightManager::DeleteLight(LightType type, uint32_t index) {
+	switch (type) {
+		case DIRECTIONALLIGHT:
+		dirLights_.erase(dirLights_.begin() + index);
+		break;
+
+		case POINTLIGHT:
+		pointLights_.erase(pointLights_.begin() + index);
+		break;
+
+		case SPOTLIGHT:
+		spotLights_.erase(spotLights_.begin() + index);
+		break;
+
+		case RECTLIGHT:
+		rectLights_.erase(rectLights_.begin() + index);
+		break;
+
+		default:
 		break;
 	}
 }

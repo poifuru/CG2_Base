@@ -3,7 +3,7 @@
 #include "ModelManager.h"
 
 SceneManager::~SceneManager () {
-	delete scene_;
+	scene_->StopToResources();
 }
 
 void SceneManager::Initialize(CameraOrganizer* camera, InputManager* input, DxCommon* dxCommon) {
@@ -17,12 +17,11 @@ void SceneManager::Update () {
 	if(nextScene_) {
 		//旧シーンを終了
 		if(scene_) {
-			delete scene_;
+			scene_->StopToResources();
 		}
 
 		//シーン切り替え
-		scene_ = nextScene_;
-		nextScene_ = nullptr;
+		scene_ = std::move(nextScene_);
 		//次シーンの初期化
 		scene_->Initialize(camera_, input_, dxCommon_);
 	}
