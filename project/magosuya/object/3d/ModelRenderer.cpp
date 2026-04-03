@@ -57,7 +57,7 @@ void ModelRenderer::Initialize() {
 	world_ = Math::MakeIdentity4x4();
 
 	// SkinCluster生成
-	CreateSkinCluster(data);
+	skinCluster_ = CreateSkinCluster(data);
 
 	// PSO設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::SkinningStandard3D);
@@ -138,6 +138,10 @@ void ModelRenderer::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	// rectLightのSRVをセット
 	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
 		8, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetRectLightSrvHandle())
+	);
+	// SkinningのSRVをセット
+	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
+		9, SRVManager::GetInstance()->GetGPUDescriptorHandle(DescriptorFreeIndex_)
 	);
 	// 実際に描画する
 	commandList_->DrawIndexedInstanced(static_cast<UINT>(data->indexCount), 1, 0, 0, 0);
@@ -361,7 +365,7 @@ void ModelRenderer::DrawSkeleton() {
 	}
 }
 
-SkinCluster ModelRenderer::CreateSkinCluster(std::shared_ptr<ModelData> modelData) {
+SkinCluster ModelRenderer::CreateSkinCluster(std::shared_ptr<ModelData>& modelData) {
 	SkinCluster skinCluster;
 
 	// palette用のResourceを確保
@@ -370,10 +374,9 @@ SkinCluster ModelRenderer::CreateSkinCluster(std::shared_ptr<ModelData> modelDat
 	skinCluster.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
 	skinCluster.mappedPalette = { mappedPalette, skeleton_.joints.size() };	// std::spanを使ってアクセスするようにする
 	// DescriptorHeapの空きIndexを確保(CPU,GPU)
-	uint32_t CPUDescriptorFreeIndex = SRVManager::GetInstance()->Allocate();
-	skinCluster.paletteSrvHandle.first = SRVManager::GetInstance()->GetCPUDescriptorHandle(CPUDescriptorFreeIndex);
-	uint32_t GPUDescriptorFreeIndex = SRVManager::GetInstance()->Allocate();
-	skinCluster.paletteSrvHandle.second = SRVManager::GetInstance()->GetGPUDescriptorHandle(GPUDescriptorFreeIndex);
+	DescriptorFreeIndex_ = SRVManager::GetInstance()->Allocate();
+	skinCluster.paletteSrvHandle.first = SRVManager::GetInstance()->GetCPUDescriptorHandle(DescriptorFreeIndex_);
+	skinCluster.paletteSrvHandle.second = SRVManager::GetInstance()->GetGPUDescriptorHandle(DescriptorFreeIndex_);
 
 	// palette用のsrvを作成
 	D3D12_SHADER_RESOURCE_VIEW_DESC paletteSrvDesc{};
@@ -400,7 +403,7 @@ SkinCluster ModelRenderer::CreateSkinCluster(std::shared_ptr<ModelData> modelDat
 
 	// InverseBindPoseMatrixの保存領域を作成
 	skinCluster.inverseBinePoseMatrices.resize(skeleton_.joints.size());
-	std::generate(skinCluster_.inverseBinePoseMatrices.begin(), skinCluster_.inverseBinePoseMatrices.end(), Math::MakeIdentity4x4);
+	std::generate(skinCluster.inverseBinePoseMatrices.begin(), skinCluster.inverseBinePoseMatrices.end(), Math::MakeIdentity4x4);
 
 	// ModelDataのSkinCluster情報を解析してinfluenceの中身を埋める
 	for(const auto& jointWeight : modelData->skinClusterData) {	// ModelのSkinClusterの情報を解析
@@ -422,6 +425,20 @@ SkinCluster ModelRenderer::CreateSkinCluster(std::shared_ptr<ModelData> modelDat
 		}
 	}
 
+	// ボーンに紐づいていない頂点にデフォルトのウェイトを設定
+	for(size_t i = 0; i < modelData->vertices.size(); ++i) {
+		auto& influence = skinCluster.mappedInfluence[i];
+		float totalWeight = 0.0f;
+		for(uint32_t j = 0; j < kNumMaxInfluence; ++j) {
+			totalWeight += influence.weights[j];
+		}
+		if(totalWeight == 0.0f) {
+			// ルートボーン(index 0)に100%のウェイトを割り当て
+			influence.weights[0] = 1.0f;
+			influence.jointIndices[0] = 0;
+		}
+	}
+
 	return skinCluster;
 }
 
@@ -433,4 +450,10 @@ void ModelRenderer::SkinClusterUpdate() {
 		skinCluster_.mappedPalette[jointIndex].skeletonSpaceInverseTransposeMatrix =
 			Math::Transpose(Math::Inverse(skinCluster_.mappedPalette[jointIndex].skeletonSpaceMatrix));
 	}
+
+	//for(size_t i = 0; i < skeleton_.joints.size(); ++i) {
+	//	// すべてのボーンに「単位行列」を入れる
+	//	skinCluster_.mappedPalette[i].skeletonSpaceMatrix = Math::MakeIdentity4x4();
+	//	skinCluster_.mappedPalette[i].skeletonSpaceInverseTransposeMatrix = Math::MakeIdentity4x4();
+	//}
 }

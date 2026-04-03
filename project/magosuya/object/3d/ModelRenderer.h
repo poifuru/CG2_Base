@@ -48,7 +48,7 @@ private: // 内部関数
 	void SkeletonUpdate(Skeleton& skeleton);
 	void ApplyAnimation();
 	void DrawSkeleton();
-	SkinCluster CreateSkinCluster(std::shared_ptr<ModelData> modelData);
+	SkinCluster CreateSkinCluster(std::shared_ptr<ModelData>& modelData);
 	void SkinClusterUpdate();
 
 private:
@@ -67,6 +67,8 @@ private:
 
 	// スキンクラスター
 	SkinCluster skinCluster_ = {};
+	// Skinning用のSRVIndex
+	uint32_t DescriptorFreeIndex_ = 0;
 
 	//PSO
 	PSODescriptor desc_ = {};

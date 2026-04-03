@@ -6,7 +6,7 @@ struct VertexShaderInput
     float2 texcoord : TEXCOORD0;
     float3 normal : NORMAL0;
     float4 weight : WEIGHT0;
-    float4 index : INDEX0;
+    int4 index : INDEX0;
 };
 
 struct TransformaitionMatrix
@@ -22,7 +22,7 @@ struct Well
     float4x4 skeletonSpaceMatrix;
     float4x4 skeletonSpaceInverseTransposeMatrix;
 };
-StructuredBuffer<Well> gMatrixPalette : register(t0);
+StructuredBuffer<Well> gMatrixPalette : register(t5);
 
 struct Skinned
 {
@@ -35,20 +35,38 @@ Skinned Skinning(VertexShaderInput input)
 {
     Skinned skinned;
     
+    // 最初に0で完全に初期化
+    skinned.position = (float4) 0;
+    skinned.normal = (float3) 0;
+    
     //*** Skinningの処理***//
     // 位置の変換
-    skinned.position = mul(input.position, gMatrixPalette[input.index.x].skeletonSpaceMatrix) * input.weight.x;
-    skinned.position = mul(input.position, gMatrixPalette[input.index.y].skeletonSpaceMatrix) * input.weight.y;
-    skinned.position = mul(input.position, gMatrixPalette[input.index.z].skeletonSpaceMatrix) * input.weight.z;
-    skinned.position = mul(input.position, gMatrixPalette[input.index.w].skeletonSpaceMatrix) * input.weight.w;
-    skinned.position.w = 1.0f;  // 確実に1を入れる
+    skinned.position += mul(input.position, gMatrixPalette[input.index.x].skeletonSpaceMatrix) * input.weight.x;
+    skinned.position += mul(input.position, gMatrixPalette[input.index.y].skeletonSpaceMatrix) * input.weight.y;
+    skinned.position += mul(input.position, gMatrixPalette[input.index.z].skeletonSpaceMatrix) * input.weight.z;
+    skinned.position += mul(input.position, gMatrixPalette[input.index.w].skeletonSpaceMatrix) * input.weight.w;
+    skinned.position.w = 1.0f; // 確実に1を入れる
     
     // 法線の変換
-    skinned.normal = mul(input.normal, (float3x3) gMatrixPalette[input.index.x].skeletonSpaceInverseTransposeMatrix) * input.weight.x;
-    skinned.normal = mul(input.normal, (float3x3) gMatrixPalette[input.index.y].skeletonSpaceInverseTransposeMatrix) * input.weight.y;
-    skinned.normal = mul(input.normal, (float3x3) gMatrixPalette[input.index.z].skeletonSpaceInverseTransposeMatrix) * input.weight.z;
-    skinned.normal = mul(input.normal, (float3x3) gMatrixPalette[input.index.w].skeletonSpaceInverseTransposeMatrix) * input.weight.w;
+    skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[input.index.x].skeletonSpaceInverseTransposeMatrix) * input.weight.x;
+    skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[input.index.y].skeletonSpaceInverseTransposeMatrix) * input.weight.y;
+    skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[input.index.z].skeletonSpaceInverseTransposeMatrix) * input.weight.z;
+    skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[input.index.w].skeletonSpaceInverseTransposeMatrix) * input.weight.w;
     skinned.normal = normalize(skinned.normal); // 正規化して戻してあげる
+    
+    //// 位置の変換
+    //skinned.position += mul(gMatrixPalette[input.index.x].skeletonSpaceMatrix, input.position) * input.weight.x;
+    //skinned.position += mul(gMatrixPalette[input.index.y].skeletonSpaceMatrix, input.position) * input.weight.y;
+    //skinned.position += mul(gMatrixPalette[input.index.z].skeletonSpaceMatrix, input.position) * input.weight.z;
+    //skinned.position += mul(gMatrixPalette[input.index.w].skeletonSpaceMatrix, input.position) * input.weight.w;
+    //skinned.position.w = 1.0f; // 確実に1を入れる
+    
+    //// 法線の変換
+    //skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[input.index.x].skeletonSpaceInverseTransposeMatrix) * input.weight.x;
+    //skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[input.index.y].skeletonSpaceInverseTransposeMatrix) * input.weight.y;
+    //skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[input.index.z].skeletonSpaceInverseTransposeMatrix) * input.weight.z;
+    //skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[input.index.w].skeletonSpaceInverseTransposeMatrix) * input.weight.w;
+    //skinned.normal = normalize(skinned.normal); // 正規化して戻してあげる
     
     return skinned;
 }

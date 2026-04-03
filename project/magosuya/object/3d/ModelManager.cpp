@@ -61,8 +61,8 @@ ModelData* ModelManager::LoadModelData(const std::string& directoryPath, const s
 	modelMap_[fileName] = newData;
 
 	// CPUメモリを解放（必要に応じて）
-	newData->vertices.clear();
-	newData->indices.clear();
+	//newData->vertices.clear();
+	//newData->indices.clear();
 
 	//データ提供
 	return modelMap_.at(fileName).get();
@@ -154,6 +154,8 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 	);
 	assert(scene->HasMeshes());	//メッシュが無ければ対応しない
 
+	OutputDebugStringA(("NumMeshes: " + std::to_string(scene->mNumMeshes) + "\n").c_str());
+
 	//Meshを解析する
 	for(uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
@@ -198,19 +200,13 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 			std::string jointName = bone->mName.C_Str();
 			JointWeightData& jointWeightData = modelData.skinClusterData[jointName];
 
-			// InverseBindPoseMatrixの抽出
-			aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();
-			aiVector3D scale, translate;
-			aiQuaternion rotate;
-			bindPoseMatrixAssimp.Decompose(scale, rotate, translate);	// 成分を抽出
-			// 左手系のBindPoseMatrix	を作る
-			Matrix4x4 bindPoseMatrix = Math::MakeAffineMatrix(
-				{ scale.x, scale.y, scale.z },					// scale
-				{ rotate.x, -rotate.y, -rotate.z, rotate.w },	// rotate
-				{ -translate.x, translate.y, translate.z }		// translate
-			);
-			// InverseBindMatrixする
-			jointWeightData.inverseBindPoseMatrix = Math::Inverse(bindPoseMatrix);
+			const aiMatrix4x4& ai = bone->mOffsetMatrix;
+			Matrix4x4 ibp;
+			ibp.m[0][0] = ai.a1; ibp.m[0][1] = -ai.b1; ibp.m[0][2] = -ai.c1; ibp.m[0][3] = -ai.d1;
+			ibp.m[1][0] = -ai.a2; ibp.m[1][1] = ai.b2; ibp.m[1][2] = ai.c2; ibp.m[1][3] = ai.d2;
+			ibp.m[2][0] = -ai.a3; ibp.m[2][1] = ai.b3; ibp.m[2][2] = ai.c3; ibp.m[2][3] = ai.d3;
+			ibp.m[3][0] = -ai.a4; ibp.m[3][1] = ai.b4; ibp.m[3][2] = ai.c4; ibp.m[3][3] = ai.d4;
+			jointWeightData.inverseBindPoseMatrix = ibp;
 
 			// Weight情報を取り出す
 			for(uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {

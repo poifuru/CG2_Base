@@ -260,37 +260,37 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	//Texture用のディスクリプタテーブル(t0, Pixel)
 	skinningStandard3DRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;	//DiscriptorTableを使う
 	skinningStandard3DRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
-	skinningStandard3DRootParameters[4].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[0];	//Tableの中身の配列を指定
+	skinningStandard3DRootParameters[4].DescriptorTable.pDescriptorRanges = &skinningStandard3DDescriptorRanges[0];	//Tableの中身の配列を指定
 	skinningStandard3DRootParameters[4].DescriptorTable.NumDescriptorRanges = 1;	//Tableで利用する数
 
 	//DirLight一覧用のディスクリプタテーブル(t1用)
 	skinningStandard3DRootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	skinningStandard3DRootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	skinningStandard3DRootParameters[5].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[1]; // Range[1]を指す
+	skinningStandard3DRootParameters[5].DescriptorTable.pDescriptorRanges = &skinningStandard3DDescriptorRanges[1]; // Range[1]を指す
 	skinningStandard3DRootParameters[5].DescriptorTable.NumDescriptorRanges = 1;
 
 	//PointLight一覧用のディスクリプタテーブル(t2用)
 	skinningStandard3DRootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	skinningStandard3DRootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	skinningStandard3DRootParameters[6].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[2]; // Range[1]を指す
+	skinningStandard3DRootParameters[6].DescriptorTable.pDescriptorRanges = &skinningStandard3DDescriptorRanges[2]; // Range[1]を指す
 	skinningStandard3DRootParameters[6].DescriptorTable.NumDescriptorRanges = 1;
 
 	//PointLight一覧用のディスクリプタテーブル(t3用)
 	skinningStandard3DRootParameters[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	skinningStandard3DRootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	skinningStandard3DRootParameters[7].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[3]; // Range[1]を指す
+	skinningStandard3DRootParameters[7].DescriptorTable.pDescriptorRanges = &skinningStandard3DDescriptorRanges[3]; // Range[1]を指す
 	skinningStandard3DRootParameters[7].DescriptorTable.NumDescriptorRanges = 1;
 
 	//RectLight一覧用のディスクリプタテーブル(t4用)
 	skinningStandard3DRootParameters[8].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	skinningStandard3DRootParameters[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	skinningStandard3DRootParameters[8].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[4]; // Range[1]を指す
+	skinningStandard3DRootParameters[8].DescriptorTable.pDescriptorRanges = &skinningStandard3DDescriptorRanges[4]; // Range[1]を指す
 	skinningStandard3DRootParameters[8].DescriptorTable.NumDescriptorRanges = 1;
 
 	//MatrixPalette用(t1, Vertex)
 	skinningStandard3DRootParameters[9].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	skinningStandard3DRootParameters[9].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	skinningStandard3DRootParameters[9].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[5]; // Range[1]を指す
+	skinningStandard3DRootParameters[9].DescriptorTable.pDescriptorRanges = &skinningStandard3DDescriptorRanges[5]; // Range[5]を指す
 	skinningStandard3DRootParameters[9].DescriptorTable.NumDescriptorRanges = 1;
 
 	//Sampler
