@@ -349,3 +349,4 @@ pdb
 /project/externals/DirectXTex/lib/Release/
 /project/externals/DirectXTex/Shaders/Compiled/
 /logs
+/project/externals/imgui/lib/Debug/imgui.idb
