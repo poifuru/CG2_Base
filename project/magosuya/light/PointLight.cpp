@@ -32,9 +32,9 @@ void PointLight::ImGui(int index) {
 	if(ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::ColorEdit4("Color", &color_.x);
 		ImGui::DragFloat3("Position", &position_.x, 0.01f);
-		ImGui::DragFloat("Intensity", &intensity_, 0.01f, 0.0f, IMGUI_MAX);
-		ImGui::DragFloat("radius", &radius_, 0.01f, 0.0f, IMGUI_MAX);
-		ImGui::DragFloat("decay", &decay_, 0.01f, 0.0f, IMGUI_MAX);
+		ImGui::DragFloat("Intensity", &intensity_, 0.01f, 0.0f, FLT_MAX);
+		ImGui::DragFloat("radius", &radius_, 0.01f, 0.0f, FLT_MAX);
+		ImGui::DragFloat("decay", &decay_, 0.01f, 0.0f, FLT_MAX);
 	}
 #endif
 }

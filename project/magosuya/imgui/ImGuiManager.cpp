@@ -21,17 +21,26 @@ void ImGuiManager::Initialize () {
 	ImGui::CreateContext ();
 	ImGui::StyleColorsDark ();
 	ImGuiIO& io = ImGui::GetIO ();
+
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // ドッキング有効化
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // マルチビューポート
+
 	ImFont* fontJP = io.Fonts->AddFontFromFileTTF (
 		"Resources/AppliMincho/PottaOne-Regular.ttf", 17.0f, nullptr,
 		io.Fonts->GetGlyphRangesJapanese ());
 	io.FontDefault = fontJP;
-	ImGui_ImplWin32_Init (WindowsAPI::GetInstance()->GetHwnd ());
+	ImGui_ImplWin32_Init (WindowsAPI::GetInstance()->GetHwnd ());	
+
+	uint32_t index = SRVManager::GetInstance()->Allocate(); 
+	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = SRVManager::GetInstance()->GetCPUDescriptorHandle(index);
+	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = SRVManager::GetInstance()->GetGPUDescriptorHandle(index);
+
 	ImGui_ImplDX12_Init (DxCommon::GetInstance()->GetDevice (),
 						 2,
 						 DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
 						 SRVManager::GetInstance ()->GetDescriptorHeap(),
-						 SRVManager::GetInstance ()->GetDescriptorHeap ()->GetCPUDescriptorHandleForHeapStart (),
-						 SRVManager::GetInstance ()->GetDescriptorHeap ()->GetGPUDescriptorHandleForHeapStart ()
+						 cpuHandle,
+						 gpuHandle
 	);
 #endif
 }
