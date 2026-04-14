@@ -6,13 +6,13 @@
 TestScene::TestScene() {
 	ModelManager::GetInstance()->LoadModelData("Resources/AnimatedCube", "AnimatedCube.gltf");
 	ModelManager::GetInstance()->LoadAnimationData("Resources/AnimatedCube", "AnimatedCube.gltf");
-	TextureManager::GetInstance()->TextureManager::LoadTexture(
+	TextureManager::GetInstance()->LoadTexture(
 		"Resources/AnimatedCube/AnimatedCube_BaseColor.png", "Cube"
 	);
 	// 人のアニメーション
 	ModelManager::GetInstance()->LoadModelData("Resources/human", "walk.gltf");
 	ModelManager::GetInstance()->LoadAnimationData("Resources/human", "walk.gltf");
-	TextureManager::GetInstance()->LoadTexture("Resources/human/white.png", "white");
+	//TextureManager::GetInstance()->LoadTexture("Resources/human/white.png", "white");
 }
 
 TestScene::~TestScene() {
@@ -35,7 +35,7 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 
 	human_ = std::make_unique<Model>(dxCommon, lightManager_.get());
 	human_->SetModelData("walk.gltf");
-	human_->SetTexture("white");
+	human_->SetTexture("white1x1");
 	human_->SetAnimation("walk.gltf");
 	human_->Initialize({ 100.0f, 100.0f, 100.0f }, { Math::Deg2Rad(-90.0f), Math::Deg2Rad(180.0f), 0.0f }, {});
 	human_->SkeletonInit();

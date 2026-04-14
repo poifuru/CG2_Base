@@ -31,7 +31,7 @@ void ImGuiManager::Initialize () {
 	io.FontDefault = fontJP;
 	ImGui_ImplWin32_Init (WindowsAPI::GetInstance()->GetHwnd ());	
 
-	uint32_t index = SRVManager::GetInstance()->Allocate(); 
+	uint32_t index = SRVManager::GetInstance()->Allocate();
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = SRVManager::GetInstance()->GetCPUDescriptorHandle(index);
 	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = SRVManager::GetInstance()->GetGPUDescriptorHandle(index);
 
