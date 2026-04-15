@@ -62,8 +62,8 @@ void MagosuyaEngine::Initialize () {
 }
 
 void MagosuyaEngine::BeginFrame () {
-	imguiManager_->BeginFrame ();
 	dxCommon_->BeginFrame ();
+	imguiManager_->BeginFrame ();
 	srvManager_->PreDraw();
 
 	//ゲームパッドの更新
@@ -72,8 +72,8 @@ void MagosuyaEngine::BeginFrame () {
 }
 void MagosuyaEngine::EndFrame () {
 	Mesh::AllDrawing ();
-	imguiManager_->Draw ();
 	inputManager_->EndFrame ();
+	imguiManager_->Draw ();
 	dxCommon_->EndFrame ();
 	texManager_->ClearIntermediateResource ();
 }
