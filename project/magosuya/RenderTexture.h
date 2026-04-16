@@ -29,6 +29,7 @@ public:
 	// アクセッサ
 	ID3D12Resource* GetResource() { return resource_.Get(); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetDescriptorHandle() { return rtvHandle_; }
+	void SetRTVHandle(D3D12_CPU_DESCRIPTOR_HANDLE handle) { rtvHandle_ = handle; }
 	uint32_t GetSrvIndex() { return srvIndex_; }
 
 private:

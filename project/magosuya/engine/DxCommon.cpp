@@ -400,10 +400,7 @@ void DxCommon::CreateRTV() {
 	//ディスクリプタの先頭を取得する(ループで使うために現在のハンドルとする)
 	D3D12_CPU_DESCRIPTOR_HANDLE currentHandle = rtvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 
-	//スワップチェーンリソースの数
-	const UINT RTV_COUNT = swapChainDesc_.BufferCount;
-
-	for(UINT i = 0; i < RTV_COUNT; i++) {
+	for(UINT i = 0; i < kMaxRTVNum_; i++) {
 		//ディスクリプタの先頭アドレスに書き込む
 		rtvHandles_[i] = currentHandle;
 		//生成
