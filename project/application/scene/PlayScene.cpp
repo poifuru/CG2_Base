@@ -6,14 +6,10 @@
 #include "ModelManager.h"
 #include "SceneManager.h"
 #include "SceneType.h"
-#include "imgui.h"
-
-#include "Korokoro.h"
-#include "Fly.h"
 
 PlayScene::PlayScene () {
 	ModelManager::GetInstance()->LoadModelData("Resources/skydome", "skydome.obj");
-	TextureManager::GetInstance()->LoadTexture("Resources/skydome/skydome.png", "skydome");
+	TextureManager::GetInstance()->LoadTexture("Resources/uvChecker.png", "uvChecker");
 }
 
 PlayScene::~PlayScene () {
@@ -24,7 +20,7 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	input_ = inputManager;
 	dxCommon_ = dxCommon;
 
-	camera_->AddCamera("main2", CameraType::FixedPointCamera);
+	camera_->AddCamera("main2", CameraType::FollowCamera);
 	camera_->SetActiveCamera("main2");
 
 	lightManager_ = std::make_unique<LightManager>(dxCommon);
@@ -41,11 +37,12 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	//オブジェクトたちの初期化
 	skydome_ = std::make_unique<Model>(dxCommon, lightManager_.get());
 	skydome_->SetModelData("skydome.obj");
-	skydome_->SetTexture("skydome");
+	skydome_->SetTexture("uvChecker");
 	skydome_->Initialize();
 	skydome_->IsLighting(LightReflectionModel::None);
 
-	GenerateEnemies();
+	player_ = std::make_unique<Player>(dxCommon_, camera_, input_, lightManager_.get());
+	player_->Initialize();
 }
 
 void PlayScene::Update () {
@@ -56,6 +53,9 @@ void PlayScene::Update () {
 	lightManager_->Update();
 	lightManager_->ImGui();
 
+	player_->Update();
+
+	camera_->SetFollowTarget("main2", player_->GetTransform());
 	camera_->Update();
 	camera_->ImGui();
 
@@ -63,11 +63,9 @@ void PlayScene::Update () {
 }
 void PlayScene::Draw () {
 	skydome_->Draw();
+	player_->Draw();
 }
 
 void PlayScene::StopToResources() {
 
-}
-
-void PlayScene::GenerateEnemies() {
 }

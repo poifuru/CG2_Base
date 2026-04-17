@@ -178,8 +178,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\entity\Entity.cpp" />
     <ClCompile Include="application\scene\DebugScene.cpp" />
     <ClCompile Include="application\entity\enemy\BaseEnemy.cpp" />
-    <ClCompile Include="application\entity\enemy\Korokoro.cpp" />
-    <ClCompile Include="application\entity\enemy\Fly.cpp" />
     <ClCompile Include="magosuya\light\DirectionalLight.cpp" />
     <ClCompile Include="magosuya\light\BaseLight.cpp" />
     <ClCompile Include="magosuya\light\LightManager.cpp" />
@@ -349,8 +347,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\entity\boss\Boss.h" />
     <ClInclude Include="application\scene\DebugScene.h" />
     <ClInclude Include="application\entity\enemy\BaseEnemy.h" />
-    <ClInclude Include="application\entity\enemy\Korokoro.h" />
-    <ClInclude Include="application\entity\enemy\Fly.h" />
     <ClInclude Include="magosuya\light\DirectionalLight.h" />
     <ClInclude Include="magosuya\light\BaseLight.h" />
     <ClInclude Include="magosuya\light\LightManager.h" />
