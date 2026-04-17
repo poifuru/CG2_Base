@@ -13,9 +13,9 @@ Korokoro::~Korokoro() {
 }
 
 void Korokoro::Initialize() {
-	model_->Initialize();
 	model_->SetModelData("korokoro.obj"); // 敵のモデル
 	model_->SetTexture("korokoro");
+	model_->Initialize();
 	model_->SetRoughness(0.6f);
 	model_->SetMetallic(0.0f);
 

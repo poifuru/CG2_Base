@@ -39,9 +39,9 @@ Player::~Player() {
 }
 
 void Player::Initialize() {
-	model_->Initialize();
 	model_->SetModelData("player.obj");
 	model_->SetTexture("player");
+	model_->Initialize();
 	SetAABBSize({ kPlayerWidth, kPlayerHeight, 1.0f });
 
 	weapon_->Initialize();

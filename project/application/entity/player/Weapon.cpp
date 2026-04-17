@@ -15,9 +15,9 @@ Weapon::~Weapon() {
 }
 
 void Weapon::Initialize() {
-	model_->Initialize();
 	model_->SetModelData("hammer.obj");
 	model_->SetTexture("hammer");
+	model_->Initialize();
 
 	//角度調整
 	Vector3 rotate = {};

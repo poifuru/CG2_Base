@@ -13,9 +13,9 @@ void Fly::Initialize() {
 	hp_ = 1; // 体力の設定
 	SetAABBSize({ 0.5f, 0.5f, 0.5f }); // 当たり判定のサイズ
 
-	model_->Initialize();
 	model_->SetModelData("korokoro.obj"); // 敵のモデル
 	model_->SetTexture("korokoro");
+	model_->Initialize();
 	model_->SetRoughness(0.6f);
 	model_->SetMetallic(0.0f);
 
