@@ -33,14 +33,7 @@ void FollowCamera::Update () {
 		return;
 	}
 
-	camera_.transform.translate = target_->translate + offset_;
-
-	if(camera_.transform.translate.x <= 19.0f) {
-		camera_.transform.translate.x = 19.0f;
-	}
-	else if(camera_.transform.translate.x >= 85.0f) {
-		camera_.transform.translate.x = 85.0f;
-	}
+	camera_.transform.translate.z = target_->translate.z + offset_.z;
 
 	//行列の計算
 	camera_.world = Math::MakeAffineMatrix (camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);

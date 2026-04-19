@@ -149,6 +149,7 @@
     <ClInclude Include="application\entity\player\Weapon.h" />
     <ClInclude Include="application\entity\enemy\BaseEnemy.h" />
     <ClInclude Include="application\scene\TestScene.h" />
+    <ClInclude Include="magosuya\general\DeltaTime.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />

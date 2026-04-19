@@ -54,6 +54,7 @@ void PlayScene::Update () {
 	lightManager_->ImGui();
 
 	player_->Update();
+	player_->ImGui();
 
 	camera_->SetFollowTarget("main2", player_->GetTransform());
 	camera_->Update();

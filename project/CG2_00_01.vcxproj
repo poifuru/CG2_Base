@@ -347,6 +347,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\entity\boss\Boss.h" />
     <ClInclude Include="application\scene\DebugScene.h" />
     <ClInclude Include="application\entity\enemy\BaseEnemy.h" />
+    <ClInclude Include="magosuya\general\DeltaTime.h" />
     <ClInclude Include="magosuya\light\DirectionalLight.h" />
     <ClInclude Include="magosuya\light\BaseLight.h" />
     <ClInclude Include="magosuya\light\LightManager.h" />
