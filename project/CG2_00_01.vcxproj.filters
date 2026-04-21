@@ -71,9 +71,9 @@
     <ClCompile Include="magosuya\audio\AudioManager.cpp" />
     <ClCompile Include="application\entity\player\Player.cpp" />
     <ClCompile Include="application\scene\DebugScene.cpp" />
-    <ClCompile Include="application\entity\player\Weapon.cpp" />
     <ClCompile Include="application\entity\enemy\BaseEnemy.cpp" />
     <ClCompile Include="application\scene\TestScene.cpp" />
+    <ClCompile Include="application\entity\player\Bullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -146,10 +146,10 @@
     <ClInclude Include="magosuya\audio\VoiceCallback.h" />
     <ClInclude Include="application\mapchip\MapchipStruct.h" />
     <ClInclude Include="application\scene\DebugScene.h" />
-    <ClInclude Include="application\entity\player\Weapon.h" />
     <ClInclude Include="application\entity\enemy\BaseEnemy.h" />
     <ClInclude Include="application\scene\TestScene.h" />
     <ClInclude Include="magosuya\general\DeltaTime.h" />
+    <ClInclude Include="application\entity\player\Bullet.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />

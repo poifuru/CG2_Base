@@ -107,6 +107,8 @@ void Player::ImGui() {
 #ifdef USEIMGUI
 	ImGui::Begin("Player");
 	ImGui::DragFloat3("Position", &transform_.translate.x, 0.01f);
+	ImGui::DragFloat3("Velocity", &velocity_.x, 0.01f);
+	ImGui::DragFloat3("Acceleration", &acceleration_.x, 0.01f);
 	ImGui::End();
 #endif
 }

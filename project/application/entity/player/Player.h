@@ -1,7 +1,6 @@
 #pragma once
 #include "Entity.h"
 #include "CameraOrganizer.h"
-#include "Weapon.h"
 
 class Player : public Entity {
 public:		//メンバ関数
