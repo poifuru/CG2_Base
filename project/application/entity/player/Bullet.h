@@ -4,7 +4,6 @@
 
 class Bullet : public Entity {
 public:
-
 	Bullet(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input, LightManager* light);
 
 	~Bullet();
@@ -17,6 +16,16 @@ public:
 
 	void ImGui();
 
-private:
+	// アクセッサ
+	bool IsActive() { return isActive_; }
 
+private:
+	void Move();
+	void Life();
+
+private:
+	bool isActive_ = false;
+	float activeTimer_ = 0.0f;
+
+	CameraOrganizer* camera_ = nullptr;
 };
