@@ -19,5 +19,4 @@ public:
 	void SetAABBSize(const Vector3& size) { aabbSize_ = size; }
 
 protected:
-	
 };

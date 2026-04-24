@@ -9,11 +9,11 @@ BaseEnemy::~BaseEnemy() {
 }
 
 void BaseEnemy::Initialize() {
-
+	model_->Initialize();
 }
 
 void BaseEnemy::Update() {
-	
+
 }
 
 void BaseEnemy::Draw() {

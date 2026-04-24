@@ -30,5 +30,6 @@ private:
 	float speed_ = 0.0f;
 	Vector3 direction_{};
 
-	CameraOrganizer* camera_ = nullptr;
+	// デバッグ用
+	bool hitbox_ = false;
 };

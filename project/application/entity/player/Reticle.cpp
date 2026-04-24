@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Reticle.h"
 #include "DeltaTime.h"
 
@@ -19,15 +20,18 @@ void Reticle::Initialize() {
 	model_->SetDepthEnable(false);
 	model_->IsLighting(LightReflectionModel::None);
 	model_->SetAlpha(0.5f);
-	//model_->SetScale({ 2.5f, 2.5f, 1.0f });
+	model_->SetScale({ 2.0f, 2.0f, 1.0f });
 
-	positionOfset_ = { 0.0f, 0.0f, 20.0f };
-	speed_ = 15.0f;
+	positionOfset_ = { 0.0f, 0.0f, 40.0f };
+	speed_ = 25.0f;
 }
 
 void Reticle::Update() {
 	Input();
 	transform_.translate.z = playerPos_.z + positionOfset_.z;
+
+	transform_.translate.x = std::clamp(transform_.translate.x, -34.0f, 34.0f);
+	transform_.translate.y = std::clamp(transform_.translate.y, -18.0f, 18.0f);
 
 	model_->SetPosition(transform_.translate);
 	model_->Update(&camera_->GetCameraData());

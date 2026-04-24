@@ -1,7 +1,8 @@
 #include "Bullet.h"
-#include "TextureManager.h"
-#include "ModelManager.h"
 #include "Deltatime.h"
+#include "imgui.h"
+#include "Mesh.h"
+#include "MathFunction.h"
 
 Bullet::Bullet(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input, LightManager* light) {
 	camera_ = camera;
@@ -32,10 +33,34 @@ void Bullet::Update() {
 
 void Bullet::Draw() {
 	model_->Draw();
+
+	if(hitbox_) {
+		auto x = transform_.translate.x;
+		auto y = transform_.translate.y;
+		auto z = transform_.translate.z;
+		auto scaleX = transform_.scale.x;
+		auto scaleY = transform_.scale.y;
+		auto scaleZ = transform_.scale.z;
+
+		// Box上の頂点8つを定義
+		Vector3 leftUpFront = { x - scaleX, y + scaleY, z - scaleZ };		// 左上手前
+		Vector3 leftDownFront = { x - scaleX, y - scaleY, z - scaleZ };		//　左下手前
+		Vector3 rightDownFront = { x + scaleX, y - scaleY, z - scaleZ };	//　右下手前
+		Vector3 rightUpFront = { x + scaleX, y + scaleY, z - scaleZ };		//　右上手前
+		Vector3 leftUpBack = { x - scaleX, y + scaleY, z + scaleZ };		//　左上奥
+		Vector3 leftDownBack = { x - scaleX, y - scaleY, z + scaleZ };		//　左下奥
+		Vector3 rightDownBack = { x + scaleX, y - scaleY, z + scaleZ };		//　右下奥
+		Vector3 rightUpBack = { x + scaleX, y + scaleY, z + scaleZ };		//　右上奥
+
+		Mesh::DrawLine(
+			leftUpFront.x, leftUpFront.y, leftUpFront.z, 
+		)
+	}
 }
 
 void Bullet::ImGui() {
 	model_->ImGui("Bullet");
+	ImGui::Checkbox("hitbox", &hitbox_);
 }
 
 void Bullet::Move() {

@@ -30,6 +30,9 @@ Player::Player(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input,
 	// Reticle用
 	TextureManager::GetInstance()->LoadTexture("Resources/reticle/reticle.png", "reticle");
 	ModelManager::GetInstance()->LoadModelData("Resources/reticle", "reticle.obj");
+
+	model_ = std::make_unique<Model>(dxCommon, light);
+	reticle_ = std::make_unique<Reticle>(dxCommon, camera, input, light);
 }
 
 Player::~Player() {
@@ -37,7 +40,6 @@ Player::~Player() {
 }
 
 void Player::Initialize() {
-	model_ = std::make_unique<Model>(dxCommon_, light_);
 	model_->SetModelData("player.obj");
 	model_->SetTexture("player");
 	model_->Initialize();
@@ -47,7 +49,6 @@ void Player::Initialize() {
 	velocity_ = { 0.0f, 0.0f, 0.0f };
 	cooltime_ = 0.0f;
 
-	reticle_ = std::make_unique<Reticle>(dxCommon_, camera_, input_, light_);
 	reticle_->Initialize();
 }
 

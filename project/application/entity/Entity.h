@@ -2,7 +2,7 @@
 #include <memory>
 #include "struct.h"
 #include "Model.h"
-#include "Mapchip.h"
+#include "CameraOrganizer.h"
 
 class Entity {
 public:
@@ -11,7 +11,7 @@ public:
 	virtual void Draw() = 0;
 
 	virtual void OnDamage() {} // ダメージを受けた時の処理
-	
+
 	//アクセッサ
 	void SetScale(const Vector3& scale) { transform_.scale = scale; }
 	void SetRotate(const Vector3& rotate) { transform_.rotate = rotate; }
@@ -27,4 +27,6 @@ protected:
 	Vector3 acceleration_{};
 	AABB aabb_{};
 	Vector3 aabbSize_{};
+
+	CameraOrganizer* camera_ = nullptr;
 };

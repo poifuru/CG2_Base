@@ -39,7 +39,6 @@ private:
 	std::unique_ptr<Reticle> reticle_ = nullptr;
 
 	DxCommon* dxCommon_ = nullptr;
-	CameraOrganizer* camera_ = nullptr;
 	InputManager* input_ = nullptr;
 	LightManager* light_ = nullptr;
 };

@@ -75,8 +75,8 @@
     <ClCompile Include="application\scene\TestScene.cpp" />
     <ClCompile Include="application\entity\player\Bullet.cpp" />
     <ClCompile Include="application\entity\player\Reticle.cpp" />
-    <ClCompile Include="SmallFish.cpp" />
     <ClCompile Include="application\entity\enemy\SmallFish.cpp" />
+    <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -154,8 +154,8 @@
     <ClInclude Include="magosuya\general\DeltaTime.h" />
     <ClInclude Include="application\entity\player\Bullet.h" />
     <ClInclude Include="application\entity\player\Reticle.h" />
-    <ClInclude Include="SmallFish.h" />
     <ClInclude Include="application\entity\enemy\SmallFish.h" />
+    <ClInclude Include="application\entity\enemy\EnemyManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />

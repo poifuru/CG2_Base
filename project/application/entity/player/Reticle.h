@@ -29,5 +29,4 @@ private:
 	float speed_ = 0.0f;
 
 	InputManager* input_ = nullptr;
-	CameraOrganizer* camera_ = nullptr;
 };
