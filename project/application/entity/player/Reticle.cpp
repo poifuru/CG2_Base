@@ -3,8 +3,6 @@
 
 Reticle::Reticle(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input, LightManager* light) {
 	model_ = std::make_unique<Model>(dxCommon, light);
-	model_->IsLighting(LightReflectionModel::None);
-	model_->SetAlpha(0.5f);
 
 	input_ = input;
 	camera_ = camera;
@@ -18,15 +16,20 @@ void Reticle::Initialize() {
 	model_->SetModelData("reticle.obj");
 	model_->SetTexture("reticle");
 	model_->Initialize();
+	model_->SetDepthEnable(false);
+	model_->IsLighting(LightReflectionModel::None);
+	model_->SetAlpha(0.5f);
+	//model_->SetScale({ 2.5f, 2.5f, 1.0f });
 
 	positionOfset_ = { 0.0f, 0.0f, 20.0f };
-	speed_ = 3.0f;
+	speed_ = 15.0f;
 }
 
 void Reticle::Update() {
 	Input();
-	transform_.translate = playerPos_ + positionOfset_;
+	transform_.translate.z = playerPos_.z + positionOfset_.z;
 
+	model_->SetPosition(transform_.translate);
 	model_->Update(&camera_->GetCameraData());
 }
 
@@ -57,7 +60,7 @@ void Reticle::Input() {
 		moveDir.y /= length;
 
 		// 実際に速度、デルタタイムを掛ける
-		velocity_.x += moveDir.x * speed_ * kDeltaTime;
-		velocity_.y += moveDir.y * speed_ * kDeltaTime;
+		transform_.translate.x += moveDir.x * speed_ * kDeltaTime;
+		transform_.translate.y += moveDir.y * speed_ * kDeltaTime;
 	}
 }

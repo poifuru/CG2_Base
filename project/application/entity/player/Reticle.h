@@ -18,6 +18,7 @@ public:
 
 	// アクセッサ
 	void SetPlayerPos(const Vector3& pos) { playerPos_ = pos; }
+	Vector3 GetPosition() { return transform_.translate; }
 
 private:
 	void Input();

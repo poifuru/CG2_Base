@@ -172,6 +172,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="application\entity\enemy\SmallFish.cpp" />
     <ClCompile Include="application\entity\player\Player.cpp" />
     <ClCompile Include="application\scene\ClearScene.cpp" />
     <ClCompile Include="application\scene\GameoverScene.cpp" />
@@ -241,6 +242,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="magosuya\light\RectLight.cpp" />
     <ClCompile Include="application\scene\TestScene.cpp" />
     <ClCompile Include="application\entity\player\Reticle.cpp" />
+    <ClCompile Include="SmallFish.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\Line.PS.hlsl">
@@ -341,6 +343,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application\entity\enemy\SmallFish.h" />
     <ClInclude Include="application\mapchip\MapchipStruct.h" />
     <ClInclude Include="application\scene\BaseScene.h" />
     <ClInclude Include="application\scene\ClearScene.h" />
@@ -422,6 +425,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="magosuya\audio\VoiceCallback.h" />
     <ClInclude Include="application\scene\TestScene.h" />
     <ClInclude Include="application\entity\player\Reticle.h" />
+    <ClInclude Include="SmallFish.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Cube.hlsli" />

@@ -17,7 +17,7 @@ void Bullet::Initialize() {
 	model_->SetTexture("bullet");
 	model_->Initialize();
 
-	velocity_.z = 30.0f;
+	speed_ = 30.0f;
 	isActive_ = true;
 	activeTimer_ = 3.0f;	// 秒単位
 }
@@ -39,8 +39,11 @@ void Bullet::ImGui() {
 }
 
 void Bullet::Move() {
+	// 進向きを調整
+	velocity_ = direction_ * speed_;
+
 	if(isActive_) {
-		transform_.translate.z += velocity_.z * kDeltaTime;
+		transform_.translate += velocity_ * kDeltaTime;
 	}
 }
 

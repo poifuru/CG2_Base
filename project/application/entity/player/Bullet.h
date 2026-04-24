@@ -18,6 +18,7 @@ public:
 
 	// アクセッサ
 	bool IsActive() { return isActive_; }
+	void SetDirection(const Vector3& direction) { direction_ = direction; }
 
 private:
 	void Move();
@@ -26,6 +27,8 @@ private:
 private:
 	bool isActive_ = false;
 	float activeTimer_ = 0.0f;
+	float speed_ = 0.0f;
+	Vector3 direction_{};
 
 	CameraOrganizer* camera_ = nullptr;
 };

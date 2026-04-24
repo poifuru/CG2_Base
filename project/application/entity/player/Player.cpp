@@ -44,11 +44,11 @@ void Player::Initialize() {
 
 	// 固有の数値
 	speed_ = 1.5f;
-	velocity_ = { 0.0f, 0.0f, 5.0f };
+	velocity_ = { 0.0f, 0.0f, 0.0f };
 	cooltime_ = 0.0f;
 
 	reticle_ = std::make_unique<Reticle>(dxCommon_, camera_, input_, light_);
-	//reticle_->Initialize();
+	reticle_->Initialize();
 }
 
 void Player::Update() {
@@ -57,8 +57,8 @@ void Player::Update() {
 	CooltimeUpdate();
 	Move();
 	BulletsUpdate();
-	//reticle_->SetPlayerPos(transform_.translate);
-	//reticle_->Update();
+	reticle_->SetPlayerPos(transform_.translate);
+	reticle_->Update();
 
 	// モデルにデータを渡す
 	model_->SetPosition(transform_.translate);
@@ -68,7 +68,7 @@ void Player::Update() {
 void Player::Draw() {
 	model_->Draw();
 	BulletsDraw();
-	//reticle_->Draw();
+	reticle_->Draw();
 }
 
 void Player::Input() {
@@ -114,8 +114,38 @@ void Player::Input() {
 		std::unique_ptr<Bullet> newBullet = std::make_unique<Bullet>(dxCommon_, camera_, input_, light_);
 		newBullet->Initialize();
 
-		// 位置をプレイヤーに合わせる
-		newBullet->SetTranslate(transform_.translate);
+		// *** レティクルに向けて飛ばす処理 *** //
+
+		// プレイヤーの現在地を取得してtranslateをセット
+		Vector3 startPos = transform_.translate;
+		newBullet->SetTranslate(startPos);
+
+		// レティクルの現在地を取得
+		Vector3 targetPos = reticle_->GetPosition();
+
+		// 方向ベクトルの計算
+		Vector3 direction = {
+			targetPos.x - startPos.x,
+			targetPos.y - startPos.y,
+			targetPos.z - startPos.z,
+		};
+
+		// 方向ベクトルを正規化する
+		float length = std::sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+
+		if(length > 0.0f) {
+			direction.x /= length;
+			direction.y /= length;
+			direction.z /= length;
+		}
+		else {	// プレイヤーとレティクルの座標が同じの場合
+			direction = { 0.0f, 0.0f, 1.0f };
+		}
+
+		// 求めた数値をBulletに渡す
+		newBullet->SetDirection(direction);
+
+		// ****** //
 
 		// リストに追加
 		bullets_.push_back(std::move(newBullet));

@@ -30,6 +30,7 @@ public:
 	void SetMetallic(const float& metallic) { materialData_->metallic = metallic; }
 	void SetImGuiID (const std::string& id) { tag_ = id; }
 	void SetModelData (const std::weak_ptr<ModelData>& data){ modelData_ = data; }
+	void SetDepthEnable(bool flag) { desc_.DepthEnable = flag; }
 
 	/// <summary>
 	/// 使うAnimationをセット

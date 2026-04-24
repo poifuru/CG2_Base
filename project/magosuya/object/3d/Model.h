@@ -78,6 +78,8 @@ public:	//メンバ関数
 	void SetPosition (const Vector3& position) { transform_.translate = position; }
 	Vector3 GetRotate () { return transform_.rotate; }
 	void SetRotate (const Vector3& rotate) { transform_.rotate = rotate; }
+	Vector3 GetScale() { return transform_.scale; }
+	void SetScale(const Vector3& scale) { transform_.scale = scale; }
 	const EulerTransform& GetTransform () { return transform_; }
 	void SetTransform (EulerTransform transform) { transform_ = transform; }
 	EulerTransform GetUVTransform () { return uvTransform_; }
@@ -87,6 +89,7 @@ public:	//メンバ関数
 	void SetRoughness(const float& roughness) { renderer_->SetRoughness(roughness); }
 	void SetMetallic(const float& metallic) { renderer_->SetMetallic(metallic); }
 	void IsLighting (const LightReflectionModel& lighting) { renderer_->IsLighting (lighting); }
+	void SetDepthEnable(bool flag) { renderer_->SetDepthEnable(flag); }
 
 private:		//メンバ変数
 	//貼り付けるテクスチャーのハンドル
