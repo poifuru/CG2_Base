@@ -25,7 +25,7 @@ private:
 	void Life();
 
 private:
-	bool isActive_ = false;
+	bool isActive_ = true;
 	float activeTimer_ = 0.0f;
 	float speed_ = 0.0f;
 	Vector3 direction_{};

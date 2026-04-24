@@ -18,9 +18,13 @@ void Bullet::Initialize() {
 	model_->SetTexture("bullet");
 	model_->Initialize();
 
+	aabbSize_ = { 1.0f, 1.0f, 1.0f };
+
 	speed_ = 30.0f;
 	isActive_ = true;
 	activeTimer_ = 3.0f;	// 秒単位
+
+	hitbox_ = true;
 }
 
 void Bullet::Update() {
@@ -38,9 +42,9 @@ void Bullet::Draw() {
 		auto x = transform_.translate.x;
 		auto y = transform_.translate.y;
 		auto z = transform_.translate.z;
-		auto scaleX = transform_.scale.x;
-		auto scaleY = transform_.scale.y;
-		auto scaleZ = transform_.scale.z;
+		auto scaleX = aabbSize_.x;
+		auto scaleY = aabbSize_.y;
+		auto scaleZ = aabbSize_.z;
 
 		// Box上の頂点8つを定義
 		Vector3 leftUpFront = { x - scaleX, y + scaleY, z - scaleZ };		// 左上手前
@@ -53,8 +57,41 @@ void Bullet::Draw() {
 		Vector3 rightUpBack = { x + scaleX, y + scaleY, z + scaleZ };		//　右上奥
 
 		Mesh::DrawLine(
-			leftUpFront.x, leftUpFront.y, leftUpFront.z, 
-		)
+			leftUpFront.x, leftUpFront.y, leftUpFront.z, leftUpBack.x, leftUpBack.y, leftUpBack.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
+		);
+		Mesh::DrawLine(
+			leftUpFront.x, leftUpFront.y, leftUpFront.z, rightUpFront.x, rightUpFront.y, rightUpFront.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
+		);
+		Mesh::DrawLine(
+			rightUpBack.x, rightUpBack.y, rightUpBack.z, leftUpBack.x, leftUpBack.y, leftUpBack.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
+		);
+		Mesh::DrawLine(
+			rightUpBack.x, rightUpBack.y, rightUpBack.z, rightUpFront.x, rightUpFront.y, rightUpFront.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
+		);
+		Mesh::DrawLine(
+			leftUpFront.x, leftUpFront.y, leftUpFront.z, leftDownFront.x, leftDownFront.y, leftDownFront.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
+		);
+		Mesh::DrawLine(
+			leftUpBack.x, leftUpBack.y, leftUpBack.z, leftDownBack.x, leftDownBack.y, leftDownBack.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
+		);
+		Mesh::DrawLine(
+			rightUpFront.x, rightUpFront.y, rightUpFront.z, rightDownFront.x, rightDownFront.y, rightDownFront.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
+		);
+		Mesh::DrawLine(
+			rightUpBack.x, rightUpBack.y, rightUpBack.z, rightDownBack.x, rightDownBack.y, rightDownBack.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
+		);
+		Mesh::DrawLine(
+			leftDownFront.x, leftDownFront.y, leftDownFront.z, leftDownBack.x, leftDownBack.y, leftDownBack.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
+		);
+		Mesh::DrawLine(
+			leftDownFront.x, leftDownFront.y, leftDownFront.z, rightDownFront.x, rightDownFront.y, rightDownFront.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
+		);
+		Mesh::DrawLine(
+			rightDownBack.x, rightDownBack.y, rightDownBack.z, leftDownBack.x, leftDownBack.y, leftDownBack.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
+		);
+		Mesh::DrawLine(
+			rightDownBack.x, rightDownBack.y, rightDownBack.z, rightDownFront.x, rightDownFront.y, rightDownFront.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
+		);
 	}
 }
 
