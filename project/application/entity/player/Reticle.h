@@ -16,6 +16,17 @@ public:
 
 	void ImGui();
 
-private:
+	// アクセッサ
+	void SetPlayerPos(const Vector3& pos) { playerPos_ = pos; }
 
+private:
+	void Input();
+
+private:
+	Vector3 playerPos_{};
+	Vector3 positionOfset_{};
+	float speed_ = 0.0f;
+
+	InputManager* input_ = nullptr;
+	CameraOrganizer* camera_ = nullptr;
 };

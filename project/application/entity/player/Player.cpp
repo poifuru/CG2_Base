@@ -20,8 +20,6 @@ Player::Player(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input,
 	input_ = input;
 	light_ = light;
 
-	model_ = std::make_unique<Model>(dxCommon, light);
-
 	TextureManager::GetInstance()->LoadTexture("Resources/player/player.png", "player");
 	ModelManager::GetInstance()->LoadModelData("Resources/player", "player.obj");
 
@@ -39,6 +37,7 @@ Player::~Player() {
 }
 
 void Player::Initialize() {
+	model_ = std::make_unique<Model>(dxCommon_, light_);
 	model_->SetModelData("player.obj");
 	model_->SetTexture("player");
 	model_->Initialize();
@@ -47,6 +46,9 @@ void Player::Initialize() {
 	speed_ = 1.5f;
 	velocity_ = { 0.0f, 0.0f, 5.0f };
 	cooltime_ = 0.0f;
+
+	reticle_ = std::make_unique<Reticle>(dxCommon_, camera_, input_, light_);
+	//reticle_->Initialize();
 }
 
 void Player::Update() {
@@ -55,6 +57,8 @@ void Player::Update() {
 	CooltimeUpdate();
 	Move();
 	BulletsUpdate();
+	//reticle_->SetPlayerPos(transform_.translate);
+	//reticle_->Update();
 
 	// モデルにデータを渡す
 	model_->SetPosition(transform_.translate);
@@ -64,6 +68,7 @@ void Player::Update() {
 void Player::Draw() {
 	model_->Draw();
 	BulletsDraw();
+	//reticle_->Draw();
 }
 
 void Player::Input() {
