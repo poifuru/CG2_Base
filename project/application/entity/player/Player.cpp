@@ -46,7 +46,7 @@ void Player::Initialize() {
 
 	// 固有の数値
 	speed_ = 1.5f;
-	velocity_ = { 0.0f, 0.0f, 0.0f };
+	velocity_ = { 0.0f, 0.0f, 3.0f };
 	cooltime_ = 0.0f;
 
 	reticle_->Initialize();
