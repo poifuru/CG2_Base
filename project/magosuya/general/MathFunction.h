@@ -71,6 +71,9 @@ namespace Math {
 	//3次元アフィン変換行列
 	Matrix4x4 MakeAffineMatrix (const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
+	//3次元アフィン変換行列(Quaternion)
+	Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const Vector3& translate);
+
 	//透視投影行列
 	Matrix4x4 MakePerspectiveFOVMatrix (float fovY, float aspectRatio, float nearClip, float farClip);
 
@@ -149,11 +152,11 @@ namespace Math {
 	//オブジェクトの回転を操作する関数
 	//void objectRotation(Vector3& rotate);
 
-	// floatLerp関数
-	float Lerp(const float& f1, const float& f2, float t);
+	//// floatLerp関数
+	//float Lerp(const float& f1, const float& f2, float t);
 
-	//Vector3Lerp関数
-	Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t);
+	////Vector3Lerp関数
+	//Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t);
 
 	//ベジェ曲線描画用の点を求める関数
 	Vector3 ComputeBezierPoint (const Vector3& p0, const Vector3& p1, const Vector3& p2, float t);
@@ -165,18 +168,58 @@ namespace Math {
 	//反射ベクトルを求める関数
 	Vector3 Reflect (const Vector3& input, Vector3& normal);
 
+	//DegreeをRadianで返す関数
 	float Deg2Rad (float deg);
+
+	//任意軸回転行列作成関数
+	Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
+
+	//ある軸からある軸に向けて回転させる関数
+	Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to);
+
+	//Quaternionの積 (ハミルトン積)
+	Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs);
+
+	//単位Quaternionを返す
+	Quaternion IdentityQuaternion();
+
+	//共役Quaternionを返す
+	Quaternion Conjugate(const Quaternion& q);
+
+	//Quaternionのnorm（ノルム）を返す
+	float Norm(const Quaternion& q);
+
+	//正規化したQuaternionを返す
+	Quaternion Normalize(const Quaternion& q);
+
+	//逆Quaternionを返す
+	Quaternion Inverse(const Quaternion& q);
+
+	//Quaternionの内積
+	float Dot(const Quaternion& q0, const Quaternion& q1);
+
+	//任意回転軸を表すQuaternionの生成
+	Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle);
+
+	//ベクトルをQuaternionで回転させた結果のベクトルを求める
+	Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion);
+
+	//Quaternionから回転行列を求める
+	Matrix4x4 MakeRotateMatrix(const Quaternion& quaternion);
+
+	//球面線形補間
+	Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
+
+	//Lerp関数(template対応)
+	template <typename T>
+	T Lerp(const T& start, const T& end, float t);
+
+	//Quaternionようにオーバーロード
+	Quaternion Lerp(const Quaternion& start, const Quaternion& end, float t);
 }
 
 //演算子オーバーロード
-Vector3 operator+(const Vector3& v1, const Vector3& v2);
-Vector3 operator-(const Vector3& v1, const Vector3& v2);
-Vector3 operator*(float s, const Vector3& v);
-Vector3 operator*(const Vector3& v, float s);
 Vector3 operator/(const Vector3& v, float s);
 Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2);
 Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2);
 Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2);
-/*単項演算子*/
-Vector3 operator+(const Vector3& v);
-Vector3 operator-(const Vector3& v);

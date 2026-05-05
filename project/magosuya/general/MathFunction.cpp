@@ -291,6 +291,18 @@ namespace Math {
 		return translateMatrix;
 	}
 
+	Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Quaternion& rotate, const Vector3& translate) {
+		Matrix4x4 result = MakeIdentity4x4();
+
+		Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
+		Matrix4x4 rotateMatrix = MakeRotateMatrix(rotate);
+		Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
+
+		result = Multiply(Multiply(scaleMatrix, rotateMatrix), translateMatrix);
+
+		return result;
+	}
+
 	Matrix4x4 MakePerspectiveFOVMatrix (float fovY, float aspectRatio, float nearClip, float farClip) {
 		Matrix4x4 result = { 0.0f };
 
@@ -382,9 +394,9 @@ namespace Math {
 		Vector3 result = {};
 
 		// v.x の分だけ M の X軸を進める
-		result.x = v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0];
-		result.y = v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1];
-		result.z = v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2];
+		result.x = v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0] + 1.0f * m.m[3][0];
+		result.y = v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1] + 1.0f * m.m[3][1];
+		result.z = v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2] + 1.0f * m.m[3][2];
 
 		return result;
 	}
@@ -793,7 +805,7 @@ namespace Math {
 	//	wasMousePressed = isMousePressed;
 	//}
 
-	float Lerp(const float& start, const float& end, float t) {
+	/*float Lerp(const float& start, const float& end, float t) {
 		return t * end + (1 - t) * start;
 	}
 
@@ -805,7 +817,7 @@ namespace Math {
 		v.z = t * end.z + (1 - t) * start.z;
 
 		return v;
-	}
+	}*/
 
 	Vector3 ComputeBezierPoint (const Vector3& p0, const Vector3& p1, const Vector3& p2, float t) {
 		Vector3 a = Lerp (p0, p1, t);
@@ -850,17 +862,199 @@ namespace Math {
 		float ret = static_cast<float>(deg) * (3.14159265358979323846f / 180.0f);
 		return ret;
 	}
+
+	Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle) {
+		Matrix4x4 result = { 0.0f }; // 全て0で初期化
+		float c = cosf(angle);
+		float s = sinf(angle);
+		float omc = 1.0f - c; // One Minus Cos
+
+		// スライドの行列式 R に基づいて各要素を計算
+		result.m[0][0] = axis.x * axis.x * omc + c;
+		result.m[0][1] = axis.x * axis.y * omc + axis.z * s;
+		result.m[0][2] = axis.x * axis.z * omc - axis.y * s;
+
+		result.m[1][0] = axis.x * axis.y * omc - axis.z * s;
+		result.m[1][1] = axis.y * axis.y * omc + c;
+		result.m[1][2] = axis.y * axis.z * omc + axis.x * s;
+
+		result.m[2][0] = axis.x * axis.z * omc + axis.y * s;
+		result.m[2][1] = axis.y * axis.z * omc - axis.x * s;
+		result.m[2][2] = axis.z * axis.z * omc + c;
+
+		result.m[3][3] = 1.0f; // 同次座標
+		return result;
+	}
+
+	Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to) {
+		Vector3 fromN = Normalize(from);
+		Vector3 toN = Normalize(to);
+		float cosTheta = Dot(fromN, toN);
+
+		// 同じ方向
+		if(cosTheta > 0.999999f) return MakeIdentity4x4();
+
+		// 真逆の方向
+		if(cosTheta < -0.999999f) {
+			Vector3 axis;
+			if(fabsf(fromN.x) > 1e-6f || fabsf(fromN.y) > 1e-6f) {
+				axis = Normalize(Vector3{ fromN.y, -fromN.x, 0.0f });
+			}
+			else {
+				axis = Normalize(Vector3{ fromN.z, 0.0f, -fromN.x });
+			}
+			return MakeRotateAxisAngle(axis, static_cast<float>(M_PI));
+		}
+
+		// 通常時
+		Vector3 axis = Normalize(Cross(fromN, toN));
+		float angle = acosf(cosTheta); // cosThetaから角度を求める
+		return MakeRotateAxisAngle(axis, angle);
+	}
+
+	Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs) {
+		return Quaternion(
+			lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y,
+			lhs.w * rhs.y - lhs.x * rhs.z + lhs.y * rhs.w + lhs.z * rhs.x,
+			lhs.w * rhs.z + lhs.x * rhs.y - lhs.y * rhs.x + lhs.z * rhs.w,
+			lhs.w * rhs.w - lhs.x * rhs.x - lhs.y * rhs.y - lhs.z * rhs.z
+		);
+	}
+
+	Quaternion IdentityQuaternion() {
+		return Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+	Quaternion Conjugate(const Quaternion& q) {
+		return Quaternion(-q.x, -q.y, -q.z, q.w);
+	}
+
+	float Norm(const Quaternion& q) {
+		return std::sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
+	}
+
+	Quaternion Normalize(const Quaternion& q) {
+		float n = Norm(q);
+		if(n > 0.0f) {
+			float invN = 1.0f / n;
+			return Quaternion(q.x * invN, q.y * invN, q.z * invN, q.w * invN);
+		}
+		return IdentityQuaternion();
+	}
+
+	Quaternion Inverse(const Quaternion& q) {
+		float n2 = q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w;
+		if(n2 > 0.0f) {
+			float invN2 = 1.0f / n2;
+			Quaternion conj = Conjugate(q);
+			return Quaternion(conj.x * invN2, conj.y * invN2, conj.z * invN2, conj.w * invN2);
+		}
+		return IdentityQuaternion();
+	}
+
+	float Dot(const Quaternion& q0, const Quaternion& q1) {
+		return q0.x * q1.x + q0.y * q1.y + q0.z * q1.z + q0.w * q1.w;
+	}
+
+	Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle) {
+		Vector3 normAxis = Normalize(axis);
+		float halfAngle = angle / 2.0f;
+		float sinHalf = sinf(halfAngle);
+
+		return Quaternion(
+			normAxis.x * sinHalf,
+			normAxis.y * sinHalf,
+			normAxis.z * sinHalf,
+			cosf(halfAngle)
+		);
+	}
+
+	Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion) {
+		//ベクトルをQuaternion形式 (x, y, z, 0) に変換
+		Quaternion v(vector.x, vector.y, vector.z, 0.0f);
+
+		//q * v * conjugate(q) を計算
+		Quaternion conj = Conjugate(quaternion);
+		Quaternion resultQ = Multiply(Multiply(quaternion, v), conj);
+
+		//結果の虚部をVector3として返す
+		return { resultQ.x, resultQ.y, resultQ.z };
+	}
+
+	Matrix4x4 MakeRotateMatrix(const Quaternion& quaternion) {
+		Matrix4x4 result = MakeIdentity4x4();
+
+		float x = quaternion.x;
+		float y = quaternion.y;
+		float z = quaternion.z;
+		float w = quaternion.w;
+
+		//Quaternionから回転行列への変換公式
+		result.m[0][0] = 1.0f - 2.0f * y * y - 2.0f * z * z;
+		result.m[0][1] = 2.0f * x * y + 2.0f * w * z;
+		result.m[0][2] = 2.0f * x * z - 2.0f * w * y;
+
+		result.m[1][0] = 2.0f * x * y - 2.0f * w * z;
+		result.m[1][1] = 1.0f - 2.0f * x * x - 2.0f * z * z;
+		result.m[1][2] = 2.0f * y * z + 2.0f * w * x;
+
+		result.m[2][0] = 2.0f * x * z + 2.0f * w * y;
+		result.m[2][1] = 2.0f * y * z - 2.0f * w * x;
+		result.m[2][2] = 1.0f - 2.0f * x * x - 2.0f * y * y;
+
+		return result;
+	}
+
+	Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t) {
+		float dot = Dot(q0, q1);
+
+		//向きを補正するためのコピー
+		Quaternion targetQ1 = q1;
+
+		//内積が負の場合は逆向きに補間する
+		if(dot < 0.0f) {
+			targetQ1 = -q1;
+			dot = -dot;
+		}
+
+		//ドット積が1に近い（角度がほぼ0）場合は、ゼロ除算を避けるために線形補間（Lerp）に切り替えるのが安全
+		if(dot > 0.9995f) {
+			//線形補間して正規化（簡易版）
+			Quaternion result = q0 * (1.0f - t) + targetQ1 * t;
+			return result;
+		}
+
+		//なす角thetaを求める
+		float theta_0 = std::acos(dot);   //q0とq1の間の角度
+		float theta = theta_0 * t;     //補間後の角度
+
+		//補間係数 scale0, scale1 を求める
+		//公式: Slerp(q0, q1, t) = (sin((1-t)theta)/sin(theta)) * q0 + (sin(t*theta)/sin(theta)) * q1
+		float sin_theta_0 = std::sin(theta_0);
+		float sin_theta = std::sin(theta);
+
+		float scale0 = std::sin(theta_0 - theta) / sin_theta_0;
+		float scale1 = sin_theta / sin_theta_0;
+
+		//それぞれの補間係数を利用して補間後のQuaternionを求める
+		return q0 * scale0 + targetQ1 * scale1;
+	}
+
+	template<typename T>
+	T Lerp(const T& start, const T& end, float t) {
+		T result;
+		// tが0の時にstart、1の時にendになる
+		result = start + (end - start) * t;
+		return result;
+	}
+
+	Quaternion Lerp(const Quaternion& start, const Quaternion& end, float t) {
+		return Slerp(start, end, t);
+	}
 }
 
 //演算子オーバーロード
-Vector3 operator+(const Vector3& v1, const Vector3& v2) { return Math::Add (v1, v2); }
-Vector3 operator-(const Vector3& v1, const Vector3& v2) { return Math::Subtract (v1, v2); }
-Vector3 operator*(float s, const Vector3& v) { return Math::Multiply (s, v); }
-Vector3 operator*(const Vector3& v, float s) { return s * v; }
 Vector3 operator/(const Vector3& v, float s) { return Math::Multiply (1.0f / s, v); }
 Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Add (m1, m2); }
 Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Subtract (m1, m2); }
 Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Multiply (m1, m2); }
-/*単項演算子*/
-Vector3 operator+(const Vector3& v) { return { -v.x, -v.y, -v.z }; }
-Vector3 operator-(const Vector3& v) { return v; }
