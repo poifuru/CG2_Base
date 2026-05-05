@@ -21,6 +21,9 @@ public:
 	void SetAABBSize(const Vector3& size) { aabbSize_ = size; }
 
 protected:
+	void DrawHitbox(Vector4 color);
+
+protected:
 	std::unique_ptr<Model> model_;
 	EulerTransform transform_{};
 	Vector3 velocity_{};

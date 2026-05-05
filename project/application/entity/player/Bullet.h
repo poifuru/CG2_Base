@@ -32,4 +32,5 @@ private:
 
 	// デバッグ用
 	bool hitbox_ = false;
+	Vector4 hitboxColor_{};
 };

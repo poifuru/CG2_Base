@@ -25,6 +25,7 @@ void Bullet::Initialize() {
 	activeTimer_ = 3.0f;	// 秒単位
 
 	hitbox_ = true;
+	hitboxColor_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 }
 
 void Bullet::Update() {
@@ -39,59 +40,7 @@ void Bullet::Draw() {
 	model_->Draw();
 
 	if(hitbox_) {
-		auto x = transform_.translate.x;
-		auto y = transform_.translate.y;
-		auto z = transform_.translate.z;
-		auto scaleX = aabbSize_.x;
-		auto scaleY = aabbSize_.y;
-		auto scaleZ = aabbSize_.z;
-
-		// Box上の頂点8つを定義
-		Vector3 leftUpFront = { x - scaleX, y + scaleY, z - scaleZ };		// 左上手前
-		Vector3 leftDownFront = { x - scaleX, y - scaleY, z - scaleZ };		//　左下手前
-		Vector3 rightDownFront = { x + scaleX, y - scaleY, z - scaleZ };	//　右下手前
-		Vector3 rightUpFront = { x + scaleX, y + scaleY, z - scaleZ };		//　右上手前
-		Vector3 leftUpBack = { x - scaleX, y + scaleY, z + scaleZ };		//　左上奥
-		Vector3 leftDownBack = { x - scaleX, y - scaleY, z + scaleZ };		//　左下奥
-		Vector3 rightDownBack = { x + scaleX, y - scaleY, z + scaleZ };		//　右下奥
-		Vector3 rightUpBack = { x + scaleX, y + scaleY, z + scaleZ };		//　右上奥
-
-		Mesh::DrawLine(
-			leftUpFront.x, leftUpFront.y, leftUpFront.z, leftUpBack.x, leftUpBack.y, leftUpBack.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
-		);
-		Mesh::DrawLine(
-			leftUpFront.x, leftUpFront.y, leftUpFront.z, rightUpFront.x, rightUpFront.y, rightUpFront.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
-		);
-		Mesh::DrawLine(
-			rightUpBack.x, rightUpBack.y, rightUpBack.z, leftUpBack.x, leftUpBack.y, leftUpBack.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
-		);
-		Mesh::DrawLine(
-			rightUpBack.x, rightUpBack.y, rightUpBack.z, rightUpFront.x, rightUpFront.y, rightUpFront.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
-		);
-		Mesh::DrawLine(
-			leftUpFront.x, leftUpFront.y, leftUpFront.z, leftDownFront.x, leftDownFront.y, leftDownFront.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
-		);
-		Mesh::DrawLine(
-			leftUpBack.x, leftUpBack.y, leftUpBack.z, leftDownBack.x, leftDownBack.y, leftDownBack.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
-		);
-		Mesh::DrawLine(
-			rightUpFront.x, rightUpFront.y, rightUpFront.z, rightDownFront.x, rightDownFront.y, rightDownFront.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
-		);
-		Mesh::DrawLine(
-			rightUpBack.x, rightUpBack.y, rightUpBack.z, rightDownBack.x, rightDownBack.y, rightDownBack.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
-		);
-		Mesh::DrawLine(
-			leftDownFront.x, leftDownFront.y, leftDownFront.z, leftDownBack.x, leftDownBack.y, leftDownBack.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
-		);
-		Mesh::DrawLine(
-			leftDownFront.x, leftDownFront.y, leftDownFront.z, rightDownFront.x, rightDownFront.y, rightDownFront.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
-		);
-		Mesh::DrawLine(
-			rightDownBack.x, rightDownBack.y, rightDownBack.z, leftDownBack.x, leftDownBack.y, leftDownBack.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
-		);
-		Mesh::DrawLine(
-			rightDownBack.x, rightDownBack.y, rightDownBack.z, rightDownFront.x, rightDownFront.y, rightDownFront.z, { 1.0f, 1.0f, 1.0f, 1.0f }, camera_->GetVPMatrix()
-		);
+		DrawHitbox(hitboxColor_);
 	}
 }
 
@@ -101,7 +50,7 @@ void Bullet::ImGui() {
 }
 
 void Bullet::Move() {
-	// 進向きを調整
+	// 進む向きを調整
 	velocity_ = direction_ * speed_;
 
 	if(isActive_) {
