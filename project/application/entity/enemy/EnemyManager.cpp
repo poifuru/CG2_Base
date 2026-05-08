@@ -20,7 +20,7 @@ void EnemyManager::Initialize(DxCommon* dxCommon, LightManager* light, CameraOrg
 		enemy->SetIsActive(false);
 	}
 
-	// --- スポーンタイムライン（ハードコード） ---
+	// --- スポーンタイムライン（仮置き） ---
 	spawnTimeline_ = {
 		{ 10.0f, kSmallFish, { -5.0f, 0.0f, 30.0f } },
 		{ 10.0f, kSmallFish, {  0.0f, 0.0f, 30.0f } },
