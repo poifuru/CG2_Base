@@ -17,6 +17,9 @@ public:
 	EulerTransform GetTransform() { return transform_; }
 	void SetPosition(const Vector3& pos) { transform_.translate = pos; }
 	void SetAABBSize(const Vector3& size) { aabbSize_ = size; }
+	bool IsActive() { return isActive_; }
+	void SetIsActive(bool flag) { isActive_ = flag; }
 
 protected:
+	bool isActive_ = false;
 };
