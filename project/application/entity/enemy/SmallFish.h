@@ -1,7 +1,8 @@
 #pragma once
 #include "BaseEnemy.h"
 class SmallFish : public BaseEnemy {
-	SmallFish();
+public:
+	SmallFish(DxCommon* dxCommon, LightManager* light, CameraOrganizer* camera);
 	~SmallFish();
 
 	void Initialize() override;

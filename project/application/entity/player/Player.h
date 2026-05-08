@@ -19,6 +19,7 @@ public:
 	EulerTransform GetTransform() { return transform_; }
 	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
 	AABB GetAABB() { return aabb_; }
+	std::list<std::unique_ptr<Bullet>>& GetBullets() { return bullets_; }
 	
 private:	// プライベート関数
 	void Input();

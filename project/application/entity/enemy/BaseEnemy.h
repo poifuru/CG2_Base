@@ -4,7 +4,7 @@
 
 class BaseEnemy : public Entity {
 public:
-	BaseEnemy(DxCommon* dxCommon, LightManager* light);
+	BaseEnemy(DxCommon* dxCommon, LightManager* light, CameraOrganizer* camera);
 	virtual ~BaseEnemy();
 
 	void Initialize() override;

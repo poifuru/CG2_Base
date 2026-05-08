@@ -43,6 +43,9 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 
 	player_ = std::make_unique<Player>(dxCommon_, camera_, input_, lightManager_.get());
 	player_->Initialize();
+
+	enemyManager_ = std::make_unique<EnemyManager>();
+	enemyManager_->Initialize(dxCommon, lightManager_.get(), camera);
 }
 
 void PlayScene::Update () {
@@ -56,6 +59,21 @@ void PlayScene::Update () {
 	player_->Update();
 	player_->ImGui();
 
+	enemyManager_->Update(player_->GetTransform().translate.z);
+
+	// --- 弾と敵の当たり判定 ---
+	for (auto& bullet : player_->GetBullets()) {
+		if (!bullet->IsActive()) continue;
+		for (auto& enemy : enemyManager_->GetEnemies()) {
+			if (!enemy || !enemy->IsActive()) continue;
+			if (Math::IsCollision(bullet->GetAABB(), enemy->GetAABB())) {
+				bullet->SetIsActive(false);  // 弾を消す
+				enemy->SetIsActive(false);   // 敵を消す
+				break;
+			}
+		}
+	}
+
 	camera_->SetFollowTarget("main2", player_->GetTransform());
 	camera_->Update();
 	camera_->ImGui();
@@ -65,6 +83,7 @@ void PlayScene::Update () {
 void PlayScene::Draw () {
 	skydome_->Draw();
 	player_->Draw();
+	enemyManager_->Draw();
 }
 
 void PlayScene::StopToResources() {

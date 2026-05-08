@@ -18,6 +18,8 @@ public:
 
 	// アクセッサ
 	bool IsActive() { return isActive_; }
+	const AABB& GetAABB() const { return aabb_; }
+	void SetIsActive(bool flag) { isActive_ = flag; }
 	void SetDirection(const Vector3& direction) { direction_ = direction; }
 
 private:

@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "LightManager.h"
 #include "Player.h"
+#include "EnemyManager.h"
 
 class PlayScene : public BaseScene {
 public:		//メンバ関数
@@ -20,6 +21,7 @@ private:	//メンバ変数
 	std::unique_ptr<Model> skydome_ = nullptr;
 
 	std::unique_ptr<Player> player_ = nullptr;
+	std::unique_ptr<EnemyManager> enemyManager_ = nullptr;
 
 	DxCommon* dxCommon_ = nullptr;
 };

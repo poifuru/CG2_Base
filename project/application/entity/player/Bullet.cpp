@@ -34,6 +34,9 @@ void Bullet::Update() {
 
 	model_->SetPosition(transform_.translate);
 	model_->Update(&camera_->GetCameraData());
+	// AABBの更新
+	aabb_.min = transform_.translate - aabbSize_;
+	aabb_.max = transform_.translate + aabbSize_;
 }
 
 void Bullet::Draw() {
