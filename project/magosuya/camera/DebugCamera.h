@@ -17,7 +17,7 @@ public:	//メンバ関数
 	~DebugCamera () override;
 
 	//初期化
-	void Initialize (const Transform& transform) override;
+	void Initialize (const EulerTransform& Transform) override;
 
 	//更新
 	void Update () override;

@@ -14,18 +14,18 @@ Sprite::~Sprite () {
 
 void Sprite::Initialize (Vector3 position) {
 	AdjustTextureSize ();
-	//transformの初期化
-	transformData_.transform.scale = { size_.x, size_.y, 1.0f };
-	transformData_.transform.rotate = { 0.0f, 0.0f, rotation_ };
-	transformData_.transform.translate = position;
+	//Transformの初期化
+	TransformData_.Transform.scale = { size_.x, size_.y, 1.0f };
+	TransformData_.Transform.rotate = { 0.0f, 0.0f, rotation_ };
+	TransformData_.Transform.translate = position;
 
 	//uvTransformの初期化
-	transformData_.uvTransform.scale = { 1.0f, 1.0f, 1.0f };
-	transformData_.uvTransform.rotate = {};
-	transformData_.uvTransform.translate = {};
+	TransformData_.uvTransform.scale = { 1.0f, 1.0f, 1.0f };
+	TransformData_.uvTransform.rotate = {};
+	TransformData_.uvTransform.translate = {};
 
 	//wvpMatrixの初期化
-	transformData_.wvpMatrix = Math::MakeIdentity4x4 ();
+	TransformData_.wvpMatrix = Math::MakeIdentity4x4 ();
 
 	renderer_->Initialize ();
 }
@@ -36,15 +36,15 @@ void Sprite::SetTexture (std::string ID) {
 }
 
 void Sprite::MakewvpMatrix () {
-	Matrix4x4 world = Math::MakeAffineMatrix (transformData_.transform.scale, transformData_.transform.rotate, transformData_.transform.translate);
+	Matrix4x4 world = Math::MakeAffineMatrix (TransformData_.Transform.scale, TransformData_.Transform.rotate, TransformData_.Transform.translate);
 	Matrix4x4 view = Math::MakeIdentity4x4 ();
 	Matrix4x4 proj = Math::MakeOrthographicMatrix (0, 0, 1280.0f, 720.0f, 0, 100.0f);
-	transformData_.wvpMatrix = Math::Multiply (world, Math::Multiply (view, proj));
+	TransformData_.wvpMatrix = Math::Multiply (world, Math::Multiply (view, proj));
 }
 
 void Sprite::Update () {
 	MakewvpMatrix ();
-	renderer_->Update (transformData_.wvpMatrix, transformData_.uvTransform,
+	renderer_->Update (TransformData_.wvpMatrix, TransformData_.uvTransform,
 					   anchorPoint_, isFlipX_, isFlipY_, id_, textureLeftTop_, textureSize_
 	);
 }
@@ -54,7 +54,7 @@ void Sprite::Draw () {
 }
 
 void Sprite::ImGui () {
-	renderer_->ImGui (transformData_.transform, transformData_.uvTransform);
+	renderer_->ImGui (TransformData_.Transform, TransformData_.uvTransform);
 }
 
 void Sprite::AdjustTextureSize () {

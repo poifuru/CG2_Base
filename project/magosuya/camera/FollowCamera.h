@@ -6,7 +6,7 @@ public:
 	FollowCamera ();
 	~FollowCamera () override;
 
-	void Initialize (const Transform& transform) override;
+	void Initialize (const Transform& Transform) override;
 
 	void SetTarget (const Transform* target);
 

@@ -23,7 +23,7 @@ protected:
 	void UpdateAABB();
 
 	std::unique_ptr<Model> model_;
-	Transform transform_;
+	EulerTransform Transform_;
 	Vector3 velocity_;
 	AABB aabb_;
 	Vector3 aabbSize_;

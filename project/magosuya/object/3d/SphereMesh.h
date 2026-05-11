@@ -26,7 +26,7 @@ public:		//メンバ関数
 
 	//アクセッサ
 	std::vector<VertexData> GetVertexData() { return vertexData_; }
-	Matrix4x4 GetWorld() { return transformationMatrix_.World; }
+	Matrix4x4 GetWorld() { return TransformationMatrix_.World; }
 
 private:	//メンバ変数
 	PSODescriptor desc_ = {};
@@ -49,9 +49,9 @@ private:	//メンバ変数
 	D3D12_INDEX_BUFFER_VIEW ibView_{};
 
 	//座標データ
-	Transform transform_;	//ローカル座標
+	Transform Transform_;	//ローカル座標
 	Transform uvTransform_;	//uvTranform用のローカル座標
-	TransformationMatrix transformationMatrix_; //ワールド座標と、カメラからwvp行列をもらって格納する
+	TransformationMatrix TransformationMatrix_; //ワールド座標と、カメラからwvp行列をもらって格納する
 
 	//球の半径
 	float radius_;

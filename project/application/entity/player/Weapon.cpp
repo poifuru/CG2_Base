@@ -3,7 +3,7 @@
 #include "imgui.h"
 
 Weapon::Weapon(DxCommon* dxCommon, LightManager* light)
-	: transform_{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} }
+	: Transform_{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} }
 	, localAABB_{ {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} }
 	, attackAABB_{ {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} }
 {

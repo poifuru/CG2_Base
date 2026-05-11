@@ -30,7 +30,7 @@ void CameraOrganizer::AddCamera (const std::string& name, CameraType type) {
 	}
 
 	//原点にカメラを生成
-	Transform transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+	EulerTransform Transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 
 	CameraComponent* camera = nullptr;
 
@@ -66,7 +66,7 @@ void CameraOrganizer::AddCamera (const std::string& name, CameraType type) {
 		return;
 	}
 
-	camera->Initialize (transform);
+	camera->Initialize (Transform);
 	cameras_[name] = camera;
 }
 
@@ -138,7 +138,7 @@ void CameraOrganizer::ImGui () {
 #endif
 }
 
-void CameraOrganizer::SetFollowTarget (const std::string& cameraName, const Transform& target) {
+void CameraOrganizer::SetFollowTarget (const std::string& cameraName, const EulerTransform& target) {
 	auto it = cameras_.find (cameraName);
 	if (it == cameras_.end ()) {
 		return;

@@ -42,7 +42,7 @@ public:
 	void ImGui ();
 
 	//追従カメラの設定をいじるためにコンテナからカメラを取得
-	void SetFollowTarget (const std::string& cameraName, const Transform& target);
+	void SetFollowTarget (const std::string& cameraName, const EulerTransform& target);
 
 	//LookAtカメラの設定をいじるためにコンテナからカメラを取得
 	void SetLookAtPosition (const std::string& cameraName, const Vector3& pos);

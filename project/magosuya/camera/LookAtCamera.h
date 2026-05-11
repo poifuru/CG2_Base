@@ -9,7 +9,7 @@ public:	//メンバ関数
 	~LookAtCamera () override;
 
 	//初期化
-	void Initialize (const Transform& transform) override;
+	void Initialize (const Transform& Transform) override;
 
 	//更新
 	void Update () override;
@@ -17,7 +17,7 @@ public:	//メンバ関数
 	//ImGui
 	void ImGui () override;
 
-	void SetPosition (const Vector3& pos) { camera_.transform.translate = pos; }
+	void SetPosition (const Vector3& pos) { camera_.Transform.translate = pos; }
 	void SetTarget (const Vector3& targetPos) { target_ = targetPos; }
 	bool GetTouchImGui () const { return touchImGui_; }
 	void SetTouchImGui (bool flag) { touchImGui_ = flag; }

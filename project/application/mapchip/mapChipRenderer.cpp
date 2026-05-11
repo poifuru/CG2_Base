@@ -153,7 +153,7 @@ void MapChipRenderer::Update(MapChip& mapChip, const Matrix4x4& vp, Vector3 came
 
 			// 座標を取得してワールド行列を作成
 			Vector3 pos = mapChip.GetMapChipPositionByIndex(x, y);
-			Matrix4x4 world = Math::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, pos);
+			Matrix4x4 world = Math::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, pos);
 			Matrix4x4 wvp = world * vp;
 
 			// 対応する種類の vector に追加

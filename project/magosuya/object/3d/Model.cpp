@@ -13,15 +13,15 @@ Model::~Model () {
 }
 
 void Model::Initialize (Vector3 scale, Vector3 rotate, Vector3 position) {
-	transform_ = { scale, rotate, position };
+	Transform_ = { scale, rotate, position };
 	uvTransform_ = { { 1.0f, 1.0f, 1.0f },{ 0.0f, 0.0f, 0.0f },{ 0.0f, 0.0f, 0.0f } };
 	renderer_->Initialize ();
 }
 
 void Model::Update (CameraData* cameraData) {
-	Matrix4x4 world = Math::MakeAffineMatrix (transform_.scale, transform_.rotate, transform_.translate);
+	Matrix4x4 world = Math::MakeAffineMatrix (Transform_.scale, Transform_.rotate, Transform_.translate);
 
-	renderer_->Update (world, cameraData->vp, uvTransform_, cameraData->transform.translate);
+	renderer_->Update (world, cameraData->vp, uvTransform_, cameraData->Transform.translate);
 }
 
 void Model::Draw () {
@@ -29,7 +29,7 @@ void Model::Draw () {
 }
 
 void Model::ImGui (const std::string& windowName) {
-	renderer_->ImGui (transform_, uvTransform_, windowName);
+	renderer_->ImGui (Transform_, uvTransform_, windowName);
 }
 
 void Model::SetModelData (const std::string& ID) {

@@ -18,8 +18,8 @@ public:
 
 	// ゲッター
 	const AABB& GetAABB() const { return aabb_; }
-	Transform GetTransform() { return transform_; }
-	void SetPosition(const Vector3& pos) { transform_.translate = pos; }
+	EulerTransform GetTransform() { return Transform_; }
+	void SetPosition(const Vector3& pos) { Transform_.translate = pos; }
 	void SetAABBSize(const Vector3& size) { aabbSize_ = size; }
 	// 完全に消滅したか（PlaySceneでリストから消す用）
 	bool IsDead() const { return isDead_; }

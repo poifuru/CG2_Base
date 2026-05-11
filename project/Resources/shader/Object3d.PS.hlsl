@@ -137,8 +137,8 @@ PixelShaderOutput main(VertexShaderOutput input)
     PixelShaderOutput output;
     
     //テクスチャサンプリングと基本色の決定
-    float4 transformedUV = mul(float4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
-    float4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
+    float4 TransformedUV = mul(float4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
+    float4 textureColor = gTexture.Sample(gSampler, TransformedUV.xy);
     
     //textureのアルファ値,出力カラーのアルファ値が一定以下ならその後の処理をしない(2値抜き)
     if (textureColor.a <= 0.5f || output.color.a == 0.0f) { discard; }

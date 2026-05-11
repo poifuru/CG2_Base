@@ -28,11 +28,11 @@ private:	//プライベート関数
 
 public:		//アクセッサ
 	//スケール
-	Vector3 GetScale () { return transformData_.transform.scale; }
-	void SetScale (const Vector3& scale) { transformData_.transform.scale = scale; }
+	Vector3 GetScale () { return TransformData_.Transform.scale; }
+	void SetScale (const Vector3& scale) { TransformData_.Transform.scale = scale; }
 	//位置
-	Vector3 GetPosition () { return transformData_.transform.translate; }
-	void SetPosition (const Vector3& position) { transformData_.transform.translate = position; }
+	Vector3 GetPosition () { return TransformData_.Transform.translate; }
+	void SetPosition (const Vector3& position) { TransformData_.Transform.translate = position; }
 	//回転
 	float GetRotation () { return rotation_; }
 	void SetRotation (float rotation) { rotation_ = rotation; }
@@ -62,7 +62,7 @@ public:		//アクセッサ
 
 private:	//メンバ変数  
 	//スプライトを構成するデータ
-	TransformData transformData_ = {};
+	TransformData TransformData_ = {};
 	//回転のデータ(Z軸だけなのでfloat、単位はradian)
 	float rotation_ = 0.0f;
 	//サイズ

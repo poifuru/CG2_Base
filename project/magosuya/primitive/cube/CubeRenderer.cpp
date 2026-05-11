@@ -72,28 +72,28 @@ void CubeRenderer::UpdateVertexData (const CubeData* data) {
 
 #pragma region 頂点の情報をコピー
 	//オフセットを使ってライン描画に必要な分だけバッファーにコピー
-	vertexData_[offset + 0].position = { data->transform.translate.x - data->size, data->transform.translate.y - data->size, data->transform.translate.z - data->size };
+	vertexData_[offset + 0].position = { data->Transform.translate.x - data->size, data->Transform.translate.y - data->size, data->Transform.translate.z - data->size };
 	vertexData_[offset + 0].color = data->color[0];
 
-	vertexData_[offset + 1].position = { data->transform.translate.x - data->size, data->transform.translate.y - data->size, data->transform.translate.z + data->size };
+	vertexData_[offset + 1].position = { data->Transform.translate.x - data->size, data->Transform.translate.y - data->size, data->Transform.translate.z + data->size };
 	vertexData_[offset + 1].color = data->color[1];
 
-	vertexData_[offset + 2].position = { data->transform.translate.x + data->size, data->transform.translate.y - data->size, data->transform.translate.z + data->size };
+	vertexData_[offset + 2].position = { data->Transform.translate.x + data->size, data->Transform.translate.y - data->size, data->Transform.translate.z + data->size };
 	vertexData_[offset + 2].color = data->color[2];
 
-	vertexData_[offset + 3].position = { data->transform.translate.x + data->size, data->transform.translate.y - data->size, data->transform.translate.z - data->size };
+	vertexData_[offset + 3].position = { data->Transform.translate.x + data->size, data->Transform.translate.y - data->size, data->Transform.translate.z - data->size };
 	vertexData_[offset + 3].color = data->color[3];
 
-	vertexData_[offset + 4].position = { data->transform.translate.x - data->size, data->transform.translate.y + data->size, data->transform.translate.z - data->size };
+	vertexData_[offset + 4].position = { data->Transform.translate.x - data->size, data->Transform.translate.y + data->size, data->Transform.translate.z - data->size };
 	vertexData_[offset + 4].color = data->color[4];
 
-	vertexData_[offset + 5].position = { data->transform.translate.x - data->size, data->transform.translate.y + data->size, data->transform.translate.z + data->size };
+	vertexData_[offset + 5].position = { data->Transform.translate.x - data->size, data->Transform.translate.y + data->size, data->Transform.translate.z + data->size };
 	vertexData_[offset + 5].color = data->color[5];
 
-	vertexData_[offset + 6].position = { data->transform.translate.x + data->size, data->transform.translate.y + data->size, data->transform.translate.z + data->size };
+	vertexData_[offset + 6].position = { data->Transform.translate.x + data->size, data->Transform.translate.y + data->size, data->Transform.translate.z + data->size };
 	vertexData_[offset + 6].color = data->color[6];
 
-	vertexData_[offset + 7].position = { data->transform.translate.x + data->size, data->transform.translate.y + data->size, data->transform.translate.z - data->size };
+	vertexData_[offset + 7].position = { data->Transform.translate.x + data->size, data->Transform.translate.y + data->size, data->Transform.translate.z - data->size };
 	vertexData_[offset + 7].color = data->color[7];
 #pragma endregion
 

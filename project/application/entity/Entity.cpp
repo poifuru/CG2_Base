@@ -5,7 +5,7 @@ void Entity::CheckMapCollision(MapChip* mapChip) {
 	const float kMargin = 0.001f; // 完全に0にせず、ごくわずかな隙間を作る
 
 	// --- 1. X軸方向の移動と壁判定 ---
-	transform_.translate.x += velocity_.x;
+	Transform_.translate.x += velocity_.x;
 
 	UpdateAABB();
 
@@ -31,12 +31,12 @@ void Entity::CheckMapCollision(MapChip* mapChip) {
 			if(type == MapChipType::kWall || type == MapChipType::kFloor || type == MapChipType::kCeiling) {
 				if(velocity_.x > 0.0f) {
 					Rect tileRect = mapChip->GetRectByIndex(x, y);
-					transform_.translate.x = tileRect.left - aabbSize_.x - kMargin;
+					Transform_.translate.x = tileRect.left - aabbSize_.x - kMargin;
 					isTouchingWallRight_ = true; // ★右壁フラグ
 				}
 				else if(velocity_.x < 0.0f) {
 					Rect tileRect = mapChip->GetRectByIndex(x, y);
-					transform_.translate.x = tileRect.right + aabbSize_.x + kMargin;
+					Transform_.translate.x = tileRect.right + aabbSize_.x + kMargin;
 					isTouchingWallLeft_ = true; // ★左壁フラグ	
 				}
 				velocity_.x = 0.0f;
@@ -51,7 +51,7 @@ breakX:
 
 	// --- 2. Y軸方向の移動と床・天井判定 ---
 	isGrounded_ = false; // 判定前にリセット
-	transform_.translate.y += velocity_.y;
+	Transform_.translate.y += velocity_.y;
 	UpdateAABB();
 
 	// ★ここで「X軸で押し戻された後」の最新のワールド座標を使い直す
@@ -75,11 +75,11 @@ breakX:
 			if(type != MapChipType::kBlank) {
 				if(velocity_.y > 0.0f) { // 天井ヒット
 					Rect tileRect = mapChip->GetRectByIndex(x, y);
-					transform_.translate.y = tileRect.bottom - aabbSize_.y - kMargin;
+					Transform_.translate.y = tileRect.bottom - aabbSize_.y - kMargin;
 				}
 				else if(velocity_.y < 0.0f) { // 地面ヒット
 					Rect tileRect = mapChip->GetRectByIndex(x, y);
-					transform_.translate.y = tileRect.top + aabbSize_.y + kMargin;
+					Transform_.translate.y = tileRect.top + aabbSize_.y + kMargin;
 					isGrounded_ = true;
 
 					// ★追加：踏んだタイルがダメージ床（kDamage）ならフラグを立てる
@@ -102,15 +102,15 @@ breakY:
 }
 
 void Entity::UpdateAABB() {
-	// 現在の座標(transform_.translate)を中心に、aabbSize_ 分だけ広げる
+	// 現在の座標(Transform_.translate)を中心に、aabbSize_ 分だけ広げる
 	aabb_.min = {
-		transform_.translate.x - aabbSize_.x,
-		transform_.translate.y - aabbSize_.y,
-		transform_.translate.z - aabbSize_.z
+		Transform_.translate.x - aabbSize_.x,
+		Transform_.translate.y - aabbSize_.y,
+		Transform_.translate.z - aabbSize_.z
 	};
 	aabb_.max = {
-		transform_.translate.x + aabbSize_.x,
-		transform_.translate.y + aabbSize_.y,
-		transform_.translate.z + aabbSize_.z
+		Transform_.translate.x + aabbSize_.x,
+		Transform_.translate.y + aabbSize_.y,
+		Transform_.translate.z + aabbSize_.z
 	};
 }

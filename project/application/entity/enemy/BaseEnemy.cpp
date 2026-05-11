@@ -62,7 +62,7 @@ void BaseEnemy::OnHit(int damage, const Vector3& playerPos) {
 		isDead_ = true; // 死亡演出スタート！
 		// 倒した瞬間に少し上に跳ねさせると「やられた感」が出る
 		velocity_.y = 0.2f;
-		velocity_.x = (transform_.translate.x > playerPos.x) ? 0.1f : -0.1f;
+		velocity_.x = (Transform_.translate.x > playerPos.x) ? 0.1f : -0.1f;
 	}
 	else {
 		invincibleTimer_ = kInvincibleTime;
@@ -72,7 +72,7 @@ void BaseEnemy::OnHit(int damage, const Vector3& playerPos) {
 		float upPower = 0.15f; // 少し上に浮かすとそれっぽい！
 
 		// プレイヤーと逆方向に飛ばす
-		if(transform_.translate.x > playerPos.x) {
+		if(Transform_.translate.x > playerPos.x) {
 			velocity_.x = knockbackPower;
 		}
 		else {

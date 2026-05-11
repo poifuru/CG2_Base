@@ -9,7 +9,7 @@ Fly::Fly(DxCommon* dxCommon, LightManager* light, MapChip* mapchip)
 
 void Fly::Initialize() {
 	// 初期位置を基準の高さとして保存しておく
-	baseHeight_ = transform_.translate.y;
+	baseHeight_ = Transform_.translate.y;
 	hp_ = 1; // 体力の設定
 	SetAABBSize({ 0.5f, 0.5f, 0.5f }); // 当たり判定のサイズ
 
@@ -34,13 +34,13 @@ void Fly::Update() {
 		float amplitude = 0.5f; // 揺れ幅（どれくらい上下するか）
 
 		// 基準の高さにサイン波を足すことで上下に揺らす
-		transform_.translate.y = baseHeight_ + std::sin(floatingTimer_) * amplitude;
+		Transform_.translate.y = baseHeight_ + std::sin(floatingTimer_) * amplitude;
 
 		// AABB（当たり判定）の更新
 		UpdateAABB();
 
 		// モデルの更新
-		model_->SetPosition(transform_.translate);
+		model_->SetPosition(Transform_.translate);
 		model_->Update(&CameraOrganizer::GetInstance()->GetCameraData());
 	}
 }

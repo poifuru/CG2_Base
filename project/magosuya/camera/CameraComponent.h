@@ -4,7 +4,7 @@
 #include "MathFunction.h"
 
 struct CameraData {
-	Transform transform;
+	EulerTransform Transform;
 	Matrix4x4 world;
 	Matrix4x4 view;
 	Matrix4x4 proj;
@@ -17,7 +17,7 @@ public:
 	virtual ~CameraComponent () = default;
 
 	//初期化処理 (純粋仮想関数)
-	virtual void Initialize (const Transform& transform) = 0;
+	virtual void Initialize (const EulerTransform& Transform) = 0;
 	//更新処理 (純粋仮想関数)
 	virtual void Update () = 0;
 	//ImGui (純粋仮想関数)
@@ -25,17 +25,17 @@ public:
 
 	//CameraData取得
 	CameraData& GetCameraData() { return camera_; }
-	//transform取得
-	const Transform& GetTransform () { return camera_.transform; }
+	//Transform取得
+	const EulerTransform& GetEulerTransform () { return camera_.Transform; }
 	//scale設定
-	Vector3 GetScale () { return camera_.transform.scale; }
-	void SetScale (const Vector3& scale) { camera_.transform.scale = scale; }
+	Vector3 GetScale () { return camera_.Transform.scale; }
+	void SetScale (const Vector3& scale) { camera_.Transform.scale = scale; }
 	//rotate設定
-	Vector3 GetRotate () { return camera_.transform.rotate; }
-	void SetRotate (const Vector3& rotate) { camera_.transform.rotate = rotate; }
+	Vector3 GetRotate () { return camera_.Transform.rotate; }
+	void SetRotate (const Vector3& rotate) { camera_.Transform.rotate = rotate; }
 	//translate設定
-	Vector3 GetTranslate () { return camera_.transform.translate; }
-	void SetTranslate (const Vector3& translate) { camera_.transform.translate = translate; }
+	Vector3 GetTranslate () { return camera_.Transform.translate; }
+	void SetTranslate (const Vector3& translate) { camera_.Transform.translate = translate; }
 	//world行列取得
 	const Matrix4x4& GetWorldMat () { return camera_.world; }
 	//view行列取得

@@ -200,7 +200,7 @@ struct QuaternionTransform {
 
 // SpriteRendererが参照する最小限の情報構造体
 struct TransformData {
-	EulerTransform transform;
+	EulerTransform Transform;
 	EulerTransform uvTransform;
 	Matrix4x4 wvpMatrix;
 };
@@ -254,7 +254,7 @@ struct TextureData {
 // Sprite構造体
 struct SpriteData {
 	Vector2 size;			//幅と高さ
-	EulerTransform transform;	//SRT
+	EulerTransform Transform;	//SRT
 	EulerTransform uvTransform;	//uvのSRT
 	Material* material;		//紐づけるマテリアルポインタ
 	Matrix4x4 wvpMatrix;	//wvp行列ポインタ
@@ -267,7 +267,7 @@ struct MaterialFile {
 
 // Node構造体
 struct Node {
-	QuaternionTransform transform;
+	QuaternionTransform Transform;
 	Matrix4x4 localMatrix;
 	std::string name;
 	std::vector<Node> children;
@@ -314,7 +314,7 @@ struct ModelData {
 
 // エミッター構造体
 struct Emitter {
-	EulerTransform transform;	//transform
+	EulerTransform Transform;	//Transform
 	uint32_t count;			//発生数
 	float frequency;		//発生頻度
 	float frequencyTime;	//頻度用時刻
@@ -351,7 +351,7 @@ struct Animation {
 
 // Joint構造体
 struct Joint {
-	QuaternionTransform transform;	//Transform情報
+	QuaternionTransform Transform;	//Transform情報
 	Matrix4x4 localMatrix;	// localMatrix
 	Matrix4x4 skeletonSpaceMatrix;	 // skeletonSpaceでの変換行列
 	std::string name;	// 名前

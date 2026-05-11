@@ -14,7 +14,7 @@ struct MeshParticleData {
 };
 
 struct AccelerationField {
-	Transform transform;
+	Transform Transform;
 	Vector3 acceleration;
 	AABB aabb;
 };
@@ -31,7 +31,7 @@ public:
 
 	uint32_t GetParticleNum () { return kMaxParticleNum_; };
 	void SetColor (const Vector4& color) { color_ = color; }
-	void SetEmitterPos (const Vector3& pos) { emitter_.transform.translate = pos; }
+	void SetEmitterPos (const Vector3& pos) { emitter_.Transform.translate = pos; }
 	void SetMakeParticleCount (const int& count) { emitter_.count = count; }
 	void Spawn();
 

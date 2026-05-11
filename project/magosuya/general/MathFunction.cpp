@@ -226,21 +226,21 @@ namespace Math {
 		float w = 1.0f;
 
 		//変換する
-		float transformX = matrix.m[0][0] * x + matrix.m[1][0] * y + matrix.m[2][0] * z + matrix.m[3][0] * w;
-		float transformY = matrix.m[0][1] * x + matrix.m[1][1] * y + matrix.m[2][1] * z + matrix.m[3][1] * w;
-		float transformZ = matrix.m[0][2] * x + matrix.m[1][2] * y + matrix.m[2][2] * z + matrix.m[3][2] * w;
-		float transformW = matrix.m[0][3] * x + matrix.m[1][3] * y + matrix.m[2][3] * z + matrix.m[3][3] * w;
+		float TransformX = matrix.m[0][0] * x + matrix.m[1][0] * y + matrix.m[2][0] * z + matrix.m[3][0] * w;
+		float TransformY = matrix.m[0][1] * x + matrix.m[1][1] * y + matrix.m[2][1] * z + matrix.m[3][1] * w;
+		float TransformZ = matrix.m[0][2] * x + matrix.m[1][2] * y + matrix.m[2][2] * z + matrix.m[3][2] * w;
+		float TransformW = matrix.m[0][3] * x + matrix.m[1][3] * y + matrix.m[2][3] * z + matrix.m[3][3] * w;
 
 		//同次座標のwで割って正規化する。
-		if (transformW != 0.0f) {
-			result.x = transformX / transformW;
-			result.y = transformY / transformW;
-			result.z = transformZ / transformW;
+		if (TransformW != 0.0f) {
+			result.x = TransformX / TransformW;
+			result.y = TransformY / TransformW;
+			result.z = TransformZ / TransformW;
 		}
-		else {//transformWが0ならそのまま使う
-			result.x = transformX;
-			result.y = transformY;
-			result.z = transformZ;
+		else {//TransformWが0ならそのまま使う
+			result.x = TransformX;
+			result.y = TransformY;
+			result.z = TransformZ;
 		}
 
 		return result;

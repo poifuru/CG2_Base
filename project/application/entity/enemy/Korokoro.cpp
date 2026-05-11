@@ -44,7 +44,7 @@ void Korokoro::Update() {
 	CheckMapCollision(mapchip_);
 
 	// モデルの更新
-	model_->SetPosition(transform_.translate);
+	model_->SetPosition(Transform_.translate);
 	model_->Update(&CameraOrganizer::GetInstance()->GetCameraData());
 }
 

@@ -51,10 +51,10 @@ SphereMesh::SphereMesh(DxCommon* dxCommon, LightManager* lightManager) {
 	cameraData_->y = 0.0f;
 	cameraData_->z = 0.0f;
 
-	transform_ = {};
+	Transform_ = {};
 	uvTransform_ = {};
-	transformationMatrix_.World = Math::MakeIdentity4x4();
-	transformationMatrix_.WVP = Math::MakeIdentity4x4();
+	TransformationMatrix_.World = Math::MakeIdentity4x4();
+	TransformationMatrix_.WVP = Math::MakeIdentity4x4();
 	radius_ = 1.0f;
 
 	for(int i = 0; i < 4; i++) {
@@ -78,7 +78,7 @@ SphereMesh::~SphereMesh() {
 }
 
 void SphereMesh::Initialize(Vector3 position, float radius) {
-	transform_ = {
+	Transform_ = {
 		{ 1.0f, 1.0f, 1.0f },
 		{ 0.0f, 0.0f, 0.0f },
 		position
@@ -190,7 +190,7 @@ void SphereMesh::Initialize(Vector3 position, float radius) {
 }
 
 void SphereMesh::Update(CameraData* camera) {
-	Matrix4x4 world = Math::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+	Matrix4x4 world = Math::MakeAffineMatrix(Transform_.scale, Transform_.rotate, Transform_.translate);
 	matrixData_->World = world;
 	matrixData_->WVP = Math::Multiply(matrixData_->World, camera->vp);
 	matrixData_->WorldInverseTranspose = Math::Transpose(Math::Inverse(matrixData_->World));
@@ -198,7 +198,7 @@ void SphereMesh::Update(CameraData* camera) {
 	//uvTranform更新
 	materialData_->uvTransform = Math::MakeAffineMatrix(uvTransform_.scale, uvTransform_.rotate, uvTransform_.translate);
 
-	*cameraData_ = camera->transform.translate;
+	*cameraData_ = camera->Transform.translate;
 }
 
 void SphereMesh::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
@@ -246,9 +246,9 @@ void SphereMesh::ImGui() {
 		materialData_->color.z = color_[2];
 		materialData_->color.w = color_[3];
 	}
-	ImGui::DragFloat3("scale##sphere", &transform_.scale.x, 0.01f);
-	ImGui::DragFloat3("rotate##sphere", &transform_.rotate.x, 0.01f);
-	ImGui::DragFloat3("translate##sphere", &transform_.translate.x, 0.01f);
+	ImGui::DragFloat3("scale##sphere", &Transform_.scale.x, 0.01f);
+	ImGui::DragFloat3("rotate##sphere", &Transform_.rotate.x, 0.01f);
+	ImGui::DragFloat3("translate##sphere", &Transform_.translate.x, 0.01f);
 	ImGui::DragFloat3("UVscale##sphere", &uvTransform_.scale.x, 0.01f);
 	ImGui::DragFloat3("UVrotate##sphere", &uvTransform_.rotate.x, 0.01f);
 	ImGui::DragFloat3("UVtranslate##sphere", &uvTransform_.translate.x, 0.01f);

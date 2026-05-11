@@ -7,7 +7,7 @@
 #include "WindowsAPI.h"
 
 DebugCamera::DebugCamera(InputManager* inputManager) {
-	camera_.transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -30.0f} };
+	camera_.Transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -30.0f} };
 	camera_.world = {};
 	camera_.view = {};
 	camera_.proj = {};
@@ -29,9 +29,9 @@ DebugCamera::~DebugCamera () {
 
 }
 
-void DebugCamera::Initialize(const Transform& transform) {
-	camera_.transform = transform;
-	camera_.world = Math::MakeAffineMatrix (camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);
+void DebugCamera::Initialize(const Transform& Transform) {
+	camera_.Transform = Transform;
+	camera_.world = Math::MakeAffineMatrix (camera_.Transform.scale, camera_.Transform.rotate, camera_.Transform.translate);
 	camera_.view = Math::Inverse (camera_.world);
 	camera_.proj = Math::MakePerspectiveFOVMatrix(0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, 0.1f, 1000.0f);
 
@@ -70,13 +70,13 @@ void DebugCamera::Update() {
 		move_ -= right_ * speed_;
 	}
 
-	camera_.transform.translate += move_;
+	camera_.Transform.translate += move_;
 
 	if (input_->GetRawInput ()->Push (VK_SPACE)) {
-		camera_.transform.translate.y += speed_;
+		camera_.Transform.translate.y += speed_;
 	}
 	if (input_->GetRawInput ()->Push (VK_SHIFT)) {
-		camera_.transform.translate.y -= speed_;
+		camera_.Transform.translate.y -= speed_;
 	}
 
 	//マウスで視点移動
@@ -112,19 +112,19 @@ void DebugCamera::Update() {
 	}
 
 	if (input_->GetRawInput ()->PushMouse (MouseButton::MIDDLE)) {
-		camera_.transform.rotate.y += input_->GetRawInput ()->GetMouseDeltaX() * sensitivity_;
-		camera_.transform.rotate.x += input_->GetRawInput ()->GetMouseDeltaY () * sensitivity_;
+		camera_.Transform.rotate.y += input_->GetRawInput ()->GetMouseDeltaX() * sensitivity_;
+		camera_.Transform.rotate.x += input_->GetRawInput ()->GetMouseDeltaY () * sensitivity_;
 
-		if (camera_.transform.rotate.x > pitchOver_) {
-			camera_.transform.rotate.x = pitchOver_;
+		if (camera_.Transform.rotate.x > pitchOver_) {
+			camera_.Transform.rotate.x = pitchOver_;
 		}
-		if (camera_.transform.rotate.x < -pitchOver_) {
-			camera_.transform.rotate.x = -pitchOver_;
+		if (camera_.Transform.rotate.x < -pitchOver_) {
+			camera_.Transform.rotate.x = -pitchOver_;
 		}
 	}
 
 	//変化した情報をworldMatrixにまとめてviewMatrixに入れる
-	camera_.world = Math::MakeAffineMatrix(camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);
+	camera_.world = Math::MakeAffineMatrix(camera_.Transform.scale, camera_.Transform.rotate, camera_.Transform.translate);
 	camera_.view = Math::Inverse(camera_.world);
 	camera_.vp = Math::Multiply (camera_.view, camera_.proj);
 }
@@ -133,7 +133,7 @@ void DebugCamera::ImGui () {
 	std::string ID = std::to_string (instanceNum_);
 	std::string label = "DebugCamera";
 
-	ImGui::DragFloat3 (("scale##" + label + ID).c_str (), &camera_.transform.scale.x, 0.01f);
-	ImGui::DragFloat3 (("rotate##" + label + ID).c_str (), &camera_.transform.rotate.x, 0.01f);
-	ImGui::DragFloat3 (("translate##" + label + ID).c_str (), &camera_.transform.translate.x, 0.01f);
+	ImGui::DragFloat3 (("scale##" + label + ID).c_str (), &camera_.Transform.scale.x, 0.01f);
+	ImGui::DragFloat3 (("rotate##" + label + ID).c_str (), &camera_.Transform.rotate.x, 0.01f);
+	ImGui::DragFloat3 (("translate##" + label + ID).c_str (), &camera_.Transform.translate.x, 0.01f);
 }

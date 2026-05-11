@@ -7,7 +7,7 @@ public:
 	FixedPointCamera ();
 	~FixedPointCamera () override;
 
-	void Initialize (const Transform& transform) override;
+	void Initialize (const EulerTransform& Transform) override;
 
 	void Update () override;
 

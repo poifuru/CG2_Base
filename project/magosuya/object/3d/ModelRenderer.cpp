@@ -116,7 +116,7 @@ void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	commandList_->DrawIndexedInstanced (static_cast<UINT>(data->indexCount), 1, 0, 0, 0);
 }
 
-void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform, const std::string& windowName) {
+void ModelRenderer::ImGui (Transform& Transform, Transform& uvTransform, const std::string& windowName) {
 #ifdef USEIMGUI
 	std::string num = std::to_string (instanceID_);
 	std::string label = "##" + tag_ + num;
@@ -128,9 +128,9 @@ void ModelRenderer::ImGui (Transform& transform, Transform& uvTransform, const s
 		materialData_->color.z = color_[2];
 		materialData_->color.w = color_[3];
 	}
-	ImGui::DragFloat3 (("scale" + label).c_str (), &transform.scale.x, 0.01f);
-	ImGui::DragFloat3 (("rotate" + label).c_str (), &transform.rotate.x, 0.01f);
-	ImGui::DragFloat3 (("translate" + label).c_str (), &transform.translate.x, 0.01f);
+	ImGui::DragFloat3 (("scale" + label).c_str (), &Transform.scale.x, 0.01f);
+	ImGui::DragFloat3 (("rotate" + label).c_str (), &Transform.rotate.x, 0.01f);
+	ImGui::DragFloat3 (("translate" + label).c_str (), &Transform.translate.x, 0.01f);
 	ImGui::DragFloat3 (("UVscale" + label).c_str (), &uvTransform.scale.x, 0.01f);
 	ImGui::DragFloat3 (("UVrotate" + label).c_str (), &uvTransform.rotate.x, 0.01f);
 	ImGui::DragFloat3 (("UVtranslate" + label).c_str (), &uvTransform.translate.x, 0.01f);

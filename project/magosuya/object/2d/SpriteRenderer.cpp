@@ -61,7 +61,7 @@ void SpriteRenderer::Initialize () {
 	desc_.BlendMode = BlendModeType::Alpha;
 }
 
-void SpriteRenderer::Update (Matrix4x4 wvpData, Transform uvTransform, Vector2 anchorPoint, bool flipX, bool flipY, const std::string& id, Vector2 texLeftTop, Vector2 texSize) {
+void SpriteRenderer::Update (Matrix4x4 wvpData, EulerTransform uvTransform, Vector2 anchorPoint, bool flipX, bool flipY, const std::string& id, Vector2 texLeftTop, Vector2 texSize) {
 	//vertexData_に初期の四角形座標を書く（size_を使って計算）
 	float left = 0.0f - anchorPoint.x;
 	float right = 1.0f - anchorPoint.x;
@@ -120,7 +120,7 @@ void SpriteRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	commandList_->DrawIndexedInstanced (6, 1, 0, 0, 0);
 }
 
-void SpriteRenderer::ImGui (Transform& transform, Transform& uvTransform) {
+void SpriteRenderer::ImGui (EulerTransform& Transform, EulerTransform& uvTransform) {
 #ifdef USEIMGUI
 	if (ImGui::ColorEdit4 ("Color##SpriteColor", color_)) {
 		// 色が変更されたらmaterialDataに反映
@@ -129,9 +129,9 @@ void SpriteRenderer::ImGui (Transform& transform, Transform& uvTransform) {
 		materialData_->color.z = color_[2];
 		materialData_->color.w = color_[3];
 	}
-	ImGui::DragFloat3 ("Scale", &transform.scale.x, 1.0f);
-	ImGui::DragFloat3 ("Rotate", &transform.rotate.x, 0.01f);
-	ImGui::DragFloat3 ("Translate", &transform.translate.x, 1.0f);
+	ImGui::DragFloat3 ("Scale", &Transform.scale.x, 1.0f);
+	ImGui::DragFloat3 ("Rotate", &Transform.rotate.x, 0.01f);
+	ImGui::DragFloat3 ("Translate", &Transform.translate.x, 1.0f);
 	ImGui::DragFloat2 ("UVScale", &uvTransform.scale.x, 0.01f);
 	ImGui::DragFloat ("UVRotate", &uvTransform.rotate.z, 0.01f);
 	ImGui::DragFloat2 ("UVTranslate", &uvTransform.translate.x, 0.01f);

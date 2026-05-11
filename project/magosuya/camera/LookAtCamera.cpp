@@ -12,15 +12,15 @@ LookAtCamera::~LookAtCamera () {
 
 }
 
-void LookAtCamera::Initialize (const Transform& transform) {
-	camera_.transform = transform;
+void LookAtCamera::Initialize (const Transform& Transform) {
+	camera_.Transform = Transform;
 
 	//LookAtCameraの初期値
 	target_ = {};
 	distance_ = 15.0f;
 
-	camera_.transform.rotate.x = 0.3f;
-	//camera_.transform.rotate.y = -1.0f;
+	camera_.Transform.rotate.x = 0.3f;
+	//camera_.Transform.rotate.y = -1.0f;
 
 	sensitivity_ = 0.001f;
 	pitchOver_ = 1.5708f;
@@ -35,15 +35,15 @@ void LookAtCamera::Update () {
 	if (input_->GetRawInput ()->PushMouse (MouseButton::MIDDLE)) {
 		ShowCursor (FALSE);
 		//ターゲットの球面座標上を回転させる
-		camera_.transform.rotate.y += input_->GetRawInput ()->GetMouseDeltaX () * sensitivity_;
-		camera_.transform.rotate.x += input_->GetRawInput ()->GetMouseDeltaY () * sensitivity_;
+		camera_.Transform.rotate.y += input_->GetRawInput ()->GetMouseDeltaX () * sensitivity_;
+		camera_.Transform.rotate.x += input_->GetRawInput ()->GetMouseDeltaY () * sensitivity_;
 
 		//視点移動の制限
-		if (camera_.transform.rotate.x > pitchOver_) {
-			camera_.transform.rotate.x = pitchOver_;
+		if (camera_.Transform.rotate.x > pitchOver_) {
+			camera_.Transform.rotate.x = pitchOver_;
 		}
-		if (camera_.transform.rotate.x < -pitchOver_) {
-			camera_.transform.rotate.x = -pitchOver_;
+		if (camera_.Transform.rotate.x < -pitchOver_) {
+			camera_.Transform.rotate.x = -pitchOver_;
 		}
 	}
 	else {
@@ -54,8 +54,8 @@ void LookAtCamera::Update () {
 
 	// === 🌟 LookAtカメラの視点位置計算 🌟 ===
 	// Y軸回転（水平方向）を yaw_、X軸回転（垂直方向）を pitch_ として扱う
-	float yaw_ = camera_.transform.rotate.y;
-	float pitch_ = camera_.transform.rotate.x;
+	float yaw_ = camera_.Transform.rotate.y;
+	float pitch_ = camera_.Transform.rotate.x;
 
 	Vector3 eyePosition = {};
 	// 極座標/球面座標で視点を計算
@@ -78,7 +78,7 @@ void LookAtCamera::ImGui () {
 	std::string ID = std::to_string (instanceNum_);
 	std::string label = "LookAtCamera";
 
-	ImGui::DragFloat3 (("scale##" + label + ID).c_str (), &camera_.transform.scale.x, 0.01f);
-	ImGui::DragFloat3 (("rotate##" + label + ID).c_str (), &camera_.transform.rotate.x, 0.01f);
-	ImGui::DragFloat3 (("translate##" + label + ID).c_str (), &camera_.transform.translate.x, 0.01f);
+	ImGui::DragFloat3 (("scale##" + label + ID).c_str (), &camera_.Transform.scale.x, 0.01f);
+	ImGui::DragFloat3 (("rotate##" + label + ID).c_str (), &camera_.Transform.rotate.x, 0.01f);
+	ImGui::DragFloat3 (("translate##" + label + ID).c_str (), &camera_.Transform.translate.x, 0.01f);
 }

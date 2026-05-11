@@ -37,7 +37,7 @@ void Mesh::DrawCube (CubeData* data, const Matrix4x4& vp) {
 	//実際にlineForGPUに中身を入れる
 	CubeForGPU cubeForGPU;
 	//ワールド座標作成用のローカル変数を宣言
-	cubeForGPU.World = Math::MakeAffineMatrix (data->transform.scale, data->transform.rotate, data->transform.translate);
+	cubeForGPU.World = Math::MakeAffineMatrix (data->Transform.scale, data->Transform.rotate, data->Transform.translate);
 	cubeForGPU.WVP = Math::Multiply (cubeForGPU.World, vp);
 	//作ったデータを送信(1インスタンス分)
 	renderer_->TransferData (cubeForGPU);

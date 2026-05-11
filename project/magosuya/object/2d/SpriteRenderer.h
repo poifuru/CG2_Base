@@ -15,10 +15,10 @@ public:		//外部公開メソッド
 	~SpriteRenderer ();
 
 	void Initialize ();
-	void Update (Matrix4x4 wvpData, Transform uvTransform, Vector2 anchorPoint,
+	void Update (Matrix4x4 wvpData, EulerTransform uvTransform, Vector2 anchorPoint,
 				 bool flipX, bool flipY, const std::string& id, Vector2 texLeftTop, Vector2 texSize);
 	void Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
-	void ImGui (Transform& transform, Transform& uvTransform);
+	void ImGui (EulerTransform& Transform, EulerTransform& uvTransform);
 
 	//アクセッサ
 	Material* GetMaterial () { return materialData_; }

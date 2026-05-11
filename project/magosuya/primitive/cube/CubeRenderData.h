@@ -2,7 +2,7 @@
 #include "struct.h"
 
 struct CubeData {
-	Transform transform;
+	Transform Transform;
 	float size;
 	Vector3 position[8];
 	Vector4 color[8];

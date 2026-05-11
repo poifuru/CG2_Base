@@ -9,7 +9,7 @@ const float kDeltaTime = 1.0f / 60.0f;
 MeshParticle::MeshParticle () {
 	//乱数エンジンのインスタンスを作成してrdの結果で初期化する
 	randomEngine_.seed (rd ());
-	emitter_.transform = {
+	emitter_.Transform = {
 		{},
 		{},
 		{}
@@ -21,7 +21,7 @@ MeshParticle::MeshParticle () {
 		lineData_[i].color = { 0.0f, 0.0f, 0.0f, 1.0f };
 	}
 	field_ = {
-		//transform
+		//Transform
 		{{1.0f, 1.0f, 1.0f},
 		{0.0f ,0.0f ,0.0f},
 		{0.0f, 2.0f, 0.0f},},
@@ -68,15 +68,15 @@ void MeshParticle::Update (Matrix4x4* vp) {
 
 		if (dstIndex < kMaxParticleNum_) {
 			//fieldの範囲内で加速度を適用する
-			if (Math::IsCollision (field_.aabb, particleIterator_->cube.transform.translate)) {
+			if (Math::IsCollision (field_.aabb, particleIterator_->cube.Transform.translate)) {
 				particleIterator_->velocity += field_.acceleration * kDeltaTime;
 			}
 
 			//速度を反映させる
-			particleIterator_->cube.transform.translate += particleIterator_->velocity * kDeltaTime;
-			particleIterator_->cube.transform.rotate.x += randRotate_ (randomEngine_) * kDeltaTime;
-			particleIterator_->cube.transform.rotate.y += randRotate_ (randomEngine_) * kDeltaTime;
-			particleIterator_->cube.transform.rotate.z += randRotate_ (randomEngine_) * kDeltaTime;
+			particleIterator_->cube.Transform.translate += particleIterator_->velocity * kDeltaTime;
+			particleIterator_->cube.Transform.rotate.x += randRotate_ (randomEngine_) * kDeltaTime;
+			particleIterator_->cube.Transform.rotate.y += randRotate_ (randomEngine_) * kDeltaTime;
+			particleIterator_->cube.Transform.rotate.z += randRotate_ (randomEngine_) * kDeltaTime;
 			particleIterator_->currentTime += kDeltaTime;
 
 			//徐々に透明度を下げて消えるように
@@ -110,8 +110,8 @@ void MeshParticle::ImGui () {
 	ImGui::Separator ();
 
 	ImGui::Text ("Emitter");
-	ImGui::DragFloat3 ("scale", &emitter_.transform.scale.x, 0.01f, 0.0f, 100.f);
-	ImGui::DragFloat3 ("translate", &emitter_.transform.translate.x, 0.01f, -100.0f, 100.f);
+	ImGui::DragFloat3 ("scale", &emitter_.Transform.scale.x, 0.01f, 0.0f, 100.f);
+	ImGui::DragFloat3 ("translate", &emitter_.Transform.translate.x, 0.01f, -100.0f, 100.f);
 	int count = static_cast<int>(emitter_.count);
 	if (ImGui::DragInt ("count", &count, 1, 0, 100)) {
 		emitter_.count = static_cast<uint32_t>(count);
@@ -120,8 +120,8 @@ void MeshParticle::ImGui () {
 
 	ImGui::Checkbox ("accelerationField", &isActiveField_);
 	if (isActiveField_) {
-		ImGui::DragFloat3 ("fieldPos", &field_.transform.translate.x, 0.01f);
-		ImGui::DragFloat3 ("fieldSize", &field_.transform.scale.x, 0.01f);
+		ImGui::DragFloat3 ("fieldPos", &field_.Transform.translate.x, 0.01f);
+		ImGui::DragFloat3 ("fieldSize", &field_.Transform.scale.x, 0.01f);
 		ImGui::DragFloat3 ("acceleration", &field_.acceleration.x, 0.01f);
 	}
 
@@ -139,9 +139,9 @@ MeshParticleData MeshParticle::MakeNewParticle (std::mt19937 randomEngine, const
 	MeshParticleData data{};
 
 	//使う分布を初期化する
-	pos_x = std::uniform_real_distribution<float> (-emitter_.transform.scale.x, emitter_.transform.scale.x);
-	pos_y = std::uniform_real_distribution<float> (-emitter_.transform.scale.y, emitter_.transform.scale.y);
-	pos_z = std::uniform_real_distribution<float> (-emitter_.transform.scale.z, emitter_.transform.scale.z);
+	pos_x = std::uniform_real_distribution<float> (-emitter_.Transform.scale.x, emitter_.Transform.scale.x);
+	pos_y = std::uniform_real_distribution<float> (-emitter_.Transform.scale.y, emitter_.Transform.scale.y);
+	pos_z = std::uniform_real_distribution<float> (-emitter_.Transform.scale.z, emitter_.Transform.scale.z);
 	randRotate_ = std::uniform_real_distribution<float> (0.3f, 0.9f);
 	randSize_ = std::uniform_real_distribution<float> (0.01f, 0.1f);
 	randVelocity1_ = std::uniform_real_distribution<float> (0.0f, 5.0f);
@@ -150,14 +150,14 @@ MeshParticleData MeshParticle::MakeNewParticle (std::mt19937 randomEngine, const
 	randTime_ = std::uniform_real_distribution<float> (2.0f, 3.0f);
 
 	//パーティクル情報の初期化
-	data.cube.transform.scale = { 0.25f, 0.25f, 0.25f };
-	data.cube.transform.rotate = { 0.0f, 0.0f, 0.0f };
+	data.cube.Transform.scale = { 0.25f, 0.25f, 0.25f };
+	data.cube.Transform.rotate = { 0.0f, 0.0f, 0.0f };
 	//emitterを加味してtranslateを再計算
-	data.cube.transform.translate = emitter_.transform.translate;
+	data.cube.Transform.translate = emitter_.Transform.translate;
 
-	data.cube.transform.translate.x += pos_x(randomEngine);
-	data.cube.transform.translate.y += pos_y(randomEngine);
-	data.cube.transform.translate.z += pos_z(randomEngine);
+	data.cube.Transform.translate.x += pos_x(randomEngine);
+	data.cube.Transform.translate.y += pos_y(randomEngine);
+	data.cube.Transform.translate.z += pos_z(randomEngine);
 	data.cube.size = 1.0f;
 	data.velocity = { randVelocity2_ (randomEngine), randVelocity1_ (randomEngine), randVelocity2_ (randomEngine) };
 	/*Vector4 color1 = { 1.0f, 0.1f, 0.1f, 1.0f };
@@ -190,44 +190,44 @@ void MeshParticle::EmitterUpdate () {
 
 void MeshParticle::EmitterLinePosUpdate () {
 	linePos[0] = {
-		emitter_.transform.translate.x - emitter_.transform.scale.x,
-		emitter_.transform.translate.y - emitter_.transform.scale.y,
-		emitter_.transform.translate.z - emitter_.transform.scale.z,
+		emitter_.Transform.translate.x - emitter_.Transform.scale.x,
+		emitter_.Transform.translate.y - emitter_.Transform.scale.y,
+		emitter_.Transform.translate.z - emitter_.Transform.scale.z,
 	};
 	linePos[1] = {
-		emitter_.transform.translate.x - emitter_.transform.scale.x,
-		emitter_.transform.translate.y - emitter_.transform.scale.y,
-		emitter_.transform.translate.z + emitter_.transform.scale.z,
+		emitter_.Transform.translate.x - emitter_.Transform.scale.x,
+		emitter_.Transform.translate.y - emitter_.Transform.scale.y,
+		emitter_.Transform.translate.z + emitter_.Transform.scale.z,
 	};
 	linePos[2] = {
-		emitter_.transform.translate.x + emitter_.transform.scale.x,
-		emitter_.transform.translate.y - emitter_.transform.scale.y,
-		emitter_.transform.translate.z + emitter_.transform.scale.z,
+		emitter_.Transform.translate.x + emitter_.Transform.scale.x,
+		emitter_.Transform.translate.y - emitter_.Transform.scale.y,
+		emitter_.Transform.translate.z + emitter_.Transform.scale.z,
 	};
 	linePos[3] = {
-		emitter_.transform.translate.x + emitter_.transform.scale.x,
-		emitter_.transform.translate.y - emitter_.transform.scale.y,
-		emitter_.transform.translate.z - emitter_.transform.scale.z,
+		emitter_.Transform.translate.x + emitter_.Transform.scale.x,
+		emitter_.Transform.translate.y - emitter_.Transform.scale.y,
+		emitter_.Transform.translate.z - emitter_.Transform.scale.z,
 	};
 	linePos[4] = {
-		emitter_.transform.translate.x - emitter_.transform.scale.x,
-		emitter_.transform.translate.y + emitter_.transform.scale.y,
-		emitter_.transform.translate.z - emitter_.transform.scale.z,
+		emitter_.Transform.translate.x - emitter_.Transform.scale.x,
+		emitter_.Transform.translate.y + emitter_.Transform.scale.y,
+		emitter_.Transform.translate.z - emitter_.Transform.scale.z,
 	};
 	linePos[5] = {
-		emitter_.transform.translate.x - emitter_.transform.scale.x,
-		emitter_.transform.translate.y + emitter_.transform.scale.y,
-		emitter_.transform.translate.z + emitter_.transform.scale.z,
+		emitter_.Transform.translate.x - emitter_.Transform.scale.x,
+		emitter_.Transform.translate.y + emitter_.Transform.scale.y,
+		emitter_.Transform.translate.z + emitter_.Transform.scale.z,
 	};
 	linePos[6] = {
-		emitter_.transform.translate.x + emitter_.transform.scale.x,
-		emitter_.transform.translate.y + emitter_.transform.scale.y,
-		emitter_.transform.translate.z + emitter_.transform.scale.z,
+		emitter_.Transform.translate.x + emitter_.Transform.scale.x,
+		emitter_.Transform.translate.y + emitter_.Transform.scale.y,
+		emitter_.Transform.translate.z + emitter_.Transform.scale.z,
 	};
 	linePos[7] = {
-		emitter_.transform.translate.x + emitter_.transform.scale.x,
-		emitter_.transform.translate.y + emitter_.transform.scale.y,
-		emitter_.transform.translate.z - emitter_.transform.scale.z,
+		emitter_.Transform.translate.x + emitter_.Transform.scale.x,
+		emitter_.Transform.translate.y + emitter_.Transform.scale.y,
+		emitter_.Transform.translate.z - emitter_.Transform.scale.z,
 	};
 }
 
@@ -282,8 +282,8 @@ void MeshParticle::EmitterLineDraw () {
 }
 
 void MeshParticle::FieldUpdate () {
-	field_.aabb.min = field_.transform.translate - field_.transform.scale;
-	field_.aabb.max = field_.transform.translate + field_.transform.scale;
+	field_.aabb.min = field_.Transform.translate - field_.Transform.scale;
+	field_.aabb.max = field_.Transform.translate + field_.Transform.scale;
 }
 
 void MeshParticle::FieldLinePosUpdate () {

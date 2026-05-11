@@ -22,7 +22,7 @@ const float kMaxFallSpeed = -0.5f;
 
 Player::Player(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input, LightManager* light, MapChip* mapchip) {
 	isDoubleJump_ = false;
-	transform_ = {};
+	Transform_ = {};
 	
 	camera_ = camera;
 	input_ = input;
@@ -45,7 +45,7 @@ void Player::Initialize() {
 	SetAABBSize({ kPlayerWidth, kPlayerHeight, 1.0f });
 
 	weapon_->Initialize();
-	transform_.translate = mapchip_->GetMapChipPositionByIndex(2, 19);
+	Transform_.translate = mapchip_->GetMapChipPositionByIndex(2, 19);
 
 	for(uint32_t i = 0; i < 3; ++i) {
 		life_[i]->SetTexture("life");
@@ -64,7 +64,7 @@ void Player::Update() {
 	WallKickTimer();
 
 	//武器の更新処理
-	weapon_->Update(transform_.translate, faceDirection_, updownDirection_, isGrounded_, &camera_->GetCameraData());
+	weapon_->Update(Transform_.translate, faceDirection_, updownDirection_, isGrounded_, &camera_->GetCameraData());
 	
 	CheckMapCollision(mapchip_);
 	EntityState();
@@ -77,7 +77,7 @@ void Player::Update() {
 		model_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 	}
 
-	model_->SetPosition(transform_.translate);
+	model_->SetPosition(Transform_.translate);
 	model_->Update(&camera_->GetCameraData());
 
 	for(uint32_t i = 0; i < 3; ++i) {
