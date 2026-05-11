@@ -9,7 +9,7 @@ using namespace Microsoft::WRL;
 #include "PSOManager.h"
 #include "DxCommon.h"
 
-struct VertexData {
+struct SkyboxVertex {
 	Vector4 position;
 };
 
