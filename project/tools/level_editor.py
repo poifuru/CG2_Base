@@ -11,10 +11,44 @@ bl_info = {
     "category": "Object"
 }
 
+# ---オペレータをここに書き溜めていく---
+# オペレータ 頂点を伸ばす
+class MYADDON_OT_stretch_vertex(bpy.types.Operator):
+    bl_idname = "myaddon.myaddon_ot_stretch_vertex"
+    bl_label = "頂点を伸ばす"
+    bl_description = "頂点座標を引っ張って伸ばします"
+    # リドゥ、アンドゥ可能オプション
+    bl_options = {'REGISTER', 'UNDO'}
+
+    # メニューを実行したときに呼ばれるコールバック関数
+    def execute(self, context):
+        bpy.data.objects["Cube"].data.vertices[0].co.x += 1.0
+        print("頂点を伸ばしました。")
+
+        # オペレータの命令終了を通知
+        return {'FINISHED'}
+    
+# オペレータ ICO球生成
+class MYADDON_OT_create_ico_sphere(bpy.types.Operator):
+    bl_idname = "myaddon.myaddon_ot_create_object"
+    bl_label = "ICO球生成"
+    bl_description = "ICO球を生成します"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    # メニューを実行したときに呼ばれる関数
+    def execute(self, context):
+        bpy.ops.mesh.primitive_ico_sphere_add()
+        print("ICO球を生成しました。")
+
+        return {'FINISHED'}
+
 # メニューの中身を定義するクラス
 class LEVEL_EDITOR_MT_main_menu(bpy.types.Menu):
+    # Blenderがクラスを識別するための固有の文字列
     bl_label = "My menu"
+    # メニューのラベルとして表示される文字列
     bl_idname = "LEVEL_EDITOR_MT_main_menu"
+    # 著者表示用の文字列
     bl_desctiption = "拡張メニュー by" + bl_info["author"]
 
     # プルダウンメニューの中身
@@ -22,9 +56,11 @@ class LEVEL_EDITOR_MT_main_menu(bpy.types.Menu):
         layout = self.layout
         # ここにボタンを追加していく
         layout.operator("wm.url_open", text = "公式ドキュメントを開く").url = "https://example.com"
+        layout.operator("wm.url_open", text = "チュートリアル")
 
         layout.separator()
-        layout.operator("wm.url_open", text = "チュートリアル")
+        layout.operator(MYADDON_OT_stretch_vertex.bl_idname, text = MYADDON_OT_stretch_vertex.bl_label)
+        layout.operator(MYADDON_OT_create_ico_sphere.bl_idname, text = MYADDON_OT_create_ico_sphere.bl_label)
 
     def submenu(self, context):
         # 自分の bl_idname を指定してメニューとして登録する
@@ -32,6 +68,8 @@ class LEVEL_EDITOR_MT_main_menu(bpy.types.Menu):
 
 # 登録するクラスのリスト
 classes = (
+    MYADDON_OT_stretch_vertex,
+    MYADDON_OT_create_ico_sphere,
     LEVEL_EDITOR_MT_main_menu,
 )
 
