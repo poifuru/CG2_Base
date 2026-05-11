@@ -76,6 +76,7 @@
     <ClCompile Include="application\entity\enemy\Korokoro.cpp" />
     <ClCompile Include="application\entity\enemy\Fly.cpp" />
     <ClCompile Include="application\scene\TestScene.cpp" />
+    <ClCompile Include="magosuya\object\3d\Skybox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -153,6 +154,7 @@
     <ClInclude Include="application\entity\enemy\Korokoro.h" />
     <ClInclude Include="application\entity\enemy\Fly.h" />
     <ClInclude Include="application\scene\TestScene.h" />
+    <ClInclude Include="magosuya\object\3d\Skybox.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />

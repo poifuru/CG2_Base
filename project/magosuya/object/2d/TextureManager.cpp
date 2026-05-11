@@ -20,7 +20,8 @@ TextureData* TextureManager::LoadTexture (const std::string& filePath, const std
 		//存在していたら既存のデータを返す
 		return &existingData;
 	}
-	
+
+	HRESULT hr;
 
 	//returnするデータを詰める箱
 	TextureData newData{};
@@ -31,7 +32,15 @@ TextureData* TextureManager::LoadTexture (const std::string& filePath, const std
 	DirectX::ScratchImage image{};
 	std::wstring filePathW = String::ConvertString (filePath);
 	OutputDebugStringW ((L"探してるファイル: " + filePathW + L"\n").c_str ());
-	HRESULT hr = DirectX::LoadFromWICFile (filePathW.c_str (), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+
+	// ファイルパスの拡張子で分岐
+	if(filePathW.ends_with(L".dds")) {
+		hr = DirectX::LoadFromDDSFile(filePathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+	}
+	else {
+		hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	}
+
 	if (FAILED (hr)) {
 		std::wstringstream ss;
 		ss << L"[エラー] テクスチャ読み込み失敗！ ダミーのテクスチャを返します HRESULT: 0x" << std::hex << hr << std::endl;
@@ -53,7 +62,13 @@ TextureData* TextureManager::LoadTexture (const std::string& filePath, const std
 
 	//ミップマップの作成
 	DirectX::ScratchImage mipImage{};
-	hr = DirectX::GenerateMipMaps (image.GetImages (), image.GetImageCount (), image.GetMetadata (), DirectX::TEX_FILTER_SRGB, 0, mipImage);
+	if(DirectX::IsCompressed(image.GetMetadata().format)) {
+		mipImage = std::move(image);
+	}
+	else {
+		hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 4, mipImage);
+	}
+
 	assert (SUCCEEDED (hr));
 
 	//mipImageを使ってmetaDataを作る
@@ -71,7 +86,8 @@ TextureData* TextureManager::LoadTexture (const std::string& filePath, const std
 		newIndex,
 		newData.textureResource.Get(),
 		newData.metadata.format,
-		(UINT)newData.metadata.mipLevels
+		(UINT)newData.metadata.mipLevels,
+		newData
 	);
 
 	//生成物をmapに渡すためにデータを詰める
@@ -215,15 +231,8 @@ TextureData* TextureManager::CreateDummyTexture (const std::string& ID) {
 		newIndex,
 		newData.textureResource.Get(),
 		newData.metadata.format,
-		(UINT)newData.metadata.mipLevels
-	);
-
-	//srvManagerでSRVの生成
-	srvManager_->CreateSRVforTexture2D(
-		newIndex,
-		newData.textureResource.Get(),
-		newData.metadata.format,
-		(UINT)newData.metadata.mipLevels
+		(UINT)newData.metadata.mipLevels,
+		newData
 	);
 
 	//生成物をmapに渡すためにデータを詰める

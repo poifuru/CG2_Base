@@ -19,4 +19,7 @@ private:	//メンバ変数
 	std::unique_ptr<Model> cube_ = nullptr;
 	std::unique_ptr<Model> human_ = nullptr;
 	Animation animation_ = {};
+
+	// スカイボックス
+
 };

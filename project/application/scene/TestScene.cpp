@@ -13,6 +13,9 @@ TestScene::TestScene() {
 	ModelManager::GetInstance()->LoadModelData("Resources/human", "walk.gltf");
 	ModelManager::GetInstance()->LoadAnimationData("Resources/human", "walk.gltf");
 	TextureManager::GetInstance()->LoadTexture("Resources/human/white.png", "white");
+
+	// skybox
+	TextureManager::GetInstance()->LoadTexture("Resources/Skybox/rostock_laage_airport_4k.dds", "skybox");
 }
 
 TestScene::~TestScene() {
