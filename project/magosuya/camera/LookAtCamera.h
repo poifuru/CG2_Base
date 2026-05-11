@@ -9,7 +9,7 @@ public:	//メンバ関数
 	~LookAtCamera () override;
 
 	//初期化
-	void Initialize (const Transform& Transform) override;
+	void Initialize (const EulerTransform& Transform) override;
 
 	//更新
 	void Update () override;

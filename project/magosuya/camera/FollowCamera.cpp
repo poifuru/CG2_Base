@@ -17,13 +17,13 @@ FollowCamera::~FollowCamera () {
 	
 }
 
-void FollowCamera::Initialize (const Transform& Transform) {
+void FollowCamera::Initialize (const EulerTransform& Transform) {
 	camera_.Transform = Transform;
 	camera_.proj = Math::MakePerspectiveFOVMatrix (0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, 0.1f, 1000.0f);
 }
 
-void FollowCamera::SetTarget (const Transform* target) {
-	target_ = const_cast<Transform*>(target);
+void FollowCamera::SetTarget (const EulerTransform* target) {
+	target_ = const_cast<EulerTransform*>(target);
 }
 
 void FollowCamera::Update () {

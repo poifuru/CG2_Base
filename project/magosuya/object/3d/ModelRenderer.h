@@ -17,9 +17,9 @@ public:
 	~ModelRenderer ();
 
 	void Initialize ();
-	void Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform, Vector3 cameraWorld);
+	void Update (Matrix4x4 world, Matrix4x4 vp, EulerTransform uvTransform, Vector3 cameraWorld);
 	void Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
-	void ImGui (Transform& Transform, Transform& uvTransform, const std::string& windowName);
+	void ImGui (EulerTransform& Transform, EulerTransform& uvTransform, const std::string& windowName);
 
 	//アクセッサ
 	Material* GetMaterial () { return materialData_; }

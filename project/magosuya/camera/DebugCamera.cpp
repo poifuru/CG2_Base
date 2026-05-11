@@ -29,7 +29,7 @@ DebugCamera::~DebugCamera () {
 
 }
 
-void DebugCamera::Initialize(const Transform& Transform) {
+void DebugCamera::Initialize(const EulerTransform& Transform) {
 	camera_.Transform = Transform;
 	camera_.world = Math::MakeAffineMatrix (camera_.Transform.scale, camera_.Transform.rotate, camera_.Transform.translate);
 	camera_.view = Math::Inverse (camera_.world);

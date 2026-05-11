@@ -12,7 +12,7 @@ LookAtCamera::~LookAtCamera () {
 
 }
 
-void LookAtCamera::Initialize (const Transform& Transform) {
+void LookAtCamera::Initialize (const EulerTransform& Transform) {
 	camera_.Transform = Transform;
 
 	//LookAtCameraの初期値

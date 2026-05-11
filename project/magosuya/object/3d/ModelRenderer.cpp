@@ -52,7 +52,7 @@ void ModelRenderer::Initialize () {
 	desc_.BlendMode = BlendModeType::Alpha;
 }
 
-void ModelRenderer::Update (Matrix4x4 world, Matrix4x4 vp, Transform uvTransform, Vector3 cameraWorld) {
+void ModelRenderer::Update (Matrix4x4 world, Matrix4x4 vp, EulerTransform uvTransform, Vector3 cameraWorld) {
 	// 共有データをロックして有効性をチェック
 	std::shared_ptr<ModelData> data = modelData_.lock ();
 	if (!data) {
@@ -116,7 +116,7 @@ void ModelRenderer::Draw (D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	commandList_->DrawIndexedInstanced (static_cast<UINT>(data->indexCount), 1, 0, 0, 0);
 }
 
-void ModelRenderer::ImGui (Transform& Transform, Transform& uvTransform, const std::string& windowName) {
+void ModelRenderer::ImGui (EulerTransform& Transform, EulerTransform& uvTransform, const std::string& windowName) {
 #ifdef USEIMGUI
 	std::string num = std::to_string (instanceID_);
 	std::string label = "##" + tag_ + num;

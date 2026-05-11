@@ -14,36 +14,36 @@ struct MeshParticleData {
 };
 
 struct AccelerationField {
-	Transform Transform;
+	EulerTransform Transform;
 	Vector3 acceleration;
 	AABB aabb;
 };
 
 class MeshParticle {
 public:
-	MeshParticle ();
-	~MeshParticle ();
+	MeshParticle();
+	~MeshParticle();
 
-	void Initialize ();
-	void Update (Matrix4x4* vp);
-	void Draw ();
-	void ImGui ();
+	void Initialize();
+	void Update(Matrix4x4* vp);
+	void Draw();
+	void ImGui();
 
-	uint32_t GetParticleNum () { return kMaxParticleNum_; };
-	void SetColor (const Vector4& color) { color_ = color; }
-	void SetEmitterPos (const Vector3& pos) { emitter_.Transform.translate = pos; }
-	void SetMakeParticleCount (const int& count) { emitter_.count = count; }
+	uint32_t GetParticleNum() { return kMaxParticleNum_; };
+	void SetColor(const Vector4& color) { color_ = color; }
+	void SetEmitterPos(const Vector3& pos) { emitter_.Transform.translate = pos; }
+	void SetMakeParticleCount(const int& count) { emitter_.count = count; }
 	void Spawn();
 
 private:	//内部関数
-	MeshParticleData MakeNewParticle (std::mt19937 randomEngine, const Emitter& emitter_);
-	std::list<MeshParticleData> Emit (const Emitter& emitter, std::mt19937& randomEngine);
-	void EmitterUpdate ();
-	void EmitterLinePosUpdate ();
-	void EmitterLineDraw ();
-	void FieldUpdate ();
+	MeshParticleData MakeNewParticle(std::mt19937 randomEngine, const Emitter& emitter_);
+	std::list<MeshParticleData> Emit(const Emitter& emitter, std::mt19937& randomEngine);
+	void EmitterUpdate();
+	void EmitterLinePosUpdate();
+	void EmitterLineDraw();
+	void FieldUpdate();
 	void FieldLinePosUpdate();
-	void FieldLineDraw ();
+	void FieldLineDraw();
 
 private:
 	const uint32_t kMaxParticleNum_ = 5000;

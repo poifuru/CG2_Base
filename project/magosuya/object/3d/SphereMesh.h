@@ -49,8 +49,8 @@ private:	//メンバ変数
 	D3D12_INDEX_BUFFER_VIEW ibView_{};
 
 	//座標データ
-	Transform Transform_;	//ローカル座標
-	Transform uvTransform_;	//uvTranform用のローカル座標
+	EulerTransform Transform_;	//ローカル座標
+	EulerTransform uvTransform_;	//uvTranform用のローカル座標
 	TransformationMatrix TransformationMatrix_; //ワールド座標と、カメラからwvp行列をもらって格納する
 
 	//球の半径
