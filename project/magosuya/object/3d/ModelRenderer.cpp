@@ -5,6 +5,7 @@
 #include "LightManager.h"
 #include "SRVManager.h"
 #include "Mesh.h"
+#include "TextureManager.h"
 
 ModelRenderer::ModelRenderer(DxCommon* dxCommon, LightManager* lightManager) {
 	dxCommon_ = dxCommon;
@@ -39,6 +40,7 @@ void ModelRenderer::Initialize() {
 	materialData_->uvTransform = Math::MakeIdentity4x4();
 	materialData_->roughness = 0.3f;
 	materialData_->metallic = 0.5f;
+	materialData_->environmentCoefficient = 0.3f;
 
 	cameraBuffer_ = dxCommon_->CreateBufferResource(sizeof(Vector3));
 	cameraBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
@@ -143,6 +145,9 @@ void ModelRenderer::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	dxCommon_->GetCommandList()->SetGraphicsRootDescriptorTable(
 		9, SRVManager::GetInstance()->GetGPUDescriptorHandle(DescriptorFreeIndex_)
 	);
+	// 環境マップ用のTextureをセット
+	commandList_->SetGraphicsRootDescriptorTable(10, TextureManager::GetInstance()->GetTextureHandle("skybox"));
+	
 	// 実際に描画する
 	commandList_->DrawIndexedInstanced(static_cast<UINT>(data->indexCount), 1, 0, 0, 0);
 
@@ -171,6 +176,7 @@ void ModelRenderer::ImGui(EulerTransform& transform, EulerTransform& uvTransform
 	ImGui::DragFloat3(("uvTranslate" + label).c_str(), &uvTransform.translate.x, 0.01f);
 	ImGui::DragFloat(("roughness" + label).c_str(), &materialData_->roughness, 0.01f, 0.0f, 1.0f);
 	ImGui::DragFloat(("metallic" + label).c_str(), &materialData_->metallic, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat(("environmentCoefficient" + label).c_str(), &materialData_->environmentCoefficient, 0.01f, 0.0f, 1.0f);
 	// ライトの種類を選べるようにする
 	int currentNum = static_cast<int>(materialData_->enableLighting);
 	const char* lights[] = { "None", "lambert", "halfLambert" };

@@ -111,7 +111,7 @@ void Skybox::Initialize(std::string filePath, std::string tag) {
 }
 
 void Skybox::Update(CameraData* data) {
-	EulerTransform transform = { {500.0f, 500.0f, 500.0f}, {}, {} };
+	EulerTransform transform = { { 5000.0f, 5000.0f, 5000.0f}, {}, {} };
 	matrixData_->World = Math::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 
 	if(data) {

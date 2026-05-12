@@ -8,6 +8,7 @@ using namespace Microsoft::WRL;
 #include "struct.h"
 #include "PSOManager.h"
 #include "DxCommon.h"
+#include "Skybox.h"
 
 class LightManager;
 

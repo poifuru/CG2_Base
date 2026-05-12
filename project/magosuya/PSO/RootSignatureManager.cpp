@@ -40,6 +40,12 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	standard3DDescriptorRanges[4].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	standard3DDescriptorRanges[4].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
+	//環境マップ用
+	standard3DDescriptorRanges[5].BaseShaderRegister = 4; // register(t5)に対応
+	standard3DDescriptorRanges[5].NumDescriptors = 1;
+	standard3DDescriptorRanges[5].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	standard3DDescriptorRanges[5].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
 	//RootParameter(b0)
 	standard3DRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	standard3DRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	//VertexShaderで使う
@@ -89,6 +95,12 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	standard3DRootParameters[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	standard3DRootParameters[8].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[4]; // Range[1]を指す
 	standard3DRootParameters[8].DescriptorTable.NumDescriptorRanges = 1;
+
+	//RectLight一覧用のディスクリプタテーブル(t5用)
+	standard3DRootParameters[9].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	standard3DRootParameters[9].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	standard3DRootParameters[9].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[5]; // Range[1]を指す
+	standard3DRootParameters[9].DescriptorTable.NumDescriptorRanges = 1;
 
 	//Sampler
 	standard3DStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;	//バイリニアフィルタ
@@ -237,6 +249,12 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	skinningStandard3DDescriptorRanges[5].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	skinningStandard3DDescriptorRanges[5].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
+	//環境マップ用
+	skinningStandard3DDescriptorRanges[6].BaseShaderRegister = 5; // register(t5)に対応
+	skinningStandard3DDescriptorRanges[6].NumDescriptors = 1;
+	skinningStandard3DDescriptorRanges[6].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	skinningStandard3DDescriptorRanges[6].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
 	//RootParameter(b0, Vertex)
 	skinningStandard3DRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	skinningStandard3DRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	//VertexShaderで使う
@@ -287,11 +305,17 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	skinningStandard3DRootParameters[8].DescriptorTable.pDescriptorRanges = &skinningStandard3DDescriptorRanges[4]; // Range[1]を指す
 	skinningStandard3DRootParameters[8].DescriptorTable.NumDescriptorRanges = 1;
 
-	//MatrixPalette用(t1, Vertex)
+	//MatrixPalette用(t5)
 	skinningStandard3DRootParameters[9].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	skinningStandard3DRootParameters[9].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 	skinningStandard3DRootParameters[9].DescriptorTable.pDescriptorRanges = &skinningStandard3DDescriptorRanges[5]; // Range[5]を指す
 	skinningStandard3DRootParameters[9].DescriptorTable.NumDescriptorRanges = 1;
+
+	//環境マップ用(t5)
+	skinningStandard3DRootParameters[10].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	skinningStandard3DRootParameters[10].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	skinningStandard3DRootParameters[10].DescriptorTable.pDescriptorRanges = &skinningStandard3DDescriptorRanges[6]; // Range[5]を指す
+	skinningStandard3DRootParameters[10].DescriptorTable.NumDescriptorRanges = 1;
 
 	//Sampler
 	skinningStandard3DStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;	//バイリニアフィルタ
