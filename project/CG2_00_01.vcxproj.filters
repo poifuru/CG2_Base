@@ -7,12 +7,8 @@
     <FxCompile Include="Resources\shader\Object3d.VS.hlsl" />
     <FxCompile Include="Resources\shader\Particle.PS.hlsl" />
     <FxCompile Include="Resources\shader\Particle.VS.hlsl" />
-    <FxCompile Include="Resources\shader\Object3dInstance.VS.hlsl" />
-    <FxCompile Include="Resources\shader\Object3dInstance.PS.hlsl" />
-    <FxCompile Include="Resources\shader\Sprite.VS.hlsl" />
-    <FxCompile Include="Resources\shader\Sprite.PS.hlsl" />
-    <FxCompile Include="Resources\shader\SkinningObject3d.VS.hlsl" />
-    <FxCompile Include="Resources\shader\SkinningObject3d.PS.hlsl" />
+    <FxCompile Include="Resources\shader\Skybox.VS.hlsl" />
+    <FxCompile Include="Resources\shader\Skybox.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application\scene\ClearScene.cpp" />
@@ -203,6 +199,7 @@
     <None Include="Resources\shader\Object3d.hlsli" />
     <None Include="Resources\shader\Particle.hlsli" />
     <None Include="Resources\shader\Sprite.hlsli" />
+    <None Include="Resources\shader\Skybox.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

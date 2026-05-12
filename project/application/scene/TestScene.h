@@ -3,6 +3,7 @@
 #include "LightManager.h"
 #include "Model.h"
 #include "Sprite.h"
+#include "Skybox.h"
 
 class TestScene : public BaseScene {
 public:		//メンバ関数
@@ -21,5 +22,5 @@ private:	//メンバ変数
 	Animation animation_ = {};
 
 	// スカイボックス
-
+	std::unique_ptr<Skybox> skybox_ = nullptr;
 };

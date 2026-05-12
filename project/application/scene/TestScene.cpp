@@ -13,9 +13,6 @@ TestScene::TestScene() {
 	ModelManager::GetInstance()->LoadModelData("Resources/human", "walk.gltf");
 	ModelManager::GetInstance()->LoadAnimationData("Resources/human", "walk.gltf");
 	TextureManager::GetInstance()->LoadTexture("Resources/human/white.png", "white");
-
-	// skybox
-	TextureManager::GetInstance()->LoadTexture("Resources/Skybox/rostock_laage_airport_4k.dds", "skybox");
 }
 
 TestScene::~TestScene() {
@@ -42,6 +39,9 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 	human_->SetAnimation("walk.gltf");
 	human_->Initialize({ 100.0f, 100.0f, 100.0f }, { Math::Deg2Rad(-90.0f), Math::Deg2Rad(180.0f), 0.0f }, {});
 	human_->SkeletonInit();
+
+	skybox_ = std::make_unique<Skybox>(dxCommon);
+	skybox_->Initialize("Resources/Skybox/rostock_laage_airport_4k.dds", "skybox");
 }
 
 void TestScene::Update() {
@@ -55,11 +55,14 @@ void TestScene::Update() {
 
 	human_->Update(&camera_->GetCameraData());
 	human_->ImGui("human_walk");
+
+	skybox_->Update(&camera_->GetCameraData());
 }
 
 void TestScene::Draw() {
 	cube_->Draw();
 	human_->Draw();
+	skybox_->Draw();
 }
 
 void TestScene::StopToResources() {

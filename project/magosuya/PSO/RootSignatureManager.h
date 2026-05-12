@@ -19,7 +19,8 @@ enum class RootSigType : uint32_t {
 	CubeMesh,			//メッシュ描画用
 	PostProcess,		// ポストエフェクト用（SRV中心）(未実装)
 	UI,					// UI描画用（2D行列とテクスチャ）(未実装)
-	Count
+	Skybox,				// Skybox用
+	Count,
 };
 
 class RootSignatureManager {
@@ -82,6 +83,10 @@ private:	// メンバ変数
 	//Cube
 	D3D12_DESCRIPTOR_RANGE cubeMeshDescriptorRanges[2] = {};
 	D3D12_ROOT_PARAMETER cubeMeshRootParameters[2] = {};
+	//Skybox
+	D3D12_DESCRIPTOR_RANGE skyboxDescriptorRanges[1] = {};
+	D3D12_ROOT_PARAMETER skyboxRootParameters[3] = {};
+	D3D12_STATIC_SAMPLER_DESC skyboxStaticSamplers[1] = {};
 	//***ルートシグネチャの種類を増やしたいときに適宜追加***//
 
 	//RootSigTypeとIDのマップ(逆引き兼キャッシュチェック用)

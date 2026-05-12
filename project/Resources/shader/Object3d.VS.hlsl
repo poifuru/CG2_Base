@@ -1,12 +1,12 @@
 #include "Object3d.hlsli"
 
-struct TransformaitionMatrix
+struct TransformationMatrix
 {
     float4x4 WVP;
     float4x4 World;
     float4x4 WorldInverseTranspose;
 };
-ConstantBuffer<TransformaitionMatrix> gTransformaitionMatrix : register(b0);
+ConstantBuffer<TransformationMatrix> gTransformationMatrix : register(b0);
 
 struct VertexShaderInput
 {

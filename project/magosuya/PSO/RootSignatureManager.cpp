@@ -431,6 +431,40 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	cubeMeshRootParameters[1].DescriptorTable.pDescriptorRanges = cubeMeshDescriptorRanges;						//t0(SRV)を指定
 	cubeMeshRootParameters[1].DescriptorTable.NumDescriptorRanges = _countof (cubeMeshDescriptorRanges);		//Tableで利用する数
 #pragma endregion
+
+#pragma region Skybox
+	//DescriptorRange
+	skyboxDescriptorRanges[0].BaseShaderRegister = 0;	//0から始まる (t0)
+	skyboxDescriptorRanges[0].NumDescriptors = 1;		//数は1つ
+	skyboxDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	//SRVを使う
+	skyboxDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	//Offsetを自動計算
+
+	//CBV(b0, VS)用のrootParameter : TransformationMatrix
+	skyboxRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	skyboxRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	skyboxRootParameters[0].Descriptor.ShaderRegister = 0;
+
+	//CBV(b0, PS)用のrootParameter : Material
+	skyboxRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	skyboxRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	skyboxRootParameters[1].Descriptor.ShaderRegister = 0;
+
+	//DescriptorTable(t0, PS)用のrootParameter : TextureCube
+	skyboxRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	skyboxRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	skyboxRootParameters[2].DescriptorTable.pDescriptorRanges = skyboxDescriptorRanges;
+	skyboxRootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(skyboxDescriptorRanges);
+
+	//Sampler
+	skyboxStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	skyboxStaticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	skyboxStaticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	skyboxStaticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	skyboxStaticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+	skyboxStaticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;
+	skyboxStaticSamplers[0].ShaderRegister = 0;
+	skyboxStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+#pragma endregion
 }
 
 uint32_t RootSignatureManager::GetOrCreateRootSignature (RootSigType type) {
@@ -597,6 +631,19 @@ D3D12_ROOT_SIGNATURE_DESC RootSignatureManager::CreateRootSigDesc (RootSigType t
 		//Sampler
 		desc.pStaticSamplers = nullptr;
 		desc.NumStaticSamplers = 0;
+		break;
+
+	case RootSigType::Skybox:
+		//RootSignature
+		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+		//RootParametor
+		desc.pParameters = skyboxRootParameters;
+		desc.NumParameters = _countof(skyboxRootParameters);
+
+		//Sampler
+		desc.pStaticSamplers = skyboxStaticSamplers;
+		desc.NumStaticSamplers = _countof(skyboxStaticSamplers);
 		break;
 	}
 
