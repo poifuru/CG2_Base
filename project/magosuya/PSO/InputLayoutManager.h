@@ -12,6 +12,7 @@ enum class InputLayoutType : uint32_t {
     LineMesh,   //LineMesh描画用
     CubeMesh,   //CubeMesh描画用
     MeshShader, //将来のメッシュシェーダー用(InputLayout不要)
+    Skybox,     //Skybox描画用
     PostProcess,//PostEffect用(InputLayout不要)
     
     Count           // 設定の個数

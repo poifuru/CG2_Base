@@ -227,6 +227,7 @@ struct Material {
 	Matrix4x4 uvTransform;
 	float roughness; // 粗さ
 	float metallic; // 金属度
+	float environmentCoefficient;	// 環境係数
 };
 
 // TransformationMatrix構造体
