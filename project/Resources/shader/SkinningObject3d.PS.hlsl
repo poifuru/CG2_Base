@@ -13,6 +13,7 @@ struct Material
     float4x4 uvTransform;
     float roughness; // 粗さ
     float metallic; // 金属度
+    float environmentCoefficient;	// 環境係数
 };
 
 struct LightCount
@@ -85,6 +86,8 @@ StructuredBuffer<PointLight> gPointLight : register(t2);
 StructuredBuffer<SpotLight> gSpotLight : register(t3);
 
 StructuredBuffer<RectLight> gRectLight : register(t4);
+
+TextureCube<float4> gEnvironmentTexture : register(t5);
 
 SamplerState gSampler : register(s0);
 //******//
@@ -310,6 +313,12 @@ PixelShaderOutput main(VertexShaderOutput input)
 
         totalDiffuse += diffuse;
     }
+
+    // 環境マップ用の処理
+    float3 cameraToPosition = normalize(input.worldPosition - gCamera.worldPosition);
+    float3 reflectedVector = reflect(cameraToPosition, normalize(input.normal));
+    float3 environmentColor = gEnvironmentTexture.Sample(gSampler, reflectedVector).rgb;
+    environmentColor.rgb *= gMaterial.environmentCoefficient;
     
     //最終出力の分岐
     if (gMaterial.enableLighting == 0)
@@ -319,7 +328,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     else
     {
     //PBRの結果を表示
-        output.color.rgb = totalDiffuse; // totalDiffuseの中にspecularも加算済みの場合
+        output.color.rgb = totalDiffuse + environmentColor; // totalDiffuseの中にspecularも加算済みの場合
         output.color.a = gMaterial.color.a * textureColor.a;
     }
     

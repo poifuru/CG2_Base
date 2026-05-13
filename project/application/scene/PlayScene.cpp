@@ -8,8 +8,6 @@
 #include "SceneType.h"
 
 PlayScene::PlayScene () {
-	ModelManager::GetInstance()->LoadModelData("Resources/skydome", "skydome.obj");
-	TextureManager::GetInstance()->LoadTexture("Resources/uvChecker.png", "uvChecker");
 }
 
 PlayScene::~PlayScene () {
@@ -35,17 +33,14 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	lightManager_->SetDirectionalLightDir(4, { -1.0f, 0.0f, 0.0f });
 
 	//オブジェクトたちの初期化
-	skydome_ = std::make_unique<Model>(dxCommon, lightManager_.get());
-	skydome_->SetModelData("skydome.obj");
-	skydome_->SetTexture("uvChecker");
-	skydome_->Initialize();
-	skydome_->IsLighting(LightReflectionModel::None);
-
 	player_ = std::make_unique<Player>(dxCommon_, camera_, input_, lightManager_.get());
 	player_->Initialize();
 
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize(dxCommon, lightManager_.get(), camera);
+
+	skybox_ = std::make_unique<Skybox>(dxCommon);
+	skybox_->Initialize("Resources/Skybox/rostock_laage_airport_4k.dds", "skybox");
 }
 
 void PlayScene::Update () {
@@ -55,6 +50,10 @@ void PlayScene::Update () {
 	}
 	lightManager_->Update();
 	lightManager_->ImGui();
+
+	camera_->SetFollowTarget("main2", player_->GetTransform());
+	camera_->Update();
+	camera_->ImGui();
 
 	player_->Update();
 	player_->ImGui();
@@ -74,14 +73,12 @@ void PlayScene::Update () {
 		}
 	}
 
-	camera_->SetFollowTarget("main2", player_->GetTransform());
-	camera_->Update();
-	camera_->ImGui();
-
-	skydome_->Update(&camera_->GetCameraData());
+	skybox_->Update(&camera_->GetCameraData());
 }
+
 void PlayScene::Draw () {
-	skydome_->Draw();
+	skybox_->Draw();
+
 	player_->Draw();
 	enemyManager_->Draw();
 }

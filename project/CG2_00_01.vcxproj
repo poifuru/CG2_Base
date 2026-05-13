@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -20,21 +20,21 @@
     <ProjectGuid>{78cf9ffa-87b4-4851-a7e1-64190d146e94}</ProjectGuid>
     <RootNamespace>CG20001</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>CG2</ProjectName>
+    <ProjectName>MagosuyaEngine</ProjectName>
     <Platform Condition="'$(Platform)' == ''">x64</Platform>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
@@ -242,9 +242,22 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="magosuya\light\SpotLight.cpp" />
     <ClCompile Include="magosuya\light\RectLight.cpp" />
     <ClCompile Include="application\scene\TestScene.cpp" />
+    <ClCompile Include="magosuya\object\3d\Skybox.cpp" />
+    <ClCompile Include="magosuya\RenderTexture.cpp" />
+    <ClCompile Include="magosuya\engine\PostEffect.cpp" />
     <ClCompile Include="application\entity\player\Reticle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Resources\shader\CopyImage.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Resources\shader\CopyImage.VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="Resources\shader\Line.PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -289,16 +302,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="Resources\shader\Object3dInstance.PS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="Resources\shader\Object3dInstance.VS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Vertex</ShaderType>
-    </FxCompile>
     <FxCompile Include="Resources\shader\Particle.PS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -321,22 +324,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="Resources\shader\SkinningObject3d.PS.hlsl">
+    <FxCompile Include="Resources\shader\Skybox.PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="Resources\shader\SkinningObject3d.VS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Vertex</ShaderType>
-    </FxCompile>
-    <FxCompile Include="Resources\shader\Sprite.PS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="Resources\shader\Sprite.VS.hlsl">
+    <FxCompile Include="Resources\shader\Skybox.VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Vertex</ShaderType>
@@ -425,13 +418,18 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="magosuya\light\RectLight.h" />
     <ClInclude Include="magosuya\audio\VoiceCallback.h" />
     <ClInclude Include="application\scene\TestScene.h" />
+    <ClInclude Include="magosuya\object\3d\Skybox.h" />
+    <ClInclude Include="magosuya\RenderTexture.h" />
+    <ClInclude Include="magosuya\engine\PostEffect.h" />
     <ClInclude Include="application\entity\player\Reticle.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\shader\CopyImage.hlsli" />
     <None Include="Resources\shader\Cube.hlsli" />
     <None Include="Resources\shader\Line.hlsli" />
     <None Include="Resources\shader\Object3d.hlsli" />
     <None Include="Resources\shader\Particle.hlsli" />
+    <None Include="Resources\shader\Skybox.hlsli" />
     <None Include="Resources\shader\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>

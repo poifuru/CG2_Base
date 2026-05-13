@@ -1,5 +1,6 @@
 #include "MagosuyaEngine.h"
 #include "LogManager.h"
+#include "PostEffect.h"
 
 MagosuyaEngine::~MagosuyaEngine () {
 	audioManager_->Finalize();
@@ -7,6 +8,8 @@ MagosuyaEngine::~MagosuyaEngine () {
 }
 
 void MagosuyaEngine::Initialize () {
+	LogManager::GetInstance()->Initialize();
+
 	winApi_ = WindowsAPI::GetInstance ();
 	winApi_->Initialize (InputManager::GetInstance ());
 
@@ -58,12 +61,16 @@ void MagosuyaEngine::Initialize () {
 	audioManager_ = AudioManager::GetInstance();
 	audioManager_->Initialize();
 
-	LogManager::GetInstance()->Initialize();
+	// SRVManagerが初期化された後でオフスクリーン用のRenderTextureを初期化
+	dxCommon_->InitializeRenderTexture(srvManager_);
+
+	postEffect_ = PostEffect::GetInstance();
+	postEffect_->Initialize(dxCommon_);
 }
 
 void MagosuyaEngine::BeginFrame () {
-	imguiManager_->BeginFrame ();
 	dxCommon_->BeginFrame ();
+	imguiManager_->BeginFrame ();
 	srvManager_->PreDraw();
 
 	//ゲームパッドの更新
@@ -72,8 +79,15 @@ void MagosuyaEngine::BeginFrame () {
 }
 void MagosuyaEngine::EndFrame () {
 	Mesh::AllDrawing ();
-	imguiManager_->Draw ();
 	inputManager_->EndFrame ();
+
+	// ImGuiの描画の前に、描画先をRenderTextureからSwapchainへ切り替える
+	dxCommon_->PreDrawImGui();
+
+	// RenderTextureの内容をSwapchainにコピー
+	postEffect_->Draw(dxCommon_->GetRenderTexture());
+
+	imguiManager_->Draw ();
 	dxCommon_->EndFrame ();
 	texManager_->ClearIntermediateResource ();
 }

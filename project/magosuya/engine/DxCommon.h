@@ -12,6 +12,10 @@ using namespace Microsoft::WRL;
 #include <DirectXTex.h>
 #include "WindowsAPI.h"
 #include "LeakChecker.h"
+#include <memory>
+
+class SRVManager;
+class RenderTexture;
 
 class DxCommon {
 public:		//メンバ関数(mainで呼び出すよう)
@@ -22,9 +26,13 @@ public:		//メンバ関数(mainで呼び出すよう)
 	}
 
 	void Initialize();
+	void InitializeRenderTexture(SRVManager* srvManager);
 	void BeginFrame();
+	void PreDrawImGui();
 	void EndFrame();
 	void Finalize() const;
+
+	RenderTexture* GetRenderTexture() const { return renderTexture_.get(); }
 
 	/// <summary>
 	/// Resource作成関数
@@ -43,9 +51,13 @@ public:		//メンバ関数(mainで呼び出すよう)
 	/// <returns></returns>
 	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
+	// RTVの空きハンドルを渡す関数
+	D3D12_CPU_DESCRIPTOR_HANDLE AllocateRTV();
+
 private:
 	//コンストラクタを禁止
-	DxCommon() = default;
+	DxCommon();
+	~DxCommon(); // unique_ptrのデストラクタ解決のため明示的に宣言
 	// コピーコンストラクタと代入演算子を禁止
 	DxCommon(const DxCommon&) = delete;
 	DxCommon& operator=(const DxCommon&) = delete;
@@ -68,11 +80,11 @@ private:	//プライベート関数
 	void UpdateFixFPS();
 
 public:		//アクセッサ
-	ID3D12Device* GetDevice() { return device.Get(); }
-	ID3D12GraphicsCommandList* GetCommandList() { return commandList.Get(); }
-	IDxcUtils* GetDxcUtils() { return dxcUtils.Get(); }
-	IDxcCompiler3* GetDxcCompiler() { return dxcCompiler.Get(); }
-	IDxcIncludeHandler* GetIncludeHandler() { return includeHandler.Get(); }
+	ID3D12Device* GetDevice() { return device_.Get(); }
+	ID3D12GraphicsCommandList* GetCommandList() { return commandList_.Get(); }
+	IDxcUtils* GetDxcUtils() { return dxcUtils_.Get(); }
+	IDxcCompiler3* GetDxcCompiler() { return dxcCompiler_.Get(); }
+	IDxcIncludeHandler* GetIncludeHandler() { return includeHandler_.Get(); }
 
 private://メンバ変数
 	LeakChecker leakCheck_{};
@@ -82,69 +94,81 @@ private://メンバ変数
 
 	//***DX12変数***//
 	//DXGIファクトリー
-	ComPtr<IDXGIFactory7> dxgiFactory = nullptr;
+	ComPtr<IDXGIFactory7> dxgiFactory_ = nullptr;
 
 	//使用するアダプタ用の変数。最初にnullptrを入れておく
-	ComPtr<IDXGIAdapter4> useAdapter = nullptr;
+	ComPtr<IDXGIAdapter4> useAdapter_ = nullptr;
 
 	//dxcCompiler
-	ComPtr<IDxcUtils> dxcUtils = nullptr;
-	ComPtr<IDxcCompiler3> dxcCompiler = nullptr;
+	ComPtr<IDxcUtils> dxcUtils_ = nullptr;
+	ComPtr<IDxcCompiler3> dxcCompiler_ = nullptr;
 
 	//後のincludeに対応するための設定
-	ComPtr<IDxcIncludeHandler> includeHandler = nullptr;
+	ComPtr<IDxcIncludeHandler> includeHandler_ = nullptr;
 
 	//デバイス
-	ComPtr<ID3D12Device> device = nullptr;
+	ComPtr<ID3D12Device> device_ = nullptr;
 
 	//コマンドキュー
-	ComPtr<ID3D12CommandQueue> commandQueue = nullptr;
-	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
+	ComPtr<ID3D12CommandQueue> commandQueue_ = nullptr;
+	D3D12_COMMAND_QUEUE_DESC commandQueueDesc_{};
 
 	//コマンドアロケータ
-	ComPtr<ID3D12CommandAllocator> commandAllocator = nullptr;
+	ComPtr<ID3D12CommandAllocator> commandAllocator_ = nullptr;
 
 	//コマンドリスト
-	ComPtr<ID3D12GraphicsCommandList> commandList = nullptr;
+	ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
 
 	//スワップチェーン
-	ComPtr<IDXGISwapChain4> swapChain = nullptr;
-	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
+	ComPtr<IDXGISwapChain4> swapChain_ = nullptr;
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 
 	//swapChainResource
-	std::array<ComPtr<ID3D12Resource>, 2> swapChainResources;
+	std::array<ComPtr<ID3D12Resource>, 2> swapChainResources_;
 
-	//RTVを2つ作るのでディスクリプタを2つ用意
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2]{};
+	// RTVの最大数
+	static inline const uint32_t kMaxRTVNum_ = 32;
+
+	// スワップチェーンで使うRTVの個数
+	static inline const uint32_t kSwapChainNum_ = 2;
+
+	// RTVの次の空きインデックスを管理する変数
+	uint32_t rtvIndex_ = 0;
+
+	//RTVを最大数分作ためのディスクリプタを用意
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[kMaxRTVNum_]{};
 
 	//ディスクリプタヒープサイズ
 	UINT rtvDescriptorHeapSize_;
 
 	//RTVディスクリプタヒープ
-	ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap{};
+	ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_{};
 
 	//RTVの設定
-	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
 
 	//初期値0でFenceを作る
-	ComPtr<ID3D12Fence> fence = nullptr;
-	uint64_t fenceValue = 0;
+	ComPtr<ID3D12Fence> fence_ = nullptr;
+	uint64_t fenceValue_ = 0;
 
 	//FenceのSignalを待つためのイベント
-	HANDLE fenceEvent;
+	HANDLE fenceEvent_;
 
 	//DepthStencilTexture
-	ComPtr<ID3D12Resource> depthStencilResource = nullptr;
+	ComPtr<ID3D12Resource> depthStencilResource_ = nullptr;
 
 	//ディスクリプタヒープサイズ
 	UINT dsvDescriptorHeapSize_;
 
 	//DSV用ディスクリプタヒープで数は1。DSVはShader内で触るものではないので、ShaderVisibleはfalse
-	ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap{};
+	ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_{};
 
 	//ビューポート
-	D3D12_VIEWPORT viewport{};
+	D3D12_VIEWPORT viewport_{};
 
 	//シザー矩形
-	D3D12_RECT scissorRect{};
+	D3D12_RECT scissorRect_{};
+
+	//オフスクリーン描画用
+	std::unique_ptr<RenderTexture> renderTexture_ = nullptr;
 };

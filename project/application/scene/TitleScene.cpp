@@ -35,12 +35,6 @@ void TitleScene::Initialize (CameraOrganizer* camera, InputManager* inputManager
 	title_ = std::make_unique<Sprite>(dxCommon);
 	title_->SetTexture("title");
 	title_->Initialize({ 200.0f, 200.0f, 0.0f });
-
-	skydome_ = std::make_unique<Model>(dxCommon, lightManager_.get());
-	skydome_->SetModelData("skydome.obj");
-	skydome_->SetTexture("skydome");
-	skydome_->Initialize();
-	skydome_->IsLighting(LightReflectionModel::None);
 }
 
 void TitleScene::Update () {
@@ -60,12 +54,9 @@ void TitleScene::Update () {
 
 	title_->Update();
 	title_->ImGui();
-
-	skydome_->Update(&camera_->GetCameraData());
 }
 
 void TitleScene::Draw() {
-	skydome_->Draw();
 	title_->Draw();
 }
 
