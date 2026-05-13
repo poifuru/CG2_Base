@@ -59,38 +59,6 @@ void DxCommon::InitializeRenderTexture(SRVManager* srvManager) {
 }
 
 void DxCommon::BeginFrame() {
-	/*
-	//オフスクリーンレンダリングお試し用
-	const Vector4 kRenderTargetClearValue{ 1.0f, 0.0f, 0.0f, 1.0f };	// わかりやすいように赤
-	// RTV作成
-	std::unique_ptr<RenderTexture> renderTexture = std::make_unique<RenderTexture>();
-	renderTexture->CreateRenderTextureResource(
-		device_,
-		WindowsAPI::GetInstance()->kClientWidth,
-		WindowsAPI::GetInstance()->kClientHeight,
-		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
-		kRenderTargetClearValue
-	);
-	
-	// ここでrenderTexture->GetDescriptorHandle()が空っぽ（ptr=0）のまま渡されているためエラーが発生します。
-	// 事前に AllocateRTV() などでハンドルを確保して SetRTVHandle() する必要があります。
-	// また、これを毎フレーム(BeginFrameの中)で行うとメモリリークしてしまいます。
-	device_->CreateRenderTargetView(
-		renderTexture->GetResource(), &rtvDesc_, renderTexture->GetDescriptorHandle()
-	);
-
-	// SRVの作成
-	// 設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC renderTextureSrvDesc{};
-	renderTextureSrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	renderTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	renderTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	renderTextureSrvDesc.Texture2D.MipLevels = 1;
-
-	// 生成
-	device_->CreateShaderResourceView(renderTexture->GetResource(), &renderTextureSrvDesc, renderTexture->GetDescriptorHandle());
-	*/
-
 	// TransitionBarrierの設定 (RenderTextureをSRVからRTVへ遷移)
 	D3D12_RESOURCE_BARRIER barrier{};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;

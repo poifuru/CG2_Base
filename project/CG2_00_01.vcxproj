@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -243,6 +243,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\entity\player\Weapon.cpp" />
     <ClCompile Include="application\scene\TestScene.cpp" />
     <ClCompile Include="magosuya\RenderTexture.cpp" />
+    <ClCompile Include="magosuya\engine\PostEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\CopyImage.PS.hlsl">
@@ -435,6 +436,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\entity\player\Weapon.h" />
     <ClInclude Include="application\scene\TestScene.h" />
     <ClInclude Include="magosuya\RenderTexture.h" />
+    <ClInclude Include="magosuya\engine\PostEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\CopyImage.hlsli" />

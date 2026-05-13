@@ -427,7 +427,8 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 
 	//StructuedBuffer(VSのt0)用のDescriptorTable
 	cubeMeshRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;					//DescriptorTableを使う
-	cubeMeshRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;							//VertexShaderで使う
+	cubeMeshRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	
+	cubeMeshRootParameters[1].DescriptorTable.pDescriptorRanges = cubeMeshDescriptorRanges; //VertexShaderで使う
 	cubeMeshRootParameters[1].DescriptorTable.NumDescriptorRanges = _countof (cubeMeshDescriptorRanges);		//Tableで利用する数
 #pragma endregion
 
@@ -442,7 +443,7 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	postProcessRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	postProcessRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	postProcessRootParameters[0].DescriptorTable.pDescriptorRanges = &postProcessDescriptorRanges[0];
-	postProcessRootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
+	postProcessRootParameters[0].DescriptorTable.NumDescriptorRanges = _countof(postProcessDescriptorRanges);
 
 	// Sampler (s0)
 	postProcessStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;	// バイリニアフィルタ
@@ -481,7 +482,9 @@ uint32_t RootSignatureManager::GetOrCreateRootSignature (RootSigType type) {
 	//失敗したら
 	if (FAILED (hr)) {
 		//ログを出力
-		LogManager::GetInstance()->LogManager::Log (reinterpret_cast<char*>(errorBlob->GetBufferPointer ()));
+		if(errorBlob) { // errorBlobがあるときだけログを出す
+			LogManager::GetInstance()->LogManager::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
+		}
 		assert (false && "RootSignature serialization failed!");
 		return 0;
 	}

@@ -4,6 +4,7 @@
 #include "ShaderManager.h"
 #include "RootSignatureManager.h"
 #include "PSOManager.h"
+#include "SRVManager.h"
 
 void PostEffect::Initialize(DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;

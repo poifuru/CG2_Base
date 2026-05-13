@@ -1,21 +1,21 @@
 #include "CopyImage.hlsli"
 
-static const uint32_t kNumVertex = 3;
-static const float4 kPositions[kNumVertex] = {
-	{ -1.0f, 1.0f, 0.0f, 1.0f },	// 左上
-	{ 3.0f, 1.0f, 0.0f, 1.0f },		// 右上
-	{ -1.0f, -3.0f, 0.0f, 1.0f },	// 左下
+struct Vertex {
+    float4 pos;
+    float2 uv;
 };
 
-static const float2 kTexcoords[kNumVertex] = {
-	{0.0f, 0.0f},	// 左上
-	{2.0f, 0.0f},	// 右上
-	{0.0f, 2.0f},	// 左下
+// データを構造体でまとめて、順番を確実に固定する
+static const Vertex kVertices[3] = {
+    { float4(-1.0f,  1.0f, 0.0f, 1.0f), float2(0.0f, 0.0f) }, // 左上
+    { float4( 3.0f,  1.0f, 0.0f, 1.0f), float2(2.0f, 0.0f) }, // 右上
+    { float4(-1.0f, -3.0f, 0.0f, 1.0f), float2(0.0f, 2.0f) }  // 左下
 };
 
-VertexShaderOutput main(uint32_t vertexId : SV_VertexID){
-	VertexShaderOutput output;
-	output.position = kPositions[vertexId];
-	output.texcoord = kTexcoords[vertexId];
-	return output;
+// uint32_t ではなく uint を使う
+VertexShaderOutput main(uint vertexId : SV_VertexID) {
+    VertexShaderOutput output;
+    output.position = kVertices[vertexId].pos;
+    output.texcoord = kVertices[vertexId].uv;
+    return output;
 }
