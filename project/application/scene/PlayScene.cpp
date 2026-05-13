@@ -40,7 +40,7 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	enemyManager_->Initialize(dxCommon, lightManager_.get(), camera);
 
 	skybox_ = std::make_unique<Skybox>(dxCommon);
-	skybox_->Initialize("Resources/Skybox/rostock_laage_airport_4k.dds", "skybox");
+	skybox_->Initialize("Resources/Skybox/test2.dds", "skybox");
 }
 
 void PlayScene::Update () {

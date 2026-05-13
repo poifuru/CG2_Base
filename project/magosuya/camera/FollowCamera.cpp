@@ -8,7 +8,7 @@ FollowCamera::FollowCamera () {
 	camera_.view = Math::MakeIdentity4x4 ();
 	camera_.proj = Math::MakeIdentity4x4 ();
 
-	offset_ = { 0.0f, 0.0f, -50.0f };
+	offset_ = { 0.0f, 0.0f, -80.0f };
 
 	instanceNum_++;
 }
