@@ -16,6 +16,9 @@ void MagosuyaEngine::Initialize () {
 	srvManager_ = SRVManager::GetInstance();
 	srvManager_->Initialize(dxCommon_);
 
+	// SRVManagerが初期化された後でオフスクリーン用のRenderTextureを初期化
+	dxCommon_->InitializeRenderTexture(srvManager_);
+
 	shaderManager_ = ShaderManager::GetInstance();
 	shaderManager_->Initialize(dxCommon_);
 
@@ -73,6 +76,10 @@ void MagosuyaEngine::BeginFrame () {
 void MagosuyaEngine::EndFrame () {
 	Mesh::AllDrawing ();
 	inputManager_->EndFrame ();
+
+	// ImGuiの描画の前に、描画先をRenderTextureからSwapchainへ切り替える
+	dxCommon_->PreDrawImGui();
+
 	imguiManager_->Draw ();
 	dxCommon_->EndFrame ();
 	texManager_->ClearIntermediateResource ();

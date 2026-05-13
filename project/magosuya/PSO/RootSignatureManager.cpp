@@ -428,8 +428,31 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	//StructuedBuffer(VSのt0)用のDescriptorTable
 	cubeMeshRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;					//DescriptorTableを使う
 	cubeMeshRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;							//VertexShaderで使う
-	cubeMeshRootParameters[1].DescriptorTable.pDescriptorRanges = cubeMeshDescriptorRanges;						//t0(SRV)を指定
 	cubeMeshRootParameters[1].DescriptorTable.NumDescriptorRanges = _countof (cubeMeshDescriptorRanges);		//Tableで利用する数
+#pragma endregion
+
+#pragma region PostProcess
+	// Texture用のディスクリプタレンジ(t0)
+	postProcessDescriptorRanges[0].BaseShaderRegister = 0;	// 0から始まる
+	postProcessDescriptorRanges[0].NumDescriptors = 1;		// 数は1つ
+	postProcessDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	// SRVを使う
+	postProcessDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	// Texture用のディスクリプタテーブル(t0)
+	postProcessRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	postProcessRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	postProcessRootParameters[0].DescriptorTable.pDescriptorRanges = &postProcessDescriptorRanges[0];
+	postProcessRootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
+
+	// Sampler (s0)
+	postProcessStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;	// バイリニアフィルタ
+	postProcessStaticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	postProcessStaticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	postProcessStaticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	postProcessStaticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;	// 比較しない
+	postProcessStaticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;
+	postProcessStaticSamplers[0].ShaderRegister = 0;	// レジスタ番号0を使う
+	postProcessStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
 #pragma endregion
 }
 
@@ -587,16 +610,21 @@ D3D12_ROOT_SIGNATURE_DESC RootSignatureManager::CreateRootSigDesc (RootSigType t
 		break;
 
 	case RootSigType::CubeMesh:
-		//RootSignature
-		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
-		//RootParametor
 		desc.pParameters = cubeMeshRootParameters;
 		desc.NumParameters = _countof (cubeMeshRootParameters);
-
-		//Sampler
+		//静的サンプラーはなし
 		desc.pStaticSamplers = nullptr;
 		desc.NumStaticSamplers = 0;
+		//InputLayoutを使用するように設定
+		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+		break;
+	case RootSigType::PostProcess:
+		desc.pParameters = postProcessRootParameters;
+		desc.NumParameters = _countof (postProcessRootParameters);
+		desc.pStaticSamplers = postProcessStaticSamplers;
+		desc.NumStaticSamplers = _countof (postProcessStaticSamplers);
+		// フルスクリーントライアングルでは頂点バッファを使わないためInputLayoutを許可しない（しても害はないが、今回は不要）
+		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
 		break;
 	}
 

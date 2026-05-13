@@ -1,6 +1,8 @@
 #pragma once
 #include "DxCommon.h"
 
+class SRVManager;
+
 class RenderTexture {
 public:
 	/// <summary>
@@ -12,6 +14,11 @@ public:
 	/// デストラクタ
 	/// </summary>
 	~RenderTexture();
+
+	/// <summary>
+	/// 初期化
+	/// </summary>
+	void Initialize(DxCommon* dxCommon, SRVManager* srvManager);
 
 	/// <summary>
 	/// RenderTexture生成関数

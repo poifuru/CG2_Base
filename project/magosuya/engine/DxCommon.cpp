@@ -18,6 +18,9 @@
 #include "RenderTexture.h"
 #include "WindowsAPI.h"
 
+DxCommon::DxCommon() = default;
+DxCommon::~DxCommon() = default;
+
 void DxCommon::Initialize() {
 	HRESULT hr;
 
@@ -50,7 +53,13 @@ void DxCommon::Initialize() {
 	ScissorRectInit();
 }
 
+void DxCommon::InitializeRenderTexture(SRVManager* srvManager) {
+	renderTexture_ = std::make_unique<RenderTexture>();
+	renderTexture_->Initialize(this, srvManager);
+}
+
 void DxCommon::BeginFrame() {
+	/*
 	//オフスクリーンレンダリングお試し用
 	const Vector4 kRenderTargetClearValue{ 1.0f, 0.0f, 0.0f, 1.0f };	// わかりやすいように赤
 	// RTV作成
@@ -62,6 +71,10 @@ void DxCommon::BeginFrame() {
 		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
 		kRenderTargetClearValue
 	);
+	
+	// ここでrenderTexture->GetDescriptorHandle()が空っぽ（ptr=0）のまま渡されているためエラーが発生します。
+	// 事前に AllocateRTV() などでハンドルを確保して SetRTVHandle() する必要があります。
+	// また、これを毎フレーム(BeginFrameの中)で行うとメモリリークしてしまいます。
 	device_->CreateRenderTargetView(
 		renderTexture->GetResource(), &rtvDesc_, renderTexture->GetDescriptorHandle()
 	);
@@ -76,36 +89,66 @@ void DxCommon::BeginFrame() {
 
 	// 生成
 	device_->CreateShaderResourceView(renderTexture->GetResource(), &renderTextureSrvDesc, renderTexture->GetDescriptorHandle());
+	*/
 
-	//これから書きこむバックバッファのインデックスを取得
-	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
-	//TransitionBarrierの設定
+	// TransitionBarrierの設定 (RenderTextureをSRVからRTVへ遷移)
 	D3D12_RESOURCE_BARRIER barrier{};
-	//今回のバリアはTransition
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	//Noneにしておく
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	//バリアを張る対象のリソース。現在のバックバッファに対して行う
-	barrier.Transition.pResource = swapChainResources_[backBufferIndex].Get();
-	//遷移前(現在)のResourceState
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-	//遷移後のResourceState
+	barrier.Transition.pResource = renderTexture_->GetResource();
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	//TransitionBarrierを張る
 	commandList_->ResourceBarrier(1, &barrier);
-	//描画先のRTVを指定する
-	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, nullptr);
-	//描画先のRTVとDSVを設定する
+
+	// 描画先のRTVとDSVを設定する (RenderTextureに対して)
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = renderTexture_->GetDescriptorHandle();
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
-	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, &dsvHandle);
-	//指定した色で画面全体をクリアする
+	commandList_->OMSetRenderTargets(1, &rtvHandle, false, &dsvHandle);
+
+	// 指定した色で全体をクリアする
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };	//青っぽい色。RGBAの順
-	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
-	//指定した深度で画面全体をクリアする
+	commandList_->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+
+	// 指定した深度で全体をクリアする
 	commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-	//Viewportを設定
+
+	// ViewportとScissorを設定
 	commandList_->RSSetViewports(1, &viewport_);
-	//Scissorを設定
+	commandList_->RSSetScissorRects(1, &scissorRect_);
+}
+
+void DxCommon::PreDrawImGui() {
+	// これから書きこむバックバッファのインデックスを取得
+	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
+
+	// バリアを設定 (2つ)
+	D3D12_RESOURCE_BARRIER barriers[2] = {};
+	
+	// 1. RenderTextureを RENDER_TARGET から PIXEL_SHADER_RESOURCE に遷移
+	barriers[0].Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barriers[0].Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barriers[0].Transition.pResource = renderTexture_->GetResource();
+	barriers[0].Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	barriers[0].Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+
+	// 2. Swapchainを PRESENT から RENDER_TARGET に遷移
+	barriers[1].Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barriers[1].Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barriers[1].Transition.pResource = swapChainResources_[backBufferIndex].Get();
+	barriers[1].Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+	barriers[1].Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+
+	commandList_->ResourceBarrier(2, barriers);
+
+	// 描画先をSwapchainのRTVに切り替え (DSVはnullptrを指定して使わない)
+	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, nullptr);
+
+	// Swapchainをクリア (現状、シーンの画像はまだSwapchainに書き戻していないので、これがないとゴミが残る)
+	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
+	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
+
+	// ViewportとScissorを設定
+	commandList_->RSSetViewports(1, &viewport_);
 	commandList_->RSSetScissorRects(1, &scissorRect_);
 }
 
@@ -357,7 +400,7 @@ void DxCommon::CreateDescriptorHeap() {
 	dsvDescriptorHeapSize_ = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
 	//RTVディスクリプタヒープ生成
-	rtvDescriptorHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
+	rtvDescriptorHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, kMaxRTVNum_, false);
 	//DSVディスクリプタヒープ生成
 	dsvDescriptorHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 }
@@ -388,25 +431,19 @@ void DxCommon::CreateRTV() {
 
 	//swapChainからResourceを引っ張ってくる : うまく取得出来なければ起動できない
 	for(uint32_t i = 0; i < kSwapChainNum_; ++i) {
-		hr = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources_[i]));
+		hr = swapChain_->GetBuffer(i, IID_PPV_ARGS(&swapChainResources_[i]));
 		assert(SUCCEEDED(hr));
 	}
 
 	//RTVを設定する
 	rtvDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;	//出力結果をSRGBに変換して書き込む
 	rtvDesc_.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;		//2Dテクスチャとして書き込む
-	//アドレス全体の幅
-	const UINT handleIncrementSize = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	//ディスクリプタの先頭を取得する(ループで使うために現在のハンドルとする)
-	D3D12_CPU_DESCRIPTOR_HANDLE currentHandle = rtvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 
-	for(UINT i = 0; i < kMaxRTVNum_; i++) {
+	for(UINT i = 0; i < kSwapChainNum_; i++) {
 		//ディスクリプタの先頭アドレスに書き込む
-		rtvHandles_[i] = currentHandle;
+		rtvHandles_[i] = AllocateRTV();
 		//生成
 		device_->CreateRenderTargetView(swapChainResources_[i].Get(), &rtvDesc_, rtvHandles_[i]);
-		//次の書き込み場所を教えてあげる
-		currentHandle.ptr += handleIncrementSize;
 	}
 }
 

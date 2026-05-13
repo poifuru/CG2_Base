@@ -12,6 +12,10 @@ using namespace Microsoft::WRL;
 #include <DirectXTex.h>
 #include "WindowsAPI.h"
 #include "LeakChecker.h"
+#include <memory>
+
+class SRVManager;
+class RenderTexture;
 
 class DxCommon {
 public:		//メンバ関数(mainで呼び出すよう)
@@ -22,9 +26,13 @@ public:		//メンバ関数(mainで呼び出すよう)
 	}
 
 	void Initialize();
+	void InitializeRenderTexture(SRVManager* srvManager);
 	void BeginFrame();
+	void PreDrawImGui();
 	void EndFrame();
 	void Finalize() const;
+
+	RenderTexture* GetRenderTexture() const { return renderTexture_.get(); }
 
 	/// <summary>
 	/// Resource作成関数
@@ -43,9 +51,13 @@ public:		//メンバ関数(mainで呼び出すよう)
 	/// <returns></returns>
 	ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
+	// RTVの空きハンドルを渡す関数
+	D3D12_CPU_DESCRIPTOR_HANDLE AllocateRTV();
+
 private:
 	//コンストラクタを禁止
-	DxCommon() = default;
+	DxCommon();
+	~DxCommon(); // unique_ptrのデストラクタ解決のため明示的に宣言
 	// コピーコンストラクタと代入演算子を禁止
 	DxCommon(const DxCommon&) = delete;
 	DxCommon& operator=(const DxCommon&) = delete;
@@ -66,9 +78,6 @@ private:	//プライベート関数
 	void ViewportRectInit();
 	void ScissorRectInit();
 	void UpdateFixFPS();
-
-	// RTVの空きハンドルを渡す関数
-	D3D12_CPU_DESCRIPTOR_HANDLE AllocateRTV();
 
 public:		//アクセッサ
 	ID3D12Device* GetDevice() { return device_.Get(); }
@@ -159,4 +168,7 @@ private://メンバ変数
 
 	//シザー矩形
 	D3D12_RECT scissorRect_{};
+
+	//オフスクリーン描画用
+	std::unique_ptr<RenderTexture> renderTexture_ = nullptr;
 };

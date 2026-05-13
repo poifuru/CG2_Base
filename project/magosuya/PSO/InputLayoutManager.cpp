@@ -210,6 +210,20 @@ void InputLayoutManager::Initialize () {
 	//新しい設定を登録するためにdataをclear
 	data.elements.clear ();
 	//******//
+
+	//***PostProcess***//
+	data.desc.pInputElementDescs = nullptr;
+	data.desc.NumElements = 0;
+	m_LayoutCache[InputLayoutType::PostProcess] = std::move (data);
+	data.elements.clear ();
+	//******//
+
+	//***MeshShader***//
+	data.desc.pInputElementDescs = nullptr;
+	data.desc.NumElements = 0;
+	m_LayoutCache[InputLayoutType::MeshShader] = std::move (data);
+	data.elements.clear ();
+	//******//
 }
 
 const D3D12_INPUT_LAYOUT_DESC* InputLayoutManager::GetInputLayout (InputLayoutType type) const {
