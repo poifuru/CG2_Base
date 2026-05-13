@@ -74,7 +74,7 @@ void DxCommon::BeginFrame() {
 	commandList_->OMSetRenderTargets(1, &rtvHandle, false, &dsvHandle);
 
 	// 指定した色で全体をクリアする
-	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };	//青っぽい色。RGBAの順
+	float clearColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };	//青っぽい色。RGBAの順
 	commandList_->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
 	// 指定した深度で全体をクリアする
@@ -112,7 +112,7 @@ void DxCommon::PreDrawImGui() {
 	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, nullptr);
 
 	// Swapchainをクリア (現状、シーンの画像はまだSwapchainに書き戻していないので、これがないとゴミが残る)
-	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
+	float clearColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
 	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex], clearColor, 0, nullptr);
 
 	// ViewportとScissorを設定
