@@ -5,15 +5,13 @@ using namespace Microsoft::WRL;
 #include <d3d12.h>
 #include <vector>
 #include <string>
-#include <fstream>
-#include <Mmreg.h>
 #include <map>
 #include <optional>
 #include <span>
 #include <array>
 #include "DirectXTex.h"
 
-//*** シェーダーに送るための構造体を作るときは16バイト境界を意識してパディングを入れてね ***//
+//*** シェーダーに送るための構造体を作るときは16バイト境界を意識してパディングを入れること ***//
 
 // Vector2構造体
 struct Vector2 {
@@ -205,12 +203,7 @@ struct TransformData {
 	Matrix4x4 wvpMatrix;
 };
 
-// 頂点データの構造体
-struct VertexData {
-	Vector4 position;
-	Vector2 texcoord;
-	Vector3 normal;
-};
+
 
 // ライティングの反射モデル
 enum LightReflectionModel {
@@ -221,13 +214,7 @@ enum LightReflectionModel {
 
 // マテリアルの構造体
 struct Material {
-	Vector4 color;
-	LightReflectionModel enableLighting;
-	float padding[3];
-	Matrix4x4 uvTransform;
-	float roughness; // 粗さ
-	float metallic; // 金属度
-	float environmentCoefficient;	// 環境係数
+	
 };
 
 // TransformationMatrix構造体

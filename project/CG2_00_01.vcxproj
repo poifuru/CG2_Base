@@ -355,6 +355,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="magosuya\object\3d\BaseRenderer.h" />
     <ClInclude Include="magosuya\object\3d\BaseObject3d.h" />
     <ClInclude Include="magosuya\general\Easing.h" />
+    <ClInclude Include="magosuya\object\3d\RenderData.h" />
     <ClInclude Include="magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="magosuya\audio\AudioManager.h" />
     <ClInclude Include="magosuya\camera\LookAtCamera.h" />

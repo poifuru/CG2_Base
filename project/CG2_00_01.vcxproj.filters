@@ -160,6 +160,7 @@
     <ClInclude Include="application\entity\enemy\SmallFish.h" />
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="magosuya\engine\PostEffect.h" />
+    <ClInclude Include="magosuya\object\3d\RenderData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />

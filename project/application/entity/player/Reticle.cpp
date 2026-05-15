@@ -19,7 +19,7 @@ void Reticle::Initialize() {
 	model_->Initialize();
 	model_->SetDepthEnable(false);
 	model_->IsLighting(LightReflectionModel::None);
-	model_->SetAlpha(0.5f);
+	model_->SetColor(Vector4{ 1.0f, 1.0f, 0.0f, 0.5f });
 	model_->SetScale({ 2.0f, 2.0f, 1.0f });
 
 	positionOfset_ = { 0.0f, 0.0f, 40.0f };
