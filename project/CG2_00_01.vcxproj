@@ -151,7 +151,7 @@ echo "MaoSuya Engine Builded"</Command>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Magosuya;$(SolutionDir)Magosuya\Audio;$(SolutionDir)Magosuya\Buffer;$(SolutionDir)Magosuya\Camera;$(SolutionDir)Magosuya\CPUData;$(SolutionDir)Magosuya\Engine;$(SolutionDir)Magosuya\Engine\SRV;$(SolutionDir)Magosuya\General;$(SolutionDir)Magosuya\Imgui;$(SolutionDir)Magosuya\Input;$(SolutionDir)Magosuya\Light;$(SolutionDir)Magosuya\Object\2d;$(SolutionDir)Magosuya\Object\3d;$(SolutionDir)Magosuya\Particle;$(SolutionDir)Magosuya\Primitive;$(SolutionDir)Magosuya\Primitive\line;$(SolutionDir)Magosuya\Primitive\cube;$(SolutionDir)Magosuya\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Magosuya;$(SolutionDir)Magosuya\Audio;$(SolutionDir)Magosuya\Camera;$(SolutionDir)Magosuya\CPUData;$(SolutionDir)Magosuya\Engine;$(SolutionDir)Magosuya\Engine\Buffer;$(SolutionDir)Magosuya\Engine\DescriptorHandle;$(SolutionDir)Magosuya\Engine\SRV;$(SolutionDir)Magosuya\General;$(SolutionDir)Magosuya\Imgui;$(SolutionDir)Magosuya\Input;$(SolutionDir)Magosuya\Light;$(SolutionDir)Magosuya\Object\2d;$(SolutionDir)Magosuya\Object\3d;$(SolutionDir)Magosuya\Particle;$(SolutionDir)Magosuya\Primitive;$(SolutionDir)Magosuya\Primitive\line;$(SolutionDir)Magosuya\Primitive\cube;$(SolutionDir)Magosuya\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -349,9 +349,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Magosuya\CPUData\Animation.h" />
     <ClInclude Include="Magosuya\CPUData\MaterialData.h" />
     <ClInclude Include="Magosuya\CPUData\MatrixData.h" />
-    <ClInclude Include="Magosuya\CPUData\ModelData.h" />
+    <ClInclude Include="Magosuya\CPUData\ObjectData.h" />
     <ClInclude Include="Magosuya\CPUData\Skeleton.h" />
     <ClInclude Include="Magosuya\CPUData\SkinCluster.h" />
+    <ClInclude Include="Magosuya\Engine\DescriptorHandle\DescriptorHandle.h" />
     <ClInclude Include="Magosuya\General\DeltaTime.h" />
     <ClInclude Include="Magosuya\Light\DirectionalLight.h" />
     <ClInclude Include="Magosuya\Light\BaseLight.h" />
@@ -361,7 +362,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Magosuya\Object\3d\BaseRenderer.h" />
     <ClInclude Include="Magosuya\Object\3d\BaseObject3d.h" />
     <ClInclude Include="Magosuya\General\Easing.h" />
-    <ClInclude Include="Magosuya\Buffer\Buffer.h" />
+    <ClInclude Include="Magosuya\Engine\Buffer\Buffer.h" />
     <ClInclude Include="Magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="Magosuya\Audio\AudioManager.h" />
     <ClInclude Include="Magosuya\Camera\LookAtCamera.h" />

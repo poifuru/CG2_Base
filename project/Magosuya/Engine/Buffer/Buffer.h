@@ -77,12 +77,6 @@ struct Emitter {
 	float frequencyTime;	//頻度用時刻
 };
 
-
-
-
-
-
-
 // 頂点バッファ専用のテンプレートクラス
 template <typename T>
 class VertexBuffer {

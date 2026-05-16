@@ -160,13 +160,14 @@
     <ClInclude Include="application\entity\enemy\SmallFish.h" />
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="Magosuya\Engine\PostEffect.h" />
-    <ClInclude Include="Magosuya\Buffer\Buffer.h" />
-    <ClInclude Include="Magosuya\CPUData\ModelData.h" />
+    <ClInclude Include="Magosuya\Engine\Buffer\Buffer.h" />
+    <ClInclude Include="Magosuya\CPUData\ObjectData.h" />
     <ClInclude Include="Magosuya\CPUData\MaterialData.h" />
     <ClInclude Include="Magosuya\CPUData\MatrixData.h" />
     <ClInclude Include="Magosuya\CPUData\Animation.h" />
     <ClInclude Include="Magosuya\CPUData\Skeleton.h" />
     <ClInclude Include="Magosuya\CPUData\SkinCluster.h" />
+    <ClInclude Include="Magosuya\Engine\DescriptorHandle\DescriptorHandle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Magosuya\PSO\RootSignatureManager.h" />
