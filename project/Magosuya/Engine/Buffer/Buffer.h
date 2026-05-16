@@ -14,68 +14,32 @@ using namespace Microsoft::WRL;
 #include "DxCommon.h"
 #include "DirectXTex.h"
 
-// SpriteRendererが参照する最小限の情報構造体
-struct TransformData {
-	EulerTransform transform;
-	EulerTransform uvTransform;
-	Matrix4x4 wvpMatrix;
-};
-
-// テクスチャデータ構造体
-struct TextureData {
-	D3D12_GPU_DESCRIPTOR_HANDLE handle;	// テクスチャリソースハンドル
-	DirectX::TexMetadata metadata = {};	// メタデータ
-	UINT descriptorIndex = 0;	// どのディスクリプタヒープを使ったか
-	int ref_count = 0;	// 参照カウント
-};
-
-// Sprite構造体
-struct SpriteData {
-	Vector2 size;			//幅と高さ
-	EulerTransform transform;	//SRT
-	EulerTransform uvTransform;	//uvのSRT
-	std::string material;		//紐づけるマテリアルポインタ
-	Matrix4x4 wvpMatrix;	//wvp行列ポインタ
-};
-
-
-
-
-
 // ModelData構造体
-struct ModelData {
-	// 形状情報 (CPU側データ)
-	std::string materialFilePath;
-	std::vector<VertexData> vertices;
-	size_t vertexCount = 0;
-
-	// インデックス描画用のCPU側データ
-	std::vector<uint32_t> indices;
-	size_t indexCount = 0;
-
-	// Dxリソース (GPU側データ) インスタンス間で共有される
-	// 頂点バッファ
-	ComPtr<ID3D12Resource> vertexBuffer;
-	D3D12_VERTEX_BUFFER_VIEW vbView{};
-
-	// インデックスバッファ
-	ComPtr<ID3D12Resource> indexBuffer;
-	D3D12_INDEX_BUFFER_VIEW ibView{};
-
-	// ルートノード(階層構造)
-	Node rootNode;
-
-	// スキンクラスターのデータ
-	std::map<std::string, JointWeightData> skinClusterData;
-};
-
-// エミッター構造体
-struct Emitter {
-	EulerTransform transform;	//transform
-	uint32_t count;			//発生数
-	float frequency;		//発生頻度
-	float frequencyTime;	//頻度用時刻
-};
+//struct ModelData {
+//	// 形状情報 (CPU側データ)
+//	std::string materialFilePath;
+//	std::vector<VertexData> vertices;
+//	size_t vertexCount = 0;
+//
+//	// インデックス描画用のCPU側データ
+//	std::vector<uint32_t> indices;
+//	size_t indexCount = 0;
+//
+//	// Dxリソース (GPU側データ) インスタンス間で共有される
+//	// 頂点バッファ
+//	ComPtr<ID3D12Resource> vertexBuffer;
+//	D3D12_VERTEX_BUFFER_VIEW vbView{};
+//
+//	// インデックスバッファ
+//	ComPtr<ID3D12Resource> indexBuffer;
+//	D3D12_INDEX_BUFFER_VIEW ibView{};
+//
+//	// ルートノード(階層構造)
+//	Node rootNode;
+//
+//	// スキンクラスターのデータ
+//	std::map<std::string, JointWeightData> skinClusterData;
+//};
 
 // 頂点バッファ専用のテンプレートクラス
 template <typename T>
@@ -341,4 +305,21 @@ public:
 private:
 	ComPtr<ID3D12Resource> buffer_;
 	void* mappedData_ = nullptr;	// マップ用のポインタを常に持っておく
+};
+
+// 構造化バッファのクラステンプレート
+template <typename T>
+class StructuredBuffer {
+public:
+	StructuredBuffer() = default;
+
+	~StructuredBuffer() { Release(); }
+
+public:
+
+
+private:
+	ComPtr<ID3D12Resource> bufferResource_;
+	void* mappedData_ = nullptr;
+	size_t elementCount = 0;
 };

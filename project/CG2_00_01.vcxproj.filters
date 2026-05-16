@@ -161,13 +161,15 @@
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="Magosuya\Engine\PostEffect.h" />
     <ClInclude Include="Magosuya\Engine\Buffer\Buffer.h" />
-    <ClInclude Include="Magosuya\CPUData\ObjectData.h" />
-    <ClInclude Include="Magosuya\CPUData\MaterialData.h" />
-    <ClInclude Include="Magosuya\CPUData\MatrixData.h" />
-    <ClInclude Include="Magosuya\CPUData\Animation.h" />
-    <ClInclude Include="Magosuya\CPUData\Skeleton.h" />
-    <ClInclude Include="Magosuya\CPUData\SkinCluster.h" />
+    <ClInclude Include="Magosuya\CPU_GPUData\MeshData.h" />
+    <ClInclude Include="Magosuya\CPU_GPUData\MaterialData.h" />
+    <ClInclude Include="Magosuya\CPU_GPUData\TransformMatrixData.h" />
+    <ClInclude Include="Magosuya\CPU_GPUData\Animation.h" />
+    <ClInclude Include="Magosuya\CPU_GPUData\Skeleton.h" />
+    <ClInclude Include="Magosuya\CPU_GPUData\SkinCluster.h" />
     <ClInclude Include="Magosuya\Engine\DescriptorHandle\DescriptorHandle.h" />
+    <ClInclude Include="Magosuya\CPU_GPUData\ParticleData.h" />
+    <ClInclude Include="Magosuya\CPU_GPUData\SpriteData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Magosuya\PSO\RootSignatureManager.h" />

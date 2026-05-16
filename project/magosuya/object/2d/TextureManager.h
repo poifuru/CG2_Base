@@ -4,11 +4,18 @@
 using namespace Microsoft::WRL;
 #include <unordered_map>
 #include <string>
-#include <queue>
 #include <vector>
 #include "DxCommon.h"
-#include "struct.h"
+#include "DescriptorHandle.h"
 #include "SRVManager.h"
+
+// テクスチャデータ構造体
+struct TextureData {
+	DescriptorHandle handle;	// テクスチャリソースハンドル
+	DirectX::TexMetadata metadata = {};	// メタデータ
+	UINT descriptorIndex = 0;	// どのディスクリプタヒープを使ったか
+	int ref_count = 0;	// 参照カウント
+};
 
 class TextureManager {
 public:		//外部公開メソッド
