@@ -67,7 +67,7 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	standard3DRootParameters[3].Descriptor.ShaderRegister = 3;
 
 	//Texture用のディスクリプタテーブル(t0)
-	standard3DRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;	//DiscriptorTableを使う
+	standard3DRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;	//DescriptorTableを使う
 	standard3DRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
 	standard3DRootParameters[4].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[0];	//Tableの中身の配列を指定
 	standard3DRootParameters[4].DescriptorTable.NumDescriptorRanges = 1;	//Tableで利用する数

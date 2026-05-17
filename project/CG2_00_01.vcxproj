@@ -88,7 +88,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)magosuya;$(SolutionDir)magosuya\general;$(SolutionDir)magosuya\engine;$(SolutionDir)magosuya\engine\SRV;$(SolutionDir)magosuya\object\2d;$(SolutionDir)magosuya\object\3d;$(SolutionDir)magosuya\audio;$(SolutionDir)magosuya\camera;$(SolutionDir)magosuya\input;$(SolutionDir)magosuya\imgui;$(SolutionDir)magosuya\particle;$(SolutionDir)magosuya\PSO;$(SolutionDir)magosuya\primitive;$(SolutionDir)magosuya\primitive\line;$(SolutionDir)magosuya\primitive\cube;$(SolutionDir)magosuya\light;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)magosuya;$(SolutionDir)magosuya\general;$(SolutionDir)magosuya\engine;$(SolutionDir)magosuya\engine\SRV;$(SolutionDir)magosuya\object\2d;$(SolutionDir)magosuya\object\3d;$(SolutionDir)magosuya\audio;$(SolutionDir)magosuya\camera;$(SolutionDir)magosuya\input;$(SolutionDir)magosuya\imgui;$(SolutionDir)magosuya\particle;$(SolutionDir)magosuya\PSO;$(SolutionDir)magosuya\primitive;$(SolutionDir)magosuya\primitive\line;$(SolutionDir)magosuya\primitive\cube;$(SolutionDir)magosuya\light;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy;$(SolutionDir)Magosuya\Engine\RenderSystem</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -246,6 +246,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Magosuya\RenderTexture.cpp" />
     <ClCompile Include="Magosuya\Engine\PostEffect.cpp" />
     <ClCompile Include="application\entity\player\Reticle.cpp" />
+    <ClCompile Include="Magosuya\Engine\RenderSystem\RenderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\CopyImage.PS.hlsl">
@@ -355,6 +356,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Magosuya\CPU_GPUData\SkinCluster.h" />
     <ClInclude Include="Magosuya\CPU_GPUData\SpriteData.h" />
     <ClInclude Include="Magosuya\Engine\DescriptorHandle\DescriptorHandle.h" />
+    <ClInclude Include="Magosuya\Engine\RenderSystem\RenderCommand.h" />
     <ClInclude Include="Magosuya\General\DeltaTime.h" />
     <ClInclude Include="Magosuya\Light\DirectionalLight.h" />
     <ClInclude Include="Magosuya\Light\BaseLight.h" />
@@ -432,6 +434,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Magosuya\RenderTexture.h" />
     <ClInclude Include="Magosuya\Engine\PostEffect.h" />
     <ClInclude Include="application\entity\player\Reticle.h" />
+    <ClInclude Include="Magosuya\Engine\RenderSystem\RenderSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\CopyImage.hlsli" />

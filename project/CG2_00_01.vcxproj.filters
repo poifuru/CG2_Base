@@ -78,6 +78,7 @@
     <ClCompile Include="application\entity\enemy\SmallFish.cpp" />
     <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
     <ClCompile Include="Magosuya\Engine\PostEffect.cpp" />
+    <ClCompile Include="Magosuya\Engine\RenderSystem\RenderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -170,6 +171,8 @@
     <ClInclude Include="Magosuya\Engine\DescriptorHandle\DescriptorHandle.h" />
     <ClInclude Include="Magosuya\CPU_GPUData\ParticleData.h" />
     <ClInclude Include="Magosuya\CPU_GPUData\SpriteData.h" />
+    <ClInclude Include="Magosuya\Engine\RenderSystem\RenderCommand.h" />
+    <ClInclude Include="Magosuya\Engine\RenderSystem\RenderSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Magosuya\PSO\RootSignatureManager.h" />

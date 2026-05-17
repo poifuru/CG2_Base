@@ -1,45 +1,10 @@
 #pragma once
 #include <Windows.h>
-#include <wrl.h>
 using namespace Microsoft::WRL;
 #include <d3d12.h>
 #include <vector>
-#include <string>
-#include <map>
-#include <optional>
-#include <span>
-#include <array>
-
-#include "struct.h"
+#include <algorithm>
 #include "DxCommon.h"
-#include "DirectXTex.h"
-
-// ModelData構造体
-//struct ModelData {
-//	// 形状情報 (CPU側データ)
-//	std::string materialFilePath;
-//	std::vector<VertexData> vertices;
-//	size_t vertexCount = 0;
-//
-//	// インデックス描画用のCPU側データ
-//	std::vector<uint32_t> indices;
-//	size_t indexCount = 0;
-//
-//	// Dxリソース (GPU側データ) インスタンス間で共有される
-//	// 頂点バッファ
-//	ComPtr<ID3D12Resource> vertexBuffer;
-//	D3D12_VERTEX_BUFFER_VIEW vbView{};
-//
-//	// インデックスバッファ
-//	ComPtr<ID3D12Resource> indexBuffer;
-//	D3D12_INDEX_BUFFER_VIEW ibView{};
-//
-//	// ルートノード(階層構造)
-//	Node rootNode;
-//
-//	// スキンクラスターのデータ
-//	std::map<std::string, JointWeightData> skinClusterData;
-//};
 
 // 頂点バッファ専用のテンプレートクラス
 template <typename T>
@@ -169,11 +134,11 @@ public:
 		ibv_.SizeInBytes = static_cast<UINT>(size_);
 		// テンプレート引数を見て自動でフォーマット切り替え
 		// uint32_t(4バイト)ならR32_UINT、uint16_t(2バイト)ならR16_UINT
-		ibv_.Format = (sizeof(4)) ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UITN;
+		ibv_.Format = (sizeof(T) == 4) ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT;
 	}
 
 	void Update(const std::vector<T>& indices) {
-		if(mappedData_ && !indices.enpty()) {
+		if(mappedData_ && !indices.empty()) {
 			// 確保したバッファサイズを超えないようにコピー
 			size_t copySize = std::min(size_, sizeof(T) * indices.size());
 			std::memcpy(mappedData_, indices.data(), copySize);
@@ -315,11 +280,61 @@ public:
 
 	~StructuredBuffer() { Release(); }
 
-public:
+	// 要素数(count)を指定して初期化
+	void Initialize(DxCommon* dxCommon, size_t count) {
+		Release();
+		elementCount_ = count;
+		size_t bufferSize = sizeof(T) * elementCount_;
 
+		// GPUリソース生成
+		buffer_ = dxCommon->CreateBufferResource(bufferSize);
+		if(buffer_) {
+			buffer_->Map(0, nullptr, &mappedData_);
+		}
+	}
+
+	void Update(const std::vector<T>& data) {
+		if(!mappedData_ || data.empty()) return;
+		// 安全のためにサイズチェック
+		size_t copyCount = std::min(elementCount_, data.size());
+		std::memcpy(mappedData_, data.data(), sizeof(T) * copyCount);
+	}
+
+	void Release() {
+		if(buffer_ && mappedData_) {
+			buffer_->Unmap(0, nullptr);
+		}
+		buffer_ = nullptr;
+		mappedData_ = nullptr;
+		elementCount_ = 0;
+	}
+
+	// SRV作成時に必要な情報をゲッターで提供
+	ID3D12Resource* GetResource() const { return buffer_.Get(); }
+	size_t GetElementCount() const { return elementCount_; }
+	UINT GetStride() const { return static_cast<UINT>(sizeof(T)); }
+
+public:
+	// コピー禁止（ポインタの二重管理を防ぐため）
+	StructuredBuffer(const StructuredBuffer&) = delete;
+	StructuredBuffer& operator=(const StructuredBuffer&) = delete;
+
+	// ムーブは許可
+	StructuredBuffer(StructuredBuffer&& other) noexcept {
+		*this = std::move(other);
+	}
+	StructuredBuffer& operator=(StructuredBuffer&& other) noexcept {
+		if(this != &other) {
+			Release();
+			buffer_ = std::move(other.buffer_);
+			mappedData_ = other.mappedData_;
+			other.mappedData_ = nullptr;
+		}
+		return *this;
+	}
 
 private:
-	ComPtr<ID3D12Resource> bufferResource_;
+	ComPtr<ID3D12Resource> buffer_;
 	void* mappedData_ = nullptr;
-	size_t elementCount = 0;
+	size_t elementCount_ = 0;
 };
