@@ -9,8 +9,9 @@
     <FxCompile Include="Resources\shader\Particle.VS.hlsl" />
     <FxCompile Include="Resources\shader\Skybox.VS.hlsl" />
     <FxCompile Include="Resources\shader\Skybox.PS.hlsl" />
-    <FxCompile Include="Resources\shader\CopyImage.VS.hlsl" />
+    <FxCompile Include="Resources\shader\Fullscreen.VS.hlsl" />
     <FxCompile Include="Resources\shader\CopyImage.PS.hlsl" />
+    <FxCompile Include="Resources\shader\Grayscale.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application\scene\ClearScene.cpp" />
@@ -72,12 +73,12 @@
     <ClCompile Include="application\entity\enemy\BaseEnemy.cpp" />
     <ClCompile Include="application\scene\TestScene.cpp" />
     <ClCompile Include="magosuya\object\3d\Skybox.cpp" />
-    <ClCompile Include="magosuya\RenderTexture.cpp" />
+    <ClCompile Include="magosuya\engine\RenderTexture.cpp" />
     <ClCompile Include="application\entity\player\Bullet.cpp" />
     <ClCompile Include="application\entity\player\Reticle.cpp" />
     <ClCompile Include="application\entity\enemy\SmallFish.cpp" />
     <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
-    <ClCompile Include="magosuya\engine\PostEffect.cpp" />
+    <ClCompile Include="magosuya\PostEffect\PostEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -153,13 +154,13 @@
     <ClInclude Include="application\entity\enemy\BaseEnemy.h" />
     <ClInclude Include="application\scene\TestScene.h" />
     <ClInclude Include="magosuya\object\3d\Skybox.h" />
-    <ClInclude Include="magosuya\RenderTexture.h" />
+    <ClInclude Include="magosuya\engine\RenderTexture.h" />
     <ClInclude Include="magosuya\general\DeltaTime.h" />
     <ClInclude Include="application\entity\player\Bullet.h" />
     <ClInclude Include="application\entity\player\Reticle.h" />
     <ClInclude Include="application\entity\enemy\SmallFish.h" />
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
-    <ClInclude Include="magosuya\engine\PostEffect.h" />
+    <ClInclude Include="magosuya\PostEffect\PostEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />
@@ -209,7 +210,7 @@
     <None Include="Resources\shader\Particle.hlsli" />
     <None Include="Resources\shader\Sprite.hlsli" />
     <None Include="Resources\shader\Skybox.hlsli" />
-    <None Include="Resources\shader\CopyImage.hlsli" />
+    <None Include="Resources\shader\Fullscreen.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

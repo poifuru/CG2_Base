@@ -10,7 +10,7 @@ void PostEffect::Initialize(DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 
 	// シェーダーのコンパイル
-	uint32_t vsID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/CopyImage.VS.hlsl", L"vs_6_0");
+	uint32_t vsID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Fullscreen.VS.hlsl", L"vs_6_0");
 	uint32_t psID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/CopyImage.PS.hlsl", L"ps_6_0");
 
 	// RootSignatureの取得
