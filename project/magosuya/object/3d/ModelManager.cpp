@@ -3,7 +3,6 @@
 #include <cassert>
 #include <map>
 #include <filesystem>
-#include "MagosuyaEngine.h"
 #include "DxCommon.h"
 #include "TextureManager.h"
 
@@ -14,22 +13,22 @@ void ModelManager::Initialize(DxCommon* dxCommon, TextureManager* textureManager
 	textureManager_ = textureManager;
 }
 
-ModelData* ModelManager::LoadModelData(const std::string& directoryPath, const std::string& fileName, bool inversion) {
+MeshData* ModelManager::LoadModelData(const std::string& directoryPath, const std::string& fileName, bool inversion) {
 	//IDのモデルをすでに読み込んでいたら
 	if(modelMap_.count(fileName)) {
 		//既存データを取得
-		std::shared_ptr<ModelData> existingData = modelMap_.at(fileName);
+		std::shared_ptr<MeshData> existingData = modelMap_.at(fileName);
 		//存在していたら既存のデータを返す
 		return existingData.get();
 	}
 
 	//読み込んでいなければ新規読み込み
-	ModelData cpuData = LoadModelFile(directoryPath, fileName, inversion);
+	MeshData cpuData = LoadModelFile(directoryPath, fileName, inversion);
 	//shared_ptrに入れてGPUリソース作成の準備
-	std::shared_ptr<ModelData> newData = std::make_shared<ModelData>(std::move(cpuData));
+	std::shared_ptr<MeshData> newData = std::make_shared<MeshData>(std::move(cpuData));
 
 	//頂点バッファの生成と設定
-	newData->vertexBuffer = dxCommon_->CreateBufferResource(sizeof(VertexData) * newData->vertexCount);
+	newData->vertices = dxCommon_->CreateBufferResource(sizeof(VertexData) * newData->vertexCount);
 	//頂点バッファにデータを書き込む
 	VertexData* vertexDataPtr = nullptr;
 	newData->vertexBuffer->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataPtr));
@@ -68,7 +67,7 @@ ModelData* ModelManager::LoadModelData(const std::string& directoryPath, const s
 	return modelMap_.at(fileName).get();
 }
 
-std::weak_ptr<ModelData> ModelManager::GetModelData(std::string id) {
+std::weak_ptr<MeshData> ModelManager::GetModelData(std::string id) {
 	//ID指定してmapから持ってくる
 	assert(modelMap_.count(id));
 	return modelMap_.at(id);

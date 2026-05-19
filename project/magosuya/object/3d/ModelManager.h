@@ -11,6 +11,7 @@ using namespace Microsoft::WRL;
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "struct.h"
+#include "MeshData.h"
 
 class DxCommon;
 class TextureManager;
@@ -25,8 +26,8 @@ public:		//メンバ関数
 
 	void Initialize (DxCommon* dxCommon, TextureManager* textureManager);
 
-	ModelData* LoadModelData (const std::string& directoryPath, const std::string& fileName, bool inversion = false);
-	std::weak_ptr<ModelData> GetModelData (std::string id);
+	MeshData* LoadModelData (const std::string& directoryPath, const std::string& fileName, bool inversion = false);
+	std::weak_ptr<MeshData> GetModelData (std::string id);
 	void UnloadModelData (const std::string& id);
 
 	Animation* LoadAnimationData(const std::string& directoryPath, const std::string& fileName);
