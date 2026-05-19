@@ -1,6 +1,6 @@
 #include "LineRenderer.h"
 #include "MathFunction.h"
-#include "MaxMeshNum.h"
+#include "MaxPrimitiveNum.h"
 #include "DxCommon.h"
 
 LineRenderer::~LineRenderer () {
@@ -16,16 +16,16 @@ void LineRenderer::Initialize (DxCommon* dxCommon) {
 	lineBuffer_ = std::make_unique<LineVertexData> ();
 
 	//頂点バッファー作成とマッピング
-	lineBuffer_->vertexBuffer = dxCommon_->CreateBufferResource (sizeof (LineData) * VertexNum::Line * MaxMeshNum::Line);
+	lineBuffer_->vertexBuffer = dxCommon_->CreateBufferResource (sizeof (LineData) * VertexNum::Line * MaxPrimitiveNum::Line);
 	lineBuffer_->vertexBuffer->Map (0, nullptr, reinterpret_cast<void**>(&vertexData_));
 	lineBuffer_->vbView.BufferLocation = lineBuffer_->vertexBuffer->GetGPUVirtualAddress ();
-	lineBuffer_->vbView.SizeInBytes = sizeof (LineData) * VertexNum::Line * MaxMeshNum::Line;
+	lineBuffer_->vbView.SizeInBytes = sizeof (LineData) * VertexNum::Line * MaxPrimitiveNum::Line;
 	lineBuffer_->vbView.StrideInBytes = sizeof (LineData);
 
 	//行列バッファー作成とマッピング(頂点2つにつき1つ)
-	instancingBuffer_ = dxCommon_->CreateBufferResource (sizeof (LineForGPU) * MaxMeshNum::Line);
+	instancingBuffer_ = dxCommon_->CreateBufferResource (sizeof (LineForGPU) * MaxPrimitiveNum::Line);
 	instancingBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&instancingData_));
-	for (uint32_t i = 0; i < MaxMeshNum::Line; ++i) {
+	for (uint32_t i = 0; i < MaxPrimitiveNum::Line; ++i) {
 		instancingData_[i].World = Math::MakeIdentity4x4 ();
 		instancingData_[i].WVP = Math::MakeIdentity4x4 ();
 	}
@@ -35,10 +35,10 @@ void LineRenderer::Initialize (DxCommon* dxCommon) {
 	vertexIndex_ = srvManager_->Allocate();
 
 	//インスタンシング用のSRV作成
-	srvManager_->CreateSRVStructuredBuffer(instancingIndex_, instancingBuffer_.Get(), MaxMeshNum::Line, sizeof(LineForGPU));
+	srvManager_->CreateSRVStructuredBuffer(instancingIndex_, instancingBuffer_.Get(), MaxPrimitiveNum::Line, sizeof(LineForGPU));
 
 	//頂点バッファ用のSRV作成
-	srvManager_->CreateSRVStructuredBuffer(vertexIndex_, lineBuffer_->vertexBuffer.Get(), VertexNum::Line * MaxMeshNum::Line, sizeof(LineData));
+	srvManager_->CreateSRVStructuredBuffer(vertexIndex_, lineBuffer_->vertexBuffer.Get(), VertexNum::Line * MaxPrimitiveNum::Line, sizeof(LineData));
 
 	//PSOの設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::LineMesh);
@@ -53,7 +53,7 @@ void LineRenderer::Initialize (DxCommon* dxCommon) {
 
 void LineRenderer::UpdateVertexData (const LineData* data) {
 	//currentLineNumが最大数を超えていないか
-	if (currentLineCount_ >= MaxMeshNum::Line) {
+	if (currentLineCount_ >= MaxPrimitiveNum::Line) {
 		//超えてたら早期リターン
 		return;
 	}
@@ -71,7 +71,7 @@ void LineRenderer::UpdateVertexData (const LineData* data) {
 
 void LineRenderer::TransferData (const LineForGPU& data) {
 	//描画要求数が0か最大数を超えてるなら
-	if (currentLineCount_ == 0 || currentLineCount_ > MaxMeshNum::Line) {
+	if (currentLineCount_ == 0 || currentLineCount_ > MaxPrimitiveNum::Line) {
 		//早期リターン
 		return;
 	}

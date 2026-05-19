@@ -1,10 +1,10 @@
-#include "Mesh.h"
+#include "Primitive.h"
 #include "MathFunction.h"
 #include "LineRenderer.h"
 #include "CubeRenderer.h"
-#include "MaxMeshNum.h"
+#include "MaxPrimitiveNum.h"
 
-void Mesh::DrawLine (
+void Primitive::DrawLine (
 	float posX1, float posY1, float posZ1, float posX2, float posY2, float posZ2,
 	Vector4 color, const Matrix4x4& vp
 ) {
@@ -32,7 +32,7 @@ void Mesh::DrawLine (
 	renderer_->TransferData (lineForGPU);
 }
 
-void Mesh::DrawCube (CubeData* data, const Matrix4x4& vp) {
+void Primitive::DrawCube (CubeData* data, const Matrix4x4& vp) {
 	//=========================//
 	//ここでやるのはデータの転送だけ//
 	//=========================//
@@ -52,7 +52,7 @@ void Mesh::DrawCube (CubeData* data, const Matrix4x4& vp) {
 	renderer_->TransferData (cubeForGPU);
 }
 
-void Mesh::AllDrawing () {
+void Primitive::AllDrawing () {
 	//最後にまとめて描画処理を流し込む
 	LineRenderer::GetInstance ()->Draw ();
 	CubeRenderer::GetInstance ()->Draw ();

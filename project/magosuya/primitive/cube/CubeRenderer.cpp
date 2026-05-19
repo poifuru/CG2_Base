@@ -1,6 +1,6 @@
 #include "CubeRenderer.h"
 #include "MathFunction.h"
-#include "MaxMeshNum.h"
+#include "MaxPrimitiveNum.h"
 #include "DxCommon.h"
 
 //インデックス描画用のインデックス数
@@ -19,23 +19,23 @@ void CubeRenderer::Initialize (DxCommon* dxCommon) {
 	cubeBuffer_ = std::make_unique<CubeVertexData> ();
 
 	//頂点バッファー作成とマッピング
-	cubeBuffer_->vertexBuffer = dxCommon_->CreateBufferResource (sizeof (CubeVertexPositionColor) * VertexNum::Cube * MaxMeshNum::Cube);
+	cubeBuffer_->vertexBuffer = dxCommon_->CreateBufferResource (sizeof (CubeVertexPositionColor) * VertexNum::Cube * MaxPrimitiveNum::Cube);
 	cubeBuffer_->vertexBuffer->Map (0, nullptr, reinterpret_cast<void**>(&vertexData_));
 	cubeBuffer_->vbView.BufferLocation = cubeBuffer_->vertexBuffer->GetGPUVirtualAddress ();
-	cubeBuffer_->vbView.SizeInBytes = sizeof (CubeVertexPositionColor) * VertexNum::Cube * MaxMeshNum::Cube;
+	cubeBuffer_->vbView.SizeInBytes = sizeof (CubeVertexPositionColor) * VertexNum::Cube * MaxPrimitiveNum::Cube;
 	cubeBuffer_->vbView.StrideInBytes = sizeof (CubeVertexPositionColor);
 
 	//インデックスバッファー作成とマッピング
-	cubeBuffer_->indexBuffer = dxCommon_->CreateBufferResource (sizeof (uint32_t) * indexNum * MaxMeshNum::Cube);
+	cubeBuffer_->indexBuffer = dxCommon_->CreateBufferResource (sizeof (uint32_t) * indexNum * MaxPrimitiveNum::Cube);
 	cubeBuffer_->indexBuffer->Map (0, nullptr, reinterpret_cast<void**>(&indexData_));
 	cubeBuffer_->ibView.BufferLocation = cubeBuffer_->indexBuffer->GetGPUVirtualAddress ();
-	cubeBuffer_->ibView.SizeInBytes = sizeof (uint32_t) * indexNum * MaxMeshNum::Cube;
+	cubeBuffer_->ibView.SizeInBytes = sizeof (uint32_t) * indexNum * MaxPrimitiveNum::Cube;
 	cubeBuffer_->ibView.Format = DXGI_FORMAT_R32_UINT;
 
 	//行列バッファー作成とマッピング(頂点2つにつき1つ)
-	instancingBuffer_ = dxCommon_->CreateBufferResource (sizeof (CubeForGPU) * MaxMeshNum::Cube);
+	instancingBuffer_ = dxCommon_->CreateBufferResource (sizeof (CubeForGPU) * MaxPrimitiveNum::Cube);
 	instancingBuffer_->Map (0, nullptr, reinterpret_cast<void**>(&instancingData_));
-	for (uint32_t i = 0; i < MaxMeshNum::Cube; ++i) {
+	for (uint32_t i = 0; i < MaxPrimitiveNum::Cube; ++i) {
 		instancingData_[i].World = Math::MakeIdentity4x4 ();
 		instancingData_[i].WVP = Math::MakeIdentity4x4 ();
 	}
@@ -45,7 +45,7 @@ void CubeRenderer::Initialize (DxCommon* dxCommon) {
 	vertexIndex_ = srvManager_->Allocate();
 
 	//インスタンシング用のSRV作成
-	srvManager_->CreateSRVStructuredBuffer(instancingIndex_, instancingBuffer_.Get(), MaxMeshNum::Cube, sizeof(CubeForGPU));
+	srvManager_->CreateSRVStructuredBuffer(instancingIndex_, instancingBuffer_.Get(), MaxPrimitiveNum::Cube, sizeof(CubeForGPU));
 
 	//頂点バッファ用のSRV作成
 	srvManager_->CreateSRVStructuredBuffer(vertexIndex_, cubeBuffer_->vertexBuffer.Get(), VertexNum::Cube, sizeof(CubeVertexData));
@@ -62,7 +62,7 @@ void CubeRenderer::Initialize (DxCommon* dxCommon) {
 
 void CubeRenderer::UpdateVertexData (const CubeData* data) {
 	//currentCubeNumが最大数を超えていないか
-	if (currentCubeCount_ >= MaxMeshNum::Cube) {
+	if (currentCubeCount_ >= MaxPrimitiveNum::Cube) {
 		//超えてたら早期リターン
 		return;
 	}
@@ -163,7 +163,7 @@ void CubeRenderer::UpdateVertexData (const CubeData* data) {
 
 void CubeRenderer::TransferData (const CubeForGPU& data) {
 	//描画要求数が0か最大数を超えてるなら
-	if (currentCubeCount_ == 0 || currentCubeCount_ > MaxMeshNum::Cube) {
+	if (currentCubeCount_ == 0 || currentCubeCount_ > MaxPrimitiveNum::Cube) {
 		//早期リターン
 		return;
 	}

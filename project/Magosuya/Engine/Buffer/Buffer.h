@@ -1,6 +1,6 @@
 #pragma once
+#define NOMINMAX // std::min, std::maxを<Windows.h>に勝手に定義させない
 #include <Windows.h>
-using namespace Microsoft::WRL;
 #include <d3d12.h>
 #include <vector>
 #include <algorithm>

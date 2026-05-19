@@ -16,6 +16,8 @@ public:
 
 	void PushCommand(const RenderCommand& command);
 
+	void PushInstanceCommand(const InstanceRenderCommand& command);
+
 	void ExecuteCommands(D3D12_GPU_VIRTUAL_ADDRESS cameraCBVAddress);
 
 	void ClearCommands();
@@ -33,9 +35,11 @@ public:
 private:
 	RenderSystem() = default;
 
+	// コマンドをため込む
+	std::vector<RenderCommand> commandQueue_;
+	std::vector<InstanceRenderCommand> instanceCommandQueue_;
+
 	DxCommon* dxCommon_ = nullptr;
 	ID3D12GraphicsCommandList* commandList_ = nullptr;
 	LightManager* lightManager_ = nullptr;
-
-	std::vector<RenderCommand> commandQueue_;
 };

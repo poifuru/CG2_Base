@@ -10,7 +10,7 @@
 #include "PSOManager.h"
 #include "LineRenderer.h"
 #include "CubeRenderer.h"
-#include "Mesh.h"
+#include "Primitive.h"
 #include "CameraOrganizer.h"
 #include "SceneManager.h"
 #include "AudioManager.h"

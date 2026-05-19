@@ -3,7 +3,7 @@
 #include "LineRenderData.h"
 #include "CubeRenderData.h"
 
-namespace Mesh {
+namespace Primitive {
 	/// <summary>
 	/// 線を描画
 	/// </summary>

@@ -4,7 +4,6 @@
 using namespace Microsoft::WRL;
 #include <d3d12.h>
 #include <memory>
-#include "struct.h"
 #include "LineRenderData.h"
 #include "PSOManager.h"
 #include "SRVManager.h"

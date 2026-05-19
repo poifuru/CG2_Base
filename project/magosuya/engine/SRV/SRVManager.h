@@ -1,6 +1,8 @@
 #pragma once
-#include "DxCommon.h"
 #include <queue>
+
+#include "DxCommon.h"
+#include "TextureManager.h"
 
 class SRVManager {
 public:

@@ -66,6 +66,15 @@ struct RectLight
     float decay; // 距離による減衰率（PointLightと同様）
 };
 
+struct AllLight 
+{
+    LightCount gLightCount;
+    DirectionalLight gDirLights[20];
+    PointLight gPointLights[20];
+    SpotLight gSpotLights[20];
+    RectLight gRectLights[20];
+}
+
 struct Camera
 {
     float3 worldPosition;
@@ -75,7 +84,7 @@ ConstantBuffer<Material> gMaterial : register(b1);
 
 ConstantBuffer<Camera> gCamera : register(b2);
 
-ConstantBuffer<LightCount> gLightCount : register(b3);
+ConstantBuffer<AllLight> gAllLight : register(b3);
 
 Texture2D<float4> gTexture : register(t0);
 

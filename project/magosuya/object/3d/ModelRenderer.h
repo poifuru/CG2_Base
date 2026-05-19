@@ -8,7 +8,7 @@ using namespace Microsoft::WRL;
 #include "struct.h"
 #include "PSOManager.h"
 #include "DxCommon.h"
-#include "Skybox.h"
+#include "MaterialData.h"
 
 class LightManager;
 
@@ -23,14 +23,14 @@ public:
 	void ImGui (EulerTransform& transform, EulerTransform& uvTransform, const std::string& windowName);
 
 	//アクセッサ
-	Material* GetMaterial () { return materialData_; }
-	void IsLighting (const LightReflectionModel& lighting) { materialData_->enableLighting = lighting; }
+	MaterialData* GetMaterial () { return materialData_; }
+	void IsLighting (const BOOL& flag) { materialData_->enableLighting = flag; }
 	void SetColor (const Vector4& color) { materialData_->color = color; }
 	void SetAlpha(const float& alpha) { materialData_->color.w = alpha; }
 	void SetRoughness(const float& roughness) { materialData_->roughness = roughness; }
 	void SetMetallic(const float& metallic) { materialData_->metallic = metallic; }
 	void SetImGuiID (const std::string& id) { tag_ = id; }
-	void SetModelData (const std::weak_ptr<ModelData>& data){ modelData_ = data; }
+	void SetMeshData (const std::weak_ptr<ModelData>& data){ modelData_ = data; }
 	void SetDepthEnable(bool flag) { desc_.DepthEnable = flag; }
 
 	/// <summary>

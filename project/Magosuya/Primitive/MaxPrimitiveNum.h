@@ -8,7 +8,7 @@ namespace VertexNum {
 }
 
 //メッシュごとに出すことのできる最大数
-namespace MaxMeshNum {
+namespace MaxPrimitiveNum {
 	inline const uint32_t Line = 10000;
 	inline const uint32_t Cube = 10000;
 }
