@@ -1,9 +1,17 @@
 #pragma once
 #include <d3d12.h>
 #include <wrl.h>
+using namespace Microsoft::WRL;
 
 class DxCommon;
 class RenderTexture;
+
+struct PostProcessData {
+	float intensity;     // エフェクトの強度（0.0 〜 1.0など）
+	float time;          // 時間（ノイズのアニメーションや画面の揺れに使う）
+	float dummy1;        // 16バイトアライメント用のパディング
+	float dummy2;
+};
 
 class PostEffect {
 public:
@@ -16,6 +24,8 @@ public:
 
 	void Draw(RenderTexture* renderTexture);
 
+	void Imgui();
+
 private:
 	PostEffect() = default;
 	~PostEffect() = default;
@@ -25,4 +35,8 @@ private:
 	DxCommon* dxCommon_ = nullptr;
 	ID3D12PipelineState* pso_ = nullptr;
 	ID3D12RootSignature* rootSignature_ = nullptr;
+
+	// パラメータ変更用変数
+	ComPtr<ID3D12Resource> postProcessResource_ = nullptr;
+	PostProcessData* postProcessData_ = nullptr;
 };

@@ -5,13 +5,14 @@
 #include "RootSignatureManager.h"
 #include "PSOManager.h"
 #include "SRVManager.h"
+#include "imgui.h"
 
 void PostEffect::Initialize(DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 
 	// シェーダーのコンパイル
 	uint32_t vsID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Fullscreen.VS.hlsl", L"vs_6_0");
-	uint32_t psID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/CopyImage.PS.hlsl", L"ps_6_0");
+	uint32_t psID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Grayscale.PS.hlsl", L"ps_6_0");
 
 	// RootSignatureの取得
 	uint32_t rootSigID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::PostProcess);
@@ -41,6 +42,11 @@ void PostEffect::Initialize(DxCommon* dxCommon) {
 	psoDesc.SampleCount = 1;
 
 	pso_ = PSOManager::GetInstance()->GetOrCreatePSO(psoDesc);
+
+	postProcessResource_ = dxCommon_->CreateBufferResource(sizeof(PostProcessData));
+	postProcessResource_->Map(0, nullptr, reinterpret_cast<void**>(&postProcessData_));
+	postProcessData_->intensity = 0.0f;
+	postProcessData_->time = 0.0f;
 }
 
 void PostEffect::Draw(RenderTexture* renderTexture) {
@@ -55,9 +61,21 @@ void PostEffect::Draw(RenderTexture* renderTexture) {
 	// プリミティブトポロジーを設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	// CBVをセット
+	commandList->SetGraphicsRootConstantBufferView(0, postProcessResource_->GetGPUVirtualAddress());
+
 	// SRVを設定 (t0)
-	SRVManager::GetInstance()->SetGraphicsRootDescriptorTable(0, renderTexture->GetSrvIndex());
+	SRVManager::GetInstance()->SetGraphicsRootDescriptorTable(1, renderTexture->GetSrvIndex());
 
 	// 頂点バッファ無しで3頂点描画（SV_VertexIDを利用してフルスクリーントライアングルを生成）
 	commandList->DrawInstanced(3, 1, 0, 0);
+}
+
+void PostEffect::Imgui() {
+#ifdef USEIMGUI
+	ImGui::Begin("PostEffect");
+	ImGui::DragFloat("intensity", &postProcessData_->intensity, 0.001f);
+	ImGui::DragFloat("time", &postProcessData_->time, 0.001f);
+	ImGui::End();
+#endif
 }

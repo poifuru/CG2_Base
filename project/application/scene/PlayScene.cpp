@@ -6,6 +6,7 @@
 #include "ModelManager.h"
 #include "SceneManager.h"
 #include "SceneType.h"
+#include "PostEffect.h"
 
 PlayScene::PlayScene () {
 }
@@ -74,6 +75,7 @@ void PlayScene::Update () {
 	}
 
 	skybox_->Update(&camera_->GetCameraData());
+	PostEffect::GetInstance()->Imgui();
 }
 
 void PlayScene::Draw () {

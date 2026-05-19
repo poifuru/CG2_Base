@@ -497,11 +497,16 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	postProcessDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	// SRVを使う
 	postProcessDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
+	// 定数バッファ用(b0)
+	postProcessRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを直に使う
+	postProcessRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+	postProcessRootParameters[0].Descriptor.ShaderRegister = 0; // register(b0)に対応
+
 	// Texture用のディスクリプタテーブル(t0)
-	postProcessRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	postProcessRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	postProcessRootParameters[0].DescriptorTable.pDescriptorRanges = &postProcessDescriptorRanges[0];
-	postProcessRootParameters[0].DescriptorTable.NumDescriptorRanges = _countof(postProcessDescriptorRanges);
+	postProcessRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	postProcessRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	postProcessRootParameters[1].DescriptorTable.pDescriptorRanges = &postProcessDescriptorRanges[0];
+	postProcessRootParameters[1].DescriptorTable.NumDescriptorRanges = _countof(postProcessDescriptorRanges);
 
 	// Sampler (s0)
 	postProcessStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;	// バイリニアフィルタ

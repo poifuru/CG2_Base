@@ -89,7 +89,7 @@ private:	// メンバ変数
 	D3D12_STATIC_SAMPLER_DESC skyboxStaticSamplers[1] = {};
 	//PostProcess
 	D3D12_DESCRIPTOR_RANGE postProcessDescriptorRanges[1] = {};
-	D3D12_ROOT_PARAMETER postProcessRootParameters[1] = {};
+	D3D12_ROOT_PARAMETER postProcessRootParameters[2] = {};
 	D3D12_STATIC_SAMPLER_DESC postProcessStaticSamplers[1] = {};
 	//***ルートシグネチャの種類を増やしたいときに適宜追加***//
 
