@@ -70,6 +70,9 @@ void MagosuyaEngine::Initialize () {
 
 	modelFactory_ = ModelFactory::GetInstance();
 	modelFactory_->Initialize(dxCommon_);
+
+	renderSystem_ = RenderSystem::GetInstance();
+	//renderSystem_->Initialize()
 }
 
 void MagosuyaEngine::BeginFrame () {
@@ -84,6 +87,11 @@ void MagosuyaEngine::BeginFrame () {
 void MagosuyaEngine::EndFrame () {
 	Primitive::AllDrawing ();
 	inputManager_->EndFrame ();
+
+	// 描画を実行！
+	renderSystem_->ExecuteCommands( /* カメラの定数バッファ(CBV)のGPUアドレス */);
+	// 描画が終わったらコマンドを空にする
+	RenderSystem::GetInstance()->ClearCommands();
 
 	// ImGuiの描画の前に、描画先をRenderTextureからSwapchainへ切り替える
 	dxCommon_->PreDrawImGui();

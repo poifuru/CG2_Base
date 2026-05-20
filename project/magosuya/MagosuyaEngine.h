@@ -12,6 +12,7 @@
 #include "AudioManager.h"
 #include "PostEffect.h"
 #include "ModelFactory.h"
+#include "RenderSystem.h"
 
 class MagosuyaEngine {
 public:		//メンバ関数
@@ -55,4 +56,5 @@ private:
 	AudioManager* audioManager_ = nullptr;
 	PostEffect* postEffect_ = nullptr;
 	ModelFactory* modelFactory_ = nullptr;
+	RenderSystem* renderSystem_ = nullptr;
 };
