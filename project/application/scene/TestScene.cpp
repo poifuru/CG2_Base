@@ -15,6 +15,8 @@ TestScene::TestScene() {
 
 	ModelManager::GetInstance()->LoadModelData("Resources/player", "player.obj");
 	TextureManager::GetInstance()->LoadTexture("Resources/player/player.png", "player");
+
+	TextureManager::GetInstance()->LoadTexture("Resources/Skybox/test2.dds", "skybox");
 }
 
 TestScene::~TestScene() {
@@ -33,6 +35,9 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 	modelFactory_->SetLightManager(lightManager_.get());
 
 	cube_ = std::move(modelFactory_->CreateModel("player.obj", "player"));
+
+	skybox_ = std::make_unique<Skybox>(dxCommon);
+	skybox_->Initialize("skybox");
 
 	/*human_ = std::make_unique<Model>(dxCommon, lightManager_.get());
 	human_->SetModelData("walk.gltf");
@@ -53,9 +58,12 @@ void TestScene::Update() {
 
 	/*human_->Update(&camera_->GetCameraData());
 	human_->ImGui("human_walk");*/
+
+	skybox_->Update(&camera_->GetCameraData());
 }
 
 void TestScene::Draw() {
+	skybox_->Draw();
 	cube_->Draw();
 	/*human_->Draw();*/
 }
