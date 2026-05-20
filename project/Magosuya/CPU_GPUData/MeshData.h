@@ -1,5 +1,6 @@
 #pragma once
 #include "Buffer.h"
+#include "Skeleton.h"
 
 // 汎用的な頂点データの構造体
 struct VertexData {
@@ -26,4 +27,21 @@ struct MeshResource {
 		indexBuffer.Initialize(dxCommon, data.indices.size());
 		indexBuffer.Update(data.indices);
 	}
+};
+
+struct ModelData {
+	MeshResource meshResource; // GPU側のVB/IBラッパー
+
+	// シェーダーのドローコールやビューセットに最低限必要な情報
+	D3D12_VERTEX_BUFFER_VIEW vbView{};
+	D3D12_INDEX_BUFFER_VIEW  ibView{};
+	uint32_t vertexCount = 0;
+	uint32_t indexCount = 0;
+
+	// CPU側の階層構造やマテリアル、スキンクラスター用の生データ（Assimpで読んだやつ）
+	Node rootNode{};
+	MaterialFile material{};
+	std::unordered_map<std::string, JointWeightData> skinClusterData{};
+
+	// メモリ節約のため、GPU転送が終わったらCPU側の配列（vertices/indices）はクリアしてもOK
 };
