@@ -1,7 +1,6 @@
 #include "TestScene.h"
 #include "ModelManager.h"
 #include "TextureManager.h"
-#include "Mesh.h"
 
 TestScene::TestScene() {
 	ModelManager::GetInstance()->LoadModelData("Resources/AnimatedCube", "AnimatedCube.gltf");
@@ -13,6 +12,9 @@ TestScene::TestScene() {
 	ModelManager::GetInstance()->LoadModelData("Resources/human", "walk.gltf");
 	ModelManager::GetInstance()->LoadAnimationData("Resources/human", "walk.gltf");
 	TextureManager::GetInstance()->LoadTexture("Resources/human/white.png", "white");
+
+	ModelManager::GetInstance()->LoadModelData("Resources/player", "player.obj");
+	TextureManager::GetInstance()->LoadTexture("Resources/player/player.png", "player");
 }
 
 TestScene::~TestScene() {
@@ -27,18 +29,17 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 	lightManager_->Initialize();
 	lightManager_->AddLight(LightType::POINTLIGHT);
 
-	cube_ = std::make_unique<Model>(dxCommon, lightManager_.get());
-	cube_->SetModelData("AnimatedCube.gltf");
-	cube_->SetTexture("Cube");
-	cube_->SetAnimation("AnimatedCube.gltf");
-	cube_->Initialize({ 1.0f, 1.0f, 1.0f }, {}, { -5.0f, 0.0f, 0.0f });
+	modelFactory_ = ModelFactory::GetInstance();
+	modelFactory_->SetLightManager(lightManager_.get());
 
-	human_ = std::make_unique<Model>(dxCommon, lightManager_.get());
+	cube_ = std::move(modelFactory_->CreateModel("player.obj", "player"));
+
+	/*human_ = std::make_unique<Model>(dxCommon, lightManager_.get());
 	human_->SetModelData("walk.gltf");
 	human_->SetTexture("white");
 	human_->SetAnimation("walk.gltf");
 	human_->Initialize({ 100.0f, 100.0f, 100.0f }, { Math::Deg2Rad(-90.0f), Math::Deg2Rad(180.0f), 0.0f }, {});
-	human_->SkeletonInit();
+	human_->SkeletonInit();*/
 }
 
 void TestScene::Update() {
@@ -48,15 +49,15 @@ void TestScene::Update() {
 	lightManager_->ImGui();
 
 	cube_->Update(&camera_->GetCameraData());
-	cube_->ImGui("AnimatedCube");
+	//cube_->ImGui("AnimatedCube");
 
-	human_->Update(&camera_->GetCameraData());
-	human_->ImGui("human_walk");
+	/*human_->Update(&camera_->GetCameraData());
+	human_->ImGui("human_walk");*/
 }
 
 void TestScene::Draw() {
 	cube_->Draw();
-	human_->Draw();
+	/*human_->Draw();*/
 }
 
 void TestScene::StopToResources() {

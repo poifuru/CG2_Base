@@ -13,8 +13,6 @@
     <FxCompile Include="Resources\shader\CopyImage.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application\Scene\ClearScene.cpp" />
-    <ClCompile Include="Application\Scene\GameoverScene.cpp" />
     <ClCompile Include="Magosuya\Camera\CameraOrganizer.cpp" />
     <ClCompile Include="Magosuya\Camera\FixedPointCamera.cpp" />
     <ClCompile Include="Magosuya\Primitive\Cube\CubeRenderer.cpp" />
@@ -33,18 +31,12 @@
     <ClCompile Include="Magosuya\Input\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Magosuya\General\MathFunction.cpp" />
-    <ClCompile Include="Magosuya\Object\3d\SphereMesh.cpp" />
-    <ClCompile Include="Magosuya\Object\2d\Sprite.cpp" />
-    <ClCompile Include="Magosuya\Object\3d\OldModel.cpp" />
     <ClCompile Include="Magosuya\Input\RawInput.cpp" />
     <ClCompile Include="Magosuya\Object\3d\ModelManager.cpp" />
     <ClCompile Include="Magosuya\MagosuyaEngine.cpp" />
     <ClCompile Include="Magosuya\Engine\WindowsAPI.cpp" />
     <ClCompile Include="Magosuya\Object\2d\TextureManager.cpp" />
-    <ClCompile Include="Magosuya\Object\2d\SpriteRenderer.cpp" />
-    <ClCompile Include="Magosuya\Object\3d\ModelRenderer.cpp" />
     <ClCompile Include="Application\Scene\SceneManager.cpp" />
-    <ClCompile Include="Application\Scene\TitleScene.cpp" />
     <ClCompile Include="Application\Scene\PlayScene.cpp" />
     <ClCompile Include="Magosuya\PSO\RootSignatureManager.cpp" />
     <ClCompile Include="Magosuya\PSO\PSOManager.cpp" />
@@ -53,8 +45,6 @@
     <ClCompile Include="Magosuya\General\Easing.cpp" />
     <ClCompile Include="Magosuya\Engine\SRV\SRVManager.cpp" />
     <ClCompile Include="Application\Entity\Entity.cpp" />
-    <ClCompile Include="Application\Mapchip\mapchip.cpp" />
-    <ClCompile Include="Application\Mapchip\mapChipRenderer.cpp" />
     <ClCompile Include="Magosuya\PSO\ShaderManager.cpp" />
     <ClCompile Include="Magosuya\Object\3d\BaseObject3d.cpp" />
     <ClCompile Include="Magosuya\Light\LightManager.cpp" />
@@ -66,23 +56,17 @@
     <ClCompile Include="Application\Entity\Boss\Boss.cpp" />
     <ClCompile Include="Magosuya\Light\RectLight.cpp" />
     <ClCompile Include="Magosuya\Audio\AudioManager.cpp" />
-    <ClCompile Include="Application\Entity\Player\Player.cpp" />
-    <ClCompile Include="Application\Scene\DebugScene.cpp" />
     <ClCompile Include="Application\Entity\Enemy\BaseEnemy.cpp" />
     <ClCompile Include="Application\Scene\TestScene.cpp" />
     <ClCompile Include="Magosuya\Object\3d\Skybox.cpp" />
     <ClCompile Include="Magosuya\RenderTexture.cpp" />
-    <ClCompile Include="Application\Entity\Player\Bullet.cpp" />
-    <ClCompile Include="Application\Entity\Player\Reticle.cpp" />
-    <ClCompile Include="Application\Entity\Enemy\SmallFish.cpp" />
-    <ClCompile Include="Application\Entity\Enemy\EnemyManager.cpp" />
     <ClCompile Include="Magosuya\Engine\PostEffect.cpp" />
     <ClCompile Include="Magosuya\Engine\RenderSystem\RenderSystem.cpp" />
     <ClCompile Include="Magosuya\Object\3d\Model.cpp" />
+    <ClCompile Include="Magosuya\Object\3d\ModelFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Scene\BaseScene.h" />
-    <ClInclude Include="Application\Scene\ClearScene.h" />
     <ClInclude Include="Magosuya\Camera\CameraOrganizer.h" />
     <ClInclude Include="Magosuya\Camera\FixedPointCamera.h" />
     <ClInclude Include="Magosuya\Camera\CameraComponent.h" />
@@ -93,7 +77,6 @@
     <ClInclude Include="Magosuya\Primitive\MaxPrimitiveNum.h" />
     <ClInclude Include="Magosuya\PSO\BlendModeManager.h" />
     <ClInclude Include="externals\externals.h" />
-    <ClInclude Include="Application\Scene\GameoverScene.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
     <ClInclude Include="externals\imgui\imgui.h" />
     <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
@@ -113,28 +96,19 @@
     <ClInclude Include="Magosuya\Input\GamePad.h" />
     <ClInclude Include="Magosuya\General\function.h" />
     <ClInclude Include="Magosuya\General\MathFunction.h" />
-    <ClInclude Include="Magosuya\Object\3d\SphereMesh.h" />
-    <ClInclude Include="Magosuya\Object\2d\Sprite.h" />
     <ClInclude Include="Magosuya\General\struct.h" />
-    <ClInclude Include="Magosuya\Object\3d\OldModel.h" />
     <ClInclude Include="Magosuya\Input\InputManager.h" />
     <ClInclude Include="Magosuya\Input\RawInput.h" />
     <ClInclude Include="Magosuya\Object\3d\ModelManager.h" />
     <ClInclude Include="Magosuya\MagosuyaEngine.h" />
     <ClInclude Include="Magosuya\Engine\WindowsAPI.h" />
     <ClInclude Include="Magosuya\Object\2d\TextureManager.h" />
-    <ClInclude Include="Magosuya\Object\2d\SpriteRenderer.h" />
-    <ClInclude Include="Magosuya\Object\3d\ModelRenderer.h" />
     <ClInclude Include="Application\Scene\SceneManager.h" />
-    <ClInclude Include="Application\Scene\TitleScene.h" />
     <ClInclude Include="Application\Scene\PlayScene.h" />
     <ClInclude Include="Magosuya\Camera\LookAtCamera.h" />
     <ClInclude Include="Magosuya\General\Easing.h" />
     <ClInclude Include="Magosuya\Engine\SRV\SRVManager.h" />
     <ClInclude Include="Application\Entity\Entity.h" />
-    <ClInclude Include="Application\Mapchip\mapchip.h" />
-    <ClInclude Include="Application\Mapchip\mapChipRenderer.h" />
-    <ClInclude Include="Application\Entity\Player\Player.h" />
     <ClInclude Include="Application\Entity\Boss\Boss.h" />
     <ClInclude Include="Magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="Magosuya\Object\3d\BaseObject3d.h" />
@@ -148,17 +122,11 @@
     <ClInclude Include="Magosuya\Light\RectLight.h" />
     <ClInclude Include="Magosuya\Audio\AudioManager.h" />
     <ClInclude Include="Magosuya\Audio\VoiceCallback.h" />
-    <ClInclude Include="Application\Mapchip\MapchipStruct.h" />
-    <ClInclude Include="Application\Scene\DebugScene.h" />
     <ClInclude Include="Application\Entity\Enemy\BaseEnemy.h" />
     <ClInclude Include="Application\Scene\TestScene.h" />
     <ClInclude Include="Magosuya\Object\3d\Skybox.h" />
     <ClInclude Include="Magosuya\RenderTexture.h" />
     <ClInclude Include="Magosuya\General\DeltaTime.h" />
-    <ClInclude Include="Application\Entity\Player\Bullet.h" />
-    <ClInclude Include="Application\Entity\Player\Reticle.h" />
-    <ClInclude Include="Application\Entity\Enemy\SmallFish.h" />
-    <ClInclude Include="Application\Entity\Enemy\EnemyManager.h" />
     <ClInclude Include="Magosuya\Engine\PostEffect.h" />
     <ClInclude Include="Magosuya\Engine\Buffer\Buffer.h" />
     <ClInclude Include="Magosuya\CPU_GPUData\MeshData.h" />
@@ -173,6 +141,7 @@
     <ClInclude Include="Magosuya\Engine\RenderSystem\RenderCommand.h" />
     <ClInclude Include="Magosuya\Engine\RenderSystem\RenderSystem.h" />
     <ClInclude Include="Magosuya\Object\3d\Model.h" />
+    <ClInclude Include="Magosuya\Object\3d\ModelFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Magosuya\PSO\RootSignatureManager.h" />

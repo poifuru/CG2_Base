@@ -40,9 +40,9 @@ Player::~Player() {
 }
 
 void Player::Initialize() {
-	model_->SetModelData("player.obj");
+	/*model_->SetModelData("player.obj");
 	model_->SetTexture("player");
-	model_->Initialize();
+	model_->Initialize();*/
 
 	// 固有の数値
 	speed_ = 1.5f;
@@ -62,7 +62,7 @@ void Player::Update() {
 	reticle_->Update();
 
 	// モデルにデータを渡す
-	model_->SetPosition(transform_.translate);
+	//model_->SetPosition(transform_.translate);
 	model_->Update(&camera_->GetCameraData());
 }
 

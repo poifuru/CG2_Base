@@ -4,7 +4,8 @@
 #include <memory>
 #include <random>
 #include "struct.h"
-#include "Mesh.h"
+#include "Primitive.h"
+#include "ParticleData.h"
 
 struct MeshParticleData {
 	CubeData cube;

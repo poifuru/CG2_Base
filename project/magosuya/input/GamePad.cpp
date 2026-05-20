@@ -215,11 +215,11 @@ void GamePad::Vibration (float leftMotor, float rightMotor, float rumbleTime) {
 	// Clamp (0.0f〜1.0f の間に収める) して、65535 を掛ける
 
 	// 左モーター (L Motor)
-	float clampedLeft = std::fmax (0.0f, std::fmin (1.0f, leftMotor));
+	float clampedLeft = (std::max)(0.0f, (std::min)(1.0f, leftMotor));
 	vibration.wLeftMotorSpeed = static_cast<WORD>(clampedLeft * 65535.0f);
 
 	// 右モーター (R Motor)
-	float clampedRight = std::fmax (0.0f, std::fmin (1.0f, rightMotor));
+	float clampedRight = (std::max)(0.0f, (std::min)(1.0f, rightMotor));
 	vibration.wRightMotorSpeed = static_cast<WORD>(clampedRight * 65535.0f);
 
 	// 実際にコントローラーに振動を送信する

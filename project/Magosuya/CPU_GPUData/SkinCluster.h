@@ -61,7 +61,7 @@ public:
 
 		// SRV作成
 		srvIndex_ = SRVManager::GetInstance()->Allocate();
-		SRVManager::GetInstance()->CreateSRVStructuredBuffer(srvIndex_, paletteBuffer_.Get(), paletteSize, sizeof(WellForGPU));
+		SRVManager::GetInstance()->CreateSRVStructuredBuffer(srvIndex_, paletteBuffer_.Get(), UINT(paletteSize), sizeof(WellForGPU));
 		paletteSrvHandle_.gpu = SRVManager::GetInstance()->GetGPUDescriptorHandle(srvIndex_);	// 作ったSRVのハンドルを保持しておく
 
 		// InfluenceBufferの初期化

@@ -11,6 +11,7 @@ using namespace Microsoft::WRL;
 
 // テクスチャデータ構造体
 struct TextureData {
+	ComPtr<ID3D12Resource> textureResource;
 	DescriptorHandle handle;	// テクスチャリソースハンドル
 	DirectX::TexMetadata metadata = {};	// メタデータ
 	UINT descriptorIndex = 0;	// どのディスクリプタヒープを使ったか

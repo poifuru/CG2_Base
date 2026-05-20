@@ -24,8 +24,8 @@ public:
 
 public:
 	//コンストラクタを禁止
-	RenderSystem();
-	~RenderSystem(); // unique_ptrのデストラクタ解決のため明示的に宣言
+	//RenderSystem();
+	~RenderSystem() = default; // unique_ptrのデストラクタ解決のため明示的に宣言
 	// コピーコンストラクタと代入演算子を禁止
 	RenderSystem(const RenderSystem&) = delete;
 	RenderSystem& operator=(const RenderSystem&) = delete;

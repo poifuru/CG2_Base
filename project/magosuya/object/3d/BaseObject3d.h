@@ -7,6 +7,7 @@
 #include "MaterialData.h"
 #include "RenderSystem.h"
 #include "CameraComponent.h"
+#include "TextureManager.h"
 
 class DxCommon;
 class LightManager;
@@ -28,7 +29,7 @@ public:
 	void SetRoughness(float r) { materialData_.roughness = r; }
 	void SetMetallic(float m) { materialData_.metallic = m; }
 	void SetLightingModel(BOOL flag) { materialData_.enableLighting = flag; }
-	void SetTexture(D3D12_GPU_DESCRIPTOR_HANDLE handle) { textureHandle_ = handle; }
+	void SetTexture(const std::string& ID) { textureHandle_ = TextureManager::GetInstance()->GetTextureHandle(ID); }
 
 protected:
 	BaseObject3d() = default;

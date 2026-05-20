@@ -2,6 +2,7 @@
 #include "struct.h"
 #include "WindowsAPI.h"
 #include "MathFunction.h"
+#include <string>
 
 struct CameraData {
 	EulerTransform transform;

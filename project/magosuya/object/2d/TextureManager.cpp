@@ -87,11 +87,11 @@ TextureData* TextureManager::LoadTexture (const std::string& filePath, const std
 		newData.textureResource.Get(),
 		newData.metadata.format,
 		(UINT)newData.metadata.mipLevels,
-		newData
+		newData.metadata
 	);
 
 	//生成物をmapに渡すためにデータを詰める
-	newData.handle = srvManager_->GetGPUDescriptorHandle(newIndex);
+	newData.handle.gpu = srvManager_->GetGPUDescriptorHandle(newIndex);
 	//どのインデックスを使ったかを保存しておくと解放時に便利
 	newData.descriptorIndex = newIndex;
 
@@ -103,7 +103,7 @@ TextureData* TextureManager::LoadTexture (const std::string& filePath, const std
 D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetTextureHandle (const std::string& ID) {
 	//ID指定してmapから持ってくる
 	assert (textureMap_.count (ID));
-	return textureMap_.at (ID).handle;
+	return textureMap_.at (ID).handle.gpu;
 }
 
 void TextureManager::UnloadTexture (const std::string& ID) {
@@ -232,11 +232,11 @@ TextureData* TextureManager::CreateDummyTexture (const std::string& ID) {
 		newData.textureResource.Get(),
 		newData.metadata.format,
 		(UINT)newData.metadata.mipLevels,
-		newData
+		newData.metadata
 	);
 
 	//生成物をmapに渡すためにデータを詰める
-	newData.handle = srvManager_->GetGPUDescriptorHandle(newIndex);
+	newData.handle.gpu = srvManager_->GetGPUDescriptorHandle(newIndex);
 	//どのインデックスを使ったかを保存しておくと解放時に便利
 	newData.descriptorIndex = newIndex;
 

@@ -1,5 +1,5 @@
 #include "Entity.h"
-#include "Mesh.h"
+#include "Primitive.h"
 
 void Entity::DrawHitbox(Vector4 color) {
 	auto x = transform_.translate.x;
@@ -19,40 +19,40 @@ void Entity::DrawHitbox(Vector4 color) {
 	Vector3 rightDownBack = { x + scaleX, y - scaleY, z + scaleZ };		//　右下奥
 	Vector3 rightUpBack = { x + scaleX, y + scaleY, z + scaleZ };		//　右上奥
 
-	Mesh::DrawLine(
+	Primitive::DrawLine(
 		leftUpFront.x, leftUpFront.y, leftUpFront.z, leftUpBack.x, leftUpBack.y, leftUpBack.z, color, camera_->GetVPMatrix()
 	);
-	Mesh::DrawLine(
+	Primitive::DrawLine(
 		leftUpFront.x, leftUpFront.y, leftUpFront.z, rightUpFront.x, rightUpFront.y, rightUpFront.z, color, camera_->GetVPMatrix()
 	);
-	Mesh::DrawLine(
+	Primitive::DrawLine(
 		rightUpBack.x, rightUpBack.y, rightUpBack.z, leftUpBack.x, leftUpBack.y, leftUpBack.z, color, camera_->GetVPMatrix()
 	);
-	Mesh::DrawLine(
+	Primitive::DrawLine(
 		rightUpBack.x, rightUpBack.y, rightUpBack.z, rightUpFront.x, rightUpFront.y, rightUpFront.z, color, camera_->GetVPMatrix()
 	);
-	Mesh::DrawLine(
+	Primitive::DrawLine(
 		leftUpFront.x, leftUpFront.y, leftUpFront.z, leftDownFront.x, leftDownFront.y, leftDownFront.z, color, camera_->GetVPMatrix()
 	);
-	Mesh::DrawLine(
+	Primitive::DrawLine(
 		leftUpBack.x, leftUpBack.y, leftUpBack.z, leftDownBack.x, leftDownBack.y, leftDownBack.z, color, camera_->GetVPMatrix()
 	);
-	Mesh::DrawLine(
+	Primitive::DrawLine(
 		rightUpFront.x, rightUpFront.y, rightUpFront.z, rightDownFront.x, rightDownFront.y, rightDownFront.z, color, camera_->GetVPMatrix()
 	);
-	Mesh::DrawLine(
+	Primitive::DrawLine(
 		rightUpBack.x, rightUpBack.y, rightUpBack.z, rightDownBack.x, rightDownBack.y, rightDownBack.z, color, camera_->GetVPMatrix()
 	);
-	Mesh::DrawLine(
+	Primitive::DrawLine(
 		leftDownFront.x, leftDownFront.y, leftDownFront.z, leftDownBack.x, leftDownBack.y, leftDownBack.z, color, camera_->GetVPMatrix()
 	);
-	Mesh::DrawLine(
+	Primitive::DrawLine(
 		leftDownFront.x, leftDownFront.y, leftDownFront.z, rightDownFront.x, rightDownFront.y, rightDownFront.z, color, camera_->GetVPMatrix()
 	);
-	Mesh::DrawLine(
+	Primitive::DrawLine(
 		rightDownBack.x, rightDownBack.y, rightDownBack.z, leftDownBack.x, leftDownBack.y, leftDownBack.z, color, camera_->GetVPMatrix()
 	);
-	Mesh::DrawLine(
+	Primitive::DrawLine(
 		rightDownBack.x, rightDownBack.y, rightDownBack.z, rightDownFront.x, rightDownFront.y, rightDownFront.z, color, camera_->GetVPMatrix()
 	);
 }

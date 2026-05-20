@@ -2,6 +2,7 @@
 #include "SRVManager.h"
 #include "WindowsAPI.h"
 #include "DxCommon.h"
+#include "TextureManager.h"
 
 RenderTexture::RenderTexture() {
 }
@@ -29,11 +30,11 @@ void RenderTexture::Initialize(DxCommon* dxCommon, SRVManager* srvManager) {
 	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 	dxCommon->GetDevice()->CreateRenderTargetView(resource_.Get(), &rtvDesc, rtvHandle_);
 
-	TextureData texData = {};
+	DirectX::TexMetadata texMetadata{};
 
 	// SRV作成
 	srvIndex_ = srvManager->Allocate();
-	srvManager->CreateSRVforTexture2D(srvIndex_, resource_.Get(), DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, 1, texData);
+	srvManager->CreateSRVforTexture2D(srvIndex_, resource_.Get(), DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, 1, texMetadata);
 }
 
 ComPtr<ID3D12Resource> RenderTexture::CreateRenderTextureResource(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format, const Vector4& clearColor) {

@@ -10,7 +10,7 @@ struct PixelShaderOutput {
 PixelShaderOutput main(VertexShaderOutput input) {
     PixelShaderOutput output;
  
-    output.color = gTexture.Sample(gSampler, input.texcoord); 
+    output.color = gTexture.Sample(gSampler, input.texcoord);
    
     return output;
 }

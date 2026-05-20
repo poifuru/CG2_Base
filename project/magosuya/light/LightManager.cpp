@@ -1,9 +1,6 @@
 #include "LightManager.h"
 #include "imgui.h"
 
-//ライトの最大数
-const uint32_t MaxCount = 20;
-
 LightManager::LightManager(DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 }
@@ -310,22 +307,22 @@ void LightManager::AddLight(LightType type) {
 	switch(type) {
 	case DIRECTIONALLIGHT:
 		dirLights_.push_back(std::make_unique<DirectionalLight>());
-		lightCountData_->dirLight++;
+		lightCPUData_.count.dirLight++;
 		break;
 
 	case POINTLIGHT:
 		pointLights_.push_back(std::make_unique<PointLight>());
-		lightCountData_->pointLight++;
+		lightCPUData_.count.pointLight++;
 		break;
 
 	case SPOTLIGHT:
 		spotLights_.push_back(std::make_unique<SpotLight>());
-		lightCountData_->spotLight++;
+		lightCPUData_.count.spotLight++;
 		break;
 
 	case RECTLIGHT:
 		rectLights_.push_back(std::make_unique<RectLight>());
-		lightCountData_->rectLight++;
+		lightCPUData_.count.rectLight++;
 		break;
 
 	default:

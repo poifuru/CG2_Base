@@ -1,5 +1,6 @@
 #pragma once
 #include "struct.h"
+#include "Buffer.h"
 
 struct CubeData {
 	EulerTransform transform;

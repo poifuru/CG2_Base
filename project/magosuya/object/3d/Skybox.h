@@ -1,13 +1,14 @@
 #pragma once
-#include <Windows.h>
-#include <Wrl.h>
-using namespace Microsoft::WRL;
-#include <d3d12.h>
 #include <string>
-#include "struct.h"
-#include "PSOManager.h"
-#include "DxCommon.h"
+#include <d3d12.h>
+#include "struct.h"             // Matrix4x4, Vector4 など
+#include "Buffer.h"             // VertexBuffer, IndexBuffer, ConstantBuffer
+#include "TransformMatrixData.h" // TransformMatrixData
+#include "MaterialData.h"        // MaterialData
+#include "RenderCommand.h"       // PSODescriptor
 #include "CameraComponent.h"
+
+class DxCommon;
 
 struct SkyboxVertex {
 	Vector4 position;
@@ -16,32 +17,29 @@ struct SkyboxVertex {
 class Skybox {
 public:
 	Skybox(DxCommon* dxCommon);
+	~Skybox() = default;
 
-	void Initialize(std::string filePath, std::string tag);
+	void Initialize(const std::string& textureTag);
 
 	void Update(CameraData* data);
 
 	void Draw();
 
 private:
-	// PSO
-	PSODescriptor desc_{};
+	// PSOの設定
+	PSODescriptor psoDesc_{};
 
-	// バッファ
-	ComPtr<ID3D12Resource> vertexBuffer_ = nullptr;
-	D3D12_VERTEX_BUFFER_VIEW vbv_{};
-	ComPtr<ID3D12Resource> indexBuffer_ = nullptr;
-	D3D12_INDEX_BUFFER_VIEW ibv_{};
-	ComPtr<ID3D12Resource> matrixBuffer_ = nullptr;
-	ComPtr<ID3D12Resource> materialBuffer_ = nullptr;
+	// CPUデータ（きっちり隔離）
+	TransformMatrixData cpuTransformData_{};
+	MaterialData cpuMaterialData_{};
 
-	// マッピング用のポインタ
-	SkyboxVertex* vertexData_ = nullptr;
-	uint32_t* indexData_ = nullptr;
-	TransformationMatrix* matrixData_ = nullptr;
-	Material* materialData_ = nullptr;
+	// GPUリソース
+	VertexBuffer<SkyboxVertex> vertexBuffer_;
+	IndexBuffer<uint32_t> indexBuffer_;
+	ConstantBuffer<TransformMatrixData> matrixBuffer_;
+	ConstantBuffer<MaterialData> materialBuffer_;
 
-	// テクスチャを引っ張てくるための変数
+	// テクスチャを引っ張ってくるための識別タグ
 	std::string tag_;
 
 	// 借りるポインタ

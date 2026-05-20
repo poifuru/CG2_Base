@@ -20,8 +20,8 @@ public:		//メンバ関数
 private:	//メンバ変数
 	std::unique_ptr<LightManager> lightManager_ = nullptr;
 
-	std::unique_ptr<Player> player_ = nullptr;
-	std::unique_ptr<EnemyManager> enemyManager_ = nullptr;
+	//std::unique_ptr<Player> player_ = nullptr;
+	//std::unique_ptr<EnemyManager> enemyManager_ = nullptr;
 
 	std::unique_ptr<Skybox> skybox_ = nullptr;
 

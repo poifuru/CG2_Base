@@ -6,6 +6,7 @@
 #include <iostream>
 #include <chrono>
 #include <filesystem>
+#include <cassert>
 #include "LogManager.h"
 #include "String.h"
 

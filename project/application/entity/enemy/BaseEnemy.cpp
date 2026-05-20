@@ -10,7 +10,7 @@ BaseEnemy::~BaseEnemy() {
 }
 
 void BaseEnemy::Initialize() {
-	model_->Initialize();
+	//model_->Initialize();
 }
 
 void BaseEnemy::Update() {
@@ -22,5 +22,5 @@ void BaseEnemy::Draw() {
 }
 
 void BaseEnemy::ImGui() {
-	model_->ImGui("enemy");
+	//model_->ImGui("enemy");
 }

@@ -2,7 +2,7 @@
 #include <sstream>
 #include <cassert>
 #include <map>
-#include <filesystem>
+#include <fstream>
 #include "DxCommon.h"
 #include "TextureManager.h"
 
@@ -13,48 +13,56 @@ void ModelManager::Initialize(DxCommon* dxCommon, TextureManager* textureManager
 	textureManager_ = textureManager;
 }
 
-MeshData* ModelManager::LoadModelData(const std::string& directoryPath, const std::string& fileName, bool inversion) {
+ModelData* ModelManager::LoadModelData(const std::string& directoryPath, const std::string& fileName, bool inversion) {
 	//IDのモデルをすでに読み込んでいたら
 	if(modelMap_.count(fileName)) {
-		//既存データを取得
-		std::shared_ptr<MeshData> existingData = modelMap_.at(fileName);
-		//存在していたら既存のデータを返す
-		return existingData.get();
+		// キャッシュを返す
+		return modelMap_.at(fileName).get();
 	}
 
 	//読み込んでいなければ新規読み込み
-	MeshData cpuData = LoadModelFile(directoryPath, fileName, inversion);
+	ModelData cpuData = LoadModelFile(directoryPath, fileName, inversion);
 	//shared_ptrに入れてGPUリソース作成の準備
-	std::shared_ptr<MeshData> newData = std::make_shared<MeshData>(std::move(cpuData));
+	std::shared_ptr<ModelData> newData = std::make_shared<ModelData>(std::move(cpuData));
 
-	//頂点バッファの生成と設定
-	newData->vertices = dxCommon_->CreateBufferResource(sizeof(VertexData) * newData->vertexCount);
-	//頂点バッファにデータを書き込む
-	VertexData* vertexDataPtr = nullptr;
-	newData->vertexBuffer->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataPtr));
-	//CPUメモリからGPUリソースへデータをコピー
-	memcpy(vertexDataPtr, newData->vertices.data(), sizeof(VertexData) * newData->vertexCount);
-	newData->vertexBuffer->Unmap(0, nullptr);
+	newData->meshResource.Initialize(dxCommon_, newData->meshData);
 
-	//頂点バッファビューの設定
-	newData->vbView.BufferLocation = newData->vertexBuffer->GetGPUVirtualAddress();
-	newData->vbView.SizeInBytes = UINT(sizeof(VertexData) * newData->vertexCount);
-	newData->vbView.StrideInBytes = sizeof(VertexData);
+	// ビューの設定
+	newData->vbView = newData->meshResource.vertexBuffer.GetView();
+	newData->ibView = newData->meshResource.indexBuffer.GetView();
 
-	//インデックスバッファの生成と設定
-	newData->indexBuffer = dxCommon_->CreateBufferResource(sizeof(uint32_t) * newData->indexCount);
+	// GPUへの転送が終わったら、CPU側の配列は空にする
+	newData->meshData.vertices.clear();
+	newData->meshData.indices.clear();
 
-	//インデックスバッファにデータを書き込む
-	uint32_t* indexDataPtr = nullptr;
-	newData->indexBuffer->Map(0, nullptr, reinterpret_cast<void**>(&indexDataPtr));
-	//CPUメモリからGPUリソースへデータをコピー
-	memcpy(indexDataPtr, newData->indices.data(), sizeof(uint32_t) * newData->indexCount);
-	newData->indexBuffer->Unmap(0, nullptr);
+	////頂点バッファの生成と設定
+	//newData->vertices = dxCommon_->CreateBufferResource(sizeof(VertexData) * newData->vertexCount);
+	////頂点バッファにデータを書き込む
+	//VertexData* vertexDataPtr = nullptr;
+	//newData->vertexBuffer->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataPtr));
+	////CPUメモリからGPUリソースへデータをコピー
+	//memcpy(vertexDataPtr, newData->vertices.data(), sizeof(VertexData) * newData->vertexCount);
+	//newData->vertexBuffer->Unmap(0, nullptr);
 
-	//インデックスバッファビューの設定
-	newData->ibView.BufferLocation = newData->indexBuffer->GetGPUVirtualAddress();
-	newData->ibView.SizeInBytes = UINT(sizeof(uint32_t) * newData->indexCount);
-	newData->ibView.Format = DXGI_FORMAT_R32_UINT;
+	////頂点バッファビューの設定
+	//newData->vbView.BufferLocation = newData->vertexBuffer->GetGPUVirtualAddress();
+	//newData->vbView.SizeInBytes = UINT(sizeof(VertexData) * newData->vertexCount);
+	//newData->vbView.StrideInBytes = sizeof(VertexData);
+
+	////インデックスバッファの生成と設定
+	//newData->indexBuffer = dxCommon_->CreateBufferResource(sizeof(uint32_t) * newData->indexCount);
+
+	////インデックスバッファにデータを書き込む
+	//uint32_t* indexDataPtr = nullptr;
+	//newData->indexBuffer->Map(0, nullptr, reinterpret_cast<void**>(&indexDataPtr));
+	////CPUメモリからGPUリソースへデータをコピー
+	//memcpy(indexDataPtr, newData->indices.data(), sizeof(uint32_t) * newData->indexCount);
+	//newData->indexBuffer->Unmap(0, nullptr);
+
+	////インデックスバッファビューの設定
+	//newData->ibView.BufferLocation = newData->indexBuffer->GetGPUVirtualAddress();
+	//newData->ibView.SizeInBytes = UINT(sizeof(uint32_t) * newData->indexCount);
+	//newData->ibView.Format = DXGI_FORMAT_R32_UINT;
 
 	//mapに登録
 	modelMap_[fileName] = newData;
@@ -67,7 +75,7 @@ MeshData* ModelManager::LoadModelData(const std::string& directoryPath, const st
 	return modelMap_.at(fileName).get();
 }
 
-std::weak_ptr<MeshData> ModelManager::GetModelData(std::string id) {
+std::weak_ptr<ModelData> ModelManager::GetModelData(std::string id) {
 	//ID指定してmapから持ってくる
 	assert(modelMap_.count(id));
 	return modelMap_.at(id);
@@ -110,9 +118,9 @@ void ModelManager::UnloadAnimationData(const std::string& id) {
 	animationMap_.erase(id);
 }
 
-MaterialFile ModelManager::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& id) {
+std::string ModelManager::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& id) {
 	//必要な変数の宣言
-	MaterialFile materialData;
+	std::string materialData;
 	std::string line;
 
 	//ファイルを開く
@@ -130,7 +138,7 @@ MaterialFile ModelManager::LoadMaterialTemplateFile(const std::string& directory
 			std::string textureFilename;
 			s >> textureFilename;
 			//連結してファイルパスにする
-			materialData.textureFilePath = directoryPath + "/" + textureFilename;
+			materialData = directoryPath + "/" + textureFilename;
 		}
 	}
 
@@ -178,7 +186,7 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 				vertex.normal = { -normal.x, normal.y, normal.z };
 			}
 			vertex.texcoord = { texcoord.x, texcoord.y };
-			modelData.vertices.push_back(vertex);
+			modelData.meshData.vertices.push_back(vertex);
 		}
 
 		//Faceを解析する
@@ -188,7 +196,7 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 
 			//indexの解析
 			for(uint32_t i = 0; i < face.mNumIndices; ++i) {
-				modelData.indices.push_back(face.mIndices[i]);
+				modelData.meshData.indices.push_back(face.mIndices[i]);
 			}
 		}
 
@@ -222,15 +230,15 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 		if(material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
 			aiString textureFilePath;
 			material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
-			modelData.material.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
+			modelData.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
 		}
 	}
 
 	// 頂点数を取得 (重複が排除されたユニークな数になっているはず)
-	modelData.vertexCount = static_cast<uint32_t>(modelData.vertices.size());
+	modelData.vertexCount = static_cast<uint32_t>(modelData.meshData.vertices.size());
 
 	// インデックス数を取得
-	modelData.indexCount = static_cast<uint32_t>(modelData.indices.size());
+	modelData.indexCount = static_cast<uint32_t>(modelData.meshData.indices.size());
 
 	//RootNodeを読んで階層構造を作り上げる
 	modelData.rootNode = ReadNode(scene->mRootNode);

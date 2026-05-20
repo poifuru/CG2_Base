@@ -1,5 +1,6 @@
 #pragma once
 #include "struct.h"
+#include <string>
 
 class BaseLight {
 public:

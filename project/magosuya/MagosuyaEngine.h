@@ -1,7 +1,4 @@
 #pragma once
-#include <memory>
-#include <string>
-#include "Windows.h"
 #include "DxCommon.h"
 #include "SRVManager.h"
 #include "TextureManager.h"
@@ -10,11 +7,11 @@
 #include "PSOManager.h"
 #include "LineRenderer.h"
 #include "CubeRenderer.h"
-#include "Primitive.h"
 #include "CameraOrganizer.h"
 #include "SceneManager.h"
 #include "AudioManager.h"
 #include "PostEffect.h"
+#include "ModelFactory.h"
 
 class MagosuyaEngine {
 public:		//メンバ関数
@@ -57,4 +54,5 @@ private:
 	SceneManager* sceneManager_ = nullptr;
 	AudioManager* audioManager_ = nullptr;
 	PostEffect* postEffect_ = nullptr;
+	ModelFactory* modelFactory_ = nullptr;
 };

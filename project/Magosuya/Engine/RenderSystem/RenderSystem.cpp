@@ -37,11 +37,7 @@ void RenderSystem::ExecuteCommands(D3D12_GPU_VIRTUAL_ADDRESS cameraCBVAddress) {
 		commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		// 共通バッファのセット
-		commandList_->SetGraphicsRootConstantBufferView(3, lightManager_->GetLightCountBuffer().GetGPUVirtualAddress());
-		commandList_->SetGraphicsRootDescriptorTable(5, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetDirLightSrvHandle()));
-		commandList_->SetGraphicsRootDescriptorTable(6, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetPointLightSrvHandle()));
-		commandList_->SetGraphicsRootDescriptorTable(7, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetSpotLightSrvHandle()));
-		commandList_->SetGraphicsRootDescriptorTable(8, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetRectLightSrvHandle()));
+		commandList_->SetGraphicsRootConstantBufferView(3, lightManager_->GetLightGPUAddress());
 		commandList_->SetGraphicsRootDescriptorTable(10, TextureManager::GetInstance()->GetTextureHandle("skybox"));
 
 		// カメラバッファのバインド
@@ -75,10 +71,6 @@ void RenderSystem::ExecuteCommands(D3D12_GPU_VIRTUAL_ADDRESS cameraCBVAddress) {
 
 		// 共通バッファのセット
 		commandList_->SetGraphicsRootConstantBufferView(3, lightManager_->GetLightGPUAddress());
-		commandList_->SetGraphicsRootDescriptorTable(5, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetDirLightSrvHandle()));
-		commandList_->SetGraphicsRootDescriptorTable(6, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetPointLightSrvHandle()));
-		commandList_->SetGraphicsRootDescriptorTable(7, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetSpotLightSrvHandle()));
-		commandList_->SetGraphicsRootDescriptorTable(8, SRVManager::GetInstance()->GetGPUDescriptorHandle(lightManager_->GetRectLightSrvHandle()));
 		commandList_->SetGraphicsRootDescriptorTable(10, TextureManager::GetInstance()->GetTextureHandle("skybox"));
 
 		// カメラバッファのバインド

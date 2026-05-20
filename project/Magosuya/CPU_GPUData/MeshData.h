@@ -1,6 +1,7 @@
 #pragma once
 #include "Buffer.h"
 #include "Skeleton.h"
+#include "SkinCluster.h"
 
 // 汎用的な頂点データの構造体
 struct VertexData {
@@ -30,6 +31,9 @@ struct MeshResource {
 };
 
 struct ModelData {
+	// Assimpで読み込んだ生データの受け皿
+	MeshData meshData;
+
 	MeshResource meshResource; // GPU側のVB/IBラッパー
 
 	// シェーダーのドローコールやビューセットに最低限必要な情報
@@ -40,7 +44,7 @@ struct ModelData {
 
 	// CPU側の階層構造やマテリアル、スキンクラスター用の生データ（Assimpで読んだやつ）
 	Node rootNode{};
-	MaterialFile material{};
+	std::string textureFilePath{};
 	std::unordered_map<std::string, JointWeightData> skinClusterData{};
 
 	// メモリ節約のため、GPU転送が終わったらCPU側の配列（vertices/indices）はクリアしてもOK

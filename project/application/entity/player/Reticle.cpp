@@ -18,7 +18,7 @@ void Reticle::Initialize() {
 	model_->SetTexture("reticle");
 	model_->Initialize();
 	model_->SetDepthEnable(false);
-	model_->IsLighting(LightReflectionModel::None);
+	model_->IsLighting(FALSE);
 	model_->SetColor(Vector4{ 1.0f, 1.0f, 0.0f, 0.5f });
 	model_->SetScale({ 2.0f, 2.0f, 1.0f });
 

@@ -2,12 +2,13 @@
 #include "MathFunction.h"
 #include "CameraOrganizer.h"
 #include "InputManager.h"
-#include "TextureManager.h"
-#include "ModelManager.h"
+#include "ModelFactory.h"
 #include "SceneManager.h"
 #include "SceneType.h"
+#include "TextureManager.h"
 
 PlayScene::PlayScene () {
+	TextureManager::GetInstance()->LoadTexture("Resources/Skybox/test2.dds", "skybox");
 }
 
 PlayScene::~PlayScene () {
@@ -32,46 +33,48 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	lightManager_->SetDirectionalLightDir(3, { 0.0f, -1.0f, 0.0f });
 	lightManager_->SetDirectionalLightDir(4, { -1.0f, 0.0f, 0.0f });
 
-	//オブジェクトたちの初期化
-	player_ = std::make_unique<Player>(dxCommon_, camera_, input_, lightManager_.get());
-	player_->Initialize();
+	ModelFactory::GetInstance()->SetLightManager(lightManager_.get());
 
-	enemyManager_ = std::make_unique<EnemyManager>();
-	enemyManager_->Initialize(dxCommon, lightManager_.get(), camera);
+	//オブジェクトたちの初期化
+	/*player_ = std::make_unique<Player>(dxCommon_, camera_, input_, lightManager_.get());
+	player_->Initialize();*/
+
+	/*enemyManager_ = std::make_unique<EnemyManager>();
+	enemyManager_->Initialize(dxCommon, lightManager_.get(), camera);*/
 
 	skybox_ = std::make_unique<Skybox>(dxCommon);
-	skybox_->Initialize("Resources/Skybox/test2.dds", "skybox");
+	skybox_->Initialize("skybox");
 }
 
 void PlayScene::Update () {
 	if(input_->GetRawInput()->Trigger(VK_F1)) {
-		nextScene_ = std::make_unique<TitleScene>();
+		//nextScene_ = std::make_unique<TitleScene>();
 		SceneManager::GetInstance()->SetNextScene(std::move(nextScene_));
 	}
 	lightManager_->Update();
 	lightManager_->ImGui();
 
-	camera_->SetFollowTarget("main2", player_->GetTransform());
+	/*camera_->SetFollowTarget("main2", player_->GetTransform());*/
 	camera_->Update();
 	camera_->ImGui();
 
-	player_->Update();
-	player_->ImGui();
+	/*player_->Update();
+	player_->ImGui();*/
 
-	enemyManager_->Update(player_->GetTransform().translate.z);
+	//enemyManager_->Update(player_->GetTransform().translate.z);
 
-	// --- 弾と敵の当たり判定 ---
-	for (auto& bullet : player_->GetBullets()) {
-		if (!bullet->IsActive()) continue;
-		for (auto& enemy : enemyManager_->GetEnemies()) {
-			if (!enemy || !enemy->IsActive()) continue;
-			if (Math::IsCollision(bullet->GetAABB(), enemy->GetAABB())) {
-				bullet->SetIsActive(false);  // 弾を消す
-				enemy->SetIsActive(false);   // 敵を消す
-				break;
-			}
-		}
-	}
+	//// --- 弾と敵の当たり判定 ---
+	//for (auto& bullet : player_->GetBullets()) {
+	//	if (!bullet->IsActive()) continue;
+	//	for (auto& enemy : enemyManager_->GetEnemies()) {
+	//		if (!enemy || !enemy->IsActive()) continue;
+	//		if (Math::IsCollision(bullet->GetAABB(), enemy->GetAABB())) {
+	//			bullet->SetIsActive(false);  // 弾を消す
+	//			enemy->SetIsActive(false);   // 敵を消す
+	//			break;
+	//		}
+	//	}
+	//}
 
 	skybox_->Update(&camera_->GetCameraData());
 }
@@ -79,8 +82,8 @@ void PlayScene::Update () {
 void PlayScene::Draw () {
 	skybox_->Draw();
 
-	player_->Draw();
-	enemyManager_->Draw();
+	//player_->Draw();
+	//enemyManager_->Draw();
 }
 
 void PlayScene::StopToResources() {

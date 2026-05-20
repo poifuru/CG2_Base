@@ -1,5 +1,7 @@
 #pragma once
 #include "struct.h"
+#include <cmath>
+#include <algorithm>
 
 namespace Math {
 	static const int kColumnWidth = 60;

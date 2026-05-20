@@ -1,7 +1,7 @@
 #include "Bullet.h"
 #include "Deltatime.h"
 #include "imgui.h"
-#include "Mesh.h"
+#include "MeshData.h"
 #include "MathFunction.h"
 
 Bullet::Bullet(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input, LightManager* light) {

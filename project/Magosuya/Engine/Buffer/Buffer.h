@@ -52,7 +52,7 @@ public:
 	void Update(const std::vector<T>& vertices) {
 		if(mappedData_ && !vertices.empty()) {
 			// 確保したバッファサイズを超えないようにコピー
-			size_t copySize = std::min(size_, sizeof(T) * vertices.size());
+			size_t copySize = (std::min)(size_, sizeof(T) * vertices.size());
 			std::memcpy(mappedData_, vertices.data(), copySize);
 		}
 	}
@@ -140,7 +140,7 @@ public:
 	void Update(const std::vector<T>& indices) {
 		if(mappedData_ && !indices.empty()) {
 			// 確保したバッファサイズを超えないようにコピー
-			size_t copySize = std::min(size_, sizeof(T) * indices.size());
+			size_t copySize = (std::min)(size_, sizeof(T) * indices.size());
 			std::memcpy(mappedData_, indices.data(), copySize);
 		}
 	}
@@ -296,7 +296,7 @@ public:
 	void Update(const std::vector<T>& data) {
 		if(!mappedData_ || data.empty()) return;
 		// 安全のためにサイズチェック
-		size_t copyCount = std::min(elementCount_, data.size());
+		size_t copyCount = (std::min)(elementCount_, data.size());
 		std::memcpy(mappedData_, data.data(), sizeof(T) * copyCount);
 	}
 

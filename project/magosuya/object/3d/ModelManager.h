@@ -12,6 +12,7 @@ using namespace Microsoft::WRL;
 #include <assimp/postprocess.h>
 #include "struct.h"
 #include "MeshData.h"
+#include "Animation.h"
 
 class DxCommon;
 class TextureManager;
@@ -26,8 +27,8 @@ public:		//メンバ関数
 
 	void Initialize (DxCommon* dxCommon, TextureManager* textureManager);
 
-	MeshData* LoadModelData (const std::string& directoryPath, const std::string& fileName, bool inversion = false);
-	std::weak_ptr<MeshData> GetModelData (std::string id);
+	ModelData* LoadModelData (const std::string& directoryPath, const std::string& fileName, bool inversion = false);
+	std::weak_ptr<ModelData> GetModelData (std::string id);
 	void UnloadModelData (const std::string& id);
 
 	Animation* LoadAnimationData(const std::string& directoryPath, const std::string& fileName);
@@ -47,7 +48,7 @@ private:
 
 private:	//内部関数
 	//マテリアルファイルの読み込み関数
-	MaterialFile LoadMaterialTemplateFile (const std::string& directoryPath, const std::string& id);
+	std::string LoadMaterialTemplateFile (const std::string& directoryPath, const std::string& id);
 
 	//モデル読み込みの関数
 	ModelData LoadModelFile (const std::string& directoryPath, const std::string& fileName, bool inversion);

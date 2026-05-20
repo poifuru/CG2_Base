@@ -1,8 +1,6 @@
 #pragma once
 #include <queue>
-
 #include "DxCommon.h"
-#include "TextureManager.h"
 
 class SRVManager {
 public:
@@ -35,7 +33,7 @@ public:
 	ID3D12DescriptorHeap* GetDescriptorHeap() { return descriptorHeap_.Get(); }
 
 	//SRV生成(texture)
-	void CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format, UINT MipLevels, TextureData texData);
+	void CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format, UINT MipLevels, const DirectX::TexMetadata& texMetadata);
 	//SRV生成(Structured Buffer)
 	void CreateSRVStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByteStride);
 

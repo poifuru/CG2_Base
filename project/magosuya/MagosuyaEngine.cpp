@@ -1,6 +1,7 @@
 #include "MagosuyaEngine.h"
 #include "LogManager.h"
 #include "PostEffect.h"
+#include "Primitive.h"
 
 MagosuyaEngine::~MagosuyaEngine () {
 	audioManager_->Finalize();
@@ -66,6 +67,9 @@ void MagosuyaEngine::Initialize () {
 
 	postEffect_ = PostEffect::GetInstance();
 	postEffect_->Initialize(dxCommon_);
+
+	modelFactory_ = ModelFactory::GetInstance();
+	modelFactory_->Initialize(dxCommon_);
 }
 
 void MagosuyaEngine::BeginFrame () {
@@ -78,7 +82,7 @@ void MagosuyaEngine::BeginFrame () {
 	audioManager_->Update();
 }
 void MagosuyaEngine::EndFrame () {
-	Mesh::AllDrawing ();
+	Primitive::AllDrawing ();
 	inputManager_->EndFrame ();
 
 	// ImGuiの描画の前に、描画先をRenderTextureからSwapchainへ切り替える

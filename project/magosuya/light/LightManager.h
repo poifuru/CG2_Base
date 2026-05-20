@@ -8,6 +8,9 @@
 #include "DxCommon.h"
 #include "Buffer.h"
 
+//ライトの最大数
+const uint32_t MaxCount = 20;
+
 //ライトの種類
 enum LightType {
 	DIRECTIONALLIGHT,
@@ -65,10 +68,10 @@ struct RectLightForGPU {
 struct AllLightDataForGPU {
 	LightCount count;
 
-	DirectionalLightForGPU dirLights[20]; // MaxCount = 20
-	PointLightForGPU       pointLights[20];
-	SpotLightForGPU        spotLights[20];
-	RectLightForGPU        rectLights[20];
+	DirectionalLightForGPU dirLights[MaxCount];
+	PointLightForGPU pointLights[MaxCount];
+	SpotLightForGPU spotLights[MaxCount];
+	RectLightForGPU rectLights[MaxCount];
 };
 
 class LightManager {
