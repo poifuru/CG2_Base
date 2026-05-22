@@ -40,11 +40,17 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	standard3DDescriptorRanges[4].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	standard3DDescriptorRanges[4].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	//環境マップ用
-	standard3DDescriptorRanges[5].BaseShaderRegister = 4; // register(t5)に対応
+	//MatrixPalette用(ダミー)
+	standard3DDescriptorRanges[5].BaseShaderRegister = 5; // register(t5)に対応
 	standard3DDescriptorRanges[5].NumDescriptors = 1;
 	standard3DDescriptorRanges[5].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	standard3DDescriptorRanges[5].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	//環境マップ用
+	standard3DDescriptorRanges[6].BaseShaderRegister = 5; // register(t5)に対応
+	standard3DDescriptorRanges[6].NumDescriptors = 1;
+	standard3DDescriptorRanges[6].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	standard3DDescriptorRanges[6].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	//RootParameter(b0)
 	standard3DRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
@@ -96,11 +102,17 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	standard3DRootParameters[8].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[4]; // Range[1]を指す
 	standard3DRootParameters[8].DescriptorTable.NumDescriptorRanges = 1;
 
-	//RectLight一覧用のディスクリプタテーブル(t5用)
+	//MatrixPalette用(t5, ダミー)
 	standard3DRootParameters[9].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	standard3DRootParameters[9].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	standard3DRootParameters[9].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[5]; // Range[1]を指す
+	standard3DRootParameters[9].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	standard3DRootParameters[9].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[5]; // Range[5]を指す
 	standard3DRootParameters[9].DescriptorTable.NumDescriptorRanges = 1;
+
+	//環境マップ用(t5)
+	standard3DRootParameters[10].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	standard3DRootParameters[10].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	standard3DRootParameters[10].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[6]; // Range[6]を指す
+	standard3DRootParameters[10].DescriptorTable.NumDescriptorRanges = 1;
 
 	//Sampler
 	standard3DStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;	//バイリニアフィルタ
@@ -149,6 +161,18 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	standard3DInstanceDescriptorRanges[5].NumDescriptors = 1;
 	standard3DInstanceDescriptorRanges[5].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	standard3DInstanceDescriptorRanges[5].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	//MatrixPalette用(ダミー)
+	standard3DInstanceDescriptorRanges[6].BaseShaderRegister = 5; // register(t5)に対応
+	standard3DInstanceDescriptorRanges[6].NumDescriptors = 1;
+	standard3DInstanceDescriptorRanges[6].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	standard3DInstanceDescriptorRanges[6].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	//環境マップ用
+	standard3DInstanceDescriptorRanges[7].BaseShaderRegister = 5; // register(t5)に対応
+	standard3DInstanceDescriptorRanges[7].NumDescriptors = 1;
+	standard3DInstanceDescriptorRanges[7].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	standard3DInstanceDescriptorRanges[7].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	//MatrixBufferInstance(b0)
 	standard3DInstanceRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;		//DiscriptorTableを使う
@@ -200,6 +224,18 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	standard3DInstanceRootParameters[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	standard3DInstanceRootParameters[8].DescriptorTable.pDescriptorRanges = &standard3DInstanceDescriptorRanges[4]; // Range[4]を指す
 	standard3DInstanceRootParameters[8].DescriptorTable.NumDescriptorRanges = 1;
+
+	//MatrixPalette用(t5, ダミー)
+	standard3DInstanceRootParameters[9].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	standard3DInstanceRootParameters[9].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	standard3DInstanceRootParameters[9].DescriptorTable.pDescriptorRanges = &standard3DInstanceDescriptorRanges[6]; // Range[6]を指す
+	standard3DInstanceRootParameters[9].DescriptorTable.NumDescriptorRanges = 1;
+
+	//環境マップ用(t5)
+	standard3DInstanceRootParameters[10].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	standard3DInstanceRootParameters[10].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	standard3DInstanceRootParameters[10].DescriptorTable.pDescriptorRanges = &standard3DInstanceDescriptorRanges[7]; // Range[7]を指す
+	standard3DInstanceRootParameters[10].DescriptorTable.NumDescriptorRanges = 1;
 
 	//Sampler
 	standard3DInstanceStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;	//バイリニアフィルタ
@@ -693,12 +729,12 @@ D3D12_ROOT_SIGNATURE_DESC RootSignatureManager::CreateRootSigDesc (RootSigType t
 		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 		//RootParametor
-		desc.pParameters = skyboxRootParameters;
-		desc.NumParameters = _countof(skyboxRootParameters);
+		desc.pParameters = standard3DRootParameters;
+		desc.NumParameters = _countof(standard3DRootParameters);
 
 		//Sampler
-		desc.pStaticSamplers = skyboxStaticSamplers;
-		desc.NumStaticSamplers = _countof(skyboxStaticSamplers);
+		desc.pStaticSamplers = standard3DStaticSamplers;
+		desc.NumStaticSamplers = _countof(standard3DStaticSamplers);
 		break;
 	}
 

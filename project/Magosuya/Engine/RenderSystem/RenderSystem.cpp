@@ -5,18 +5,13 @@
 #include "LightManager.h"
 #include <algorithm>
 
-void RenderSystem::Initialize(DxCommon* dxCommon, LightManager* lightManager) {
+void RenderSystem::Initialize(DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 	commandList_ = dxCommon->GetCommandList();
-	lightManager_ = lightManager;
 }
 
 void RenderSystem::PushCommand(const RenderCommand& command) {
 	commandQueue_.push_back(command);
-}
-
-void RenderSystem::PushInstanceCommand(const InstanceRenderCommand& command) {
-	instanceCommandQueue_.push_back(command);
 }
 
 void RenderSystem::ExecuteCommands(D3D12_GPU_VIRTUAL_ADDRESS cameraCBVAddress) {
@@ -36,56 +31,22 @@ void RenderSystem::ExecuteCommands(D3D12_GPU_VIRTUAL_ADDRESS cameraCBVAddress) {
 		PSOManager::GetInstance()->SetPSO(cmd.psoDesc);
 		commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		// 共通バッファのセット
-		commandList_->SetGraphicsRootConstantBufferView(3, lightManager_->GetLightGPUAddress());
-		commandList_->SetGraphicsRootDescriptorTable(10, TextureManager::GetInstance()->GetTextureHandle("skybox"));
-
-		// カメラバッファのバインド
-		commandList_->SetGraphicsRootConstantBufferView(2, cameraCBVAddress);
-
-		// コマンド固有のバッファ、ビューをセット
-		//2番目のバッファビューが有効（0以外）ならカウントを2にする
+		// メッシュ設定
 		UINT vbvCount = (cmd.vbViews[1].BufferLocation != 0) ? 2 : 1;
-
 		commandList_->IASetVertexBuffers(0, vbvCount, cmd.vbViews);
 		commandList_->IASetIndexBuffer(&cmd.ibv);
 
-		commandList_->SetGraphicsRootConstantBufferView(0, cmd.transformCBV);
-		commandList_->SetGraphicsRootConstantBufferView(1, cmd.materialCBV);
-		commandList_->SetGraphicsRootDescriptorTable(4, cmd.textureSRV);
+		for(UINT i = 0; i < kMaxRootParameters; ++i) {
+			const auto& binding = cmd.binds[i];
+			if(binding.type == BindingType::None) continue;
 
-		// スキニング用のSRVがあればバインド
-		if(cmd.skinningSRV.ptr != 0) {
-			commandList_->SetGraphicsRootDescriptorTable(9, cmd.skinningSRV);
+			if(binding.type == BindingType::CBV) {
+				commandList_->SetGraphicsRootConstantBufferView(i, binding.gpuAddress);
+			}
+			else if(binding.type == BindingType::SRV_Table) {
+				commandList_->SetGraphicsRootDescriptorTable(i, binding.descriptorHandle);
+			}
 		}
-
-		// 描画！
-		commandList_->DrawIndexedInstanced(cmd.indexCount, 1, 0, 0, 0);
-	}
-
-	for(const auto& cmd : instanceCommandQueue_) {
-		// ルートシグネチャ、PSOの設定
-		RootSignatureManager::GetInstance()->SetRootSignature(cmd.rootSignatureID);
-		PSOManager::GetInstance()->SetPSO(cmd.psoDesc);
-		commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		// 共通バッファのセット
-		commandList_->SetGraphicsRootConstantBufferView(3, lightManager_->GetLightGPUAddress());
-		commandList_->SetGraphicsRootDescriptorTable(10, TextureManager::GetInstance()->GetTextureHandle("skybox"));
-
-		// カメラバッファのバインド
-		commandList_->SetGraphicsRootConstantBufferView(2, cameraCBVAddress);
-
-		// コマンド固有のバッファ、ビューをセット
-		// 2番目のバッファビューが有効（0以外）ならカウントを2にする
-		UINT vbvCount = (cmd.vbViews[1].BufferLocation != 0) ? 2 : 1;
-
-		commandList_->IASetVertexBuffers(0, vbvCount, cmd.vbViews);
-		commandList_->IASetIndexBuffer(&cmd.ibv);
-
-		commandList_->SetGraphicsRootDescriptorTable(0, cmd.transformsSRV);
-		commandList_->SetGraphicsRootConstantBufferView(1, cmd.materialCBV);
-		commandList_->SetGraphicsRootDescriptorTable(4, cmd.textureSRV);
 
 		// 描画！
 		commandList_->DrawIndexedInstanced(cmd.indexCount, 1, 0, 0, 0);

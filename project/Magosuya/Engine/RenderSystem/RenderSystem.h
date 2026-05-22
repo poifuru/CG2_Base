@@ -12,11 +12,10 @@ public:
 		return &instance;
 	}
 
-	void Initialize(DxCommon* dxCommon, LightManager* lightManager);
+	void Initialize(DxCommon* dxCommon);
+	void SetLightManager(LightManager* lightManager) { lightManager_ = lightManager; }
 
 	void PushCommand(const RenderCommand& command);
-
-	void PushInstanceCommand(const InstanceRenderCommand& command);
 
 	void ExecuteCommands(D3D12_GPU_VIRTUAL_ADDRESS cameraCBVAddress);
 
@@ -37,7 +36,6 @@ private:
 
 	// コマンドをため込む
 	std::vector<RenderCommand> commandQueue_;
-	std::vector<InstanceRenderCommand> instanceCommandQueue_;
 
 	DxCommon* dxCommon_ = nullptr;
 	ID3D12GraphicsCommandList* commandList_ = nullptr;

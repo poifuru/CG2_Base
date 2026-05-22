@@ -24,6 +24,7 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 
 	lightManager_ = std::make_unique<LightManager>(dxCommon);
 	lightManager_->Initialize();
+	RenderSystem::GetInstance()->SetLightManager(lightManager_.get());
 	for(int i = 0; i < 5; ++i) {
 		lightManager_->AddLight(LightType::DIRECTIONALLIGHT);
 		lightManager_->SetDirectionalLightIntensity(i, 2.0f);

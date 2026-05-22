@@ -9,6 +9,7 @@
 #include "LookAtCamera.h"
 #include "MathFunction.h"
 #include "InputManager.h"
+#include "Buffer.h"
 
 enum class CameraType {
 	FixedPointCamera,
@@ -27,7 +28,7 @@ public:
 	~CameraOrganizer ();
 
 	//初期化関数
-	void Initialize (InputManager* inputManager);
+	void Initialize (InputManager* inputManager, DxCommon* dxCommon);
 
 	//カメラを登録する関数
 	void AddCamera (const std::string& name, CameraType type);
@@ -53,6 +54,9 @@ public:
 
 	//描画用のvp行列取得関数
 	Matrix4x4& GetVPMatrix () { return vpMatrix_; }
+
+	//定数バッファのGPU仮想アドレスを取得
+	D3D12_GPU_VIRTUAL_ADDRESS GetCameraGPUAddress() const { return cameraBuffer_.GetGPUVirtualAddress(); }
 
 	//位置と回転をいじれるように
 	Vector3 GetPosition (const std::string& ID) { return cameras_.at (ID)->GetTranslate (); }
@@ -87,4 +91,6 @@ private:
 
 	//ポインタを借りる
 	InputManager* input_ = nullptr;
+
+	ConstantBuffer<Vector3> cameraBuffer_;
 };

@@ -14,7 +14,7 @@ struct Material
     float metallic; // 金属度
 };
 
-ConstantBuffer<Material> gMaterial : register(b0);
+ConstantBuffer<Material> gMaterial : register(b1);
 
 TextureCube<float4> gTexture : register(t0);
 

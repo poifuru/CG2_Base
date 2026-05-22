@@ -54,7 +54,7 @@ void MagosuyaEngine::Initialize () {
 	cubeRenderer_->Initialize (dxCommon_);
 
 	cameraOrganizer_ = CameraOrganizer::GetInstance ();
-	cameraOrganizer_->Initialize (inputManager_);
+	cameraOrganizer_->Initialize (inputManager_, dxCommon_);
 
 	sceneManager_ = SceneManager::GetInstance();
 	sceneManager_->Initialize(cameraOrganizer_, inputManager_, dxCommon_);
@@ -72,7 +72,7 @@ void MagosuyaEngine::Initialize () {
 	modelFactory_->Initialize(dxCommon_);
 
 	renderSystem_ = RenderSystem::GetInstance();
-	//renderSystem_->Initialize()
+	renderSystem_->Initialize(dxCommon_);
 }
 
 void MagosuyaEngine::BeginFrame () {
@@ -89,7 +89,7 @@ void MagosuyaEngine::EndFrame () {
 	inputManager_->EndFrame ();
 
 	// 描画を実行！
-	renderSystem_->ExecuteCommands( /* カメラの定数バッファ(CBV)のGPUアドレス */);
+	renderSystem_->ExecuteCommands(cameraOrganizer_->GetCameraGPUAddress());
 	// 描画が終わったらコマンドを空にする
 	RenderSystem::GetInstance()->ClearCommands();
 

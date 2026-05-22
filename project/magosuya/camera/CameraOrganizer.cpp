@@ -8,9 +8,12 @@ CameraOrganizer::~CameraOrganizer () {
 	cameras_.clear ();
 }
 
-void CameraOrganizer::Initialize (InputManager* inputManager) {
+void CameraOrganizer::Initialize (InputManager* inputManager, DxCommon* dxCommon) {
 	input_ = inputManager;
 	vpMatrix_ = Math::MakeIdentity4x4 ();
+
+	// 定数バッファの初期化
+	cameraBuffer_.Initialize(dxCommon);
 
 	//テスト用 DebugCameraを生成＆登録
 	AddCamera ("Debug", CameraType::DebugCamera);
@@ -94,6 +97,9 @@ void CameraOrganizer::SetActiveCamera (const std::string& cameraName) {
 void CameraOrganizer::Update () {
 	activeCamera_->Update ();
 	vpMatrix_ = activeCamera_->GetVPMat ();
+
+	// 現在のカメラのワールド座標(Translate)を定数バッファに書き込んでGPUと同期
+	cameraBuffer_.Update(GetCameraData().transform.translate);
 }
 
 void CameraOrganizer::ImGui () {

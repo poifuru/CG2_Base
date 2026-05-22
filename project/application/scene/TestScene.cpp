@@ -29,6 +29,7 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 
 	lightManager_ = std::make_unique<LightManager>(dxCommon);
 	lightManager_->Initialize();
+	RenderSystem::GetInstance()->SetLightManager(lightManager_.get());
 	lightManager_->AddLight(LightType::POINTLIGHT);
 
 	modelFactory_ = ModelFactory::GetInstance();
