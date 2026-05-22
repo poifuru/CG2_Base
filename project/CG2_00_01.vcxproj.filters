@@ -58,6 +58,7 @@
     <ClCompile Include="Magosuya\Engine\RenderSystem\RenderSystem.cpp" />
     <ClCompile Include="Magosuya\Object\3d\Model.cpp" />
     <ClCompile Include="Magosuya\Object\3d\ModelFactory.cpp" />
+    <ClCompile Include="Magosuya\CPU_GPUData\Animation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Scene\BaseScene.h" />

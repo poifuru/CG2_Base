@@ -174,6 +174,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="Application\Entity\Entity.cpp" />
     <ClCompile Include="Application\Entity\Enemy\BaseEnemy.cpp" />
+    <ClCompile Include="Magosuya\CPU_GPUData\Animation.cpp" />
     <ClCompile Include="Magosuya\Light\DirectionalLight.cpp" />
     <ClCompile Include="Magosuya\Light\BaseLight.cpp" />
     <ClCompile Include="Magosuya\Light\LightManager.cpp" />

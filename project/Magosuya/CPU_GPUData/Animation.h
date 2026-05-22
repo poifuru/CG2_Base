@@ -32,3 +32,12 @@ struct Animation {
 	// NodeAnimationの集合。Node名で引けるようにする(map)
 	std::map<std::string, NodeAnimation> nodeAnimations;
 };
+
+// アニメーション用の関数
+namespace AnimationFunc {
+
+	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
+
+	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);
+
+}

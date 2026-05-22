@@ -1,6 +1,7 @@
 #include "TestScene.h"
 #include "ModelManager.h"
 #include "TextureManager.h"
+#include "imgui.h"
 
 TestScene::TestScene() {
 	ModelManager::GetInstance()->LoadModelData("Resources/AnimatedCube", "AnimatedCube.gltf");
@@ -61,12 +62,13 @@ void TestScene::Update() {
 
 	skybox_->Update(&camera_->GetCameraData());
 	cube_->Update(&camera_->GetCameraData());
-	//cube_->ImGui("AnimatedCube");
 
 	/*human_->Update(&camera_->GetCameraData());
 	human_->ImGui("human_walk");*/
 
 	camera_->ImGui();
+	cube_->ImGui("AnimationCube");
+	ImGui::ShowDemoWindow();
 }
 
 void TestScene::Draw() {

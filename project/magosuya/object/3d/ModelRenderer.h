@@ -43,8 +43,6 @@ public:
 
 private: // 内部関数
 	Matrix4x4 AnimationUpdate(ModelData* modelData);
-	Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
-	Quaternion CalculateValue(const std::vector<KeyframeQuaternion>& keyframes, float time);
 	Skeleton CreateSkeleton(const Node& roodNode);
 	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
 	void SkeletonUpdate(Skeleton& skeleton);

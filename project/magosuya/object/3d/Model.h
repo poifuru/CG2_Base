@@ -15,9 +15,15 @@ public:
 
 	void Draw() override;
 
+	void ImGui(const std::string& label);
+
 	// アニメーションを切り替えるセッター（ポインタで直接受け取る）
 	void SetAnimation(Animation* animation) { animation_ = animation; animationTime_ = 0.0f; }
 	void SetModelData(ModelData* modelData) { modelData_ = modelData; }
+
+private:	// 内部メソッド
+	Matrix4x4 CalculateWorldMatrix() override;
+	Matrix4x4 AnimationUpdate();
 
 private:
 	// モデルのデータ

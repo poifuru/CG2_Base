@@ -26,6 +26,8 @@ public:
 	// システム側に共通バッファがあるので、配列3番からセットすること
 	virtual void Draw() = 0;
 
+	virtual void ImGui(const std::string& label);
+
 	// PSO周りの設定
 	void SetRenderType(RenderType type);
 	void SetBlendMode(BlendModeType type);
@@ -38,7 +40,13 @@ public:
 	void SetTexture(const std::string& ID) { textureHandle_ = TextureManager::GetInstance()->GetTextureHandle(ID); }
 
 protected:
+	virtual Matrix4x4 CalculateWorldMatrix();
+
+protected:
 	BaseObject3d() = default;
+
+	// BaseObject3d全体で共有するID用の数値
+	static inline uint32_t instanceID_ = 0;
 
 	// CPUデータ
 	EulerTransform transform_{};

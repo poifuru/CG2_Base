@@ -1,7 +1,10 @@
 #include "BaseObject3d.h"
 #include "MathFunction.h"
+#include "imgui.h"
 
 BaseObject3d::BaseObject3d(DxCommon* dxCommon) {
+	instanceID_++;
+
 	dxCommon_ = dxCommon;
 
 	transformBuffer_ = std::make_unique<TransformMatrixResource>();
@@ -26,7 +29,7 @@ void BaseObject3d::Initialize() {
 
 void BaseObject3d::Update(CameraData* cameraData) {
 	// === 行列の計算とGPUへの転送をここで一括処理 ===
-	Matrix4x4 world = Math::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+	Matrix4x4 world = CalculateWorldMatrix();
 	transformMatrixData_.World = world;
 	transformMatrixData_.WVP = world * cameraData->vp;
 	transformMatrixData_.WorldInverseTranspose = Math::Inverse(Math::Transpose(world));
@@ -42,8 +45,36 @@ void BaseObject3d::Draw() {
 
 }
 
+void BaseObject3d::ImGui(const std::string& label) {
+#ifdef USEIMGUI
+	// ImGui用
+	bool bEnableLighting = materialData_.enableLighting;
+
+	if(ImGui::TreeNode("Transform")) {
+		ImGui::DragFloat3(("Scale" + label).c_str(), &transform_.scale.x, 0.01f);
+		ImGui::DragFloat3(("Rotate" + label).c_str(), &transform_.rotate.x, 0.01f);
+		ImGui::DragFloat3(("Transform" + label).c_str(), &transform_.translate.x, 0.01f);
+		ImGui::TreePop();
+	}
+	if(ImGui::TreeNode("Material")) {
+		ImGui::ColorEdit4(("color" + label).c_str(), &materialData_.color.x);
+		ImGui::DragFloat3(("uvScale" + label).c_str(), &uvTransform_.scale.x, 0.01f);
+		ImGui::DragFloat3(("uvRotate" + label).c_str(), &uvTransform_.rotate.x, 0.01f);
+		ImGui::DragFloat3(("uvTransform" + label).c_str(), &uvTransform_.translate.x, 0.01f);
+		ImGui::SliderFloat(("Roughness" + label).c_str(), &materialData_.roughness, 0.0f, 1.0f);
+		ImGui::SliderFloat(("Metallic" + label).c_str(), &materialData_.metallic, 0.0f, 1.0f);
+		ImGui::SliderFloat(("EnvironmentCoefficient" + label).c_str(), &materialData_.environmentCoefficient, 0.0f, 1.0f);
+		if(ImGui::Checkbox(("EnableLighting" + label).c_str(), &bEnableLighting)) {
+			// チェックが切り替わったら、元の変数に書き戻す
+			materialData_.enableLighting = bEnableLighting;
+		}
+		ImGui::TreePop();
+	}
+#endif // USEIMGUI
+}
+
 void BaseObject3d::SetRenderType(RenderType type) {
-	switch (type) {
+	switch(type) {
 	case RenderType::Standard:
 
 		psoDesc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Standard3D);
@@ -76,12 +107,16 @@ void BaseObject3d::SetRenderType(RenderType type) {
 }
 
 void BaseObject3d::SetBlendMode(BlendModeType type) {
-	 psoDesc_.BlendMode = type;
-	 
-	 if(type == BlendModeType::Opaque) {
-		 layer_ = 0;
-	 }
-	 else {
-		 layer_ = 1;
-	 }
+	psoDesc_.BlendMode = type;
+
+	if(type == BlendModeType::Opaque) {
+		layer_ = 0;
+	}
+	else {
+		layer_ = 1;
+	}
+}
+
+Matrix4x4 BaseObject3d::CalculateWorldMatrix() {
+	return Math::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 }

@@ -1,9 +1,10 @@
 #include "Model.h"
 #include "DeltaTime.h"
 #include "MathFunction.h"
+#include "imgui.h"
 
 Model::Model(DxCommon* dxCommon)
-	: BaseObject3d(dxCommon){
+	: BaseObject3d(dxCommon) {
 
 }
 
@@ -31,33 +32,8 @@ void Model::Initialize(ModelData* modelData, D3D12_GPU_DESCRIPTOR_HANDLE texture
 }
 
 void Model::Update(CameraData* cameraData) {
-	// Animationがセットされていればタイマーカウント
-	if(animation_) {
-		animationTime_ += kDeltaTime;
-	}
 
-	//// Animationの再生
-	//animationTime_ += 1.0f / 60.0f;
-	//animationTime_ = std::fmod(animationTime_, data->duration);	// 最後まで行ったらリピート
-
-	//Vector3 translate = modelData_->rootNode.transform.translate;
-	//Quaternion rotate = modelData_->rootNode.transform.rotate;
-	//Vector3 scale = modelData_->rootNode.transform.scale;
-
-	//if(auto it = data->nodeAnimations.find(modelData_->rootNode.name); it != data->nodeAnimations.end()) {
-	//	const NodeAnimation& rootNodeAnimation = (*it).second;
-	//	if(!rootNodeAnimation.translate.keyframes.empty()) {
-	//		translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_);
-	//	}
-	//	if(!rootNodeAnimation.rotate.keyframes.empty()) {
-	//		rotate = CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime_);
-	//	}
-	//	if(!rootNodeAnimation.scale.keyframes.empty()) {
-	//		scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);
-	//	}
-	//}
-
-	//return Math::MakeAffineMatrix(scale, rotate, translate);
+	AnimationUpdate();
 
 	BaseObject3d::Update(cameraData);
 }
@@ -95,4 +71,55 @@ void Model::Draw() {
 
 	// コマンドを投げる
 	RenderSystem::GetInstance()->PushCommand(cmd);
+}
+
+void Model::ImGui(const std::string& label) {
+	// ラベル作成
+	std::string objLabel = "##" + label + std::to_string(instanceID_);
+
+	if(ImGui::TreeNode((label + objLabel).c_str())) {
+		BaseObject3d::ImGui(objLabel);
+
+		if(ImGui::TreeNode(("Animation" + objLabel).c_str())) {
+			ImGui::TreePop();
+		}
+		ImGui::TreePop();
+	}
+}
+
+Matrix4x4 Model::CalculateWorldMatrix() {
+	// 1. まず通常のトランスフォーム（ImGuiとかで動かす用）の行列を作る
+	Matrix4x4 affine = Math::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+
+	// 2. アニメーションがあるなら、そのローカル行列を計算して掛け合わせる
+	if(animation_) {
+		Matrix4x4 animationMatrix = AnimationUpdate(); // 時間更新を除いた純粋な行列計算に変更
+		return animationMatrix * affine;
+	}
+
+	// アニメーションがないなら通常のアフィン変換だけ
+	return affine;
+}
+
+Matrix4x4 Model::AnimationUpdate() {
+	animationTime_ += kDeltaTime;
+	animationTime_ = std::fmod(animationTime_, animation_->duration);	// 最後まで行ったらリピート
+
+	Vector3 translate = modelData_->rootNode.transform.translate;
+	Quaternion rotate = modelData_->rootNode.transform.rotate;
+	Vector3 scale = modelData_->rootNode.transform.scale;
+
+	if(auto it = animation_->nodeAnimations.find(modelData_->rootNode.name); it != animation_->nodeAnimations.end()) {
+		const NodeAnimation& rootNodeAnimation = (*it).second;
+		if(!rootNodeAnimation.translate.keyframes.empty()) {
+			translate = AnimationFunc::CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_);
+		}
+		if(!rootNodeAnimation.rotate.keyframes.empty()) {
+			rotate = AnimationFunc::CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime_);
+		}
+		if(!rootNodeAnimation.scale.keyframes.empty()) {
+			scale = AnimationFunc::CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);
+		}
+	}
+	return Math::MakeAffineMatrix(scale, rotate, translate);
 }
