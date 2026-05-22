@@ -41,6 +41,7 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 
 	skybox_ = std::make_unique<Skybox>(dxCommon);
 	skybox_->Initialize("skybox");
+	skybox_->SetRenderType(RenderType::Skybox);
 
 	/*human_ = std::make_unique<Model>(dxCommon, lightManager_.get());
 	human_->SetModelData("walk.gltf");

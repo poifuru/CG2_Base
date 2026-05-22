@@ -17,6 +17,7 @@ Skybox::Skybox(DxCommon* dxCommon)
 
 void Skybox::Initialize(const std::string& textureTag) {
 	BaseObject3d::Initialize();
+	transform_ = { { 500.0f, 500.0f, 500.0f }, {}, {} };
 	tag_ = textureTag;
 
 	// 1. 頂点データの構築と初期化
@@ -30,6 +31,7 @@ void Skybox::Initialize(const std::string& textureTag) {
 	vertices[6].position = { -1.0f, -1.0f, -1.0f, 1.0f };
 	vertices[7].position = { 1.0f, -1.0f, -1.0f, 1.0f };
 	vertexBuffer_->Initialize(dxCommon_, vertices);
+	vertexBuffer_->Update(vertices);
 
 	// 2. インデックスデータの構築と初期化
 	std::vector<uint32_t> indices = {
@@ -53,23 +55,25 @@ void Skybox::Initialize(const std::string& textureTag) {
 
 	// 4. PSOの設定
 	psoDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO; // 背景なのでZバッファへの書き込みはOFF
+	psoDesc_.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;
 	psoDesc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Skybox);
 	psoDesc_.VS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Skybox.VS.hlsl", L"vs_6_0");
 	psoDesc_.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Skybox.PS.hlsl", L"ps_6_0");
 	psoDesc_.InputLayoutID = InputLayoutType::Skybox;
 	psoDesc_.BlendMode = BlendModeType::Opaque;
+	layer_ = 0;
+
+	renderType_ = RenderType::Skybox;
 }
 
 void Skybox::Update(CameraData* data) {
-	EulerTransform transform = { { 5000.0f, 5000.0f, 5000.0f }, {}, {} };
-	transformMatrixData_.World = Math::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-
 	if(data) {
+		transform_.translate = data->transform.translate;
+		transformMatrixData_.World = Math::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 		transformMatrixData_.WVP = Math::Multiply(transformMatrixData_.World, data->vp);
 	}
 
-	// GPUバッファへデータ更新をコミット
-	transformBuffer_->Update(transformMatrixData_);
+	BaseObject3d::Update(data);
 }
 
 void Skybox::Draw() {

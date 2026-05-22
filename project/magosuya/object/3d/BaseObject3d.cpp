@@ -96,12 +96,12 @@ void BaseObject3d::SetRenderType(RenderType type) {
 		break;
 
 	case RenderType::Skybox:
-		psoDesc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Standard3D);
-		psoDesc_.VS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/SkinningObject3d.VS.hlsl", L"vs_6_0");
-		psoDesc_.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/SkinningObject3d.PS.hlsl", L"ps_6_0");
-		psoDesc_.InputLayoutID = InputLayoutType::SkinningStandard3D;
+		psoDesc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Skybox);
+		psoDesc_.VS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Skybox.VS.hlsl", L"vs_6_0");
+		psoDesc_.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Skybox.PS.hlsl", L"ps_6_0");
+		psoDesc_.InputLayoutID = InputLayoutType::Skybox;
+		psoDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 		renderType_ = RenderType::Skybox;
-
 		break;
 	}
 }
