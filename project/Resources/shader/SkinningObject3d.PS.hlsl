@@ -1,6 +1,6 @@
 #include "Object3d.hlsli"
 
-//***\‘¢‘Ì‚âƒŒƒWƒXƒ^[‚Ì’è‹`***//
+//***æ§‹é€ ä½“ã‚„ãƒ¬ã‚¸ã‚¹ã‚¿ãƒ¼ã®å®šç¾©***//
 struct PixelShaderOutput
 {
     float4 color : SV_TARGET0;
@@ -9,11 +9,11 @@ struct PixelShaderOutput
 struct Material
 {
     float4 color;
-    int enableLighting;
     float4x4 uvTransform;
-    float roughness; // ‘e‚³
-    float metallic; // ‹à‘®“x
-    float environmentCoefficient;	// ŠÂ‹«ŒW”
+    float roughness; // ç²—ã•
+    float metallic; // é‡‘å±åº¦
+    float environmentCoefficient;	// ç’°å¢ƒä¿‚æ•°
+    int enableLighting;
 };
 
 struct LightCount
@@ -36,8 +36,8 @@ struct PointLight
     float4 color;
     float3 position;
     float intensity;
-    float radius; //ƒ‰ƒCƒg‚ª“Í‚­Å‘å‹——£
-    float decay; //Œ¸Š—¦
+    float radius; //ãƒ©ã‚¤ãƒˆãŒå±Šãæœ€å¤§è·é›¢
+    float decay; //æ¸›è¡°ç‡
     float padding[2];
 };
 
@@ -56,14 +56,14 @@ struct SpotLight
 struct RectLight
 {
     float4 color;
-    float3 position; // ƒ‰ƒCƒg‚Ì’†SÀ•W
+    float3 position; // ãƒ©ã‚¤ãƒˆã®ä¸­å¿ƒåº§æ¨™
     float intensity;
-    float3 direction; // ƒ‰ƒCƒg‚Ì³–Ê•ûŒüi–@üj
-    float2 size; // Width(•) ‚Æ Height(‚‚³)
-    float3 right; // ƒ‰ƒCƒg‚Ì‰E•ûŒüƒxƒNƒgƒ‹
+    float3 direction; // ãƒ©ã‚¤ãƒˆã®æ­£é¢æ–¹å‘ï¼ˆæ³•ç·šï¼‰
+    float2 size; // Width(å¹…) ã¨ Height(é«˜ã•)
+    float3 right; // ãƒ©ã‚¤ãƒˆã®å³æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
     float padding;
-    float3 up; // ƒ‰ƒCƒg‚Ìã•ûŒüƒxƒNƒgƒ‹
-    float decay; // ‹——£‚É‚æ‚éŒ¸Š—¦iPointLight‚Æ“¯—lj
+    float3 up; // ãƒ©ã‚¤ãƒˆã®ä¸Šæ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+    float decay; // è·é›¢ã«ã‚ˆã‚‹æ¸›è¡°ç‡ï¼ˆPointLightã¨åŒæ§˜ï¼‰
 };
 
 struct Camera
@@ -92,16 +92,16 @@ TextureCube<float4> gEnvironmentTexture : register(t5);
 SamplerState gSampler : register(s0);
 //******//
 
-//***ŠÖ”ü‚è‚Ì’è‹`***//
+//***é–¢æ•°å‘¨ã‚Šã®å®šç¾©***//
 static const float PI = 3.14159265359f;
 
-// ‡@ ¬‚³‚Èƒp[ƒcFÕ•Á—¦‚ÌŒvZ
+// â‘  å°ã•ãªãƒ‘ãƒ¼ãƒ„ï¼šé®è”½ç‡ã®è¨ˆç®—
 float GeometrySchlickGGX(float NdotV, float k)
 {
     return NdotV / (NdotV * (1.0f - k) + k);
 }
 
-// D€: •¨‘Ì‚Ì”÷×‚È‰š“Ê‚É‚æ‚é”½Ë‚ÌL‚ª‚è
+// Dé …: ç‰©ä½“ã®å¾®ç´°ãªå‡¹å‡¸ã«ã‚ˆã‚‹åå°„ã®åºƒãŒã‚Š
 float DistributionGGX(float3 N, float3 H, float roughness)
 {
     float a = roughness * roughness;
@@ -111,24 +111,24 @@ float DistributionGGX(float3 N, float3 H, float roughness)
     return a2 / (PI * denom * denom);
 }
 
-// G€: ‰š“Ê‚É‚æ‚éŒõ‚ÌÕ‚èiŠô‰½Œ¸Šj
+// Gé …: å‡¹å‡¸ã«ã‚ˆã‚‹å…‰ã®é®ã‚Šï¼ˆå¹¾ä½•æ¸›è¡°ï¼‰
 float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 {
-    // ‘e‚³‚©‚çŒW”k‚ğZo
+    // ç²—ã•ã‹ã‚‰ä¿‚æ•°kã‚’ç®—å‡º
     float r = (roughness + 1.0f);
     float k = (r * r) / 8.0f;
     
     float NdotV = saturate(dot(N, V));
     float NdotL = saturate(dot(N, L));
     
-    // ‹“_‚©‚ç‚ÌÕ•Á‚ÆAƒ‰ƒCƒg‚©‚ç‚ÌÕ•Á‚ğŠ|‚¯‡‚í‚¹‚é
+    // è¦–ç‚¹ã‹ã‚‰ã®é®è”½ã¨ã€ãƒ©ã‚¤ãƒˆã‹ã‚‰ã®é®è”½ã‚’æ›ã‘åˆã‚ã›ã‚‹
     float ggx2 = GeometrySchlickGGX(NdotV, k);
     float ggx1 = GeometrySchlickGGX(NdotL, k);
     
     return ggx1 * ggx2;
 }
 
-// F€: Œ©‚éŠp“x‚É‚æ‚é”½Ë—¦iƒtƒŒƒlƒ‹j
+// Fé …: è¦‹ã‚‹è§’åº¦ã«ã‚ˆã‚‹åå°„ç‡ï¼ˆãƒ•ãƒ¬ãƒãƒ«ï¼‰
 float3 FresnelSchlick(float cosTheta, float3 F0)
 {
     return F0 + (1.0f - F0) * pow(saturate(1.0f - cosTheta), 5.0f);
@@ -139,25 +139,25 @@ PixelShaderOutput main(VertexShaderOutput input)
 {
     PixelShaderOutput output;
     
-    //ƒeƒNƒXƒ`ƒƒƒTƒ“ƒvƒŠƒ“ƒO‚ÆŠî–{F‚ÌŒˆ’è
+    //ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã¨åŸºæœ¬è‰²ã®æ±ºå®š
     float4 transformedUV = mul(float4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
     float4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
     
-    //texture‚ÌƒAƒ‹ƒtƒ@’l,o—ÍƒJƒ‰[‚ÌƒAƒ‹ƒtƒ@’l‚ªˆê’èˆÈ‰º‚È‚ç‚»‚ÌŒã‚Ìˆ—‚ğ‚µ‚È‚¢(2’l”²‚«)
-    if (textureColor.a <= 0.5f || output.color.a == 0.0f)
+    //textureã®ã‚¢ãƒ«ãƒ•ã‚¡å€¤,å‡ºåŠ›ã‚«ãƒ©ãƒ¼ã®ã‚¢ãƒ«ãƒ•ã‚¡å€¤ãŒä¸€å®šä»¥ä¸‹ãªã‚‰ãã®å¾Œã®å‡¦ç†ã‚’ã—ãªã„(2å€¤æŠœã)
+    if (textureColor.a <= 0.5f || gMaterial.color.a == 0.0f)
     {
         discard;
     }
     
-    //lighting‚Ì€”õ
+    //lightingã®æº–å‚™
     float3 totalDiffuse = float3(0, 0, 0);
     float3 totalSpecular = float3(0, 0, 0);
-    float3 toEye = normalize(gCamera.worldPosition - input.worldPosition); //Camera‚Ö‚Ì•ûŒü‚ğZo
+    float3 toEye = normalize(gCamera.worldPosition - input.worldPosition); //Cameraã¸ã®æ–¹å‘ã‚’ç®—å‡º
     
-    //DirectionalLight‚ÌŒvZ
+    //DirectionalLightã®è¨ˆç®—
     for (int i = 0; i < gLightCount.dirLight; ++i)
     {
-        float3 L = normalize(-gDirectionalLight[i].direction); // ƒ‰ƒCƒg‚Ö‚Ì•ûŒü
+        float3 L = normalize(-gDirectionalLight[i].direction); // ãƒ©ã‚¤ãƒˆã¸ã®æ–¹å‘
         float3 N = normalize(input.normal);
         float3 V = toEye;
         float3 H = normalize(V + L);
@@ -165,13 +165,13 @@ PixelShaderOutput main(VertexShaderOutput input)
         float3 lightColor = gDirectionalLight[i].color.rgb;
         float intensity = gDirectionalLight[i].intensity;
 
-        // PBRƒpƒ‰ƒ[ƒ^
+        // PBRãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
         float roughness = saturate(gMaterial.roughness);
         float metallic = saturate(gMaterial.metallic);
         float3 albedo = gMaterial.color.rgb * textureColor.rgb;
         float3 F0 = lerp(float3(0.04f, 0.04f, 0.04f), albedo, metallic);
 
-        // BRDFŒvZ
+        // BRDFè¨ˆç®—
         float D = DistributionGGX(N, H, roughness);
         float G = GeometrySmith(N, V, L, roughness);
         float3 F = FresnelSchlick(saturate(dot(H, V)), F0);
@@ -183,53 +183,53 @@ PixelShaderOutput main(VertexShaderOutput input)
         totalDiffuse += (diffuse + specular) * lightColor * intensity * saturate(dot(N, L));
     }
     
-    //PointLight‚ÌŒvZ
+    //PointLightã®è¨ˆç®—
     for (int j = 0; j < gLightCount.pointLight; ++j)
     {
-        //Šî–{“I‚ÈƒxƒNƒgƒ‹‚Æ‹——£‚ÌŒvZ
+        //åŸºæœ¬çš„ãªãƒ™ã‚¯ãƒˆãƒ«ã¨è·é›¢ã®è¨ˆç®—
         float3 direction = input.worldPosition - gPointLight[j].position;
         float distance = length(direction);
-        float3 L = normalize(-direction); // ƒ‰ƒCƒg‚Ö‚Ì•ûŒü
+        float3 L = normalize(-direction); // ãƒ©ã‚¤ãƒˆã¸ã®æ–¹å‘
         float3 N = normalize(input.normal);
         float3 V = toEye;
-        float3 H = normalize(V + L); // ƒn[ƒtƒxƒNƒgƒ‹
+        float3 H = normalize(V + L); // ãƒãƒ¼ãƒ•ãƒ™ã‚¯ãƒˆãƒ«
 
-        //Œ¸Š‚Æ‹­“x‚ÌŒvZ
+        //æ¸›è¡°ã¨å¼·åº¦ã®è¨ˆç®—
         float attenuation = pow(saturate(1.0f - (distance / gPointLight[j].radius)), gPointLight[j].decay);
         float3 lightColor = gPointLight[j].color.rgb;
         float intensity = gPointLight[j].intensity * attenuation;
 
-        //ƒ}ƒeƒŠƒAƒ‹İ’è‚ğgMaterial‚©‚çæ“¾
+        //ãƒãƒ†ãƒªã‚¢ãƒ«è¨­å®šã‚’gMaterialã‹ã‚‰å–å¾—
         float roughness = saturate(gMaterial.roughness);
         float metallic = saturate(gMaterial.metallic);
         float3 albedo = gMaterial.color.rgb * textureColor.rgb;
 
-        //F0‚ÌŒˆ’èiPBR‚ÌŠî–{ƒ‹[ƒ‹j
+        //F0ã®æ±ºå®šï¼ˆPBRã®åŸºæœ¬ãƒ«ãƒ¼ãƒ«ï¼‰
         float3 F0 = float3(0.04f, 0.04f, 0.04f);
         F0 = lerp(F0, albedo, metallic);
 
-        //Cook-Torrance BRDF Še€‚ÌŒvZ
+        //Cook-Torrance BRDF å„é …ã®è¨ˆç®—
         float D = DistributionGGX(N, H, roughness);
         float G = GeometrySmith(N, V, L, roughness);
         float3 F = FresnelSchlick(saturate(dot(H, V)), F0);
 
-        //Specular (‹¾–Ê”½Ë) ‚Ì‡¬
+        //Specular (é¡é¢åå°„) ã®åˆæˆ
         float3 numerator = D * G * F;
         float denominator = 4.0f * saturate(dot(N, V)) * saturate(dot(N, L)) + 0.0001f;
         float3 specular = numerator / denominator;
 
-        //Diffuse (ŠgU”½Ë) ‚Ì‡¬ (ƒGƒlƒ‹ƒM[•Û‘¶)
-        // ”½Ë‚µ‚½•ªikSj‚ğˆø‚¢‚½c‚è‚ªŠgUikDj‚É‚È‚é
+        //Diffuse (æ‹¡æ•£åå°„) ã®åˆæˆ (ã‚¨ãƒãƒ«ã‚®ãƒ¼ä¿å­˜)
+        // åå°„ã—ãŸåˆ†ï¼ˆkSï¼‰ã‚’å¼•ã„ãŸæ®‹ã‚ŠãŒæ‹¡æ•£ï¼ˆkDï¼‰ã«ãªã‚‹
         float3 kS = F;
         float3 kD = (float3(1.0f, 1.0f, 1.0f) - kS) * (1.0f - metallic);
         float3 diffuse = kD * albedo / PI;
 
-        //ÅI“I‚È‰ÁZ
+        //æœ€çµ‚çš„ãªåŠ ç®—
         float nDotL = saturate(dot(N, L));
         totalDiffuse += (diffuse + specular) * lightColor * intensity * nDotL;
     }
     
-    //SpotLight‚ÌŒvZ
+    //SpotLightã®è¨ˆç®—
     for (int k = 0; k < gLightCount.spotLight; ++k)
     {
         float3 direction = input.worldPosition - gSpotLight[k].position;
@@ -239,23 +239,23 @@ PixelShaderOutput main(VertexShaderOutput input)
         float3 V = toEye;
         float3 H = normalize(V + L);
 
-        // ‹——£Œ¸Š
+        // è·é›¢æ¸›è¡°
         float attenuation = pow(saturate(1.0f - (distance / gSpotLight[k].distance)), gSpotLight[k].decay);
 
-        // Šp“xŒ¸Š
+        // è§’åº¦æ¸›è¡°
         float cosToPos = dot(-L, normalize(gSpotLight[k].direction));
         float spotFactor = saturate((cosToPos - gSpotLight[k].cosAngle) / (1.0f - gSpotLight[k].cosAngle));
         float intensity = gSpotLight[k].intensity * attenuation * spotFactor;
 
         float3 lightColor = gSpotLight[k].color.rgb;
 
-        // PBRƒpƒ‰ƒ[ƒ^
+        // PBRãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
         float roughness = saturate(gMaterial.roughness);
         float metallic = saturate(gMaterial.metallic);
         float3 albedo = gMaterial.color.rgb * textureColor.rgb;
         float3 F0 = lerp(float3(0.04f, 0.04f, 0.04f), albedo, metallic);
 
-        // BRDFŒvZ
+        // BRDFè¨ˆç®—
         float D = DistributionGGX(N, H, roughness);
         float G = GeometrySmith(N, V, L, roughness);
         float3 F = FresnelSchlick(saturate(dot(H, V)), F0);
@@ -267,45 +267,45 @@ PixelShaderOutput main(VertexShaderOutput input)
         totalDiffuse += (diffuse + specular) * lightColor * intensity * saturate(dot(N, L));
     }
     
-    //RectLight‚ÌŒvZ
+    //RectLightã®è¨ˆç®—
     for (int l = 0; l < gLightCount.rectLight; ++l)
     {
-       //ƒ‰ƒCƒg‚Ì4‹÷‚ÌÀ•W‚ğŒvZ
+       //ãƒ©ã‚¤ãƒˆã®4éš…ã®åº§æ¨™ã‚’è¨ˆç®—
         float3 halfW = gRectLight[l].right * (gRectLight[l].size.x * 0.5f);
         float3 halfH = gRectLight[l].up * (gRectLight[l].size.y * 0.5f);
         
         float3 p[4];
-        p[0] = gRectLight[l].position - halfW - halfH; // ¶‰º
-        p[1] = gRectLight[l].position + halfW - halfH; // ‰E‰º
-        p[2] = gRectLight[l].position + halfW + halfH; // ‰Eã
-        p[3] = gRectLight[l].position - halfW + halfH; // ¶ã
+        p[0] = gRectLight[l].position - halfW - halfH; // å·¦ä¸‹
+        p[1] = gRectLight[l].position + halfW - halfH; // å³ä¸‹
+        p[2] = gRectLight[l].position + halfW + halfH; // å³ä¸Š
+        p[3] = gRectLight[l].position - halfW + halfH; // å·¦ä¸Š
 
-        //Še’¸“_‚Ö‚Ì•ûŒüƒxƒNƒgƒ‹‚ğZo
+        //å„é ‚ç‚¹ã¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’ç®—å‡º
         float3 v[4];
         for (int idx = 0; idx < 4; idx++)
         {
             v[idx] = normalize(p[idx] - input.worldPosition);
         }
 
-        //–ÊŒõŒ¹‚Ì‹­‚³‚ğŒvZiŠÈˆÕÏ•ªj
-        //—×‚è‡‚¤’¸“_‚Æ‚Ì‚È‚·Šp‚ğ‘«‚µ‚Ä‚¢‚­‚±‚Æ‚ÅA–Ê‚Æ‚µ‚Ä‚Ì‰e‹¿—Í‚ğo‚·
+        //é¢å…‰æºã®å¼·ã•ã‚’è¨ˆç®—ï¼ˆç°¡æ˜“ç©åˆ†ï¼‰
+        //éš£ã‚Šåˆã†é ‚ç‚¹ã¨ã®ãªã™è§’ã‚’è¶³ã—ã¦ã„ãã“ã¨ã§ã€é¢ã¨ã—ã¦ã®å½±éŸ¿åŠ›ã‚’å‡ºã™
         float illuminance = 0.0f;
         illuminance += acos(saturate(dot(v[0], v[1])));
         illuminance += acos(saturate(dot(v[1], v[2])));
         illuminance += acos(saturate(dot(v[2], v[3])));
         illuminance += acos(saturate(dot(v[3], v[0])));
         
-        //³‹K‰»i–ÊŒõŒ¹‚Á‚Û‚­’²®j
+        //æ­£è¦åŒ–ï¼ˆé¢å…‰æºã£ã½ãèª¿æ•´ï¼‰
         illuminance /= (2.0f * PI);
 
-        //‹——£‚É‚æ‚éŒ¸Ši’†S‚©‚ç‚Ì‹——£‚Å‘ã—pj
+        //è·é›¢ã«ã‚ˆã‚‹æ¸›è¡°ï¼ˆä¸­å¿ƒã‹ã‚‰ã®è·é›¢ã§ä»£ç”¨ï¼‰
         float3 distVec = input.worldPosition - gRectLight[l].position;
         float distance = length(distVec);
-        float attenuation = pow(saturate(1.0f - (distance / 20.0f)), gRectLight[l].decay); // 20.0f‚Í—LŒø”ÍˆÍ
+        float attenuation = pow(saturate(1.0f - (distance / 20.0f)), gRectLight[l].decay); // 20.0fã¯æœ‰åŠ¹ç¯„å›²
 
-        //ŠgU”½Ë‚ÌŒvZ
+        //æ‹¡æ•£åå°„ã®è¨ˆç®—
         float3 N = normalize(input.normal);
-        float3 L = normalize(-gRectLight[l].direction); // ƒ‰ƒCƒg‚Ì³–Ê
+        float3 L = normalize(-gRectLight[l].direction); // ãƒ©ã‚¤ãƒˆã®æ­£é¢
         float nDotL = saturate(dot(N, L));
 
         float3 albedo = gMaterial.color.rgb * textureColor.rgb;
@@ -314,21 +314,25 @@ PixelShaderOutput main(VertexShaderOutput input)
         totalDiffuse += diffuse;
     }
 
-    // ŠÂ‹«ƒ}ƒbƒv—p‚Ìˆ—
+    // ç’°å¢ƒãƒãƒƒãƒ—ç”¨ã®å‡¦ç†
     float3 cameraToPosition = normalize(input.worldPosition - gCamera.worldPosition);
     float3 reflectedVector = reflect(cameraToPosition, normalize(input.normal));
     float3 environmentColor = gEnvironmentTexture.Sample(gSampler, reflectedVector).rgb;
-    environmentColor.rgb *= gMaterial.environmentCoefficient;
     
-    //ÅIo—Í‚Ì•ªŠò
+    // PBRçš„ã«ç’°å¢ƒãƒãƒƒãƒ—ã®åå°„å…‰ã«ãƒ•ãƒ¬ãƒãƒ«åå°„ç‡ã‚’é©ç”¨
+    float3 albedo = gMaterial.color.rgb * textureColor.rgb;
+    float3 F0 = lerp(float3(0.04f, 0.04f, 0.04f), albedo, saturate(gMaterial.metallic));
+    environmentColor.rgb *= gMaterial.environmentCoefficient * F0;
+    
+    //æœ€çµ‚å‡ºåŠ›ã®åˆ†å²
     if (gMaterial.enableLighting == 0)
     {
         output.color = gMaterial.color * textureColor;
     }
     else
     {
-    //PBR‚ÌŒ‹‰Ê‚ğ•\¦
-        output.color.rgb = totalDiffuse + environmentColor; // totalDiffuse‚Ì’†‚Éspecular‚à‰ÁZÏ‚İ‚Ìê‡
+    //PBRã®çµæœã‚’è¡¨ç¤º
+        output.color.rgb = totalDiffuse + environmentColor; // totalDiffuseã®ä¸­ã«specularã‚‚åŠ ç®—æ¸ˆã¿ã®å ´åˆ
         output.color.a = gMaterial.color.a * textureColor.a;
     }
     

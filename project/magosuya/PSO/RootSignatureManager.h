@@ -57,8 +57,8 @@ private:	// ヘルパー関数
 private:	// メンバ変数
 	// 静的配列としてルートパラメータとDescriptorRangeの実体を保持する
 	//Standard3D
-	D3D12_DESCRIPTOR_RANGE standard3DDescriptorRanges[7] = {};
-	D3D12_ROOT_PARAMETER standard3DRootParameters[11] = {};
+	D3D12_DESCRIPTOR_RANGE standard3DDescriptorRanges[2] = {};
+	D3D12_ROOT_PARAMETER standard3DRootParameters[6] = {};
 	D3D12_STATIC_SAMPLER_DESC standard3DStaticSamplers[1] = {};
 	//Standard3DInstance
 	D3D12_DESCRIPTOR_RANGE standard3DInstanceDescriptorRanges[8] = {};

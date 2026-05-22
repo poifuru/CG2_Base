@@ -29,13 +29,14 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 
 	lightManager_ = std::make_unique<LightManager>(dxCommon);
 	lightManager_->Initialize();
-	RenderSystem::GetInstance()->SetLightManager(lightManager_.get());
 	lightManager_->AddLight(LightType::POINTLIGHT);
+	lightManager_->AddLight(LightType::DIRECTIONALLIGHT);
 
 	modelFactory_ = ModelFactory::GetInstance();
 	modelFactory_->SetLightManager(lightManager_.get());
 
-	cube_ = std::move(modelFactory_->CreateModel("player.obj", "player"));
+	cube_ = std::move(modelFactory_->CreateModel("AnimatedCube.gltf", "Cube"));
+	cube_->SetAnimation(ModelManager::GetInstance()->GetAnimationData("AnimatedCube.gltf").lock().get());
 
 	skybox_ = std::make_unique<Skybox>(dxCommon);
 	skybox_->Initialize("skybox");
@@ -46,6 +47,10 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 	human_->SetAnimation("walk.gltf");
 	human_->Initialize({ 100.0f, 100.0f, 100.0f }, { Math::Deg2Rad(-90.0f), Math::Deg2Rad(180.0f), 0.0f }, {});
 	human_->SkeletonInit();*/
+
+	RenderSystem::GetInstance()->SetLightBuffer(lightManager_->GetLightGPUAddress());
+	RenderSystem::GetInstance()->SetCameraBuffer(camera_->GetCameraGPUAddress());
+	RenderSystem::GetInstance()->SetSkyboxBuffer(skybox_->GetTextureHandle());
 }
 
 void TestScene::Update() {
@@ -54,13 +59,14 @@ void TestScene::Update() {
 	lightManager_->Update();
 	lightManager_->ImGui();
 
+	skybox_->Update(&camera_->GetCameraData());
 	cube_->Update(&camera_->GetCameraData());
 	//cube_->ImGui("AnimatedCube");
 
 	/*human_->Update(&camera_->GetCameraData());
 	human_->ImGui("human_walk");*/
 
-	skybox_->Update(&camera_->GetCameraData());
+	camera_->ImGui();
 }
 
 void TestScene::Draw() {

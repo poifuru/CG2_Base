@@ -14,7 +14,7 @@ void RenderSystem::PushCommand(const RenderCommand& command) {
 	commandQueue_.push_back(command);
 }
 
-void RenderSystem::ExecuteCommands(D3D12_GPU_VIRTUAL_ADDRESS cameraCBVAddress) {
+void RenderSystem::ExecuteCommands() {
 	if(commandQueue_.empty()) return;
 
 	// コマンドをソート
@@ -37,6 +37,18 @@ void RenderSystem::ExecuteCommands(D3D12_GPU_VIRTUAL_ADDRESS cameraCBVAddress) {
 		commandList_->IASetIndexBuffer(&cmd.ibv);
 
 		for(UINT i = 0; i < kMaxRootParameters; ++i) {
+			if(cmd.renderType != RenderType::Skybox) {
+				if(i == 0) {	// カメラバッファ
+					commandList_->SetGraphicsRootConstantBufferView(i, cameraCBVAddress_);
+				}
+				if(i == 1) {	// ライトバッファ
+					commandList_->SetGraphicsRootConstantBufferView(i, lightCBVAddress_);
+				}
+				if(i == 2) {
+					commandList_->SetGraphicsRootDescriptorTable(i, skyboxTextureHandle_);
+				}
+			}
+
 			const auto& binding = cmd.binds[i];
 			if(binding.type == BindingType::None) continue;
 

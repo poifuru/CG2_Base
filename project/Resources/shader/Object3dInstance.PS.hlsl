@@ -9,10 +9,11 @@ struct PixelShaderOutput
 struct Material
 {
     float4 color;
-    int enableLighting;
     float4x4 uvTransform;
     float roughness; // 粗さ
     float metallic; // 金属度
+    float environmentCoefficient; // 環境係数
+    int enableLighting;
 };
 
 struct LightCount
@@ -141,7 +142,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     float4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
     
     //textureのアルファ値,出力カラーのアルファ値が一定以下ならその後の処理をしない(2値抜き)
-    if (textureColor.a <= 0.5f || output.color.a == 0.0f)
+    if (textureColor.a <= 0.5f || gMaterial.color.a == 0.0f)
     {
         discard;
     }

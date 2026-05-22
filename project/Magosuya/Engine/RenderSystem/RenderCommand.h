@@ -12,6 +12,12 @@ enum class BindingType : UINT {
 	SRV_Table,	// ディスクリプタテーブル
 };
 
+enum class RenderType {
+	Standard,
+	Skining,
+	Skybox,
+};
+
 // バインド情報をまとめる構造体
 struct RenderBind {
 	BindingType type = BindingType::None;
@@ -40,4 +46,6 @@ struct RenderCommand {
 
 	// 描画順ソート用のプライオリティ(不透明:0、透明:1など)
 	uint8_t layer = 0;
+
+	RenderType renderType = RenderType::Standard;
 };

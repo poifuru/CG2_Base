@@ -3,20 +3,14 @@
   <ItemGroup>
     <FxCompile Include="Resources\shader\Line.PS.hlsl" />
     <FxCompile Include="Resources\shader\Line.VS.hlsl" />
-    <FxCompile Include="Resources\shader\Object3d.PS.hlsl" />
-    <FxCompile Include="Resources\shader\Object3d.VS.hlsl" />
     <FxCompile Include="Resources\shader\Particle.PS.hlsl" />
     <FxCompile Include="Resources\shader\Particle.VS.hlsl" />
-    <FxCompile Include="Resources\shader\Skybox.VS.hlsl" />
-    <FxCompile Include="Resources\shader\Skybox.PS.hlsl" />
-    <FxCompile Include="Resources\shader\CopyImage.VS.hlsl" />
-    <FxCompile Include="Resources\shader\CopyImage.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Magosuya\Camera\CameraOrganizer.cpp" />
     <ClCompile Include="Magosuya\Camera\FixedPointCamera.cpp" />
-    <ClCompile Include="Magosuya\Primitive\Cube\CubeRenderer.cpp" />
-    <ClCompile Include="Magosuya\Primitive\Line\LineRenderer.cpp" />
+    <ClCompile Include="Magosuya\Primitive\cube\CubeRenderer.cpp" />
+    <ClCompile Include="Magosuya\Primitive\line\LineRenderer.cpp" />
     <ClCompile Include="Magosuya\PSO\BlendModeManager.cpp" />
     <ClCompile Include="Magosuya\General\LogManager.cpp" />
     <ClCompile Include="Magosuya\General\ChangeString.cpp" />
@@ -70,10 +64,10 @@
     <ClInclude Include="Magosuya\Camera\CameraOrganizer.h" />
     <ClInclude Include="Magosuya\Camera\FixedPointCamera.h" />
     <ClInclude Include="Magosuya\Camera\CameraComponent.h" />
-    <ClInclude Include="Magosuya\Primitive\Cube\CubeRenderer.h" />
-    <ClInclude Include="Magosuya\Primitive\Cube\CubeRenderData.h" />
-    <ClInclude Include="Magosuya\Primitive\Line\LineRenderData.h" />
-    <ClInclude Include="Magosuya\Primitive\Line\LineRenderer.h" />
+    <ClInclude Include="Magosuya\Primitive\cube\CubeRenderer.h" />
+    <ClInclude Include="Magosuya\Primitive\cube\CubeRenderData.h" />
+    <ClInclude Include="Magosuya\Primitive\line\LineRenderData.h" />
+    <ClInclude Include="Magosuya\Primitive\line\LineRenderer.h" />
     <ClInclude Include="Magosuya\Primitive\MaxPrimitiveNum.h" />
     <ClInclude Include="Magosuya\PSO\BlendModeManager.h" />
     <ClInclude Include="externals\externals.h" />

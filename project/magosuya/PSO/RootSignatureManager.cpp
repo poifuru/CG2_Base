@@ -10,109 +10,51 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 
 	//===RootSigTypeごとの定義===///
 #pragma region standard3D
-	//Texture用
-	standard3DDescriptorRanges[0].BaseShaderRegister = 0;	//0から始まる
-	standard3DDescriptorRanges[0].NumDescriptors = 1;		//数は1つ
-	standard3DDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	//SRVを使う
-	standard3DDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	//Offsetを自動計算
+	//環境マップ用(t0)
+	standard3DDescriptorRanges[0].BaseShaderRegister = 0;
+	standard3DDescriptorRanges[0].NumDescriptors = 1;
+	standard3DDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	standard3DDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	//DirectionalLight用
-	standard3DDescriptorRanges[1].BaseShaderRegister = 1; // register(t1)に対応
-	standard3DDescriptorRanges[1].NumDescriptors = 1;
-	standard3DDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	standard3DDescriptorRanges[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+	//Texture用(t1)
+	standard3DDescriptorRanges[1].BaseShaderRegister = 1;
+	standard3DDescriptorRanges[1].NumDescriptors = 1;		//数は1つ
+	standard3DDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	//SRVを使う
+	standard3DDescriptorRanges[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	//Offsetを自動計算
 
-	//PointLight用
-	standard3DDescriptorRanges[2].BaseShaderRegister = 2; // register(t2)に対応
-	standard3DDescriptorRanges[2].NumDescriptors = 1;
-	standard3DDescriptorRanges[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	standard3DDescriptorRanges[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-	//PointLight用
-	standard3DDescriptorRanges[3].BaseShaderRegister = 3; // register(t3)に対応
-	standard3DDescriptorRanges[3].NumDescriptors = 1;
-	standard3DDescriptorRanges[3].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	standard3DDescriptorRanges[3].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-	//RectLight用
-	standard3DDescriptorRanges[4].BaseShaderRegister = 4; // register(t4)に対応
-	standard3DDescriptorRanges[4].NumDescriptors = 1;
-	standard3DDescriptorRanges[4].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	standard3DDescriptorRanges[4].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-	//MatrixPalette用(ダミー)
-	standard3DDescriptorRanges[5].BaseShaderRegister = 5; // register(t5)に対応
-	standard3DDescriptorRanges[5].NumDescriptors = 1;
-	standard3DDescriptorRanges[5].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	standard3DDescriptorRanges[5].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-	//環境マップ用
-	standard3DDescriptorRanges[6].BaseShaderRegister = 5; // register(t5)に対応
-	standard3DDescriptorRanges[6].NumDescriptors = 1;
-	standard3DDescriptorRanges[6].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	standard3DDescriptorRanges[6].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-	//RootParameter(b0)
-	standard3DRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
-	standard3DRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	//VertexShaderで使う
+	// === 共通バッファ === //
+	// カメラのワールド座標を送る用(b0)p
+	standard3DRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	standard3DRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	standard3DRootParameters[0].Descriptor.ShaderRegister = 0;
 
-	//(b1)
-	standard3DRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
-	standard3DRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
-	standard3DRootParameters[1].Descriptor.ShaderRegister = 1;						//レジスタ番号とバインド
+	// ライトバッファ(b1)p
+	standard3DRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	standard3DRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	standard3DRootParameters[1].Descriptor.ShaderRegister = 1;
 
-	//カメラのワールド座標を送る用(b2)
-	standard3DRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	//環境マップ用(t0)p
+	standard3DRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	standard3DRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	standard3DRootParameters[2].Descriptor.ShaderRegister = 2;
+	standard3DRootParameters[2].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[0];
+	standard3DRootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
+	// ====== //
 
-	//ライトの個数を送る用(b3)
-	standard3DRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	standard3DRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	standard3DRootParameters[3].Descriptor.ShaderRegister = 3;
+	// 行列バッファ(b0)v
+	standard3DRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
+	standard3DRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	//VertexShaderで使う
+	standard3DRootParameters[3].Descriptor.ShaderRegister = 0;
 
-	//Texture用のディスクリプタテーブル(t0)
-	standard3DRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;	//DescriptorTableを使う
+	// マテリアルバッファ(b2)p
+	standard3DRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	standard3DRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
-	standard3DRootParameters[4].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[0];	//Tableの中身の配列を指定
-	standard3DRootParameters[4].DescriptorTable.NumDescriptorRanges = 1;	//Tableで利用する数
+	standard3DRootParameters[4].Descriptor.ShaderRegister = 2;						//レジスタ番号とバインド
 
-	//DirLight一覧用のディスクリプタテーブル(t1用)
-	standard3DRootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	standard3DRootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	standard3DRootParameters[5].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[1]; // Range[1]を指す
-	standard3DRootParameters[5].DescriptorTable.NumDescriptorRanges = 1;
-
-	//PointLight一覧用のディスクリプタテーブル(t2用)
-	standard3DRootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	standard3DRootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	standard3DRootParameters[6].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[2]; // Range[1]を指す
-	standard3DRootParameters[6].DescriptorTable.NumDescriptorRanges = 1;
-
-	//PointLight一覧用のディスクリプタテーブル(t3用)
-	standard3DRootParameters[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	standard3DRootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	standard3DRootParameters[7].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[3]; // Range[1]を指す
-	standard3DRootParameters[7].DescriptorTable.NumDescriptorRanges = 1;
-
-	//RectLight一覧用のディスクリプタテーブル(t4用)
-	standard3DRootParameters[8].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	standard3DRootParameters[8].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	standard3DRootParameters[8].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[4]; // Range[1]を指す
-	standard3DRootParameters[8].DescriptorTable.NumDescriptorRanges = 1;
-
-	//MatrixPalette用(t5, ダミー)
-	standard3DRootParameters[9].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	standard3DRootParameters[9].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	standard3DRootParameters[9].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[5]; // Range[5]を指す
-	standard3DRootParameters[9].DescriptorTable.NumDescriptorRanges = 1;
-
-	//環境マップ用(t5)
-	standard3DRootParameters[10].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	standard3DRootParameters[10].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	standard3DRootParameters[10].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[6]; // Range[6]を指す
-	standard3DRootParameters[10].DescriptorTable.NumDescriptorRanges = 1;
+	//Texture用のディスクリプタテーブル(t1)p
+	standard3DRootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;	//DescriptorTableを使う
+	standard3DRootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
+	standard3DRootParameters[5].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[1];	//Tableの中身の配列を指定
+	standard3DRootParameters[5].DescriptorTable.NumDescriptorRanges = 1;	//Tableで利用する数
 
 	//Sampler
 	standard3DStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;	//バイリニアフィルタ
@@ -715,6 +657,7 @@ D3D12_ROOT_SIGNATURE_DESC RootSignatureManager::CreateRootSigDesc (RootSigType t
 		//InputLayoutを使用するように設定
 		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 		break;
+
 	case RootSigType::PostProcess:
 		desc.pParameters = postProcessRootParameters;
 		desc.NumParameters = _countof (postProcessRootParameters);
@@ -729,12 +672,12 @@ D3D12_ROOT_SIGNATURE_DESC RootSignatureManager::CreateRootSigDesc (RootSigType t
 		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 		//RootParametor
-		desc.pParameters = standard3DRootParameters;
-		desc.NumParameters = _countof(standard3DRootParameters);
+		desc.pParameters = skyboxRootParameters;
+		desc.NumParameters = _countof(skyboxRootParameters);
 
 		//Sampler
-		desc.pStaticSamplers = standard3DStaticSamplers;
-		desc.NumStaticSamplers = _countof(standard3DStaticSamplers);
+		desc.pStaticSamplers = skyboxStaticSamplers;
+		desc.NumStaticSamplers = _countof(skyboxStaticSamplers);
 		break;
 	}
 

@@ -5,7 +5,7 @@
 
 class Model : public BaseObject3d {
 public:
-	Model(DxCommon* dxCommon, LightManager* lightManager);
+	Model(DxCommon* dxCommon);
 	~Model() override;
 
 	// アセットはファクトリーから直接流してもらう

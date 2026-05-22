@@ -6,17 +6,18 @@
 const uint32_t kVertexNum = 8;
 const uint32_t kIndexNum = 36;
 
-Skybox::Skybox(DxCommon* dxCommon) {
+Skybox::Skybox(DxCommon* dxCommon) 
+	: BaseObject3d(dxCommon)
+{
 	dxCommon_ = dxCommon;
-	device_ = dxCommon->GetDevice();
-	commandList_ = dxCommon->GetCommandList();
+
+	vertexBuffer_ = std::make_unique<VertexBuffer<SkyboxVertex>>();
+	indexBuffer_ = std::make_unique<IndexBuffer<uint32_t>>();
 }
 
 void Skybox::Initialize(const std::string& textureTag) {
+	BaseObject3d::Initialize();
 	tag_ = textureTag;
-
-	matrixBuffer_.Initialize(dxCommon_);
-	materialBuffer_.Initialize(dxCommon_);
 
 	// 1. 頂点データの構築と初期化
 	std::vector<SkyboxVertex> vertices(kVertexNum);
@@ -28,7 +29,7 @@ void Skybox::Initialize(const std::string& textureTag) {
 	vertices[5].position = { 1.0f,  1.0f, -1.0f, 1.0f };
 	vertices[6].position = { -1.0f, -1.0f, -1.0f, 1.0f };
 	vertices[7].position = { 1.0f, -1.0f, -1.0f, 1.0f };
-	vertexBuffer_.Initialize(dxCommon_, vertices);
+	vertexBuffer_->Initialize(dxCommon_, vertices);
 
 	// 2. インデックスデータの構築と初期化
 	std::vector<uint32_t> indices = {
@@ -39,16 +40,16 @@ void Skybox::Initialize(const std::string& textureTag) {
 		4, 5, 0,  5, 1, 0, // 上
 		2, 3, 6,  3, 7, 6  // 下
 	};
-	indexBuffer_.Initialize(dxCommon_, kIndexNum);
-	indexBuffer_.Update(indices);
+	indexBuffer_->Initialize(dxCommon_, kIndexNum);
+	indexBuffer_->Update(indices);
 
 	// 3. マテリアルデータの初期化
-	cpuMaterialData_.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	cpuMaterialData_.enableLighting = FALSE; // スカイボックスは光らせない
-	cpuMaterialData_.uvTransform = Math::MakeIdentity4x4();
-	cpuMaterialData_.roughness = 0.0f;
-	cpuMaterialData_.metallic = 0.0f;
-	materialBuffer_.Update(cpuMaterialData_);
+	materialData_.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	materialData_.enableLighting = FALSE; // スカイボックスは光らせない
+	materialData_.uvTransform = Math::MakeIdentity4x4();
+	materialData_.roughness = 0.0f;
+	materialData_.metallic = 0.0f;
+	materialBuffer_->Update(materialData_);
 
 	// 4. PSOの設定
 	psoDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO; // 背景なのでZバッファへの書き込みはOFF
@@ -61,14 +62,14 @@ void Skybox::Initialize(const std::string& textureTag) {
 
 void Skybox::Update(CameraData* data) {
 	EulerTransform transform = { { 5000.0f, 5000.0f, 5000.0f }, {}, {} };
-	cpuTransformData_.World = Math::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+	transformMatrixData_.World = Math::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 
 	if(data) {
-		cpuTransformData_.WVP = Math::Multiply(cpuTransformData_.World, data->vp);
+		transformMatrixData_.WVP = Math::Multiply(transformMatrixData_.World, data->vp);
 	}
 
 	// GPUバッファへデータ更新をコミット
-	matrixBuffer_.Update(cpuTransformData_);
+	transformBuffer_->Update(transformMatrixData_);
 }
 
 void Skybox::Draw() {
@@ -79,18 +80,25 @@ void Skybox::Draw() {
 	cmd.psoDesc = psoDesc_;
 
 	// メッシュビューのバインド
-	cmd.vbViews[0] = vertexBuffer_.GetView();
-	cmd.ibv = indexBuffer_.GetView();
+	cmd.vbViews[0] = vertexBuffer_->GetView();
+	cmd.ibv = indexBuffer_->GetView();
 	cmd.indexCount = kIndexNum;
 
 	// 生成した各ConstantBufferの仮想アドレスをセット
-	cmd.transformCBV = matrixBuffer_.GetGPUVirtualAddress();
-	cmd.materialCBV = materialBuffer_.GetGPUVirtualAddress();
+	cmd.binds[0].type = BindingType::CBV;
+	cmd.binds[0].gpuAddress = transformBuffer_->GetGPUVirtualAddress();
 
-	// キューブマップ用テクスチャハンドルをパラメータ2（あるいは指定スロット）へセット
-	cmd.textureSRV = TextureManager::GetInstance()->GetTextureHandle(tag_);
+	cmd.binds[1].type = BindingType::CBV;
+	cmd.binds[1].gpuAddress = materialBuffer_->GetGPUVirtualAddress();
 
-	cmd.layer = 0;
+	cmd.binds[2].type = BindingType::SRV_Table;
+	cmd.binds[2].descriptorHandle = TextureManager::GetInstance()->GetTextureHandle(tag_);
+
+	//不透明
+	cmd.layer = layer_;
+
+	// 描画タイプ
+	cmd.renderType = renderType_;
 
 	// レンダーシステムへ直行！
 	RenderSystem::GetInstance()->PushCommand(cmd);

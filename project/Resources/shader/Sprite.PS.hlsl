@@ -8,8 +8,11 @@ struct VertexShaderOutput
 struct Material
 {
     float4 color;
-    int enableLighting;
     float4x4 uvTransform;
+    float roughness;
+    float metallic;
+    float environmentCoefficient;
+    int enableLighting;
 };
 ConstantBuffer<Material> gMaterial : register(b1); // SpriteRendererで送ってるやつ
 

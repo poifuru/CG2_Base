@@ -35,35 +35,6 @@ ModelData* ModelManager::LoadModelData(const std::string& directoryPath, const s
 	newData->meshData.vertices.clear();
 	newData->meshData.indices.clear();
 
-	////頂点バッファの生成と設定
-	//newData->vertices = dxCommon_->CreateBufferResource(sizeof(VertexData) * newData->vertexCount);
-	////頂点バッファにデータを書き込む
-	//VertexData* vertexDataPtr = nullptr;
-	//newData->vertexBuffer->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataPtr));
-	////CPUメモリからGPUリソースへデータをコピー
-	//memcpy(vertexDataPtr, newData->vertices.data(), sizeof(VertexData) * newData->vertexCount);
-	//newData->vertexBuffer->Unmap(0, nullptr);
-
-	////頂点バッファビューの設定
-	//newData->vbView.BufferLocation = newData->vertexBuffer->GetGPUVirtualAddress();
-	//newData->vbView.SizeInBytes = UINT(sizeof(VertexData) * newData->vertexCount);
-	//newData->vbView.StrideInBytes = sizeof(VertexData);
-
-	////インデックスバッファの生成と設定
-	//newData->indexBuffer = dxCommon_->CreateBufferResource(sizeof(uint32_t) * newData->indexCount);
-
-	////インデックスバッファにデータを書き込む
-	//uint32_t* indexDataPtr = nullptr;
-	//newData->indexBuffer->Map(0, nullptr, reinterpret_cast<void**>(&indexDataPtr));
-	////CPUメモリからGPUリソースへデータをコピー
-	//memcpy(indexDataPtr, newData->indices.data(), sizeof(uint32_t) * newData->indexCount);
-	//newData->indexBuffer->Unmap(0, nullptr);
-
-	////インデックスバッファビューの設定
-	//newData->ibView.BufferLocation = newData->indexBuffer->GetGPUVirtualAddress();
-	//newData->ibView.SizeInBytes = UINT(sizeof(uint32_t) * newData->indexCount);
-	//newData->ibView.Format = DXGI_FORMAT_R32_UINT;
-
 	//mapに登録
 	modelMap_[fileName] = newData;
 
@@ -164,6 +135,7 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 	OutputDebugStringA(("NumMeshes: " + std::to_string(scene->mNumMeshes) + "\n").c_str());
 
 	//Meshを解析する
+	uint32_t vertexOffset = 0;
 	for(uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
 		assert(mesh->HasNormals());
@@ -196,7 +168,7 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 
 			//indexの解析
 			for(uint32_t i = 0; i < face.mNumIndices; ++i) {
-				modelData.meshData.indices.push_back(face.mIndices[i]);
+				modelData.meshData.indices.push_back(face.mIndices[i] + vertexOffset);
 			}
 		}
 
@@ -222,6 +194,7 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 				);
 			}
 		}	
+		vertexOffset += mesh->mNumVertices;
 	}
 
 	//materialの解析

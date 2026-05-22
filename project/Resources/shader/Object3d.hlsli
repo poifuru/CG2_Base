@@ -5,3 +5,5 @@ struct VertexShaderOutput
     float3 normal : NORMAL0;
     float3 worldPosition : POSITION0;
 };
+
+static const uint kMaxLightCount = 20;

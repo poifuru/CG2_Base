@@ -2,8 +2,8 @@
 
 struct Object3dInstanceForGPU
 {
-    float4x4 WVP;
     float4x4 World;
+    float4x4 WVP;
     float4x4 WorldInverseTranspose;
 };
 StructuredBuffer<Object3dInstanceForGPU> gInstance : register(t0);

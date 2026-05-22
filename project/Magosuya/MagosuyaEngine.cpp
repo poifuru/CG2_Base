@@ -89,9 +89,9 @@ void MagosuyaEngine::EndFrame () {
 	inputManager_->EndFrame ();
 
 	// 描画を実行！
-	renderSystem_->ExecuteCommands(cameraOrganizer_->GetCameraGPUAddress());
+	renderSystem_->ExecuteCommands();
 	// 描画が終わったらコマンドを空にする
-	RenderSystem::GetInstance()->ClearCommands();
+	renderSystem_->ClearCommands();
 
 	// ImGuiの描画の前に、描画先をRenderTextureからSwapchainへ切り替える
 	dxCommon_->PreDrawImGui();

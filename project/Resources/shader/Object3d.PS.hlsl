@@ -9,11 +9,11 @@ struct PixelShaderOutput
 struct Material
 {
     float4 color;
-    int enableLighting;
     float4x4 uvTransform;
     float roughness; // 粗さ
     float metallic; // 金属度
     float environmentCoefficient;	// 環境係数
+    int enableLighting;
 };
 
 struct LightCount
@@ -59,44 +59,38 @@ struct RectLight
     float3 position; // ライトの中心座標
     float intensity;
     float3 direction; // ライトの正面方向（法線）
+    float padding1;
     float2 size; // Width(幅) と Height(高さ)
+    float padding2[2];
     float3 right; // ライトの右方向ベクトル
-    float padding;
+    float padding3;
     float3 up; // ライトの上方向ベクトル
     float decay; // 距離による減衰率（PointLightと同様）
 };
 
-struct AllLight 
+struct AllLight
 {
     LightCount gLightCount;
-    DirectionalLight gDirLights[20];
-    PointLight gPointLights[20];
-    SpotLight gSpotLights[20];
-    RectLight gRectLights[20];
-}
+    DirectionalLight gDirLights[kMaxLightCount];
+    PointLight gPointLights[kMaxLightCount];
+    SpotLight gSpotLights[kMaxLightCount];
+    RectLight gRectLights[kMaxLightCount];
+};
 
 struct Camera
 {
     float3 worldPosition;
 };
 
-ConstantBuffer<Material> gMaterial : register(b1);
+ConstantBuffer<Camera> gCamera : register(b0);
 
-ConstantBuffer<Camera> gCamera : register(b2);
+ConstantBuffer<AllLight> gAllLight : register(b1);
 
-ConstantBuffer<AllLight> gAllLight : register(b3);
+TextureCube<float4> gEnvironmentTexture : register(t0);
 
-Texture2D<float4> gTexture : register(t0);
+ConstantBuffer<Material> gMaterial : register(b2);
 
-StructuredBuffer<DirectionalLight> gDirectionalLight : register(t1);
-
-StructuredBuffer<PointLight> gPointLight : register(t2);
-
-StructuredBuffer<SpotLight> gSpotLight : register(t3);
-
-StructuredBuffer<RectLight> gRectLight : register(t4);
-
-TextureCube<float4> gEnvironmentTexture : register(t5);
+Texture2D<float4> gTexture : register(t1);
 
 SamplerState gSampler : register(s0);
 //******//
@@ -153,7 +147,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     float4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
     
     //textureのアルファ値,出力カラーのアルファ値が一定以下ならその後の処理をしない(2値抜き)
-    if (textureColor.a <= 0.5f || output.color.a == 0.0f) { discard; }
+    if (textureColor.a <= 0.5f || gMaterial.color.a == 0.0f) { discard; }
     
     //lightingの準備
     float3 totalDiffuse = float3(0, 0, 0);
@@ -161,15 +155,15 @@ PixelShaderOutput main(VertexShaderOutput input)
     float3 toEye = normalize(gCamera.worldPosition - input.worldPosition); //Cameraへの方向を算出
     
     //DirectionalLightの計算
-    for (int i = 0; i < gLightCount.dirLight; ++i)
+    for (int i = 0; i < gAllLight.gLightCount.dirLight; ++i)
     {
-        float3 L = normalize(-gDirectionalLight[i].direction); // ライトへの方向
+        float3 L = normalize(-gAllLight.gDirLights[i].direction); // ライトへの方向
         float3 N = normalize(input.normal);
         float3 V = toEye;
         float3 H = normalize(V + L);
 
-        float3 lightColor = gDirectionalLight[i].color.rgb;
-        float intensity = gDirectionalLight[i].intensity;
+        float3 lightColor = gAllLight.gDirLights[i].color.rgb;
+        float intensity = gAllLight.gDirLights[i].intensity;
 
         // PBRパラメータ
         float roughness = saturate(gMaterial.roughness);
@@ -190,10 +184,10 @@ PixelShaderOutput main(VertexShaderOutput input)
     }
     
     //PointLightの計算
-    for (int j = 0; j < gLightCount.pointLight; ++j)
+    for (int j = 0; j < gAllLight.gLightCount.pointLight; ++j)
     {
         //基本的なベクトルと距離の計算
-        float3 direction = input.worldPosition - gPointLight[j].position;
+        float3 direction = input.worldPosition - gAllLight.gPointLights[j].position;
         float distance = length(direction);
         float3 L = normalize(-direction); // ライトへの方向
         float3 N = normalize(input.normal);
@@ -201,9 +195,9 @@ PixelShaderOutput main(VertexShaderOutput input)
         float3 H = normalize(V + L); // ハーフベクトル
 
         //減衰と強度の計算
-        float attenuation = pow(saturate(1.0f - (distance / gPointLight[j].radius)), gPointLight[j].decay);
-        float3 lightColor = gPointLight[j].color.rgb;
-        float intensity = gPointLight[j].intensity * attenuation;
+        float attenuation = pow(saturate(1.0f - (distance / gAllLight.gPointLights[j].radius)), gAllLight.gPointLights[j].decay);
+        float3 lightColor = gAllLight.gPointLights[j].color.rgb;
+        float intensity = gAllLight.gPointLights[j].intensity * attenuation;
 
         //マテリアル設定をgMaterialから取得
         float roughness = saturate(gMaterial.roughness);
@@ -236,9 +230,9 @@ PixelShaderOutput main(VertexShaderOutput input)
     }
     
     //SpotLightの計算
-    for (int k = 0; k < gLightCount.spotLight; ++k)
+    for (int k = 0; k < gAllLight.gLightCount.spotLight; ++k)
     {
-        float3 direction = input.worldPosition - gSpotLight[k].position;
+        float3 direction = input.worldPosition - gAllLight.gSpotLights[k].position;
         float distance = length(direction);
         float3 L = normalize(-direction);
         float3 N = normalize(input.normal);
@@ -246,14 +240,14 @@ PixelShaderOutput main(VertexShaderOutput input)
         float3 H = normalize(V + L);
 
         // 距離減衰
-        float attenuation = pow(saturate(1.0f - (distance / gSpotLight[k].distance)), gSpotLight[k].decay);
+        float attenuation = pow(saturate(1.0f - (distance / gAllLight.gSpotLights[k].distance)), gAllLight.gSpotLights[k].decay);
 
         // 角度減衰
-        float cosToPos = dot(-L, normalize(gSpotLight[k].direction));
-        float spotFactor = saturate((cosToPos - gSpotLight[k].cosAngle) / (1.0f - gSpotLight[k].cosAngle));
-        float intensity = gSpotLight[k].intensity * attenuation * spotFactor;
+        float cosToPos = dot(-L, normalize(gAllLight.gSpotLights[k].direction));
+        float spotFactor = saturate((cosToPos - gAllLight.gSpotLights[k].cosAngle) / (1.0f - gAllLight.gSpotLights[k].cosAngle));
+        float intensity = gAllLight.gSpotLights[k].intensity * attenuation * spotFactor;
 
-        float3 lightColor = gSpotLight[k].color.rgb;
+        float3 lightColor = gAllLight.gSpotLights[k].color.rgb;
 
         // PBRパラメータ
         float roughness = saturate(gMaterial.roughness);
@@ -274,17 +268,17 @@ PixelShaderOutput main(VertexShaderOutput input)
     }
     
     //RectLightの計算
-    for (int l = 0; l < gLightCount.rectLight; ++l)
+    for (int l = 0; l < gAllLight.gLightCount.rectLight; ++l)
     {
        //ライトの4隅の座標を計算
-        float3 halfW = gRectLight[l].right * (gRectLight[l].size.x * 0.5f);
-        float3 halfH = gRectLight[l].up * (gRectLight[l].size.y * 0.5f);
+        float3 halfW = gAllLight.gRectLights[l].right * (gAllLight.gRectLights[l].size.x * 0.5f);
+        float3 halfH = gAllLight.gRectLights[l].up * (gAllLight.gRectLights[l].size.y * 0.5f);
         
         float3 p[4];
-        p[0] = gRectLight[l].position - halfW - halfH; // 左下
-        p[1] = gRectLight[l].position + halfW - halfH; // 右下
-        p[2] = gRectLight[l].position + halfW + halfH; // 右上
-        p[3] = gRectLight[l].position - halfW + halfH; // 左上
+        p[0] = gAllLight.gRectLights[l].position - halfW - halfH; // 左下
+        p[1] = gAllLight.gRectLights[l].position + halfW - halfH; // 右下
+        p[2] = gAllLight.gRectLights[l].position + halfW + halfH; // 右上
+        p[3] = gAllLight.gRectLights[l].position - halfW + halfH; // 左上
 
         //各頂点への方向ベクトルを算出
         float3 v[4];
@@ -305,17 +299,17 @@ PixelShaderOutput main(VertexShaderOutput input)
         illuminance /= (2.0f * PI);
 
         //距離による減衰（中心からの距離で代用）
-        float3 distVec = input.worldPosition - gRectLight[l].position;
+        float3 distVec = input.worldPosition - gAllLight.gRectLights[l].position;
         float distance = length(distVec);
-        float attenuation = pow(saturate(1.0f - (distance / 20.0f)), gRectLight[l].decay); // 20.0fは有効範囲
+        float attenuation = pow(saturate(1.0f - (distance / 20.0f)), gAllLight.gRectLights[l].decay); // 20.0fは有効範囲
 
         //拡散反射の計算
         float3 N = normalize(input.normal);
-        float3 L = normalize(-gRectLight[l].direction); // ライトの正面
+        float3 L = normalize(-gAllLight.gRectLights[l].direction); // ライトの正面
         float nDotL = saturate(dot(N, L));
 
         float3 albedo = gMaterial.color.rgb * textureColor.rgb;
-        float3 diffuse = (albedo / PI) * gRectLight[l].color.rgb * gRectLight[l].intensity * illuminance * nDotL * attenuation;
+        float3 diffuse = (albedo / PI) * gAllLight.gRectLights[l].color.rgb * gAllLight.gRectLights[l].intensity * illuminance * nDotL * attenuation;
 
         totalDiffuse += diffuse;
     }
@@ -324,7 +318,11 @@ PixelShaderOutput main(VertexShaderOutput input)
     float3 cameraToPosition = normalize(input.worldPosition - gCamera.worldPosition);
     float3 reflectedVector = reflect(cameraToPosition, normalize(input.normal));
     float4 environmentColor = gEnvironmentTexture.Sample(gSampler, reflectedVector);
-    environmentColor.rgb *= gMaterial.environmentCoefficient;
+    
+    // PBR的に環境マップの反射光にフレネル反射率を適用
+    float3 albedo = gMaterial.color.rgb * textureColor.rgb;
+    float3 F0 = lerp(float3(0.04f, 0.04f, 0.04f), albedo, saturate(gMaterial.metallic));
+    environmentColor.rgb *= gMaterial.environmentCoefficient * F0;
 
     //最終出力の分岐
     if (gMaterial.enableLighting == 0)
@@ -334,7 +332,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     else
     {
     //PBRの結果を表示
-        output.color.rgb = totalDiffuse + environmentColor; // totalDiffuseの中にspecularも加算済みの場合
+        output.color.rgb = totalDiffuse + environmentColor.rgb; // totalDiffuseの中にspecularも加算済みの場合
         output.color.a = gMaterial.color.a * textureColor.a;
     }
     

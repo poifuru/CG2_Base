@@ -24,7 +24,6 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 
 	lightManager_ = std::make_unique<LightManager>(dxCommon);
 	lightManager_->Initialize();
-	RenderSystem::GetInstance()->SetLightManager(lightManager_.get());
 	for(int i = 0; i < 5; ++i) {
 		lightManager_->AddLight(LightType::DIRECTIONALLIGHT);
 		lightManager_->SetDirectionalLightIntensity(i, 2.0f);
@@ -45,6 +44,10 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 
 	skybox_ = std::make_unique<Skybox>(dxCommon);
 	skybox_->Initialize("skybox");
+
+	RenderSystem::GetInstance()->SetCameraBuffer(camera_->GetCameraGPUAddress());
+	RenderSystem::GetInstance()->SetLightBuffer(lightManager_->GetLightGPUAddress());
+	RenderSystem::GetInstance()->SetSkyboxBuffer(skybox_->GetTextureHandle());
 }
 
 void PlayScene::Update () {

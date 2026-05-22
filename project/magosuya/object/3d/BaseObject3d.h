@@ -6,6 +6,7 @@
 #include "TransformMatrixData.h"
 #include "MaterialData.h"
 #include "RenderSystem.h"
+#include "RenderCommand.h"
 #include "CameraComponent.h"
 #include "TextureManager.h"
 
@@ -14,7 +15,7 @@ class LightManager;
 
 class BaseObject3d {
 public:
-	BaseObject3d(DxCommon* dxCommon, LightManager* lightManager);
+	BaseObject3d(DxCommon* dxCommon);
 	virtual ~BaseObject3d() = default;
 
 	void Initialize();
@@ -22,7 +23,12 @@ public:
 	virtual void Update(CameraData* cameraData);
 
 	// 自身はメッシュを持たないので純粋仮想関数
+	// システム側に共通バッファがあるので、配列3番からセットすること
 	virtual void Draw() = 0;
+
+	// PSO周りの設定
+	void SetRenderType(RenderType type);
+	void SetBlendMode(BlendModeType type);
 
 	// === 共通のアクセッサ（ゲッター・セッター） ===
 	void SetColor(const Vector4& color) { materialData_.color = color; }
@@ -38,17 +44,17 @@ protected:
 	EulerTransform transform_{};
 	EulerTransform uvTransform_{};
 	MaterialData materialData_{};
-	TransformMatrixData transformData_{};
+	TransformMatrixData transformMatrixData_{};
 
 	// トランスフォームとマテリアル（すべての3D物が個別に持つバッファ）
-	std::unique_ptr<TransformMatrixResource> transformResource_ = nullptr;;
-	std::unique_ptr<MaterialResource> materialResource_;
+	std::unique_ptr<TransformMatrixResource> transformBuffer_ = nullptr;;
+	std::unique_ptr<MaterialResource> materialBuffer_ = nullptr;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureHandle_{};
 
 	// パイプライン設定（子クラスの Initialize で具体的なIDを詰めさせる）
-	uint32_t rootSignatureID_ = 0;
 	PSODescriptor psoDesc_{};
+	uint8_t layer_ = 1;
+	RenderType renderType_ = RenderType::Standard;
 
 	DxCommon* dxCommon_ = nullptr;
-	LightManager* lightManager_ = nullptr;
 };

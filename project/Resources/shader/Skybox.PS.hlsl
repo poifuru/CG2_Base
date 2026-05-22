@@ -8,13 +8,14 @@ struct PixelShaderOutput
 struct Material
 {
     float4 color;
-    int enableLighting;
     float4x4 uvTransform;
     float roughness; // 粗さ
     float metallic; // 金属度
+    float environmentCoefficient; // 環境係数
+    int enableLighting;
 };
 
-ConstantBuffer<Material> gMaterial : register(b1);
+ConstantBuffer<Material> gMaterial : register(b0);
 
 TextureCube<float4> gTexture : register(t0);
 

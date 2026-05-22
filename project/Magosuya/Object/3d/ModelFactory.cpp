@@ -14,7 +14,7 @@ std::unique_ptr<Model> ModelFactory::CreateModel(const std::string& modelName, c
 	D3D12_GPU_DESCRIPTOR_HANDLE texHandle = TextureManager::GetInstance()->GetTextureHandle(textureName);
 
 	// 2. Modelインスタンスを生成
-	auto model = std::make_unique<Model>(dxCommon_, lightManager_);
+	auto model = std::make_unique<Model>(dxCommon_);
 
 	// 3. パーツを流し込んで完全に初期化された状態にする
 	model->Initialize(tempModelData, texHandle);

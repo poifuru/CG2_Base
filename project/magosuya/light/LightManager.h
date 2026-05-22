@@ -57,7 +57,9 @@ struct RectLightForGPU {
 	Vector3 position;    // ライトの中心座標
 	float intensity;
 	Vector3 direction;   // ライトの正面方向（法線）
+	float padding1;
 	Vector2 size;        // Width(幅) と Height(高さ)
+	float padding2[2];
 	Vector3 right;       // ライトの右方向ベクトル
 	float padding;
 	Vector3 up;          // ライトの上方向ベクトル

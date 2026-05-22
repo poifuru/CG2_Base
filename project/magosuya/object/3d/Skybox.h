@@ -7,14 +7,13 @@
 #include "MaterialData.h"        // MaterialData
 #include "RenderCommand.h"       // PSODescriptor
 #include "CameraComponent.h"
-
-class DxCommon;
+#include "BaseObject3d.h"
 
 struct SkyboxVertex {
 	Vector4 position;
 };
 
-class Skybox {
+class Skybox : public BaseObject3d {
 public:
 	Skybox(DxCommon* dxCommon);
 	~Skybox() = default;
@@ -25,25 +24,14 @@ public:
 
 	void Draw();
 
+	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureHandle() { return TextureManager::GetInstance()->GetTextureHandle(tag_); }
+
 private:
-	// PSOの設定
-	PSODescriptor psoDesc_{};
-
-	// CPUデータ（きっちり隔離）
-	TransformMatrixData cpuTransformData_{};
-	MaterialData cpuMaterialData_{};
-
-	// GPUリソース
-	VertexBuffer<SkyboxVertex> vertexBuffer_;
-	IndexBuffer<uint32_t> indexBuffer_;
-	ConstantBuffer<TransformMatrixData> matrixBuffer_;
-	ConstantBuffer<MaterialData> materialBuffer_;
+	// 頂点バッファ
+	std::unique_ptr<VertexBuffer<SkyboxVertex>> vertexBuffer_ = nullptr;
+	// インデックスバッファ
+	std::unique_ptr<IndexBuffer<uint32_t>> indexBuffer_ = nullptr;
 
 	// テクスチャを引っ張ってくるための識別タグ
 	std::string tag_;
-
-	// 借りるポインタ
-	DxCommon* dxCommon_ = nullptr;
-	ID3D12Device* device_ = nullptr;
-	ID3D12GraphicsCommandList* commandList_ = nullptr;
 };

@@ -1,7 +1,7 @@
 #include "BaseEnemy.h"
 
 BaseEnemy::BaseEnemy(DxCommon* dxCommon, LightManager* light, CameraOrganizer* camera) {
-	model_ = std::make_unique<Model>(dxCommon, light);
+	model_ = std::make_unique<Model>(dxCommon);
 	camera_ = camera;
 }
 
