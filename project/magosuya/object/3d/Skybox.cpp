@@ -55,7 +55,6 @@ void Skybox::Initialize(const std::string& textureTag) {
 
 	// 4. PSOの設定
 	psoDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO; // 背景なのでZバッファへの書き込みはOFF
-	psoDesc_.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;
 	psoDesc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Skybox);
 	psoDesc_.VS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Skybox.VS.hlsl", L"vs_6_0");
 	psoDesc_.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Skybox.PS.hlsl", L"ps_6_0");

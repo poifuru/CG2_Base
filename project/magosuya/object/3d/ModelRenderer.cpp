@@ -4,7 +4,7 @@
 #include "mathFunction.h"
 #include "LightManager.h"
 #include "SRVManager.h"
-#include "Mesh.h"
+#include "Primitive.h"
 #include "TextureManager.h"
 
 ModelRenderer::ModelRenderer(DxCommon* dxCommon, LightManager* lightManager) {

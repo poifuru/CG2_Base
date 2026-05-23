@@ -26,12 +26,15 @@ void ImGuiManager::Initialize () {
 		io.Fonts->GetGlyphRangesJapanese ());
 	io.FontDefault = fontJP;
 	ImGui_ImplWin32_Init (WindowsAPI::GetInstance()->GetHwnd ());
+
+	uint32_t srvIndex = SRVManager::GetInstance()->Allocate();
+
 	ImGui_ImplDX12_Init (DxCommon::GetInstance()->GetDevice (),
 						 2,
 						 DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
 						 SRVManager::GetInstance ()->GetDescriptorHeap(),
-						 SRVManager::GetInstance ()->GetDescriptorHeap ()->GetCPUDescriptorHandleForHeapStart (),
-						 SRVManager::GetInstance ()->GetDescriptorHeap ()->GetGPUDescriptorHandleForHeapStart ()
+						 SRVManager::GetInstance ()->GetCPUDescriptorHandle(srvIndex),
+						 SRVManager::GetInstance ()->GetGPUDescriptorHandle(srvIndex)
 	);
 #endif
 }

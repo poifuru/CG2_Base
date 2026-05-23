@@ -37,18 +37,21 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 	modelFactory_->SetLightManager(lightManager_.get());
 
 	cube_ = std::move(modelFactory_->CreateModel("AnimatedCube.gltf", "Cube"));
-	cube_->SetAnimation(ModelManager::GetInstance()->GetAnimationData("AnimatedCube.gltf").lock().get());
+	cubeAnimator_ = std::make_unique<Animator>(dxCommon);
+	cubeAnimator_->Initialize(cube_.get());
+	cubeAnimator_->BindAnimation(ModelManager::GetInstance()->GetAnimationData("AnimatedCube.gltf").lock().get());
+	cube_->SetAnimator(cubeAnimator_.get());
+
+	human_ = std::move(modelFactory_->CreateModel("walk.gltf", "white"));
+	humanAnimator_ = std::make_unique<Animator>(dxCommon);
+	humanAnimator_->Initialize(human_.get());
+	humanAnimator_->BindAnimation(ModelManager::GetInstance()->GetAnimationData("walk.gltf").lock().get());
+	human_->SetAnimator(humanAnimator_.get());
+	human_->SetRenderType(RenderType::Skining);
 
 	skybox_ = std::make_unique<Skybox>(dxCommon);
 	skybox_->Initialize("skybox");
 	skybox_->SetRenderType(RenderType::Skybox);
-
-	/*human_ = std::make_unique<Model>(dxCommon, lightManager_.get());
-	human_->SetModelData("walk.gltf");
-	human_->SetTexture("white");
-	human_->SetAnimation("walk.gltf");
-	human_->Initialize({ 100.0f, 100.0f, 100.0f }, { Math::Deg2Rad(-90.0f), Math::Deg2Rad(180.0f), 0.0f }, {});
-	human_->SkeletonInit();*/
 
 	RenderSystem::GetInstance()->SetLightBuffer(lightManager_->GetLightGPUAddress());
 	RenderSystem::GetInstance()->SetCameraBuffer(camera_->GetCameraGPUAddress());
@@ -63,21 +66,28 @@ void TestScene::Update() {
 
 	skybox_->Update(&camera_->GetCameraData());
 	cube_->Update(&camera_->GetCameraData());
+	human_->Update(&camera_->GetCameraData());
 
-	/*human_->Update(&camera_->GetCameraData());
-	human_->ImGui("human_walk");*/
-
-	camera_->ImGui();
-	cube_->ImGui("AnimationCube");
-	ImGui::ShowDemoWindow();
+	ImGui();
 }
 
 void TestScene::Draw() {
 	skybox_->Draw();
 	cube_->Draw();
-	/*human_->Draw();*/
+	human_->Draw();
 }
 
 void TestScene::StopToResources() {
 
+}
+
+void TestScene::ImGui() {
+#ifdef USEIMGUI
+	ImGui::Begin("TestScene");
+	camera_->ImGui();
+	cube_->ImGui("AnimationCube");
+	human_->ImGui("AnimationHuman");
+	ImGui::ShowDemoWindow();
+	ImGui::End();
+#endif
 }

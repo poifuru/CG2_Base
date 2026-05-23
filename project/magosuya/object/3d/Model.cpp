@@ -2,6 +2,7 @@
 #include "DeltaTime.h"
 #include "MathFunction.h"
 #include "imgui.h"
+#include "Animator.h"
 
 Model::Model(DxCommon* dxCommon)
 	: BaseObject3d(dxCommon) {
@@ -32,8 +33,7 @@ void Model::Initialize(ModelData* modelData, D3D12_GPU_DESCRIPTOR_HANDLE texture
 }
 
 void Model::Update(CameraData* cameraData) {
-
-	AnimationUpdate();
+	animator_->Update();
 
 	BaseObject3d::Update(cameraData);
 }
@@ -63,6 +63,13 @@ void Model::Draw() {
 	cmd.binds[5].type = BindingType::SRV_Table;
 	cmd.binds[5].descriptorHandle = textureHandle_;
 
+	if(animator_->IsSkinning() && renderType_ == RenderType::Skining) {
+		cmd.vbViews[1] = animator_->GetInfluenceVBV();
+
+		cmd.binds[6].type = BindingType::SRV_Table;
+		cmd.binds[6].descriptorHandle = animator_->GetSkinCluster().GetPaletteSRVHandle();
+	}
+
 	// 透明
 	cmd.layer = layer_;
 
@@ -80,46 +87,42 @@ void Model::ImGui(const std::string& label) {
 	if(ImGui::TreeNode((label + objLabel).c_str())) {
 		BaseObject3d::ImGui(objLabel);
 
-		if(ImGui::TreeNode(("Animation" + objLabel).c_str())) {
-			ImGui::TreePop();
+		if(animator_ != nullptr) {
+			bool animationFlag = animator_->IsAnimation();
+			if(ImGui::TreeNode(("Animation" + objLabel).c_str())) {
+				ImGui::Checkbox(("IsActive" + objLabel).c_str(), &animationFlag);
+				// タイムライン用のスライダー
+					// 時間をフレーム数に変換（1秒=60フレームとした場合）
+				int currentFrame = static_cast<int>(animator_->GetAnimation()->animationTime * 60.0f);
+				int maxFrame = static_cast<int>(animator_->GetAnimation()->duration * 60.0f);
+
+				if(ImGui::SliderInt(("Frame" + objLabel).c_str(), &currentFrame, 0, maxFrame, "%d")) {
+					// 操作されたら、フレーム数を秒数に戻して代入
+					animator_->GetAnimation()->animationTime = static_cast<float>(currentFrame) / 60.0f;
+					animationFlag = false;
+				}
+				animator_->SetIsAnimation(animationFlag);
+				ImGui::TreePop();
+			}
 		}
 		ImGui::TreePop();
 	}
 }
 
+void Model::SetAnimator(Animator* animator) {
+	animator_ = animator;
+}
+
 Matrix4x4 Model::CalculateWorldMatrix() {
-	// 1. まず通常のトランスフォーム（ImGuiとかで動かす用）の行列を作る
+	// まず通常のトランスフォーム（ImGuiとかで動かす用）の行列を作る
 	Matrix4x4 affine = Math::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 
-	// 2. アニメーションがあるなら、そのローカル行列を計算して掛け合わせる
-	if(animation_) {
-		Matrix4x4 animationMatrix = AnimationUpdate(); // 時間更新を除いた純粋な行列計算に変更
+	// アニメーションがあるなら、そのローカル行列を計算して掛け合わせる
+	if(animator_) {
+		Matrix4x4 animationMatrix = animator_->GetRootAnimationMatrix(); // 時間更新を除いた純粋な行列計算に変更
 		return animationMatrix * affine;
 	}
 
 	// アニメーションがないなら通常のアフィン変換だけ
 	return affine;
-}
-
-Matrix4x4 Model::AnimationUpdate() {
-	animationTime_ += kDeltaTime;
-	animationTime_ = std::fmod(animationTime_, animation_->duration);	// 最後まで行ったらリピート
-
-	Vector3 translate = modelData_->rootNode.transform.translate;
-	Quaternion rotate = modelData_->rootNode.transform.rotate;
-	Vector3 scale = modelData_->rootNode.transform.scale;
-
-	if(auto it = animation_->nodeAnimations.find(modelData_->rootNode.name); it != animation_->nodeAnimations.end()) {
-		const NodeAnimation& rootNodeAnimation = (*it).second;
-		if(!rootNodeAnimation.translate.keyframes.empty()) {
-			translate = AnimationFunc::CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_);
-		}
-		if(!rootNodeAnimation.rotate.keyframes.empty()) {
-			rotate = AnimationFunc::CalculateValue(rootNodeAnimation.rotate.keyframes, animationTime_);
-		}
-		if(!rootNodeAnimation.scale.keyframes.empty()) {
-			scale = AnimationFunc::CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);
-		}
-	}
-	return Math::MakeAffineMatrix(scale, rotate, translate);
 }

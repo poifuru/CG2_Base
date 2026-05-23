@@ -5,6 +5,7 @@
 #include "Sprite.h"
 #include "Skybox.h"
 #include "ModelFactory.h"
+#include "Animator.h"
 
 class TestScene : public BaseScene {
 public:		//メンバ関数
@@ -16,11 +17,18 @@ public:		//メンバ関数
 	void Draw() override;
 	void StopToResources() override;
 
+private:
+	void ImGui();
+
 private:	//メンバ変数
 	std::unique_ptr<LightManager> lightManager_ = nullptr;
 	ModelFactory* modelFactory_ = nullptr;
 
 	std::unique_ptr<Model> cube_ = nullptr;
+	std::unique_ptr<Animator> cubeAnimator_ = nullptr;
+
+	std::unique_ptr<Model> human_ = nullptr;
+	std::unique_ptr<Animator> humanAnimator_ = nullptr;
 
 	// スカイボックス
 	std::unique_ptr<Skybox> skybox_ = nullptr;

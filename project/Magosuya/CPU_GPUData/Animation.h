@@ -31,6 +31,12 @@ struct Animation {
 	float duration;	// アニメーション全体の尺
 	// NodeAnimationの集合。Node名で引けるようにする(map)
 	std::map<std::string, NodeAnimation> nodeAnimations;
+
+	// アニメーションの現在時間
+	float animationTime = 0.0f;
+
+	// アニメーションを有効にするか
+	bool isAnimation = true;
 };
 
 // アニメーション用の関数

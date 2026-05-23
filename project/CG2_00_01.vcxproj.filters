@@ -59,6 +59,7 @@
     <ClCompile Include="Magosuya\Object\3d\Model.cpp" />
     <ClCompile Include="Magosuya\Object\3d\ModelFactory.cpp" />
     <ClCompile Include="Magosuya\CPU_GPUData\Animation.cpp" />
+    <ClCompile Include="Magosuya\Object\3d\Animator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Scene\BaseScene.h" />
@@ -137,6 +138,7 @@
     <ClInclude Include="Magosuya\Engine\RenderSystem\RenderSystem.h" />
     <ClInclude Include="Magosuya\Object\3d\Model.h" />
     <ClInclude Include="Magosuya\Object\3d\ModelFactory.h" />
+    <ClInclude Include="Magosuya\Object\3d\Animator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Magosuya\PSO\RootSignatureManager.h" />

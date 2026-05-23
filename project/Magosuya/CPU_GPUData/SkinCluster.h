@@ -61,11 +61,12 @@ public:
 
 		// SRV作成
 		srvIndex_ = SRVManager::GetInstance()->Allocate();
-		SRVManager::GetInstance()->CreateSRVStructuredBuffer(srvIndex_, paletteBuffer_.Get(), UINT(paletteSize), sizeof(WellForGPU));
+		SRVManager::GetInstance()->CreateSRVStructuredBuffer(srvIndex_, paletteBuffer_.Get(), jointCount_, sizeof(WellForGPU));
 		paletteSrvHandle_.gpu = SRVManager::GetInstance()->GetGPUDescriptorHandle(srvIndex_);	// 作ったSRVのハンドルを保持しておく
 
-		// InfluenceBufferの初期化
+		// InfluenceBufferの初期化とデータ転送
 		influenceBuffer_.Initialize(dxCommon, cpuData.vertexInfluences);
+		influenceBuffer_.Update(cpuData.vertexInfluences);
 	}
 
 	void UpdatePalette(const Skeleton& skeleton, const std::vector<Matrix4x4>& inverseBindMatrices) {	
@@ -94,8 +95,10 @@ public:
 		paletteMappedData_ = nullptr;
 		jointCount_ = 0;
 
-		// SRVの解放
-		SRVManager::GetInstance()->Free(srvIndex_);
+		if (srvIndex_ != 0xFFFFFFFF) {
+			SRVManager::GetInstance()->Free(srvIndex_);
+			srvIndex_ = 0xFFFFFFFF;
+		}
 	}
 
 	// ゲッター
@@ -131,7 +134,7 @@ private:
 	// パレット用
 	ComPtr<ID3D12Resource> paletteBuffer_;
 	void* paletteMappedData_ = nullptr;
-	uint32_t srvIndex_ = 0;
+	uint32_t srvIndex_ = 0xFFFFFFFF; // 0xFFFFFFFF で「まだ何も割り当てられていない」ことを表す
 	DescriptorHandle paletteSrvHandle_{};
 	UINT jointCount_ = 0;
 

@@ -65,8 +65,8 @@ private:	// メンバ変数
 	D3D12_ROOT_PARAMETER standard3DInstanceRootParameters[11] = {};
 	D3D12_STATIC_SAMPLER_DESC standard3DInstanceStaticSamplers[1] = {};
 	//SkinningStanderd3D
-	D3D12_DESCRIPTOR_RANGE skinningStandard3DDescriptorRanges[7] = {};
-	D3D12_ROOT_PARAMETER skinningStandard3DRootParameters[11] = {};
+	D3D12_DESCRIPTOR_RANGE skinningStandard3DDescriptorRanges[3] = {};
+	D3D12_ROOT_PARAMETER skinningStandard3DRootParameters[7] = {};
 	D3D12_STATIC_SAMPLER_DESC skinningStandard3DStaticSamplers[1] = {};
 	//Sprite
 	D3D12_DESCRIPTOR_RANGE spriteDescriptorRanges[1] = {};
