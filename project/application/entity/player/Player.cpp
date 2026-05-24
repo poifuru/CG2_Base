@@ -23,6 +23,12 @@ Player::Player(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input,
 	TextureManager::GetInstance()->LoadTexture("Resources/player/player.png", "player");
 	ModelManager::GetInstance()->LoadModelData("Resources/player", "player.obj");
 
+	ModelManager::GetInstance()->LoadModelData("Resources/AnimatedCube", "AnimatedCube.gltf");
+	ModelManager::GetInstance()->LoadAnimationData("Resources/AnimatedCube", "AnimatedCube.gltf");
+	TextureManager::GetInstance()->TextureManager::LoadTexture(
+		"Resources/AnimatedCube/AnimatedCube_BaseColor.png", "Cube"
+	);
+
 	// Bullet用
 	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall/monsterBall.png", "bullet");
 	ModelManager::GetInstance()->LoadModelData("Resources/monsterBall", "monsterBall.obj");
@@ -40,8 +46,9 @@ Player::~Player() {
 }
 
 void Player::Initialize() {
-	model_->SetModelData("player.obj");
-	model_->SetTexture("player");
+	model_->SetModelData("AnimatedCube.gltf");
+	model_->SetTexture("Cube");
+	model_->SetAnimation("AnimatedCube.gltf");
 	model_->Initialize();
 
 	// 固有の数値

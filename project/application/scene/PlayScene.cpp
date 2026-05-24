@@ -9,6 +9,7 @@
 #include "PostEffect.h"
 
 PlayScene::PlayScene () {
+
 }
 
 PlayScene::~PlayScene () {
