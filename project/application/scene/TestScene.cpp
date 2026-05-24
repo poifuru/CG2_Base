@@ -41,6 +41,7 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 	cubeAnimator_->Initialize(cube_.get());
 	cubeAnimator_->BindAnimation(ModelManager::GetInstance()->GetAnimationData("AnimatedCube.gltf").lock().get());
 	cube_->SetAnimator(cubeAnimator_.get());
+	cube_->SetTranslate(Vector3{ -5.0f, 0.0f, 0.0f });
 
 	human_ = std::move(modelFactory_->CreateModel("walk.gltf", "white"));
 	humanAnimator_ = std::make_unique<Animator>(dxCommon);
@@ -48,6 +49,8 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 	humanAnimator_->BindAnimation(ModelManager::GetInstance()->GetAnimationData("walk.gltf").lock().get());
 	human_->SetAnimator(humanAnimator_.get());
 	human_->SetRenderType(RenderType::Skining);
+	human_->SetRotate(Vector3{ 0.0f, Math::Deg2Rad(180.0f), 0.0f });
+	human_->SetTranslate(Vector3{ 5.0f, 0.0f, 0.0f });
 
 	skybox_ = std::make_unique<Skybox>(dxCommon);
 	skybox_->Initialize("skybox");

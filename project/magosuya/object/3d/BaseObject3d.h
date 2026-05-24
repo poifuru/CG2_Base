@@ -33,6 +33,9 @@ public:
 	void SetBlendMode(BlendModeType type);
 
 	// === 共通のアクセッサ（ゲッター・セッター） ===
+	void SetScale(const Vector3& scale) { transform_.scale = scale; }
+	void SetRotate(const Vector3& rotate) { transform_.rotate = rotate; }
+	void SetTranslate(const Vector3& translate) { transform_.translate = translate; }
 	void SetColor(const Vector4& color) { materialData_.color = color; }
 	void SetRoughness(float r) { materialData_.roughness = r; }
 	void SetMetallic(float m) { materialData_.metallic = m; }

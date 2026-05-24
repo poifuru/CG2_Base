@@ -88,7 +88,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Application\Entity;$(SolutionDir)Application\Entity\Boss;$(SolutionDir)Application\Entity\Enemy;$(SolutionDir)Application\Entity\Player;$(SolutionDir)Application\Mapchip;$(SolutionDir)Application\Scene;$(SolutionDir)Magosuya;$(SolutionDir)Magosuya\Audio;$(SolutionDir)Magosuya\Camera;$(SolutionDir)Magosuya\CPU_GPUData;$(SolutionDir)Magosuya\Engine;$(SolutionDir)Magosuya\Engine\Buffer;$(SolutionDir)Magosuya\Engine\DescriptorHandle;$(SolutionDir)Magosuya\Engine\RenderSystem;$(SolutionDir)Magosuya\Engine\SRV;$(SolutionDir)Magosuya\General;$(SolutionDir)Magosuya\Imgui;$(SolutionDir)Magosuya\Input;$(SolutionDir)Magosuya\Light;$(SolutionDir)Magosuya\Object\2d;$(SolutionDir)Magosuya\Object\3d;$(SolutionDir)Magosuya\Particle;$(SolutionDir)Magosuya\Primitive\Cube;$(SolutionDir)Magosuya\Primitive\Line;$(SolutionDir)Magosuya\Primitive;$(SolutionDir)Magosuya\PSO</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Application\Entity;$(SolutionDir)Application\Entity\Boss;$(SolutionDir)Application\Entity\Enemy;$(SolutionDir)Application\Entity\Player;$(SolutionDir)Application\Mapchip;$(SolutionDir)Application\Scene;$(SolutionDir)Magosuya;$(SolutionDir)Magosuya\Audio;$(SolutionDir)Magosuya\Camera;$(SolutionDir)Magosuya\CPU_GPUData;$(SolutionDir)Magosuya\Engine;$(SolutionDir)Magosuya\Engine\Buffer;$(SolutionDir)Magosuya\Engine\DescriptorHandle;$(SolutionDir)Magosuya\Engine\RenderSystem;$(SolutionDir)Magosuya\Engine\SRV;$(SolutionDir)Magosuya\General;$(SolutionDir)Magosuya\Imgui;$(SolutionDir)Magosuya\Input;$(SolutionDir)Magosuya\Light;$(SolutionDir)Magosuya\Object\2d;$(SolutionDir)Magosuya\Object\3d;$(SolutionDir)Magosuya\Object\Animation;$(SolutionDir)Magosuya\Particle;$(SolutionDir)Magosuya\Primitive\Cube;$(SolutionDir)Magosuya\Primitive\Line;$(SolutionDir)Magosuya\Primitive;$(SolutionDir)Magosuya\PSO</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -117,7 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Application\Entity;$(SolutionDir)Application\Entity\Boss;$(SolutionDir)Application\Entity\Enemy;$(SolutionDir)Application\Entity\Player;$(SolutionDir)Application\Mapchip;$(SolutionDir)Application\Scene;$(SolutionDir)Magosuya;$(SolutionDir)Magosuya\Audio;$(SolutionDir)Magosuya\Camera;$(SolutionDir)Magosuya\CPU_GPUData;$(SolutionDir)Magosuya\Engine;$(SolutionDir)Magosuya\Engine\Buffer;$(SolutionDir)Magosuya\Engine\DescriptorHandle;$(SolutionDir)Magosuya\Engine\RenderSystem;$(SolutionDir)Magosuya\Engine\SRV;$(SolutionDir)Magosuya\General;$(SolutionDir)Magosuya\Imgui;$(SolutionDir)Magosuya\Input;$(SolutionDir)Magosuya\Light;$(SolutionDir)Magosuya\Object\2d;$(SolutionDir)Magosuya\Object\3d;$(SolutionDir)Magosuya\Particle;$(SolutionDir)Magosuya\Primitive\Cube;$(SolutionDir)Magosuya\Primitive\Line;$(SolutionDir)Magosuya\Primitive;$(SolutionDir)Magosuya\PSO</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Application\Entity;$(SolutionDir)Application\Entity\Boss;$(SolutionDir)Application\Entity\Enemy;$(SolutionDir)Application\Entity\Player;$(SolutionDir)Application\Mapchip;$(SolutionDir)Application\Scene;$(SolutionDir)Magosuya;$(SolutionDir)Magosuya\Audio;$(SolutionDir)Magosuya\Camera;$(SolutionDir)Magosuya\CPU_GPUData;$(SolutionDir)Magosuya\Engine;$(SolutionDir)Magosuya\Engine\Buffer;$(SolutionDir)Magosuya\Engine\DescriptorHandle;$(SolutionDir)Magosuya\Engine\RenderSystem;$(SolutionDir)Magosuya\Engine\SRV;$(SolutionDir)Magosuya\General;$(SolutionDir)Magosuya\Imgui;$(SolutionDir)Magosuya\Input;$(SolutionDir)Magosuya\Light;$(SolutionDir)Magosuya\Object\2d;$(SolutionDir)Magosuya\Object\3d;$(SolutionDir)Magosuya\Object\Animation;$(SolutionDir)Magosuya\Particle;$(SolutionDir)Magosuya\Primitive\Cube;$(SolutionDir)Magosuya\Primitive\Line;$(SolutionDir)Magosuya\Primitive;$(SolutionDir)Magosuya\PSO</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,7 +151,7 @@ echo "MaoSuya Engine Builded"</Command>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Application\Entity;$(SolutionDir)Application\Entity\Boss;$(SolutionDir)Application\Entity\Enemy;$(SolutionDir)Application\Entity\Player;$(SolutionDir)Application\Mapchip;$(SolutionDir)Application\Scene;$(SolutionDir)Magosuya;$(SolutionDir)Magosuya\Audio;$(SolutionDir)Magosuya\Camera;$(SolutionDir)Magosuya\CPU_GPUData;$(SolutionDir)Magosuya\Engine;$(SolutionDir)Magosuya\Engine\Buffer;$(SolutionDir)Magosuya\Engine\DescriptorHandle;$(SolutionDir)Magosuya\Engine\RenderSystem;$(SolutionDir)Magosuya\Engine\SRV;$(SolutionDir)Magosuya\General;$(SolutionDir)Magosuya\Imgui;$(SolutionDir)Magosuya\Input;$(SolutionDir)Magosuya\Light;$(SolutionDir)Magosuya\Object\2d;$(SolutionDir)Magosuya\Object\3d;$(SolutionDir)Magosuya\Particle;$(SolutionDir)Magosuya\Primitive\Cube;$(SolutionDir)Magosuya\Primitive\Line;$(SolutionDir)Magosuya\Primitive;$(SolutionDir)Magosuya\PSO</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Application\Entity;$(SolutionDir)Application\Entity\Boss;$(SolutionDir)Application\Entity\Enemy;$(SolutionDir)Application\Entity\Player;$(SolutionDir)Application\Mapchip;$(SolutionDir)Application\Scene;$(SolutionDir)Magosuya;$(SolutionDir)Magosuya\Audio;$(SolutionDir)Magosuya\Camera;$(SolutionDir)Magosuya\CPU_GPUData;$(SolutionDir)Magosuya\Engine;$(SolutionDir)Magosuya\Engine\Buffer;$(SolutionDir)Magosuya\Engine\DescriptorHandle;$(SolutionDir)Magosuya\Engine\RenderSystem;$(SolutionDir)Magosuya\Engine\SRV;$(SolutionDir)Magosuya\General;$(SolutionDir)Magosuya\Imgui;$(SolutionDir)Magosuya\Input;$(SolutionDir)Magosuya\Light;$(SolutionDir)Magosuya\Object\2d;$(SolutionDir)Magosuya\Object\3d;$(SolutionDir)Magosuya\Object\Animation;$(SolutionDir)Magosuya\Particle;$(SolutionDir)Magosuya\Primitive\Cube;$(SolutionDir)Magosuya\Primitive\Line;$(SolutionDir)Magosuya\Primitive;$(SolutionDir)Magosuya\PSO</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -172,7 +172,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Magosuya\Object\3d\Animator.cpp" />
+    <ClCompile Include="Magosuya\Object\Animation\Animator.cpp" />
     <ClCompile Include="Application\Entity\Entity.cpp" />
     <ClCompile Include="Application\Entity\Enemy\BaseEnemy.cpp" />
     <ClCompile Include="Magosuya\CPU_GPUData\Animation.cpp" />
@@ -230,6 +230,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Magosuya\Engine\RenderSystem\RenderSystem.cpp" />
     <ClCompile Include="Magosuya\Object\3d\Model.cpp" />
     <ClCompile Include="Magosuya\Object\3d\ModelFactory.cpp" />
+    <ClCompile Include="Magosuya\Particle\ParticleField.cpp" />
+    <ClCompile Include="Magosuya\Particle\ParticleGroup.cpp" />
+    <ClCompile Include="Magosuya\Particle\ParticleEmitter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\Line.PS.hlsl">
@@ -278,7 +281,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Magosuya\Object\3d\Animator.h" />
+    <ClInclude Include="Magosuya\Object\Animation\Animator.h" />
     <ClInclude Include="Application\Scene\BaseScene.h" />
     <ClInclude Include="Application\Entity\Entity.h" />
     <ClInclude Include="Application\Entity\Boss\Boss.h" />
@@ -302,6 +305,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Magosuya\Object\3d\BaseObject3d.h" />
     <ClInclude Include="Magosuya\General\Easing.h" />
     <ClInclude Include="Magosuya\Engine\Buffer\Buffer.h" />
+    <ClInclude Include="Magosuya\Particle\IParticleField.h" />
     <ClInclude Include="Magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="Magosuya\Audio\AudioManager.h" />
     <ClInclude Include="Magosuya\Camera\LookAtCamera.h" />
@@ -361,6 +365,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Magosuya\Engine\RenderSystem\RenderSystem.h" />
     <ClInclude Include="Magosuya\Object\3d\Model.h" />
     <ClInclude Include="Magosuya\Object\3d\ModelFactory.h" />
+    <ClInclude Include="Magosuya\Particle\ParticleField.h" />
+    <ClInclude Include="Magosuya\Particle\ParticleGroup.h" />
+    <ClInclude Include="Magosuya\Particle\ParticleEmitter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\CopyImage.hlsli" />

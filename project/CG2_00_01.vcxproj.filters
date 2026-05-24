@@ -59,7 +59,10 @@
     <ClCompile Include="Magosuya\Object\3d\Model.cpp" />
     <ClCompile Include="Magosuya\Object\3d\ModelFactory.cpp" />
     <ClCompile Include="Magosuya\CPU_GPUData\Animation.cpp" />
-    <ClCompile Include="Magosuya\Object\3d\Animator.cpp" />
+    <ClCompile Include="Magosuya\Object\Animation\Animator.cpp" />
+    <ClCompile Include="Magosuya\Particle\ParticleField.cpp" />
+    <ClCompile Include="Magosuya\Particle\ParticleGroup.cpp" />
+    <ClCompile Include="Magosuya\Particle\ParticleEmitter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Scene\BaseScene.h" />
@@ -138,7 +141,11 @@
     <ClInclude Include="Magosuya\Engine\RenderSystem\RenderSystem.h" />
     <ClInclude Include="Magosuya\Object\3d\Model.h" />
     <ClInclude Include="Magosuya\Object\3d\ModelFactory.h" />
-    <ClInclude Include="Magosuya\Object\3d\Animator.h" />
+    <ClInclude Include="Magosuya\Object\Animation\Animator.h" />
+    <ClInclude Include="Magosuya\Particle\IParticleField.h" />
+    <ClInclude Include="Magosuya\Particle\ParticleField.h" />
+    <ClInclude Include="Magosuya\Particle\ParticleGroup.h" />
+    <ClInclude Include="Magosuya\Particle\ParticleEmitter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Magosuya\PSO\RootSignatureManager.h" />

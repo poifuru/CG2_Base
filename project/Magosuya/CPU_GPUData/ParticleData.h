@@ -1,6 +1,6 @@
 #pragma once
 #include "struct.h"
-#include "Buffer.h"
+#include <cstdint>
 
 // エミッター構造体
 struct Emitter {
@@ -18,4 +18,10 @@ struct ParticleData {
 	Vector4 color;
 	float lifeTime;
 	float currentTime;
+};
+
+struct ParticleForGPU {
+	Matrix4x4 world;
+	Matrix4x4 WVP;
+	Vector4 color;
 };
