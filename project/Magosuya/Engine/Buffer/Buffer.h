@@ -313,13 +313,18 @@ public:
 	}
 
 	void Release() {
-		if(buffer_ && mappedData_) {
-			buffer_->Unmap(0, nullptr);
+		// buffer_ が存在している（SRVを作った）場合のみ解放する
+		if(buffer_) {
+			if(mappedData_) {
+				buffer_->Unmap(0, nullptr);
+			}
+			SRVManager::GetInstance()->Free(srvIndex_);
 		}
 		buffer_ = nullptr;
 		mappedData_ = nullptr;
 		elementCount_ = 0;
-		SRVManager::GetInstance()->Free(srvIndex_);
+		// 念のため初期値に戻す
+		srvIndex_ = 0;
 	}
 
 	// SRV作成時に必要な情報をゲッターで提供
@@ -342,7 +347,14 @@ public:
 			Release();
 			buffer_ = std::move(other.buffer_);
 			mappedData_ = other.mappedData_;
+			elementCount_ = other.elementCount_;
+			srvIndex_ = other.srvIndex_;
+			srvHandle_ = other.srvHandle_;
+
+			// ムーブ元を空にする
+			other.buffer_ = nullptr;
 			other.mappedData_ = nullptr;
+			other.elementCount_ = 0;
 		}
 		return *this;
 	}

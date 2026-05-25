@@ -3,8 +3,9 @@
 #include "ParticleGroup.h"
 #include "Deltatime.h"
 
-ParticleEmitter::ParticleEmitter(ParticleGroup* targetGroup) {
+ParticleEmitter::ParticleEmitter(ParticleGroup* targetGroup, const std::string& name) {
 	targetGroup_ = targetGroup;
+	name_ = name;
 	// シードの設定はここ（初期化時）で1回だけ！
 	randomEngine_.seed(rd_());
 
@@ -24,6 +25,12 @@ void ParticleEmitter::Update() {
 		}
 		emitterData_.frequencyTime -= emitterData_.frequency; // 進めた時間を戻す
 	}
+}
+
+void ParticleEmitter::ImGui() {
+#ifdef USEIMGUI
+
+#endif
 }
 
 void ParticleEmitter::Emit() {

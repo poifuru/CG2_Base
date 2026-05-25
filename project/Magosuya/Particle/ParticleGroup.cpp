@@ -19,7 +19,9 @@ ParticleGroup::~ParticleGroup() {
 
 }
 
-void ParticleGroup::Initialize() {
+void ParticleGroup::Initialize(const std::string& name) {
+	name_ = name;
+
 	// バッファ初期化
 	std::vector<ParticleVertex> vertices(kParticleVertexNum);
 	vertices[0] = {	// 左上
@@ -161,6 +163,12 @@ void ParticleGroup::Draw() {
 
 	// コマンドを投げる
 	RenderSystem::GetInstance()->PushCommand(cmd);
+}
+
+void ParticleGroup::ImGui() {
+#ifdef USEIMGUI
+
+#endif
 }
 
 void ParticleGroup::AddParticle(const ParticleData& particle) {

@@ -1,6 +1,7 @@
 #include "ParticleSystem.h"
 #include "ParticleSystem.h"
 #include "ParticleField.h" // GravityField など
+#include "imgui.h"
 
 ParticleSystem::ParticleSystem(DxCommon* dxCommon) : dxCommon_(dxCommon) {}
 

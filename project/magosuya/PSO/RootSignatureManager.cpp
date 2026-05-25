@@ -309,10 +309,10 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	//位置情報のインスタンスバッファ(t0)VS
 	particleRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;					//DescriptorTableを使う
 	particleRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;							//VertexShaderで使う
-	particleRootParameters[0].DescriptorTable.pDescriptorRanges = particleDescriptorRanges;					//t0(SRV)を指定
-	particleRootParameters[0].DescriptorTable.NumDescriptorRanges = _countof (particleDescriptorRanges);	//Tableで利用する数
+	particleRootParameters[0].DescriptorTable.pDescriptorRanges = &particleDescriptorRanges[0];					//t0(SRV)を指定
+	particleRootParameters[0].DescriptorTable.NumDescriptorRanges = 1;	//Tableで利用する数
 
-	//マテリアルバッファ(b0)PS
+	//マテリアルバッファ(b1)PS
 	particleRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	particleRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
 	particleRootParameters[1].Descriptor.ShaderRegister = 1;						//b1を指定
@@ -320,8 +320,8 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	//Texture(t0)PS
 	particleRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;				//DiscriptorTableを使う
 	particleRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;							//PixelShaderで使う
-	particleRootParameters[2].DescriptorTable.pDescriptorRanges = textureDescriptorRanges;				//t0(SRV)を指定
-	particleRootParameters[2].DescriptorTable.NumDescriptorRanges = _countof (textureDescriptorRanges);	//Tableで利用する数
+	particleRootParameters[2].DescriptorTable.pDescriptorRanges = &textureDescriptorRanges[0];				//t0(SRV)を指定
+	particleRootParameters[2].DescriptorTable.NumDescriptorRanges = 1;	//Tableで利用する数
 
 	//Sampler
 	particleStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;				//バイリニアフィルタ

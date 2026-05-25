@@ -6,12 +6,16 @@ class ParticleGroup;
 
 class ParticleEmitter {
 public:
-	ParticleEmitter(ParticleGroup* targetGroup);
+	ParticleEmitter(ParticleGroup* targetGroup, const std::string& name);
 	void Update();
+	void ImGui();
+
+	std::string GetName() const { return name_; }
 
 private:
 	void Emit();
 
+	std::string name_{};
 	ParticleGroup* targetGroup_ = nullptr; // 煙用、炎用などのグループへのポインタ
 	Emitter emitterData_;
 

@@ -13,19 +13,19 @@ public:
 	void Initialize(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
 	void Update(const CameraData& cameraData);
 	void Draw();
+	void ImGui();
 
 	// 外部のグローバルなフィールド（ステージの風など）を適用したい場合用
 	void AddExternalField(IParticleField* field);
 
-	// エミッターやグループのパラメータ調整用ゲッター（ImGui用など）
-	ParticleGroup* GetGroup() { return group_.get(); }
-
 private:
 	DxCommon* dxCommon_ = nullptr;
 
-	std::unique_ptr<ParticleGroup> group_;
-	std::unique_ptr<ParticleEmitter> emitter_;
+	std::vector<std::unique_ptr<ParticleGroup>> groups_;
+	std::vector<std::unique_ptr<ParticleEmitter>> emitters_;
+	std::vector<std::unique_ptr<IParticleField>> fields_;
 
-	// このシステム固有のフィールド（例：重力など）をまとめて管理
-	std::vector<std::unique_ptr<IParticleField>> localFields_;
+	// ImGuiの選択状態を管理する変数
+	int currentSelectedEmitter_ = 0;
+	int currentSelectedField_ = 0;
 };

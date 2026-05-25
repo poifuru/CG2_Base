@@ -15,9 +15,10 @@ public:
 	ParticleGroup(DxCommon* dxCommon);
 	~ParticleGroup();
 
-	void Initialize();
+	void Initialize(const std::string& name);
 	void Update(const CameraData& cameraData);
 	void Draw();
+	void ImGui();
 
 	// パーティクルを追加する（エミッターから呼ばれる）
 	void AddParticle(const ParticleData& particle);
@@ -27,6 +28,9 @@ public:
 
 	// テクスチャをセット
 	void SetTexture(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) { textureHandle_ = textureHandle; }
+
+	// 名前を取得
+	std::string GetName() const { return name_; }
 
 private:
 	DxCommon* dxCommon_ = nullptr;
@@ -43,6 +47,7 @@ private:
 	std::unique_ptr<MaterialResource> materialBuffer_;
 
 	// CPUデータ
+	std::string name_{};
 	MaterialData material_{};
 	std::list<ParticleData> particles_;
 	std::vector<IParticleField*> fields_; // 適用するフィールドのポインタ配列
