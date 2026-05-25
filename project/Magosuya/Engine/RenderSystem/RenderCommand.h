@@ -16,6 +16,7 @@ enum class RenderType {
 	Standard,
 	Skining,
 	Skybox,
+	Particle,
 };
 
 // バインド情報をまとめる構造体

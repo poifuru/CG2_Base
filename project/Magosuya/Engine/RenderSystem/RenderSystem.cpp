@@ -37,7 +37,7 @@ void RenderSystem::ExecuteCommands() {
 		commandList_->IASetIndexBuffer(&cmd.ibv);
 
 		for(UINT i = 0; i < kMaxRootParameters; ++i) {
-			if(cmd.renderType != RenderType::Skybox) {
+			if(cmd.renderType != RenderType::Skybox && cmd.renderType != RenderType::Particle) {
 				if(i == 0) {	// カメラバッファ
 					commandList_->SetGraphicsRootConstantBufferView(i, cameraCBVAddress_);
 				}

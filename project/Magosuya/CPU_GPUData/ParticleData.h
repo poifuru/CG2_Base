@@ -10,7 +10,12 @@ struct Emitter {
 	float frequencyTime;	//頻度用時刻
 };
 
-//
+struct ParticleVertex {
+	Vector4 position;
+	Vector2 texcoord;
+};
+
+// パーティクル一粒ごとの構造体
 struct ParticleData {
 	EulerTransform transform;
 	Vector3 velocity;

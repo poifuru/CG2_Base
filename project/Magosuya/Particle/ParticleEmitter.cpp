@@ -15,8 +15,15 @@ ParticleEmitter::ParticleEmitter(ParticleGroup* targetGroup) {
 	emitterData_.frequencyTime = 0.0f;
 }
 
-void ParticleEmitter::Update(float deltaTime) {
-
+void ParticleEmitter::Update() {
+	emitterData_.frequencyTime += kDeltaTime; // 発生時刻を進める
+	if (emitterData_.frequency <= emitterData_.frequencyTime) { // 頻度を超えたら
+		// emitterData_.countの数だけ一気に発生させる
+		for (uint32_t i = 0; i < emitterData_.count; ++i) {
+			Emit();
+		}
+		emitterData_.frequencyTime -= emitterData_.frequency; // 進めた時間を戻す
+	}
 }
 
 void ParticleEmitter::Emit() {

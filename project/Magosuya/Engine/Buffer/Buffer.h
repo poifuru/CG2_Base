@@ -5,6 +5,8 @@
 #include <vector>
 #include <algorithm>
 #include "DxCommon.h"
+#include "SRVManager.h"
+#include "DescriptorHandle.h"
 
 // 頂点バッファ専用のテンプレートクラス
 template <typename T>
@@ -291,8 +293,18 @@ public:
 		if(buffer_) {
 			buffer_->Map(0, nullptr, &mappedData_);
 		}
-	}
 
+		// SRVの生成処理
+		// 空いているディスクリプタのインデックスを確保
+		srvIndex_ = SRVManager::GetInstance()->Allocate();
+
+		// SRVManagerに構造化バッファ用のSRVを作ってもらう
+		SRVManager::GetInstance()->CreateSRVStructuredBuffer(srvIndex_, buffer_.Get(), static_cast<UINT>(elementCount_), static_cast<UINT>(sizeof(T)));
+
+		// 描画時にコマンドリストへ渡すためのGPUハンドルを取得して保持しておく
+		srvHandle_.gpu = SRVManager::GetInstance()->GetGPUDescriptorHandle(srvIndex_);
+	}
+		
 	void Update(const std::vector<T>& data) {
 		if(!mappedData_ || data.empty()) return;
 		// 安全のためにサイズチェック
@@ -307,12 +319,14 @@ public:
 		buffer_ = nullptr;
 		mappedData_ = nullptr;
 		elementCount_ = 0;
+		SRVManager::GetInstance()->Free(srvIndex_);
 	}
 
 	// SRV作成時に必要な情報をゲッターで提供
 	ID3D12Resource* GetResource() const { return buffer_.Get(); }
 	size_t GetElementCount() const { return elementCount_; }
 	UINT GetStride() const { return static_cast<UINT>(sizeof(T)); }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVHandle() const { return srvHandle_.gpu; }
 
 public:
 	// コピー禁止（ポインタの二重管理を防ぐため）
@@ -337,4 +351,8 @@ private:
 	ComPtr<ID3D12Resource> buffer_;
 	void* mappedData_ = nullptr;
 	size_t elementCount_ = 0;
+
+	// SRV管理用の変数を追加
+	UINT srvIndex_ = 0;
+	DescriptorHandle srvHandle_{};
 };

@@ -4,6 +4,7 @@
 using namespace Microsoft::WRL;
 #include <d3d12.h>
 #include <unordered_map>
+#include <functional>
 #include "DxCommon.h"
 #include "ShaderManager.h"
 #include "RootSignatureManager.h"

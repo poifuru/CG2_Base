@@ -10,7 +10,7 @@ struct Material
     int enableLighting;
 };
 
-ConstantBuffer<Material> gMaterial : register(b0);
+ConstantBuffer<Material> gMaterial : register(b1);
 
 struct PixelShaderOutput
 {

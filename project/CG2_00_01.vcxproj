@@ -233,6 +233,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Magosuya\Particle\ParticleField.cpp" />
     <ClCompile Include="Magosuya\Particle\ParticleGroup.cpp" />
     <ClCompile Include="Magosuya\Particle\ParticleEmitter.cpp" />
+    <ClCompile Include="Magosuya\Particle\ParticleSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\Line.PS.hlsl">
@@ -368,6 +369,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Magosuya\Particle\ParticleField.h" />
     <ClInclude Include="Magosuya\Particle\ParticleGroup.h" />
     <ClInclude Include="Magosuya\Particle\ParticleEmitter.h" />
+    <ClInclude Include="Magosuya\Particle\ParticleSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\CopyImage.hlsli" />

@@ -5,6 +5,8 @@
 #include "Buffer.h"
 #include "ParticleData.h"
 #include "MaterialData.h"
+#include "RenderSystem.h"
+#include "CameraComponent.h"
 
 class IParticleField;
 
@@ -14,7 +16,7 @@ public:
 	~ParticleGroup();
 
 	void Initialize();
-	void Update(float deltaTime);
+	void Update(const CameraData& cameraData);
 	void Draw();
 
 	// パーティクルを追加する（エミッターから呼ばれる）
@@ -23,16 +25,33 @@ public:
 	// このグループに影響を与えるフィールドを登録する
 	void AddField(IParticleField* field);
 
+	// テクスチャをセット
+	void SetTexture(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) { textureHandle_ = textureHandle; }
+
 private:
 	DxCommon* dxCommon_ = nullptr;
 
-	// 自作のStructuredBufferを活用！
-	StructuredBuffer<ParticleForGPU> instancingBuffer_;
-	MaterialResource materialBuffer_;
+	// パイプライン設定（子クラスの Initialize で具体的なIDを詰めさせる）
+	PSODescriptor psoDesc_{};
+	uint8_t layer_ = 1;
+	RenderType renderType_ = RenderType::Particle;
 
+	// バッファ
+	std::unique_ptr<VertexBuffer<ParticleVertex>> vertexBuffer_;
+	std::unique_ptr<IndexBuffer<uint32_t>> indexBuffer_;
+	std::unique_ptr<StructuredBuffer<ParticleForGPU>> instancingBuffer_;
+	std::unique_ptr<MaterialResource> materialBuffer_;
+
+	// CPUデータ
+	MaterialData material_{};
 	std::list<ParticleData> particles_;
 	std::vector<IParticleField*> fields_; // 適用するフィールドのポインタ配列
+	// テクスチャハンドル
+	D3D12_GPU_DESCRIPTOR_HANDLE textureHandle_{};
+
+	// ビルボード切り替え用のフラグ
+	bool useBillboard_ = true;
 
 	// 出せるパーティクルの最大数
-	const uint32_t kMaxParticleNum_ = 5000;
+	const uint32_t kMaxParticleNum_ = 10000;
 };

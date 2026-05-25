@@ -6,6 +6,7 @@
 #include "Skybox.h"
 #include "ModelFactory.h"
 #include "Animator.h"
+#include "ParticleSystem.h"
 
 class TestScene : public BaseScene {
 public:		//メンバ関数
@@ -29,6 +30,9 @@ private:	//メンバ変数
 
 	std::unique_ptr<Model> human_ = nullptr;
 	std::unique_ptr<Animator> humanAnimator_ = nullptr;
+
+	// パーティクル
+	std::unique_ptr<ParticleSystem> hitEffect_ = nullptr;
 
 	// スカイボックス
 	std::unique_ptr<Skybox> skybox_ = nullptr;

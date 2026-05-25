@@ -17,6 +17,9 @@ TestScene::TestScene() {
 	ModelManager::GetInstance()->LoadModelData("Resources/player", "player.obj");
 	TextureManager::GetInstance()->LoadTexture("Resources/player/player.png", "player");
 
+	// パーティクルのテクスチャ
+	TextureManager::GetInstance()->LoadTexture("Resources/Particle/circle.png", "particle");
+
 	TextureManager::GetInstance()->LoadTexture("Resources/Skybox/test2.dds", "skybox");
 }
 
@@ -52,6 +55,9 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 	human_->SetRotate(Vector3{ 0.0f, Math::Deg2Rad(180.0f), 0.0f });
 	human_->SetTranslate(Vector3{ 5.0f, 0.0f, 0.0f });
 
+	hitEffect_ = std::make_unique<ParticleSystem>(dxCommon);
+	hitEffect_->Initialize(TextureManager::GetInstance()->TextureManager::GetTextureHandle("particle"));
+
 	skybox_ = std::make_unique<Skybox>(dxCommon);
 	skybox_->Initialize("skybox");
 	skybox_->SetRenderType(RenderType::Skybox);
@@ -67,9 +73,12 @@ void TestScene::Update() {
 	lightManager_->Update();
 	lightManager_->ImGui();
 
-	skybox_->Update(&camera_->GetCameraData());
 	cube_->Update(&camera_->GetCameraData());
 	human_->Update(&camera_->GetCameraData());
+
+	hitEffect_->Update(camera_->GetCameraData());
+
+	skybox_->Update(&camera_->GetCameraData());
 
 	ImGui();
 }
@@ -78,6 +87,7 @@ void TestScene::Draw() {
 	skybox_->Draw();
 	cube_->Draw();
 	human_->Draw();
+	hitEffect_->Draw();
 }
 
 void TestScene::StopToResources() {

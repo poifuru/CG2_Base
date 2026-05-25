@@ -7,7 +7,7 @@ class ParticleGroup;
 class ParticleEmitter {
 public:
 	ParticleEmitter(ParticleGroup* targetGroup);
-	void Update(float deltaTime);
+	void Update();
 
 private:
 	void Emit();

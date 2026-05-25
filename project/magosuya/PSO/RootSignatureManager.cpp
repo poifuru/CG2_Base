@@ -10,47 +10,47 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 
 	//===RootSigTypeごとの定義===///
 #pragma region standard3D
-	//環境マップ用(t0)
+	//環境マップ用(t0)PS
 	standard3DDescriptorRanges[0].BaseShaderRegister = 0;
 	standard3DDescriptorRanges[0].NumDescriptors = 1;
 	standard3DDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	standard3DDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	//Texture用(t1)
+	//Texture用(t1)PS
 	standard3DDescriptorRanges[1].BaseShaderRegister = 1;
 	standard3DDescriptorRanges[1].NumDescriptors = 1;		//数は1つ
 	standard3DDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	//SRVを使う
 	standard3DDescriptorRanges[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	//Offsetを自動計算
 
 	// === 共通バッファ === //
-	// カメラのワールド座標を送る用(b0)pixel
+	// カメラのワールド座標を送る用(b0)PS
 	standard3DRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	standard3DRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	standard3DRootParameters[0].Descriptor.ShaderRegister = 0;
 
-	// ライトバッファ(b1)pixel
+	// ライトバッファ(b1)PS
 	standard3DRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	standard3DRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	standard3DRootParameters[1].Descriptor.ShaderRegister = 1;
 
-	//環境マップ用(t0)pixel
+	//環境マップ用(t0)PS
 	standard3DRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	standard3DRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	standard3DRootParameters[2].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[0];
 	standard3DRootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
 	// ====== //
 
-	// 行列バッファ(b0)vertex
+	// 行列バッファ(b0)VS
 	standard3DRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	standard3DRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	//VertexShaderで使う
 	standard3DRootParameters[3].Descriptor.ShaderRegister = 0;
 
-	// マテリアルバッファ(b2)pixel
+	// マテリアルバッファ(b2)PS
 	standard3DRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	standard3DRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
 	standard3DRootParameters[4].Descriptor.ShaderRegister = 2;						//レジスタ番号とバインド
 
-	//Texture用(t1)pixel
+	//Texture用(t1)PS
 	standard3DRootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;	//DescriptorTableを使う
 	standard3DRootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
 	standard3DRootParameters[5].DescriptorTable.pDescriptorRanges = &standard3DDescriptorRanges[1];	//Tableの中身の配列を指定
@@ -191,57 +191,57 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 #pragma endregion
 
 #pragma region skinningStandard3D
-	//環境マップ用
+	//環境マップ用(t0)PS
 	skinningStandard3DDescriptorRanges[0].BaseShaderRegister = 0;	//0から始まる
 	skinningStandard3DDescriptorRanges[0].NumDescriptors = 1;		//数は1つ
 	skinningStandard3DDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	//SRVを使う
 	skinningStandard3DDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	//Offsetを自動計算
 
-	//テクスチャ用
+	//テクスチャ用(t1)PS
 	skinningStandard3DDescriptorRanges[1].BaseShaderRegister = 1; // register(t1)に対応
 	skinningStandard3DDescriptorRanges[1].NumDescriptors = 1;
 	skinningStandard3DDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	skinningStandard3DDescriptorRanges[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	//MatrixPalette用
+	//MatrixPalette用(t0)VS
 	skinningStandard3DDescriptorRanges[2].BaseShaderRegister = 0; // register(t0)に対応
 	skinningStandard3DDescriptorRanges[2].NumDescriptors = 1;
 	skinningStandard3DDescriptorRanges[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	skinningStandard3DDescriptorRanges[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	//カメラのワールド座標を送る用(b0)pixel
+	//カメラのワールド座標を送る用(b0)PS
 	skinningStandard3DRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	skinningStandard3DRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	skinningStandard3DRootParameters[0].Descriptor.ShaderRegister = 0;
 
-	//ライトの個数を送る用(b1)pixel
+	//ライトの個数を送る用(b1)PS
 	skinningStandard3DRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	skinningStandard3DRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	skinningStandard3DRootParameters[1].Descriptor.ShaderRegister = 1;
 
-	//環境マップ用(t0)pixel
+	//環境マップ用(t0)PS
 	skinningStandard3DRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	skinningStandard3DRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	skinningStandard3DRootParameters[2].DescriptorTable.pDescriptorRanges = &skinningStandard3DDescriptorRanges[0];
 	skinningStandard3DRootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
 
-	//行列バッファ(b0)vertex
+	//行列バッファ(b0)VS
 	skinningStandard3DRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	skinningStandard3DRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;	//VertexShaderで使う
 	skinningStandard3DRootParameters[3].Descriptor.ShaderRegister = 0;
 
-	//マテリアルバッファ(b2)pixel
+	//マテリアルバッファ(b2)PS
 	skinningStandard3DRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	skinningStandard3DRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
 	skinningStandard3DRootParameters[4].Descriptor.ShaderRegister = 2;						//レジスタ番号とバインド
 
-	//Texture用のディスクリプタテーブル(t1)pixel
+	//Texture用のディスクリプタテーブル(t1)PS
 	skinningStandard3DRootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;	//DiscriptorTableを使う
 	skinningStandard3DRootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;	//PixelShaderで使う
 	skinningStandard3DRootParameters[5].DescriptorTable.pDescriptorRanges = &skinningStandard3DDescriptorRanges[1];
 	skinningStandard3DRootParameters[5].DescriptorTable.NumDescriptorRanges = 1;	//Tableで利用する数
 
-	//MatrixPalette用(t0)vertex
+	//MatrixPalette用(t0)VS
 	skinningStandard3DRootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	skinningStandard3DRootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 	skinningStandard3DRootParameters[6].DescriptorTable.pDescriptorRanges = &skinningStandard3DDescriptorRanges[2];
@@ -293,31 +293,31 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 #pragma endregion
 
 #pragma region Particle
-	//DescriptorRange(VSで使うt0レジスタ用)
+	//位置情報のインスタンスバッファ(t0)VS
 	particleDescriptorRanges[0].BaseShaderRegister = 0;	//0から始まる
 	particleDescriptorRanges[0].NumDescriptors = 1;		//数は1つ
 	particleDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	//SRVを使う
 	particleDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	//Offsetを自動計算
 	
-	//textureDescriptorRange(PSで使うt0レジスタ用)
+	//textureDescriptorRange(t0)PS
 	textureDescriptorRanges[0].BaseShaderRegister = 0;	//0から始まる
 	textureDescriptorRanges[0].NumDescriptors = 1;		//数は1つ
 	textureDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	//SRVを使う
 	textureDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;	//Offsetを自動計算
 
 	//RootParameter
-	//StructuedBuffer(VSのt0)用のDescriptorTable
+	//位置情報のインスタンスバッファ(t0)VS
 	particleRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;					//DescriptorTableを使う
 	particleRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;							//VertexShaderで使う
 	particleRootParameters[0].DescriptorTable.pDescriptorRanges = particleDescriptorRanges;					//t0(SRV)を指定
 	particleRootParameters[0].DescriptorTable.NumDescriptorRanges = _countof (particleDescriptorRanges);	//Tableで利用する数
 
-	//ConstantBuffer(PSのb1)用のCBV
+	//マテリアルバッファ(b0)PS
 	particleRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;		//CBVを使う
 	particleRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		//PixelShaderで使う
 	particleRootParameters[1].Descriptor.ShaderRegister = 1;						//b1を指定
 
-	//Texture(PSのt0)用のDescriptorTable
+	//Texture(t0)PS
 	particleRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;				//DiscriptorTableを使う
 	particleRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;							//PixelShaderで使う
 	particleRootParameters[2].DescriptorTable.pDescriptorRanges = textureDescriptorRanges;				//t0(SRV)を指定
