@@ -9,7 +9,6 @@ public:
 	ParticleEmitter(const std::string& name);
 	void Update();
 	void ImGui();
-	//void ImGuiBehavior(); // Particlesタブ用
 
 	void Emit(ParticleGroup* group);
 
@@ -26,6 +25,10 @@ public:
 	void TargetGroup(ParticleGroup* group);
 	void UntargetGroup(ParticleGroup* group);
 	bool IsTargeting(ParticleGroup* group) const;
+
+private:
+	// 乱数生成ヘルパー関数
+	float ApplyRandomRange(bool isRandom, float minVal, float maxVal);
 
 private:
 	std::vector<ParticleGroup*> targetGroups_; // このエミッターが発射する先のグループ達

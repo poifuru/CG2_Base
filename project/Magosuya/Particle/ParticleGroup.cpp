@@ -186,13 +186,76 @@ void ParticleGroup::ImGui() {
 	ImGui::Separator();
 
 	ImGui::Text("Particle Behavior");
-	// 寿命、速度、カラーの範囲を直接編集！
-	ImGui::DragFloat2("LifeTime (Min/Max)", &behavior_.minLifeTime, 0.05f, 0.0f, 10.0f);
-	ImGui::DragFloat3("Velocity Min", &behavior_.minVelocity.x, 0.01f);
-	ImGui::DragFloat3("Velocity Max", &behavior_.maxVelocity.x, 0.01f);
-	ImGui::ColorEdit4("Color Min", &behavior_.minColor.x);
-	ImGui::ColorEdit4("Color Max", &behavior_.maxColor.x);
-	ImGui::Checkbox("Use Billboard", &useBillboard_);
+
+	// ユニークラベル作成
+	std::string label = "##" + name_;
+
+	// --- Scale ---
+	ImGui::Checkbox(("Random Scale" + label).c_str(), &behavior_.isRandomScale);
+	if (behavior_.isRandomScale) {
+		ImGui::DragFloat3(("Scale Min" + label).c_str(), &behavior_.minScale.x, 0.01f);
+		ImGui::DragFloat3(("Scale Max" + label).c_str(), &behavior_.maxScale.x, 0.01f);
+	}
+	else {
+		ImGui::DragFloat3(("Scale (Fixed)" + label).c_str(), &behavior_.transform.scale.x, 0.01f);
+		behavior_.minScale = behavior_.transform.scale;
+	}
+
+	// --- Rotate ---
+	ImGui::Checkbox(("Random Rotate" + label).c_str(), &behavior_.isRandomRotate);
+	if (behavior_.isRandomRotate) {
+		ImGui::DragFloat3(("Rotate Min" + label).c_str(), &behavior_.minRotate.x, 0.01f);
+		ImGui::DragFloat3(("Rotate Max" + label).c_str(), &behavior_.maxRotate.x, 0.01f);
+	} 
+	else {
+		ImGui::DragFloat3(("Rotate (Fixed)" + label).c_str(), &behavior_.transform.rotate.x, 0.01f, 0.0f, 3.14f);
+		behavior_.minRotate = behavior_.transform.rotate;
+	}
+
+	// --- Translate ---
+	ImGui::Checkbox(("Random Translate" + label).c_str(), &behavior_.isRandomTranslate);
+	if(behavior_.isRandomTranslate) {
+		ImGui::DragFloat3(("Translate Min" + label).c_str(), &behavior_.minTranslate.x, 0.01f);
+		ImGui::DragFloat3(("Translate Min" + label).c_str(), &behavior_.maxTranslate.x, 0.01f);
+	}
+	else {
+		ImGui::DragFloat3(("Translate (Fixed)" + label).c_str(), &behavior_.transform.translate.x, 0.01f);
+		behavior_.minTranslate = behavior_.transform.translate;
+	}
+
+	// --- Velocity ---
+	ImGui::Checkbox(("Random Velocity" + label).c_str(), &behavior_.isRandomVelocity);
+	if(behavior_.isRandomVelocity) {
+		ImGui::DragFloat3(("Velocity Min" + label).c_str(), &behavior_.minVelocity.x, 0.01f);
+		ImGui::DragFloat3(("Velocity Max" + label).c_str(), &behavior_.maxVelocity.x, 0.01f);
+	} 
+	else {
+		ImGui::DragFloat3(("Velocity (Fixed)" + label).c_str(), &behavior_.velocity.x, 0.01f);
+		behavior_.minVelocity = behavior_.velocity;
+	}
+
+	// --- Color ---
+	ImGui::Checkbox(("Random Color" + label).c_str(), &behavior_.isRandomColor);
+	if(behavior_.isRandomColor) {
+		ImGui::ColorEdit4(("Color Min" + label).c_str(), &behavior_.minColor.x);
+		ImGui::ColorEdit4(("Color Max" + label).c_str(), &behavior_.maxColor.x);
+	} 
+	else {
+		ImGui::ColorEdit4(("Color (Fixed)" + label).c_str(), &behavior_.maxColor.x);
+	}
+
+	// --- LifeTime ---
+	ImGui::Checkbox(("Random LifeTime" + label).c_str(), &behavior_.isRandomLifeTime);
+	if(behavior_.isRandomLifeTime) {
+		ImGui::DragFloat2(("LifeTime (Min/Max)" + label).c_str(), &behavior_.minLifeTime, 0.05f, 0.0f, 10.0f);
+	} 
+	else {
+		ImGui::DragFloat(("LifeTime (Fixed)" + label).c_str(), &behavior_.minLifeTime, 0.05f, 0.0f, 10.0f);
+	}
+
+	ImGui::Separator();
+	
+	ImGui::Checkbox(("Use Billboard" + label).c_str(), &useBillboard_);
 #endif
 }
 

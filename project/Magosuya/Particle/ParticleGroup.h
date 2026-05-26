@@ -10,12 +10,31 @@
 
 // パーティクルごとに異なる粒の挙動パラメータ
 struct ParticleBehavior {
-	Vector4 minColor = { 0.0f, 0.0f, 0.0f, 0.0f };
-	Vector4 maxColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	EulerTransform transform = { {1.0f, 1.0f, 1.0f}, {}, {} };
+	Vector3 minScale = { 1.0f, 1.0f, 1.0f };
+	Vector3 maxScale = {  3.0f,  3.0f,  3.0f };
+	Vector3 minRotate = { 0.0f, 0.0f, 0.0f };
+	Vector3 maxRotate = {  3.14f,  3.14f,  3.14f };
+	Vector3 minTranslate = { -1.0f, -1.0f, -1.0f };
+	Vector3 maxTranslate = {  1.0f,  1.0f,  1.0f };
+
+	Vector3 velocity = { 0.0f, 0.0f, 0.0f };
 	Vector3 minVelocity = { -1.0f, -1.0f, -1.0f };
 	Vector3 maxVelocity = {  1.0f,  1.0f,  1.0f };
+
+	Vector4 minColor = { 0.0f, 0.0f, 0.0f, 0.0f };
+	Vector4 maxColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	
 	float minLifeTime = 1.0f;
 	float maxLifeTime = 3.0f;
+
+	// 各パラメータをランダムにするかどうかのフラグ
+	bool isRandomScale = false;
+	bool isRandomRotate = false;
+	bool isRandomTranslate = false;
+	bool isRandomVelocity = true;
+	bool isRandomColor = true;
+	bool isRandomLifeTime = true;
 };
 
 class IParticleField;

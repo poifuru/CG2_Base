@@ -3,6 +3,7 @@
 #include "ParticleGroup.h"
 #include "Deltatime.h"
 #include "imgui.h"
+#include "Primitive.h"
 
 ParticleEmitter::ParticleEmitter(const std::string& name) {
 	name_ = name;
@@ -55,74 +56,59 @@ void ParticleEmitter::ImGui() {
 #endif
 }
 
-//void ParticleEmitter::ImGuiBehavior() {
-//#ifdef USEIMGUI
-//	// 名前の変更（std::stringを直接編集できるようにテキスト入力を工夫）
-//	// ImGuiのInputTextはchar配列が必要なので一時バッファを使う
-//	char nameBuffer[128];
-//	snprintf(nameBuffer, sizeof(nameBuffer), "%s", name_.c_str());
-//	if(ImGui::InputText("Group/Emitter Name", nameBuffer, sizeof(nameBuffer))) {
-//		name_ = nameBuffer; // 入力されたら名前を更新
-//	}
-//
-//	ImGui::Separator();
-//	ImGui::Text("パーティクルの挙動設定");
-//
-//	// 寿命の範囲
-//	ImGui::DragFloat2("LifeTime (Min/Max)", &behavior_.minLifeTime, 0.05f, 0.0f, 10.0f);
-//
-//	// 速度の範囲
-//	ImGui::DragFloat3("Velocity Min", &behavior_.minVelocity.x, 0.05f);
-//	ImGui::DragFloat3("Velocity Max", &behavior_.maxVelocity.x, 0.05f);
-//
-//	// カラーの範囲
-//	ImGui::ColorEdit4("Color Min", &behavior_.minColor.x);
-//	ImGui::ColorEdit4("Color Max", &behavior_.maxColor.x);
-//#endif
-//}
-
 void ParticleEmitter::Emit(ParticleGroup* group) {
 	if(!group) return;
 
-	// 指定されたグループから生成ルール（Behavior）を借りてくる
 	const ParticleBehavior& behavior = group->GetBehavior();
-
 	ParticleData data;
 
-	// 指定された範囲（min〜max）でランダムな値を生成する簡易ヘルパー
-	// std::uniform_real_distributionの範囲をその場で書き換えて使用
-	auto GetRandFloat = [this](float min, float max) {
-		if(min >= max) return min;
-		std::uniform_real_distribution<float>::param_type param(min, max);
-		return rand_(randomEngine_, param);
-		};
+	// 基本的なトランスフォーム（Scale, Rotate）はグループの挙動をベースにする
+	data.transform = behavior.transform; 
 
-	// 1. 位置の設定（エミッターのTranslateを基準に少し散らす）
-	data.transform = { {1.0f, 1.0f, 1.0f}, {},
-		{
-			emitterData_.transform.translate.x + GetRandFloat(-0.5f, 0.5f),
-			emitterData_.transform.translate.y + GetRandFloat(-0.5f, 0.5f),
-			emitterData_.transform.translate.z + GetRandFloat(-0.5f, 0.5f)
-		}
-	};
+	// Scale
+	data.transform.scale.x = ApplyRandomRange(behavior.isRandomScale, behavior.minScale.x, behavior.maxScale.x);
+	data.transform.scale.y = ApplyRandomRange(behavior.isRandomScale, behavior.minScale.y, behavior.maxScale.y);
+	data.transform.scale.z = ApplyRandomRange(behavior.isRandomScale, behavior.minScale.z, behavior.maxScale.z);
 
-	// 2. 挙動パラメータ（behavior_）を元にランダムに決定
-	data.velocity = {
-		GetRandFloat(behavior.minVelocity.x, behavior.maxVelocity.x),
-		GetRandFloat(behavior.minVelocity.y, behavior.maxVelocity.y),
-		GetRandFloat(behavior.minVelocity.z, behavior.maxVelocity.z)
-	};
+	// Rotate
+	data.transform.rotate.x = ApplyRandomRange(behavior.isRandomRotate, behavior.minRotate.x, behavior.maxRotate.x);
+	data.transform.rotate.y = ApplyRandomRange(behavior.isRandomRotate, behavior.minRotate.y, behavior.maxRotate.y);
+	data.transform.rotate.z = ApplyRandomRange(behavior.isRandomRotate, behavior.minRotate.z, behavior.maxRotate.z);
+
+	// 出現位置の決定：エミッターの Transform（translate, scale）に基づいて計算する
+	// エミッターの中心位置 (translate) から、サイズ (scale) の半分だけマイナス〜プラスの範囲で散らす
+	// X軸の出現範囲： [中心 - scale.x/2, 中心 + scale.x/2]
+	float minX = emitterData_.transform.translate.x - (emitterData_.transform.scale.x * 0.5f);
+	float maxX = emitterData_.transform.translate.x + (emitterData_.transform.scale.x * 0.5f);
+
+	// Y軸の出現範囲： [中心 - scale.y/2, 中心 + scale.y/2]
+	float minY = emitterData_.transform.translate.y - (emitterData_.transform.scale.y * 0.5f);
+	float maxY = emitterData_.transform.translate.y + (emitterData_.transform.scale.y * 0.5f);
+
+	// Z軸の出現範囲： [中心 - scale.z/2, 中心 + scale.z/2]
+	float minZ = emitterData_.transform.translate.z - (emitterData_.transform.scale.z * 0.5f);
+	float maxZ = emitterData_.transform.translate.z + (emitterData_.transform.scale.z * 0.5f);
+
+	// メンバ関数の ApplyRandomRange を使って、範囲内からランダムに位置を決定（ラムダ式は使わない）
+	data.transform.translate.x = ApplyRandomRange(behavior.isRandomTranslate, minX, maxX);
+	data.transform.translate.y = ApplyRandomRange(behavior.isRandomTranslate, minY, maxY);
+	data.transform.translate.z = ApplyRandomRange(behavior.isRandomTranslate, minZ, maxZ);
+
+	// 速度の決定（グループ側の設定を適用）
+	data.velocity.x = ApplyRandomRange(behavior.isRandomVelocity, behavior.minVelocity.x, behavior.maxVelocity.x);
+	data.velocity.y = ApplyRandomRange(behavior.isRandomVelocity, behavior.minVelocity.y, behavior.maxVelocity.y);
+	data.velocity.z = ApplyRandomRange(behavior.isRandomVelocity, behavior.minVelocity.z, behavior.maxVelocity.z);
 
 	data.acceleration = {};
 
-	data.color = {
-		GetRandFloat(behavior.minColor.x, behavior.maxColor.x),
-		GetRandFloat(behavior.minColor.y, behavior.maxColor.y),
-		GetRandFloat(behavior.minColor.z, behavior.maxColor.z),
-		GetRandFloat(behavior.minColor.w, behavior.maxColor.w)
-	};
+	// 色の決定
+	data.color.x = ApplyRandomRange(behavior.isRandomColor, behavior.maxColor.x, behavior.minColor.x);
+	data.color.y = ApplyRandomRange(behavior.isRandomColor, behavior.maxColor.y, behavior.minColor.y);
+	data.color.z = ApplyRandomRange(behavior.isRandomColor, behavior.maxColor.z, behavior.minColor.z);
+	data.color.w = ApplyRandomRange(behavior.isRandomColor, behavior.maxColor.w, behavior.minColor.w);
 
-	data.lifeTime = GetRandFloat(behavior.minLifeTime, behavior.maxLifeTime);
+	// 寿命の決定
+	data.lifeTime = ApplyRandomRange(behavior.isRandomLifeTime, behavior.minLifeTime, behavior.maxLifeTime);
 	data.currentTime = 0.0f;
 
 	// そのグループに直接放り込む
@@ -131,10 +117,10 @@ void ParticleEmitter::Emit(ParticleGroup* group) {
 
 // 1. 指定されたグループをターゲット（発射先）に追加する
 void ParticleEmitter::TargetGroup(ParticleGroup* group) {
-	if (group == nullptr) return;
+	if(group == nullptr) return;
 
 	// すでに登録済みなら二重登録しないようにチェック
-	if (IsTargeting(group)) return;
+	if(IsTargeting(group)) return;
 
 	// 配列に追加
 	targetGroups_.push_back(group);
@@ -142,13 +128,14 @@ void ParticleEmitter::TargetGroup(ParticleGroup* group) {
 
 // 2. 指定されたグループをターゲットから外す
 void ParticleEmitter::UntargetGroup(ParticleGroup* group) {
-	if (group == nullptr) return;
+	if(group == nullptr) return;
 
 	// ループ（イテレータ）を回して、一致するポインタを探して削除する
-	for (auto it = targetGroups_.begin(); it != targetGroups_.end(); ) {
-		if (*it == group) {
+	for(auto it = targetGroups_.begin(); it != targetGroups_.end(); ) {
+		if(*it == group) {
 			it = targetGroups_.erase(it); // 見つけたら削除して次のイテレータを受け取る
-		} else {
+		}
+		else {
 			++it; // 見つからなければ次に進む
 		}
 	}
@@ -156,14 +143,23 @@ void ParticleEmitter::UntargetGroup(ParticleGroup* group) {
 
 // 3. 指定されたグループがすでにターゲットに含まれているか調べる
 bool ParticleEmitter::IsTargeting(ParticleGroup* group) const {
-	if (group == nullptr) return false;
+	if(group == nullptr) return false;
 
 	// 配列を愚直にループして、同じアドレスのポインタがあるか探す
-	for (size_t i = 0; i < targetGroups_.size(); ++i) {
-		if (targetGroups_[i] == group) {
+	for(size_t i = 0; i < targetGroups_.size(); ++i) {
+		if(targetGroups_[i] == group) {
 			return true; // 見つかった
 		}
 	}
 
 	return false; // 見つからなかった
+}
+
+float ParticleEmitter::ApplyRandomRange(bool isRandom, float minVal, float maxVal) {
+	if (!isRandom) {
+		return minVal; // 固定値ならminの値をそのまま返す
+	}
+	if (minVal >= maxVal) return minVal;
+	std::uniform_real_distribution<float>::param_type param(minVal, maxVal);
+	return rand_(randomEngine_, param);
 }
