@@ -12,7 +12,7 @@ void PostEffect::Initialize(DxCommon* dxCommon) {
 
 	// シェーダーのコンパイル
 	uint32_t vsID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Fullscreen.VS.hlsl", L"vs_6_0");
-	uint32_t psID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Vignette.PS.hlsl", L"ps_6_0");
+	uint32_t psID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/BoxFilter.PS.hlsl", L"ps_6_0");
 
 	// RootSignatureの取得
 	uint32_t rootSigID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::PostProcess);

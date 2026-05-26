@@ -48,7 +48,7 @@ Player::~Player() {
 void Player::Initialize() {
 	model_->SetModelData("AnimatedCube.gltf");
 	model_->SetTexture("Cube");
-	model_->SetAnimation("AnimatedCube.gltf");
+	//model_->SetAnimation("AnimatedCube.gltf");
 	model_->Initialize();
 
 	// 固有の数値
