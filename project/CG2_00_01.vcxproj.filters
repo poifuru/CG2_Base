@@ -12,6 +12,7 @@
     <FxCompile Include="Resources\shader\Fullscreen.VS.hlsl" />
     <FxCompile Include="Resources\shader\CopyImage.PS.hlsl" />
     <FxCompile Include="Resources\shader\Grayscale.PS.hlsl" />
+    <FxCompile Include="Resources\shader\Vignette.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application\scene\ClearScene.cpp" />
