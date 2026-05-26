@@ -8,6 +8,16 @@
 #include "RenderSystem.h"
 #include "CameraComponent.h"
 
+// パーティクルごとに異なる粒の挙動パラメータ
+struct ParticleBehavior {
+	Vector4 minColor = { 0.0f, 0.0f, 0.0f, 0.0f };
+	Vector4 maxColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector3 minVelocity = { -1.0f, -1.0f, -1.0f };
+	Vector3 maxVelocity = {  1.0f,  1.0f,  1.0f };
+	float minLifeTime = 1.0f;
+	float maxLifeTime = 3.0f;
+};
+
 class IParticleField;
 
 class ParticleGroup {
@@ -23,14 +33,24 @@ public:
 	// パーティクルを追加する（エミッターから呼ばれる）
 	void AddParticle(const ParticleData& particle);
 
-	// このグループに影響を与えるフィールドを登録する
+	// このグループに影響を与えるフィールドを登録・解除
 	void AddField(IParticleField* field);
+	bool HasField(IParticleField* field);
+	void RemoveField(IParticleField* field);
 
 	// テクスチャをセット
 	void SetTexture(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) { textureHandle_ = textureHandle; }
 
-	// 名前を取得
+	// 名前を変更・取得
+	void SetName(const std::string& name) { name_ = name; }
 	std::string GetName() const { return name_; }
+
+	// ビルボードの変更・取得
+	void SetBillBoard(bool flag) { useBillboard_ = flag; }
+	bool GetBillBoard() { return useBillboard_; }
+
+	// エミッターが粒子を生成するときに、このルールを読み取れるようにゲッターを用意
+	const ParticleBehavior& GetBehavior() const { return behavior_; }
 
 private:
 	DxCommon* dxCommon_ = nullptr;
@@ -48,6 +68,7 @@ private:
 
 	// CPUデータ
 	std::string name_{};
+	ParticleBehavior behavior_;
 	MaterialData material_{};
 	std::list<ParticleData> particles_;
 	std::vector<IParticleField*> fields_; // 適用するフィールドのポインタ配列

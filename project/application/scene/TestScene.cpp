@@ -18,7 +18,7 @@ TestScene::TestScene() {
 	TextureManager::GetInstance()->LoadTexture("Resources/player/player.png", "player");
 
 	// パーティクルのテクスチャ
-	TextureManager::GetInstance()->LoadTexture("Resources/Particle/circle.png", "particle");
+	TextureManager::GetInstance()->LoadTexture("Resources/Particle/circle2.png", "particle");
 
 	TextureManager::GetInstance()->LoadTexture("Resources/Skybox/test2.dds", "skybox");
 }
@@ -55,8 +55,8 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 	human_->SetRotate(Vector3{ 0.0f, Math::Deg2Rad(180.0f), 0.0f });
 	human_->SetTranslate(Vector3{ 5.0f, 0.0f, 0.0f });
 
-	hitEffect_ = std::make_unique<ParticleSystem>(dxCommon);
-	hitEffect_->Initialize(TextureManager::GetInstance()->TextureManager::GetTextureHandle("particle"));
+	parSystem_ = std::make_unique<ParticleSystem>(dxCommon);
+	parSystem_->Initialize();
 
 	skybox_ = std::make_unique<Skybox>(dxCommon);
 	skybox_->Initialize("skybox");
@@ -71,12 +71,11 @@ void TestScene::Update() {
 	camera_->Update();
 
 	lightManager_->Update();
-	lightManager_->ImGui();
 
 	cube_->Update(&camera_->GetCameraData());
 	human_->Update(&camera_->GetCameraData());
 
-	hitEffect_->Update(camera_->GetCameraData());
+	parSystem_->Update(camera_->GetCameraData());
 
 	skybox_->Update(&camera_->GetCameraData());
 
@@ -87,7 +86,7 @@ void TestScene::Draw() {
 	skybox_->Draw();
 	cube_->Draw();
 	human_->Draw();
-	hitEffect_->Draw();
+	parSystem_->Draw();
 }
 
 void TestScene::StopToResources() {
@@ -97,10 +96,29 @@ void TestScene::StopToResources() {
 void TestScene::ImGui() {
 #ifdef USEIMGUI
 	ImGui::Begin("TestScene");
-	camera_->ImGui();
-	cube_->ImGui("AnimationCube");
-	human_->ImGui("AnimationHuman");
-	ImGui::ShowDemoWindow();
+	if(ImGui::BeginTabBar("Setting")) {
+		if(ImGui::BeginTabItem("Camera")) {
+			camera_->ImGui();
+			ImGui::EndTabItem();
+		}
+
+		if(ImGui::BeginTabItem("Light")) {
+			lightManager_->ImGui();
+			ImGui::EndTabItem();
+		}
+
+		if(ImGui::BeginTabItem("Objects")) {
+			cube_->ImGui("AnimationCube");
+			human_->ImGui("AnimationHuman");
+			ImGui::EndTabItem();
+		}
+
+		if(ImGui::BeginTabItem("ParticleSystem")) {
+			parSystem_->ImGui();
+			ImGui::EndTabItem();
+		}
+		ImGui::EndTabBar();
+	}
 	ImGui::End();
 #endif
 }

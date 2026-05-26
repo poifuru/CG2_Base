@@ -41,6 +41,9 @@ struct RenderCommand {
 	D3D12_INDEX_BUFFER_VIEW ibv{};
 	UINT indexCount = 0;
 
+	// インスタンス数を追加（デフォルトは1）
+	UINT instanceCount = 1;
+
 	// === ルートパラメータごとのバインドデータ ===
 	// ルートパラメータのインデックス（0〜15）にダイレクトに対応させる
 	RenderBind binds[kMaxRootParameters]{};

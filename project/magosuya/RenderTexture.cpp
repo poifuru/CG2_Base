@@ -12,7 +12,7 @@ RenderTexture::~RenderTexture() {
 
 void RenderTexture::Initialize(DxCommon* dxCommon, SRVManager* srvManager) {
 	// オフスクリーンレンダリング用のクリアカラー（わかりやすいように少し暗い色など自由に変更可能）
-	const Vector4 kRenderTargetClearValue{ 0.1f, 0.25f, 0.5f, 1.0f }; // DxCommonのClear色と同じ
+	const Vector4 kRenderTargetClearValue{ 0.0f, 0.0f, 0.0f, 1.0f }; // DxCommonのClear色と同じ
 
 	// リソース作成
 	CreateRenderTextureResource(

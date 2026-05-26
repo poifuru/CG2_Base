@@ -2,6 +2,7 @@
 #include "IParticleField.h"
 #include "MathFunction.h"
 #include "Deltatime.h"
+#include "imgui.h"
 
 static inline const uint32_t kParticleVertexNum = 4;
 static inline const uint32_t kParticleIndexNum = 6;
@@ -62,7 +63,7 @@ void ParticleGroup::Initialize(const std::string& name) {
 	psoDesc_.VS_ID = ShaderManager::GetInstance ()->CompileAndCacheShader (L"Resources/shader/Particle.VS.hlsl", L"vs_6_0");
 	psoDesc_.PS_ID = ShaderManager::GetInstance ()->CompileAndCacheShader (L"Resources/shader/Particle.PS.hlsl", L"ps_6_0");
 	psoDesc_.InputLayoutID = InputLayoutType::Particle;
-	psoDesc_.BlendMode = BlendModeType::Additive;
+	psoDesc_.BlendMode = BlendModeType::Alpha;
 	psoDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;	//Depthの書き込みを行わない
 	layer_ = 1;
 	renderType_ = RenderType::Particle;
@@ -93,14 +94,14 @@ void ParticleGroup::Update(const CameraData& cameraData) {
 		// インスタンシング用バッファに詰める処理（省略）
 		ParticleForGPU gpuData;
 
-		// 行列作成
+		// スケールと回転（もしあれば）だけで行列を作成（平行移動は一旦原点にする）
 		Matrix4x4 world = Math::MakeAffineMatrix(
-			it->transform.scale,
-			it->transform.rotate,
-			it->transform.translate
+		it->transform.scale,
+		it->transform.rotate,
+		{ 0.0f, 0.0f, 0.0f }
 		);
 
-		// ビルボード処理：カメラの回転成分（3x3部分）を乗算する
+		// ビルボード処理：カメラのY軸回転だけを反映させる（Y軸ビルボード）
 		if(useBillboard_) {
 			Matrix4x4 billboardRotation = cameraData.world;
 			billboardRotation.m[3][0] = 0.0f; // 平行移動成分を消す
@@ -111,9 +112,14 @@ void ParticleGroup::Update(const CameraData& cameraData) {
 			gpuData.world = Math::Multiply(world, billboardRotation);
 		}
 		else {
-			// ビルボードを使わない場合は通常のアフィン行列をそのまま使う
+			// ビルボードを使わない場合はそのまま使う
 			gpuData.world = world;
 		}
+
+		// 最後にパーティクルの位置を平行移動として適用する
+		gpuData.world.m[3][0] = it->transform.translate.x;
+		gpuData.world.m[3][1] = it->transform.translate.y;
+		gpuData.world.m[3][2] = it->transform.translate.z;
 		
 		gpuData.WVP = Math::Multiply(gpuData.world, cameraData.vp);
 
@@ -145,6 +151,9 @@ void ParticleGroup::Draw() {
 	cmd.ibv = indexBuffer_->GetView();
 	cmd.indexCount = kParticleIndexNum;
 
+	// 現在のパーティクル数をインスタンス数として設定！
+	cmd.instanceCount = static_cast<UINT>(particles_.size());
+
 	// 定数バッファのアドレス
 	cmd.binds[0].type = BindingType::SRV_Table;
 	cmd.binds[0].descriptorHandle = instancingBuffer_->GetSRVHandle();
@@ -167,7 +176,23 @@ void ParticleGroup::Draw() {
 
 void ParticleGroup::ImGui() {
 #ifdef USEIMGUI
+	// 名前の変更
+	char nameBuffer[128];
+	snprintf(nameBuffer, sizeof(nameBuffer), "%s", name_.c_str());
+	if(ImGui::InputText("Group Name", nameBuffer, sizeof(nameBuffer))) {
+		name_ = nameBuffer;
+	}
 
+	ImGui::Separator();
+
+	ImGui::Text("Particle Behavior");
+	// 寿命、速度、カラーの範囲を直接編集！
+	ImGui::DragFloat2("LifeTime (Min/Max)", &behavior_.minLifeTime, 0.05f, 0.0f, 10.0f);
+	ImGui::DragFloat3("Velocity Min", &behavior_.minVelocity.x, 0.01f);
+	ImGui::DragFloat3("Velocity Max", &behavior_.maxVelocity.x, 0.01f);
+	ImGui::ColorEdit4("Color Min", &behavior_.minColor.x);
+	ImGui::ColorEdit4("Color Max", &behavior_.maxColor.x);
+	ImGui::Checkbox("Use Billboard", &useBillboard_);
 #endif
 }
 
@@ -180,5 +205,22 @@ void ParticleGroup::AddParticle(const ParticleData& particle) {
 void ParticleGroup::AddField(IParticleField* field) {
 	if (field != nullptr) {
 		fields_.push_back(field);
+	}
+}
+
+bool ParticleGroup::HasField(IParticleField* field) {
+	for (size_t i = 0; i < fields_.size(); ++i) {
+		if (fields_[i] == field) return true;
+	}
+	return false;
+}
+
+void ParticleGroup::RemoveField(IParticleField* field) {
+	for (auto it = fields_.begin(); it != fields_.end(); ) {
+		if (*it == field) {
+			it = fields_.erase(it); // 見つけたら削除
+		} else {
+			++it;
+		}
 	}
 }

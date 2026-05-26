@@ -32,7 +32,7 @@ private:	//メンバ変数
 	std::unique_ptr<Animator> humanAnimator_ = nullptr;
 
 	// パーティクル
-	std::unique_ptr<ParticleSystem> hitEffect_ = nullptr;
+	std::unique_ptr<ParticleSystem> parSystem_ = nullptr;
 
 	// スカイボックス
 	std::unique_ptr<Skybox> skybox_ = nullptr;

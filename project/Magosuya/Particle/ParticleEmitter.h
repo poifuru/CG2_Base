@@ -6,18 +6,31 @@ class ParticleGroup;
 
 class ParticleEmitter {
 public:
-	ParticleEmitter(ParticleGroup* targetGroup, const std::string& name);
+	ParticleEmitter(const std::string& name);
 	void Update();
 	void ImGui();
+	//void ImGuiBehavior(); // Particlesタブ用
 
+	void Emit(ParticleGroup* group);
+
+	// 名前の設定・取得
+	void SetName(const std::string& name) { name_ = name; }
 	std::string GetName() const { return name_; }
 
-private:
-	void Emit();
+	// 名前を直接書き換えるためのバッファ取得用
+	std::string& GetNameRef() { return name_; }
+	// ImGui編集用に参照を返す
+	Emitter& GetEmitterData() { return emitterData_; }
 
-	std::string name_{};
-	ParticleGroup* targetGroup_ = nullptr; // 煙用、炎用などのグループへのポインタ
+	// 4枚目のタブでくっつけたり外したりするための関数
+	void TargetGroup(ParticleGroup* group);
+	void UntargetGroup(ParticleGroup* group);
+	bool IsTargeting(ParticleGroup* group) const;
+
+private:
+	std::vector<ParticleGroup*> targetGroups_; // このエミッターが発射する先のグループ達
 	Emitter emitterData_;
+	std::string name_{};
 
 	//生成エンジン
 	std::mt19937 randomEngine_;

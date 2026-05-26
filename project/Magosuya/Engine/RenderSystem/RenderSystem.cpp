@@ -61,7 +61,7 @@ void RenderSystem::ExecuteCommands() {
 		}
 
 		// 描画！
-		commandList_->DrawIndexedInstanced(cmd.indexCount, 1, 0, 0, 0);
+		commandList_->DrawIndexedInstanced(cmd.indexCount, cmd.instanceCount, 0, 0, 0);
 	}
 }
 
