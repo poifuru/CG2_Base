@@ -35,8 +35,6 @@ void ParticleSystem::Draw() {
 
 void ParticleSystem::ImGui() {
 #ifdef USEIMGUI
-	ImGui::Begin("Particle System");
-
 	// ----------------------------------------------------
 	// 選択インデックスが範囲外を指さないように丸める
 	// ----------------------------------------------------
@@ -302,8 +300,6 @@ void ParticleSystem::ImGui() {
 		// 【修正】EndTabBarとEndのペア関係を正しい位置に修正！
 		ImGui::EndTabBar(); 
 	}
-
-	ImGui::End();
 #endif
 }
 

@@ -139,8 +139,6 @@ void LightManager::Update() {
 
 void LightManager::ImGui() {
 #ifdef USEIMGUI
-	ImGui::Begin("Light Manager");
-
 	// タブバーを開始する
 	if(ImGui::BeginTabBar("LightTabs")) {
 
@@ -298,8 +296,6 @@ void LightManager::ImGui() {
 
 		ImGui::EndTabBar(); // タブバーを終了
 	}
-
-	ImGui::End();
 #endif
 }
 

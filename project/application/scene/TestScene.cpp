@@ -103,6 +103,7 @@ void TestScene::ImGui() {
 		}
 
 		if(ImGui::BeginTabItem("Light")) {
+			ImGui::Spacing();
 			lightManager_->ImGui();
 			ImGui::EndTabItem();
 		}

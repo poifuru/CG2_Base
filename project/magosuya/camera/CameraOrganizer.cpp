@@ -104,7 +104,6 @@ void CameraOrganizer::Update () {
 
 void CameraOrganizer::ImGui () {
 #ifdef USEIMGUI
-	ImGui::Begin ("CameraOrganizer");
 	ImGui::Separator ();
 	// 現在アクティブなカメラの名前を取得
 	const char* current_item = activeCameraName_.c_str ();
@@ -140,7 +139,6 @@ void CameraOrganizer::ImGui () {
 	ImGui::Text (("アクティブなカメラ : " + activeCameraName_).c_str ());
 
 	activeCamera_->ImGui ();
-	ImGui::End ();
 #endif
 }
 
