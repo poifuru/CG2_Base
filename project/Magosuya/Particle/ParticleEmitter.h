@@ -1,5 +1,7 @@
 #pragma once
 #include <random>
+#include <json.hpp>
+using namespace nlohmann;
 #include "ParticleData.h"
 
 class ParticleGroup;
@@ -11,6 +13,9 @@ public:
 	void ImGui();
 
 	void Emit(ParticleGroup* group);
+
+	// 設定の保存
+	void SaveConfig(json& jsonOut)const;
 
 	// 名前の設定・取得
 	void SetName(const std::string& name) { name_ = name; }

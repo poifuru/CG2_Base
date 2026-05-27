@@ -7,18 +7,20 @@
 void TextureManager::Initialize (DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 	srvManager_ = SRVManager::GetInstance();
-	CreateDummyTexture ("Dummy");
+
+	// ダミーの生成（戻り値のインデックスを記録しておく）
+	dummyTextureIndex_ = CreateDummyTexture();
 }
 
-TextureData* TextureManager::LoadTexture (const std::string& filePath, const std::string& ID) {
+int TextureManager::LoadTexture (const std::string& filePath) {
 	//そのパスの画像をすでに読み込んでいたら
-	if (textureMap_.count (ID)) {
+	if (pathMap_.count (filePath)) {
 		//既存データを取得
-		TextureData& existingData = textureMap_.at (ID);
+		int existingIndex = pathMap_.at (filePath);
 		//参照カウントを増やす
-		existingData.ref_count++;
+		textureMap_.at(existingIndex).ref_count++;
 		//存在していたら既存のデータを返す
-		return &existingData;
+		return existingIndex;
 	}
 
 	HRESULT hr;
@@ -42,21 +44,27 @@ TextureData* TextureManager::LoadTexture (const std::string& filePath, const std
 	}
 
 	if (FAILED (hr)) {
-		std::wstringstream ss;
-		ss << L"[エラー] テクスチャ読み込み失敗！ ダミーのテクスチャを返します HRESULT: 0x" << std::hex << hr << std::endl;
-		OutputDebugStringW (ss.str ().c_str ());
-		//ダミーテクスチャデータを取得
-		TextureData& dummyData = textureMap_.at ("Dummy");
-		//参照カウントを増やす
-		dummyData.ref_count++;
-		//元のIDでダミーテクスチャの情報を登録(そのIDが通らないので同じIDが来た時にすぐにダミーデータを返せるように)
-		TextureData failureCacheData = dummyData; // ダミーの情報をコピー
-		failureCacheData.ref_count = 1;           // このID自体の参照は1からスタート
-		//IDをキャッシュに登録
-		textureMap_[ID] = failureCacheData;
+		//std::wstringstream ss;
+		//ss << L"[エラー] テクスチャ読み込み失敗！ ダミーのテクスチャを返します HRESULT: 0x" << std::hex << hr << std::endl;
+		//OutputDebugStringW (ss.str ().c_str ());
+		////ダミーテクスチャデータを取得
+		//TextureData& dummyData = textureMap_.at ("Dummy");
+		////参照カウントを増やす
+		//dummyData.ref_count++;
+		////元のIDでダミーテクスチャの情報を登録(そのIDが通らないので同じIDが来た時にすぐにダミーデータを返せるように)
+		//TextureData failureCacheData = dummyData; // ダミーの情報をコピー
+		//failureCacheData.ref_count = 1;           // このID自体の参照は1からスタート
+		////IDをキャッシュに登録
+		//textureMap_[ID] = failureCacheData;
 
-		//新しく登録したキャッシュデータを返す
-		return &textureMap_.at (ID);
+		////新しく登録したキャッシュデータを返す
+		//return &textureMap_.at (ID);
+
+		// ダミーテクスチャのインデックスの参照カウントを増やして返す
+		textureMap_.at(dummyTextureIndex_).ref_count++;
+		// 失敗したパスもダミーを指すようにキャッシュしておく
+		pathMap_[filePath] = dummyTextureIndex_;
+		return dummyTextureIndex_;
 	}
 	assert (SUCCEEDED (hr));
 
@@ -80,6 +88,7 @@ TextureData* TextureManager::LoadTexture (const std::string& filePath, const std
 
 	//srvManagerで空きディスクリプタのインデックスを確保
 	UINT newIndex = srvManager_->Allocate();
+	int textureID = static_cast<int>(newIndex);
 
 	//srvManagerでSRVの生成
 	srvManager_->CreateSRVforTexture2D(
@@ -95,24 +104,27 @@ TextureData* TextureManager::LoadTexture (const std::string& filePath, const std
 	//どのインデックスを使ったかを保存しておくと解放時に便利
 	newData.descriptorIndex = newIndex;
 
-	//mapに登録
-	textureMap_[ID] = newData;
-	return &textureMap_.at (ID);
+	// 両方のマップに登録
+	textureMap_[textureID] = newData;
+	pathMap_[filePath] = textureID;
+
+	return textureID;
 }
 
-D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetTextureHandle (const std::string& ID) {
-	//ID指定してmapから持ってくる
-	assert (textureMap_.count (ID));
-	return textureMap_.at (ID).handle.gpu;
+D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetTextureHandle (int textureIndex) {
+	if (textureMap_.count(textureIndex) == 0) {
+		return textureMap_.at(dummyTextureIndex_).handle.gpu;
+	}
+	return textureMap_.at(textureIndex).handle.gpu;
 }
 
-void TextureManager::UnloadTexture (const std::string& ID) {
+void TextureManager::UnloadTexture (int textureIndex) {
 	//参照カウントを減らす
-	if (!textureMap_.count (ID)) { return; }
-	textureMap_.at (ID).ref_count--;
+	if (!textureMap_.count (textureIndex)) { return; }
+	textureMap_.at (textureIndex).ref_count--;
 
 	// 参照を取得する
-	TextureData& data = textureMap_.at (ID);
+	TextureData& data = textureMap_.at (textureIndex);
 
 	//参照カウントがゼロになったらテクスチャ削除
 	if (data.ref_count <= 0) {
@@ -120,18 +132,23 @@ void TextureManager::UnloadTexture (const std::string& ID) {
 		//使っていたインデックスを空きリストに戻す
 		srvManager_->Free(data.descriptorIndex);
 		//キャッシュマップからデータを削除
-		textureMap_.erase (ID);
+		textureMap_.erase (textureIndex);
 	}
+}
+
+std::string TextureManager::GetTexturePath(int textureIndex) {
+	if (textureMap_.count(textureIndex) == 0) return "";
+	return textureMap_.at(textureIndex).filePath;
 }
 
 void TextureManager::ClearIntermediateResource () {
 	intermediateResource_.clear ();
 }
 
-const DirectX::TexMetadata& TextureManager::GetMetaData (const std::string& id) {
-	assert (textureMap_.count (id));
+const DirectX::TexMetadata& TextureManager::GetMetaData (int textureIndex) {
+	assert (textureMap_.count (textureIndex));
 
-	return textureMap_.at (id).metadata;
+	return textureMap_.at (textureIndex).metadata;
 }
 
 ComPtr<ID3D12Resource> TextureManager::CreateTextureResource (const DirectX::TexMetadata& metadata) {
@@ -181,7 +198,7 @@ ComPtr<ID3D12Resource> TextureManager::UploadTextureData (const ComPtr<ID3D12Res
 	return intermediateResource;
 }
 
-TextureData* TextureManager::CreateDummyTexture (const std::string& ID) {
+int TextureManager::CreateDummyTexture () {
 	//returnするデータを詰める箱
 	TextureData newData{};
 	newData.ref_count = 1;
@@ -240,7 +257,13 @@ TextureData* TextureManager::CreateDummyTexture (const std::string& ID) {
 	//どのインデックスを使ったかを保存しておくと解放時に便利
 	newData.descriptorIndex = newIndex;
 
-	//mapに登録
-	textureMap_[ID] = newData;
-	return &textureMap_.at (ID);
+	// キーを割り当てられたインデックス（int）にする
+	int textureID = static_cast<int>(newIndex);
+	textureMap_[textureID] = newData;
+
+	// パスからの逆引きマップにも登録しておく（"Dummy" というパスで呼ばれたらこれを返す）
+	pathMap_["Dummy"] = textureID;
+
+	// 確定した整数IDを返す
+	return textureID;
 }

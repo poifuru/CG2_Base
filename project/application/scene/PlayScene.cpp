@@ -8,7 +8,7 @@
 #include "TextureManager.h"
 
 PlayScene::PlayScene () {
-	TextureManager::GetInstance()->LoadTexture("Resources/Skybox/test2.dds", "skybox");
+	TextureManager::GetInstance()->LoadTexture("Resources/Skybox/test2.dds");
 }
 
 PlayScene::~PlayScene () {
@@ -43,7 +43,7 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	enemyManager_->Initialize(dxCommon, lightManager_.get(), camera);*/
 
 	skybox_ = std::make_unique<Skybox>(dxCommon);
-	skybox_->Initialize("skybox");
+	skybox_->Initialize("Resources/Skybox/test2.dds");
 
 	RenderSystem::GetInstance()->SetCameraBuffer(camera_->GetCameraGPUAddress());
 	RenderSystem::GetInstance()->SetLightBuffer(lightManager_->GetLightGPUAddress());

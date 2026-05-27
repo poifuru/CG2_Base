@@ -7,20 +7,20 @@ TestScene::TestScene() {
 	ModelManager::GetInstance()->LoadModelData("Resources/AnimatedCube", "AnimatedCube.gltf");
 	ModelManager::GetInstance()->LoadAnimationData("Resources/AnimatedCube", "AnimatedCube.gltf");
 	TextureManager::GetInstance()->TextureManager::LoadTexture(
-		"Resources/AnimatedCube/AnimatedCube_BaseColor.png", "Cube"
+		"Resources/AnimatedCube/AnimatedCube_BaseColor.png"
 	);
 	// 人のアニメーション
 	ModelManager::GetInstance()->LoadModelData("Resources/human", "walk.gltf");
 	ModelManager::GetInstance()->LoadAnimationData("Resources/human", "walk.gltf");
-	TextureManager::GetInstance()->LoadTexture("Resources/human/white.png", "white");
+	TextureManager::GetInstance()->LoadTexture("Resources/human/white.png");
 
 	ModelManager::GetInstance()->LoadModelData("Resources/player", "player.obj");
-	TextureManager::GetInstance()->LoadTexture("Resources/player/player.png", "player");
+	TextureManager::GetInstance()->LoadTexture("Resources/player/player.png");
 
 	// パーティクルのテクスチャ
-	TextureManager::GetInstance()->LoadTexture("Resources/Particle/circle2.png", "particle");
+	TextureManager::GetInstance()->LoadTexture("Resources/Particle/circle2.png");
 
-	TextureManager::GetInstance()->LoadTexture("Resources/Skybox/test2.dds", "skybox");
+	TextureManager::GetInstance()->LoadTexture("Resources/Skybox/test2.dds");
 }
 
 TestScene::~TestScene() {
@@ -39,14 +39,14 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 	modelFactory_ = ModelFactory::GetInstance();
 	modelFactory_->SetLightManager(lightManager_.get());
 
-	cube_ = std::move(modelFactory_->CreateModel("AnimatedCube.gltf", "Cube"));
+	cube_ = std::move(modelFactory_->CreateModel("AnimatedCube.gltf", "Resources/AnimatedCube/AnimatedCube_BaseColor.png"));
 	cubeAnimator_ = std::make_unique<Animator>(dxCommon);
 	cubeAnimator_->Initialize(cube_.get());
 	cubeAnimator_->BindAnimation(ModelManager::GetInstance()->GetAnimationData("AnimatedCube.gltf").lock().get());
 	cube_->SetAnimator(cubeAnimator_.get());
 	cube_->SetTranslate(Vector3{ -5.0f, 0.0f, 0.0f });
 
-	human_ = std::move(modelFactory_->CreateModel("walk.gltf", "white"));
+	human_ = std::move(modelFactory_->CreateModel("walk.gltf", "Resources/human/white.png"));
 	humanAnimator_ = std::make_unique<Animator>(dxCommon);
 	humanAnimator_->Initialize(human_.get());
 	humanAnimator_->BindAnimation(ModelManager::GetInstance()->GetAnimationData("walk.gltf").lock().get());
@@ -59,7 +59,7 @@ void TestScene::Initialize(CameraOrganizer* camera, InputManager* inputManager, 
 	parSystem_->Initialize();
 
 	skybox_ = std::make_unique<Skybox>(dxCommon);
-	skybox_->Initialize("skybox");
+	skybox_->Initialize("Resources/Skybox/test2.dds");
 	skybox_->SetRenderType(RenderType::Skybox);
 
 	RenderSystem::GetInstance()->SetLightBuffer(lightManager_->GetLightGPUAddress());

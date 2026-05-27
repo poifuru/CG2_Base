@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "Buffer.h"
 
 // マテリアルデータ
@@ -9,6 +10,12 @@ struct MaterialData {
 	float metallic; // 金属度
 	float environmentCoefficient;	// 環境係数
 	BOOL enableLighting;
+};
+
+// テクスチャのファイルパス保存用
+struct MaterialTex {
+	int index;
+	std::string filePath;
 };
 
 struct MaterialResource {

@@ -11,7 +11,7 @@ public:
 	~Model() override;
 
 	// アセットはファクトリーから直接流してもらう
-	void Initialize(ModelData* modelData, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
+	void Initialize(ModelData* modelData);
 
 	void Update(CameraData* cameraData) override;
 

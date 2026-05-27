@@ -11,7 +11,7 @@ ParticleEmitter::ParticleEmitter(const std::string& name) {
 	randomEngine_.seed(rd_());
 
 	// 自身のデータの初期化
-	emitterData_.transform = { {}, {}, {} };
+	emitterData_.transform = { {1.0f, 1.0f, 1.0f}, {}, {} };
 	emitterData_.count = 10;
 	emitterData_.frequency = 1.0f;
 	emitterData_.frequencyTime = 0.0f;
@@ -113,6 +113,23 @@ void ParticleEmitter::Emit(ParticleGroup* group) {
 
 	// そのグループに直接放り込む
 	group->AddParticle(data);
+}
+
+void ParticleEmitter::SaveConfig(json& jsonOut) const {
+	jsonOut["name"] = name_;
+
+	auto& e = jsonOut["emitterData"];
+	e["count"] = emitterData_.count;
+	e["frequency"] = emitterData_.frequency;
+	e["translate"] = { emitterData_.transform.translate.x, emitterData_.transform.translate.y, emitterData_.transform.translate.z };
+	e["scale"] = { emitterData_.transform.scale.x, emitterData_.transform.scale.y, emitterData_.transform.scale.z };
+
+	// このエミッターが狙っているターゲットグループの名前を保存しておく
+	nlohmann::json targets = nlohmann::json::array();
+	for (size_t i = 0; i < targetGroups_.size(); ++i) {
+		targets.push_back(targetGroups_[i]->GetName());
+	}
+	jsonOut["targetGroups"] = targets;
 }
 
 // 1. 指定されたグループをターゲット（発射先）に追加する

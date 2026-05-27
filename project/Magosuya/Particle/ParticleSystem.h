@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <json.hpp>
+using namespace nlohmann;
 #include "ParticleGroup.h"
 #include "ParticleEmitter.h"
 #include "IParticleField.h"
@@ -14,6 +16,9 @@ public:
 	void Update(const CameraData& cameraData);
 	void Draw();
 	void ImGui();
+
+	void SaveToFile(const std::string& filePath);
+	void LoadFromFile(const std::string& filePath);
 
 	// 動的に要素を追加する関数
 	void AddEmitter(const std::string& name);

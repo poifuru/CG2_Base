@@ -117,6 +117,12 @@ void BaseObject3d::SetBlendMode(BlendModeType type) {
 	}
 }
 
+void BaseObject3d::SetTexture(const std::string& filePath) {
+	texInfo_.filePath = filePath;
+	texInfo_.index = TextureManager::GetInstance()->LoadTexture(filePath);
+	textureHandle_ = TextureManager::GetInstance()->GetTextureHandle(texInfo_.index);
+}
+
 Matrix4x4 BaseObject3d::CalculateWorldMatrix() {
 	return Math::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 }

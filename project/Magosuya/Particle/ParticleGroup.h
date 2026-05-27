@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <list>
+#include <json.hpp>
+using namespace nlohmann;
 #include "DxCommon.h"
 #include "Buffer.h"
 #include "ParticleData.h"
@@ -57,6 +59,10 @@ public:
 	bool HasField(IParticleField* field);
 	void RemoveField(IParticleField* field);
 
+	// 設定の保存・読み込み
+	void SaveConfig(json& jsonOut)const;
+	void LoadConfig(const json& jsonIn);
+
 	// テクスチャをセット
 	void SetTexture(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) { textureHandle_ = textureHandle; }
 
@@ -93,6 +99,7 @@ private:
 	std::vector<IParticleField*> fields_; // 適用するフィールドのポインタ配列
 	// テクスチャハンドル
 	D3D12_GPU_DESCRIPTOR_HANDLE textureHandle_{};
+	MaterialTex tex_{};
 
 	// ビルボード切り替え用のフラグ
 	bool useBillboard_ = true;

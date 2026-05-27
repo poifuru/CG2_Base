@@ -13,14 +13,13 @@ Model::~Model() {
 
 }
 
-void Model::Initialize(ModelData* modelData, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
+void Model::Initialize(ModelData* modelData) {
 	// 親クラスの初期化
 	BaseObject3d::Initialize();
 
 	// === Modelクラス自身の初期化 === //
 	// 工場から貰ったアセットをそのままセット！
 	modelData_ = modelData;
-	textureHandle_ = textureHandle; // 親クラス（BaseObject3d）のメンバに格納
 
 	// このモデルが使うPSOやテクスチャのデフォルトをセット
 	psoDesc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Standard3D); // スキニングなし用の標準ルートシグネチャIDなど

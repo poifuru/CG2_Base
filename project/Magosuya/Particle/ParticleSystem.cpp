@@ -1,4 +1,6 @@
-#include "ParticleSystem.h"
+#include <fstream>
+#include <iomanip>
+#include <filesystem>
 #include "ParticleSystem.h"
 #include "ParticleField.h" // GravityField など
 #include "imgui.h"
@@ -294,6 +296,14 @@ void ParticleSystem::ImGui() {
 				ImGui::Text("Please select or create an emitter first.");
 			}
 
+			if (ImGui::Button("Save System")) {
+				SaveToFile("Resources/Data/particle_v1.json");
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Load System")) {
+				LoadFromFile("Resources/Data/particle_v1.json");
+			}
+
 			ImGui::EndTabItem();
 		}
 
@@ -301,6 +311,80 @@ void ParticleSystem::ImGui() {
 		ImGui::EndTabBar(); 
 	}
 #endif
+}
+
+void ParticleSystem::SaveToFile(const std::string& filePath) {
+	nlohmann::json root;
+
+	// 1. 全てのグループを保存
+	root["groups"] = nlohmann::json::array();
+	for (size_t i = 0; i < groups_.size(); ++i) {
+		nlohmann::json groupJson;
+		groups_[i]->SaveConfig(groupJson);
+		root["groups"].push_back(groupJson);
+	}
+
+	// 2. 全てのエミッターを保存
+	root["emitters"] = nlohmann::json::array();
+	for (size_t i = 0; i < emitters_.size(); ++i) {
+		nlohmann::json emitterJson;
+		emitters_[i]->SaveConfig(emitterJson);
+		root["emitters"].push_back(emitterJson);
+	}
+
+	// 保存先ファイルの親フォルダ（Resources/Data/）がなければ自動作成する
+	std::filesystem::path path(filePath);
+	if (path.has_parent_path()) {
+		std::filesystem::create_directories(path.parent_path());
+	}
+
+	// ファイル書き出し
+	std::ofstream file(filePath);
+	if (file.is_open()) {
+		file << std::setw(4) << root << std::endl; // インデント付きで見やすく保存
+	}
+}
+
+void ParticleSystem::LoadFromFile(const std::string& filePath) {
+	std::ifstream file(filePath);
+	if (!file.is_open()) return;
+
+	nlohmann::json root;
+	file >> root;
+
+	// 実行中の古いデータを一回綺麗にする
+	groups_.clear();
+	emitters_.clear();
+
+	// グループの復元
+	if (root.contains("groups")) {
+		for (const auto& groupJson : root["groups"]) {
+			// グループを新しく生成して、テクスチャハンドルは仮かデフォルトを一旦セット
+			// (実際にはTextureManagerから名前で引き直せるようにすると最高)
+			AddGroup(groupJson["name"], {}); 
+			groups_.back()->LoadConfig(groupJson);
+		}
+	}
+
+	// エミッターの復元とグループとの再接続
+	if (root.contains("emitters")) {
+		for (const auto& emitterJson : root["emitters"]) {
+			AddEmitter(emitterJson["name"]);
+			auto* newEmitter = emitters_.back().get();
+			// エミッター自体のデータをロード
+			// ... (省略) ...
+
+			// ターゲットグループの紐付けを名前を頼りに再構築
+			for (const auto& targetName : emitterJson["targetGroups"]) {
+				for (size_t g = 0; g < groups_.size(); ++g) {
+					if (groups_[g]->GetName() == targetName.get<std::string>()) {
+						newEmitter->TargetGroup(groups_[g].get());
+						break;
+					}
+				}
+			}
+		}
+	}
 }
 
 void ParticleSystem::AddEmitter(const std::string& name) {

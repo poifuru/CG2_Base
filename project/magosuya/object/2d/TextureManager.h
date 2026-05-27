@@ -16,6 +16,7 @@ struct TextureData {
 	DirectX::TexMetadata metadata = {};	// メタデータ
 	UINT descriptorIndex = 0;	// どのディスクリプタヒープを使ったか
 	int ref_count = 0;	// 参照カウント
+	std::string filePath = "";
 };
 
 class TextureManager {
@@ -29,20 +30,23 @@ public:		//外部公開メソッド
 	void Initialize (DxCommon* dxCommon);
 
 	//画像をロードする関数
-	TextureData* LoadTexture (const std::string& filePath, const std::string& ID);
+	int LoadTexture (const std::string& filePath);
 
 	//登録した画像のGPUハンドルを取得する関数
-	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureHandle (const std::string& ID);
+	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureHandle (int textureIndex);
 
 	//テクスチャのアンロード関数
-	void UnloadTexture (const std::string& filePath);
+	void UnloadTexture (int textureIndex);
+
+	// インデックスからファイルパスを逆引きするための関数
+	std::string GetTexturePath(int textureIndex);
 
 	//中間リソース解放関数
 	void ClearIntermediateResource ();
 
 	//アクセッサ
 	const std::vector<ComPtr<ID3D12Resource>>& GetIntermediateResource () const { return intermediateResource_; }
-	const DirectX::TexMetadata& GetMetaData (const std::string& id);
+	const DirectX::TexMetadata& GetMetaData (int textureIndex);
 
 private:
 	//コンストラクタを禁止
@@ -62,10 +66,16 @@ private:	//内部関数
 	ComPtr<ID3D12Resource> UploadTextureData (const ComPtr<ID3D12Resource>& texture, const DirectX::ScratchImage& mipImages);
 
 	//ダミーのテクスチャを作成する関数
-	TextureData* CreateDummyTexture (const std::string& ID);
+	int CreateDummyTexture ();
 
 private:	//メンバ変数
-	std::unordered_map<std::string, TextureData> textureMap_;
+	std::unordered_map<int, TextureData> textureMap_;
+
+	// 二重ロード防止用の「パス → インデックス」の検索マップ
+	std::unordered_map<std::string, int> pathMap_;
+
+	// ダミーのインデックスを保持しておく
+	int dummyTextureIndex_ = 0;
 
 	//中間リソースの解放待ちリスト
 	std::vector<ComPtr<ID3D12Resource>> intermediateResource_;

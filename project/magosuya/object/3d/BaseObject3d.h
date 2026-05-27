@@ -40,7 +40,7 @@ public:
 	void SetRoughness(float r) { materialData_.roughness = r; }
 	void SetMetallic(float m) { materialData_.metallic = m; }
 	void SetLightingModel(BOOL flag) { materialData_.enableLighting = flag; }
-	void SetTexture(const std::string& ID) { textureHandle_ = TextureManager::GetInstance()->GetTextureHandle(ID); }
+	void SetTexture(const std::string& filePath);
 
 protected:
 	virtual Matrix4x4 CalculateWorldMatrix();
@@ -56,6 +56,7 @@ protected:
 	EulerTransform uvTransform_{};
 	MaterialData materialData_{};
 	TransformMatrixData transformMatrixData_{};
+	MaterialTex texInfo_{};
 
 	// トランスフォームとマテリアル（すべての3D物が個別に持つバッファ）
 	std::unique_ptr<TransformMatrixResource> transformBuffer_ = nullptr;;

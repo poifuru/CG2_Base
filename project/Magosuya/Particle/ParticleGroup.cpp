@@ -3,6 +3,7 @@
 #include "MathFunction.h"
 #include "Deltatime.h"
 #include "imgui.h"
+#include "TextureManager.h"
 
 static inline const uint32_t kParticleVertexNum = 4;
 static inline const uint32_t kParticleIndexNum = 6;
@@ -255,6 +256,7 @@ void ParticleGroup::ImGui() {
 
 	ImGui::Separator();
 	
+	// --- Billboard --- //
 	ImGui::Checkbox(("Use Billboard" + label).c_str(), &useBillboard_);
 #endif
 }
@@ -286,4 +288,134 @@ void ParticleGroup::RemoveField(IParticleField* field) {
 			++it;
 		}
 	}
+}
+
+void ParticleGroup::SaveConfig(json& jsonOut) const {
+	// 名前
+	jsonOut["name"] = name_;
+
+	// テクスチャ用の情報
+	jsonOut["texturePath"] = TextureManager::GetInstance()->GetTexturePath(tex_.index);
+	
+	// behaviorのパラメータを詰める
+	auto& b = jsonOut["behavior"];
+	// Scale
+	b["isRandomScale"] = behavior_.isRandomScale;
+	b["minScale"] = { behavior_.minScale.x, behavior_.minScale.y, behavior_.minScale.z };
+	b["maxScale"] = { behavior_.maxScale.x, behavior_.maxScale.y, behavior_.maxScale.z };
+	b["scale"] = { behavior_.transform.scale.x, behavior_.transform.scale.y, behavior_.transform.scale.z };
+
+	// Rotate
+	b["isRandomRotate"] = behavior_.isRandomRotate;
+	b["minRotate"] = { behavior_.minRotate.x, behavior_.minRotate.y, behavior_.minRotate.z };
+	b["maxRotate"] = { behavior_.maxRotate.x, behavior_.maxRotate.y, behavior_.maxRotate.z };
+	b["rotate"] = { behavior_.transform.rotate.x, behavior_.transform.rotate.y, behavior_.transform.rotate.z };
+
+	// Translate
+	b["isRandomTranslate"] = behavior_.isRandomTranslate;
+	b["minTranslate"] = { behavior_.minTranslate.x, behavior_.minTranslate.y, behavior_.minTranslate.z };
+	b["maxTranslate"] = { behavior_.maxTranslate.x, behavior_.maxTranslate.y, behavior_.maxTranslate.z };
+	b["translate"] = { behavior_.transform.translate.x, behavior_.transform.translate.y, behavior_.transform.translate.z };
+
+	// Velocity
+	b["isRandomVelocity"] = behavior_.isRandomVelocity;
+	b["minVelocity"] = { behavior_.minVelocity.x, behavior_.minVelocity.y, behavior_.minVelocity.z };
+	b["maxVelocity"] = { behavior_.maxVelocity.x, behavior_.maxVelocity.y, behavior_.maxVelocity.z };
+	b["velocity"] = { behavior_.velocity.x, behavior_.velocity.y, behavior_.velocity.z };
+
+	// Color
+	b["isRandomColor"] = behavior_.isRandomColor;
+	b["minColor"] = { behavior_.minColor.x, behavior_.minColor.y, behavior_.minColor.z, behavior_.minColor.w };
+	b["maxColor"] = { behavior_.maxColor.x, behavior_.maxColor.y, behavior_.maxColor.z, behavior_.maxColor.w };
+
+	// LifeTime
+	b["minLifeTime"] = behavior_.minLifeTime;
+	b["maxLifeTime"] = behavior_.maxLifeTime;
+
+	// useBillboard
+	jsonOut["useBillboard"] = useBillboard_;
+}
+
+void ParticleGroup::LoadConfig(const json& jsonIn) {
+	// name
+	if(jsonIn.contains("name")) name_ = jsonIn["name"];
+
+	// テクスチャ
+	if(jsonIn.contains("texturePath")) {
+		std::string path = jsonIn["texturePath"];
+		// パスを基にロードし直して、新しいインデックス（int）を受け取る！
+		tex_.index = TextureManager::GetInstance()->LoadTexture(path);
+
+		// GPUハンドルもマネージャーから引き直して適用
+		textureHandle_ = TextureManager::GetInstance()->GetTextureHandle(tex_.index);
+	}
+
+	if(jsonIn.contains("behavior")) {
+		auto& b = jsonIn["behavior"];
+
+		// Scale
+		behavior_.isRandomScale = b["isRandomScale"];
+		behavior_.minScale.x = b["minScale"][0];
+		behavior_.minScale.y = b["minScale"][1];
+		behavior_.minScale.z = b["minScale"][2];
+		behavior_.maxScale.x = b["maxScale"][0];
+		behavior_.maxScale.y = b["maxScale"][1];
+		behavior_.maxScale.z = b["maxScale"][2];
+		behavior_.transform.scale.x = b["scale"][0];
+		behavior_.transform.scale.y = b["scale"][1];
+		behavior_.transform.scale.z = b["scale"][2];
+
+		// Rotate
+		behavior_.isRandomRotate = b["isRandomRotate"];
+		behavior_.minRotate.x = b["minRotate"][0];
+		behavior_.minRotate.y = b["minRotate"][1];
+		behavior_.minRotate.z = b["minRotate"][2];
+		behavior_.maxRotate.x = b["maxRotate"][0];
+		behavior_.maxRotate.y = b["maxRotate"][1];
+		behavior_.maxRotate.z = b["maxRotate"][2];
+		behavior_.transform.rotate.x = b["rotate"][0];
+		behavior_.transform.rotate.y = b["rotate"][1];
+		behavior_.transform.rotate.z = b["rotate"][2];
+
+		// Translate
+		behavior_.isRandomTranslate = b["isRandomTranslate"];
+		behavior_.minTranslate.x = b["minTranslate"][0];
+		behavior_.minTranslate.y = b["minTranslate"][1];
+		behavior_.minTranslate.z = b["minTranslate"][2];
+		behavior_.maxTranslate.x = b["maxTranslate"][0];
+		behavior_.maxTranslate.y = b["maxTranslate"][1];
+		behavior_.maxTranslate.z = b["maxTranslate"][2];
+		behavior_.transform.translate.x = b["translate"][0];
+		behavior_.transform.translate.y = b["translate"][1];
+		behavior_.transform.translate.z = b["translate"][2];
+
+		// Velocity
+		behavior_.isRandomVelocity = b["isRandomScale"];
+		behavior_.minVelocity.x = b["minVelocity"][0];
+		behavior_.minVelocity.y = b["minVelocity"][1];
+		behavior_.minVelocity.z = b["minVelocity"][2];
+		behavior_.maxVelocity.x = b["maxVelocity"][0];
+		behavior_.maxVelocity.y = b["maxVelocity"][1];
+		behavior_.maxVelocity.z = b["maxVelocity"][2];
+		behavior_.velocity.x = b["velocity"][0];
+		behavior_.velocity.y = b["velocity"][1];
+		behavior_.velocity.z = b["velocity"][2];
+
+		// Color
+		behavior_.isRandomColor = b["isRandomColor"];
+		behavior_.minColor.x = b["minColor"][0];
+		behavior_.minColor.y = b["minColor"][1];
+		behavior_.minColor.z = b["minColor"][2];
+		behavior_.minColor.w = b["minColor"][3];
+		behavior_.maxColor.x = b["maxColor"][0];
+		behavior_.maxColor.y = b["maxColor"][1];
+		behavior_.maxColor.z = b["maxColor"][2];
+		behavior_.maxColor.w = b["maxColor"][3];
+
+		// LifeTime
+		behavior_.minLifeTime = b["minLifeTime"];
+		behavior_.maxLifeTime = b["maxLifeTime"];
+	}
+
+	if(jsonIn.contains("useBillboard")) useBillboard_ = jsonIn["useBillboard"];
 }
