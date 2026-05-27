@@ -22,7 +22,7 @@ public:
 
 	// 動的に要素を追加する関数
 	void AddEmitter(const std::string& name);
-	void AddGroup(const std::string& name, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle);
+	void AddGroup(const std::string& name, int textureHandle);
 	void AddField(std::unique_ptr<IParticleField> field);
 
 private:

@@ -69,6 +69,9 @@ public:
 	// 名前を変更・取得
 	void SetName(const std::string& name) { name_ = name; }
 	std::string GetName() const { return name_; }
+	// TexInfoのindexセット
+	void SetTextureIndex(int index);
+	void SetTexturePath(const std::string& path) { texInfo_.filePath = path; }
 
 	// ビルボードの変更・取得
 	void SetBillBoard(bool flag) { useBillboard_ = flag; }
@@ -76,6 +79,7 @@ public:
 
 	// エミッターが粒子を生成するときに、このルールを読み取れるようにゲッターを用意
 	const ParticleBehavior& GetBehavior() const { return behavior_; }
+	const MaterialTex& GetTexInfo()const { return texInfo_; }
 
 private:
 	DxCommon* dxCommon_ = nullptr;
@@ -99,7 +103,7 @@ private:
 	std::vector<IParticleField*> fields_; // 適用するフィールドのポインタ配列
 	// テクスチャハンドル
 	D3D12_GPU_DESCRIPTOR_HANDLE textureHandle_{};
-	MaterialTex tex_{};
+	MaterialTex texInfo_{};
 
 	// ビルボード切り替え用のフラグ
 	bool useBillboard_ = true;

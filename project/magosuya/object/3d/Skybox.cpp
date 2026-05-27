@@ -15,10 +15,11 @@ Skybox::Skybox(DxCommon* dxCommon)
 	indexBuffer_ = std::make_unique<IndexBuffer<uint32_t>>();
 }
 
-void Skybox::Initialize(const std::string& textureTag) {
+void Skybox::Initialize(const std::string& filePath) {
 	BaseObject3d::Initialize();
 	transform_ = { { 500.0f, 500.0f, 500.0f }, {}, {} };
-	tag_ = textureTag;
+	texInfo_.index = TextureManager::GetInstance()->LoadTexture(filePath);
+	texInfo_.filePath = filePath;
 
 	// 1. 頂点データの構築と初期化
 	std::vector<SkyboxVertex> vertices(kVertexNum);
@@ -95,7 +96,7 @@ void Skybox::Draw() {
 	cmd.binds[1].gpuAddress = materialBuffer_->GetGPUVirtualAddress();
 
 	cmd.binds[2].type = BindingType::SRV_Table;
-	cmd.binds[2].descriptorHandle = TextureManager::GetInstance()->GetTextureHandle(tag_);
+	cmd.binds[2].descriptorHandle = TextureManager::GetInstance()->GetTextureHandle(texInfo_.index);
 
 	//不透明
 	cmd.layer = layer_;

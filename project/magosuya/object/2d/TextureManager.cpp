@@ -10,6 +10,7 @@ void TextureManager::Initialize (DxCommon* dxCommon) {
 
 	// ダミーの生成（戻り値のインデックスを記録しておく）
 	dummyTextureIndex_ = CreateDummyTexture();
+	dummyCubeTextureIndex_ = CreateDummyCubeTexture();
 }
 
 int TextureManager::LoadTexture (const std::string& filePath) {
@@ -44,21 +45,16 @@ int TextureManager::LoadTexture (const std::string& filePath) {
 	}
 
 	if (FAILED (hr)) {
-		//std::wstringstream ss;
-		//ss << L"[エラー] テクスチャ読み込み失敗！ ダミーのテクスチャを返します HRESULT: 0x" << std::hex << hr << std::endl;
-		//OutputDebugStringW (ss.str ().c_str ());
-		////ダミーテクスチャデータを取得
-		//TextureData& dummyData = textureMap_.at ("Dummy");
-		////参照カウントを増やす
-		//dummyData.ref_count++;
-		////元のIDでダミーテクスチャの情報を登録(そのIDが通らないので同じIDが来た時にすぐにダミーデータを返せるように)
-		//TextureData failureCacheData = dummyData; // ダミーの情報をコピー
-		//failureCacheData.ref_count = 1;           // このID自体の参照は1からスタート
-		////IDをキャッシュに登録
-		//textureMap_[ID] = failureCacheData;
+		std::wstringstream ss;
+		ss << L"[エラー] テクスチャ読み込み失敗！ ダミーのテクスチャを返します HRESULT: 0x" << std::hex << hr << std::endl;
+		OutputDebugStringW (ss.str ().c_str ());
 
-		////新しく登録したキャッシュデータを返す
-		//return &textureMap_.at (ID);
+		// パスに "dds" が含まれる、あるいは特定の条件ならキューブ用のダミーを返す
+		if (filePath.find(".dds") != std::string::npos) { // 簡易的な判定
+			textureMap_.at(dummyCubeTextureIndex_).ref_count++;
+			pathMap_[filePath] = dummyCubeTextureIndex_;
+			return dummyCubeTextureIndex_;
+		}
 
 		// ダミーテクスチャのインデックスの参照カウントを増やして返す
 		textureMap_.at(dummyTextureIndex_).ref_count++;
@@ -265,5 +261,55 @@ int TextureManager::CreateDummyTexture () {
 	pathMap_["Dummy"] = textureID;
 
 	// 確定した整数IDを返す
+	return textureID;
+}
+
+int TextureManager::CreateDummyCubeTexture() {
+	TextureData newData{};
+	newData.ref_count = 1;
+	newData.filePath = "DummyCube";
+
+	HRESULT hr;
+	DirectX::ScratchImage image{};
+
+	// ★ポイント：arraySize を 6 にしてキューブマップとして初期化する！
+	const size_t width = 1;
+	const size_t height = 1;
+	const size_t depthOrArraySize = 6; // 6面分
+	const DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+	hr = image.InitializeCube(format, width, height, 1, 1); // Initialize2D の代わりに Cube を使用
+	assert(SUCCEEDED(hr));
+
+	// 6面全てを真っ白（あるいはデバッグ用に目立つ色）に塗りつぶす
+	for (size_t i = 0; i < 6; ++i) {
+		uint32_t* pixelData = reinterpret_cast<uint32_t*>(image.GetImage(0, i, 0)->pixels);
+		*pixelData = 0xFFFFFFFF; // 真っ白
+	}
+
+	newData.metadata = image.GetMetadata();
+	newData.textureResource = CreateTextureResource(newData.metadata);
+	intermediateResource_.push_back(UploadTextureData(newData.textureResource, image));
+
+	UINT newIndex = srvManager_->Allocate();
+
+	// ★SRV生成時、内部の srvManager_->CreateSRVforTexture2D が
+	// metadata.miscFlags & D3D12_RESOURCE_MISC_FLAG_TEXTURECUBE を見て
+	// 自動で CUBEMAP 用の SRV を作ってくれる設定になっているか確認してね！
+	srvManager_->CreateSRVforTexture2D(
+		newIndex,
+		newData.textureResource.Get(),
+		newData.metadata.format,
+		(UINT)newData.metadata.mipLevels,
+		newData.metadata
+	);
+
+	newData.handle.gpu = srvManager_->GetGPUDescriptorHandle(newIndex);
+	newData.descriptorIndex = newIndex;
+
+	int textureID = static_cast<int>(newIndex);
+	textureMap_[textureID] = newData;
+	pathMap_["DummyCube"] = textureID;
+
 	return textureID;
 }

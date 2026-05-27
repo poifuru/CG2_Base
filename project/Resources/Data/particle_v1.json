@@ -2,8 +2,13 @@
     "emitters": [
         {
             "emitterData": {
-                "count": 10,
-                "frequency": 1.0,
+                "count": 3,
+                "frequency": 2.0,
+                "rotate": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
                 "scale": [
                     1.0,
                     1.0,
@@ -24,11 +29,11 @@
     "groups": [
         {
             "behavior": {
-                "isRandomColor": true,
-                "isRandomRotate": false,
+                "isRandomColor": false,
+                "isRandomRotate": true,
                 "isRandomScale": false,
                 "isRandomTranslate": false,
-                "isRandomVelocity": true,
+                "isRandomVelocity": false,
                 "maxColor": [
                     1.0,
                     1.0,
@@ -37,8 +42,8 @@
                 ],
                 "maxLifeTime": 3.0,
                 "maxRotate": [
-                    3.140000104904175,
-                    3.140000104904175,
+                    0.0,
+                    0.0,
                     3.140000104904175
                 ],
                 "maxScale": [
@@ -62,14 +67,14 @@
                     0.0,
                     0.0
                 ],
-                "minLifeTime": 1.0,
+                "minLifeTime": 2.0,
                 "minRotate": [
                     0.0,
                     0.0,
                     0.0
                 ],
                 "minScale": [
-                    1.0,
+                    0.05000000074505806,
                     1.0,
                     1.0
                 ],
@@ -79,9 +84,9 @@
                     0.0
                 ],
                 "minVelocity": [
-                    -1.0,
-                    -1.0,
-                    -1.0
+                    0.0,
+                    0.0,
+                    0.0
                 ],
                 "rotate": [
                     0.0,
@@ -89,7 +94,7 @@
                     0.0
                 ],
                 "scale": [
-                    1.0,
+                    0.05000000074505806,
                     1.0,
                     1.0
                 ],
@@ -105,6 +110,7 @@
                 ]
             },
             "name": "Group_0",
+            "texturePath": "Resources/Particle/circle2.png",
             "useBillboard": true
         }
     ]

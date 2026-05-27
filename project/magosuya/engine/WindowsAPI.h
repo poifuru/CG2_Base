@@ -2,8 +2,17 @@
 #ifndef __HLSL_VERSION
 #include <Windows.h>  // HLSL側では __HLSL_VERSION が定義されてないのでスキップできる
 #endif
+#include <string>
 #include <memory>
 #include "InputManager.h"
+
+namespace FileUtils {
+	// ファイル選択ダイアログを開いて、選択された絶対パスを返す関数
+	std::string OpenFileDialog();
+
+	// 絶対パスを「Resources/」からの相対パスに変換するヘルパー関数
+	std::string GetRelativePath(const std::string& absolutePath);
+}
 
 class InputManager; // 前方宣言
 

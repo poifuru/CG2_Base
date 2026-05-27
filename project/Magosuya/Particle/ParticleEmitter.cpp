@@ -121,8 +121,9 @@ void ParticleEmitter::SaveConfig(json& jsonOut) const {
 	auto& e = jsonOut["emitterData"];
 	e["count"] = emitterData_.count;
 	e["frequency"] = emitterData_.frequency;
-	e["translate"] = { emitterData_.transform.translate.x, emitterData_.transform.translate.y, emitterData_.transform.translate.z };
 	e["scale"] = { emitterData_.transform.scale.x, emitterData_.transform.scale.y, emitterData_.transform.scale.z };
+	e["rotate"] = { emitterData_.transform.rotate.x, emitterData_.transform.rotate.y, emitterData_.transform.rotate.z };
+	e["translate"] = { emitterData_.transform.translate.x, emitterData_.transform.translate.y, emitterData_.transform.translate.z };
 
 	// このエミッターが狙っているターゲットグループの名前を保存しておく
 	nlohmann::json targets = nlohmann::json::array();
@@ -130,6 +131,36 @@ void ParticleEmitter::SaveConfig(json& jsonOut) const {
 		targets.push_back(targetGroups_[i]->GetName());
 	}
 	jsonOut["targetGroups"] = targets;
+}
+
+void ParticleEmitter::LoadConfig(const json& jsonIn) {
+	// name
+	if(jsonIn.contains("name")) name_ = jsonIn["name"];
+
+	if(jsonIn.contains("emitterData")) {
+		auto& e = jsonIn["emitterData"];
+
+		// Scale
+		emitterData_.transform.scale.x = e["scale"][0];
+		emitterData_.transform.scale.y = e["scale"][1];
+		emitterData_.transform.scale.z = e["scale"][2];
+
+		// Rotate
+		emitterData_.transform.rotate.x = e["rotate"][0];
+		emitterData_.transform.rotate.y = e["rotate"][1];
+		emitterData_.transform.rotate.z = e["rotate"][2];
+
+		// Translate
+		emitterData_.transform.translate.x = e["translate"][0];
+		emitterData_.transform.translate.y = e["translate"][1];
+		emitterData_.transform.translate.z = e["translate"][2];
+
+		// Count
+		emitterData_.count = e["count"];
+
+		// Frequency
+		emitterData_.frequency = e["frequency"];
+	}
 }
 
 // 1. 指定されたグループをターゲット（発射先）に追加する

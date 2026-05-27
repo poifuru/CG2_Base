@@ -14,8 +14,9 @@ public:
 
 	void Emit(ParticleGroup* group);
 
-	// 設定の保存
+	// 設定の保存・ロード
 	void SaveConfig(json& jsonOut)const;
+	void LoadConfig(const json& jsonIn);
 
 	// 名前の設定・取得
 	void SetName(const std::string& name) { name_ = name; }

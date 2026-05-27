@@ -67,6 +67,8 @@ private:	//内部関数
 
 	//ダミーのテクスチャを作成する関数
 	int CreateDummyTexture ();
+	// キューブマップのダミーを作る関数
+	int CreateDummyCubeTexture();
 
 private:	//メンバ変数
 	std::unordered_map<int, TextureData> textureMap_;
@@ -76,6 +78,7 @@ private:	//メンバ変数
 
 	// ダミーのインデックスを保持しておく
 	int dummyTextureIndex_ = 0;
+	int dummyCubeTextureIndex_ = 0;
 
 	//中間リソースの解放待ちリスト
 	std::vector<ComPtr<ID3D12Resource>> intermediateResource_;

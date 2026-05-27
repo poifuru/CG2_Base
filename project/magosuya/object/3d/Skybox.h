@@ -18,13 +18,13 @@ public:
 	Skybox(DxCommon* dxCommon);
 	~Skybox() = default;
 
-	void Initialize(const std::string& textureTag);
+	void Initialize(const std::string& filePath);
 
 	void Update(CameraData* data);
 
 	void Draw();
 
-	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureHandle() { return TextureManager::GetInstance()->GetTextureHandle(tag_); }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureHandle() { return TextureManager::GetInstance()->GetTextureHandle(texInfo_.index); }
 
 private:
 	// 頂点バッファ

@@ -145,7 +145,7 @@ void ParticleSystem::ImGui() {
 			// 新しいパーティクルグループ（挙動・見た目アセット）を追加するボタン
 			if(ImGui::Button("Add Group", ImVec2(-1, 0))) {
 				std::string newName = "Group_" + std::to_string(groups_.size());
-				D3D12_GPU_DESCRIPTOR_HANDLE texHandle = TextureManager::GetInstance()->GetTextureHandle("particle");
+				int texHandle = TextureManager::GetInstance()->LoadTexture("Resources/Particle/circle2.png");
 
 				AddGroup(newName, texHandle);
 				currentSelectedGroup_ = static_cast<int>(groups_.size()) - 1;
@@ -358,28 +358,48 @@ void ParticleSystem::LoadFromFile(const std::string& filePath) {
 
 	// グループの復元
 	if (root.contains("groups")) {
-		for (const auto& groupJson : root["groups"]) {
-			// グループを新しく生成して、テクスチャハンドルは仮かデフォルトを一旦セット
-			// (実際にはTextureManagerから名前で引き直せるようにすると最高)
-			AddGroup(groupJson["name"], {}); 
+		for (size_t i = 0; i < root["groups"].size(); ++i) {
+			const auto& groupJson = root["groups"][i];
+
+			std::string gName = groupJson["name"];
+			std::string texPath = "";
+			int texHandle = 0; // デフォルトテクスチャのハンドルなど
+
+			// テクスチャパスが保存されていれば読み込んでハンドルを取得
+			if (groupJson.contains("texturePath")) {
+				texPath = groupJson["texturePath"].get<std::string>();
+				if (!texPath.empty()) {
+					texHandle = TextureManager::GetInstance()->LoadTexture(texPath);
+				}
+			}
+
+			// 正しいテクスチャハンドルを渡してグループを生成
+			AddGroup(gName, texHandle); 
 			groups_.back()->LoadConfig(groupJson);
 		}
 	}
 
 	// エミッターの復元とグループとの再接続
 	if (root.contains("emitters")) {
-		for (const auto& emitterJson : root["emitters"]) {
+		for (size_t i = 0; i < root["emitters"].size(); ++i) {
+			const auto& emitterJson = root["emitters"][i];
+
 			AddEmitter(emitterJson["name"]);
 			auto* newEmitter = emitters_.back().get();
+
 			// エミッター自体のデータをロード
-			// ... (省略) ...
+			newEmitter->LoadConfig(emitterJson);
 
 			// ターゲットグループの紐付けを名前を頼りに再構築
-			for (const auto& targetName : emitterJson["targetGroups"]) {
-				for (size_t g = 0; g < groups_.size(); ++g) {
-					if (groups_[g]->GetName() == targetName.get<std::string>()) {
-						newEmitter->TargetGroup(groups_[g].get());
-						break;
+			if (emitterJson.contains("targetGroups")) {
+				for (size_t t = 0; t < emitterJson["targetGroups"].size(); ++t) {
+					std::string targetName = emitterJson["targetGroups"][t].get<std::string>();
+
+					for (size_t g = 0; g < groups_.size(); ++g) {
+						if (groups_[g]->GetName() == targetName) {
+							newEmitter->TargetGroup(groups_[g].get());
+							break;
+						}
 					}
 				}
 			}
@@ -395,11 +415,21 @@ void ParticleSystem::AddEmitter(const std::string& name) {
 	emitters_.push_back(std::move(newEmitter));
 }
 
-void ParticleSystem::AddGroup(const std::string& name, D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
+void ParticleSystem::AddGroup(const std::string& name, int textureHandle) {
 	// パーティクルグループ（アセット）を単体で生成する！
 	auto newGroup = std::make_unique<ParticleGroup>(dxCommon_);
 	newGroup->Initialize(name);
-	newGroup->SetTexture(textureHandle);
+
+	newGroup->SetTextureIndex(textureHandle);
+
+	// 初期テクスチャのパスがTextureManagerから取れればセットし、取れなければデフォルトパスを直に割り当てておく
+	std::string initPath = TextureManager::GetInstance()->GetTexturePath(textureHandle);
+	if(initPath.empty()) {
+		initPath = "Resources/Particle/circle2.png"; // フォールバック用
+	}
+
+	newGroup->SetTexturePath(initPath);
+
 	groups_.push_back(std::move(newGroup));
 }
 

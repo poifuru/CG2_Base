@@ -101,3 +101,36 @@ bool WindowsAPI::ProcessMessage() {
 void WindowsAPI::Finalize() {
 	DestroyWindow(hwnd_);
 }
+
+std::string FileUtils::OpenFileDialog() {
+	char filePath[MAX_PATH] = "";
+
+	OPENFILENAMEA ofn;
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = WindowsAPI::GetInstance()->WindowsAPI::GetHwnd(); // 必要ならゲームのウィンドウハンドル(HWND)を渡してね
+	ofn.lpstrFilter = "PNG Files (*.png)\0*.png\0All Files (*.*)\0*.*\0";
+	ofn.lpstrFile = filePath;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.lpstrTitle = "Select Particle Texture";
+	ofn.Flags = OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR; // カレントディレクトリを勝手に変えないフラグ
+
+	if (GetOpenFileNameA(&ofn)) {
+		return std::string(filePath); // 選択された絶対パスを返す
+	}
+	return ""; // キャンセルされたら空文字
+}
+
+std::string FileUtils::GetRelativePath(const std::string& absolutePath) {
+	if (absolutePath.empty()) return "";
+
+	// "Resources" という文字列がどこにあるか探す
+	size_t pos = absolutePath.find("Resources");
+	if (pos != std::string::npos) {
+		// "Resources" 以降の文字列を切り出す (例: "Resources/Particle/circle2.png")
+		return absolutePath.substr(pos);
+	}
+
+	// 見つからなければそのまま返す
+	return absolutePath;
+}

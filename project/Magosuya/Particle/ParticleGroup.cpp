@@ -4,6 +4,7 @@
 #include "Deltatime.h"
 #include "imgui.h"
 #include "TextureManager.h"
+#include "WindowsAPI.h"
 
 static inline const uint32_t kParticleVertexNum = 4;
 static inline const uint32_t kParticleIndexNum = 6;
@@ -177,6 +178,9 @@ void ParticleGroup::Draw() {
 
 void ParticleGroup::ImGui() {
 #ifdef USEIMGUI
+	// ユニークラベル作成
+	std::string label = "##" + name_;
+
 	// 名前の変更
 	char nameBuffer[128];
 	snprintf(nameBuffer, sizeof(nameBuffer), "%s", name_.c_str());
@@ -184,12 +188,31 @@ void ParticleGroup::ImGui() {
 		name_ = nameBuffer;
 	}
 
+	// 使っているテクスチャ表示
+	//std::string currentPath = TextureManager::GetInstance()->GetTexturePath(texInfo_.index);
+	ImGui::Text("Texture: %s", texInfo_.filePath.empty() ? "None" : texInfo_.filePath.c_str());
+
+	ImGui::SameLine(); // ボタンを横並びにする
+	if (ImGui::Button(("Open" + label).c_str())) {
+		// ダイアログを開いて絶対パスを取得
+		std::string absPath = FileUtils::OpenFileDialog();
+		if (!absPath.empty()) {
+			// 自作エンジンで扱いやすいように「Resources/...」からの相対パスに変換
+			std::string relPath = FileUtils::GetRelativePath(absPath);
+
+			int newIndex = TextureManager::GetInstance()->LoadTexture(relPath);
+			if (newIndex >= 0) {
+				// テクスチャ情報を更新
+				SetTextureIndex(newIndex);
+				// ★パスを直接メンバー変数に記憶しちゃう！
+				texInfo_.filePath = relPath; 
+			}
+		}
+	}
+
 	ImGui::Separator();
 
 	ImGui::Text("Particle Behavior");
-
-	// ユニークラベル作成
-	std::string label = "##" + name_;
 
 	// --- Scale ---
 	ImGui::Checkbox(("Random Scale" + label).c_str(), &behavior_.isRandomScale);
@@ -295,7 +318,7 @@ void ParticleGroup::SaveConfig(json& jsonOut) const {
 	jsonOut["name"] = name_;
 
 	// テクスチャ用の情報
-	jsonOut["texturePath"] = TextureManager::GetInstance()->GetTexturePath(tex_.index);
+	jsonOut["texturePath"] = texInfo_.filePath;
 	
 	// behaviorのパラメータを詰める
 	auto& b = jsonOut["behavior"];
@@ -340,14 +363,14 @@ void ParticleGroup::LoadConfig(const json& jsonIn) {
 	// name
 	if(jsonIn.contains("name")) name_ = jsonIn["name"];
 
-	// テクスチャ
+	// テクスチャの復元
 	if(jsonIn.contains("texturePath")) {
-		std::string path = jsonIn["texturePath"];
+		texInfo_.filePath = jsonIn["texturePath"].get<std::string>();
 		// パスを基にロードし直して、新しいインデックス（int）を受け取る！
-		tex_.index = TextureManager::GetInstance()->LoadTexture(path);
+		texInfo_.index = TextureManager::GetInstance()->LoadTexture(texInfo_.filePath);
 
 		// GPUハンドルもマネージャーから引き直して適用
-		textureHandle_ = TextureManager::GetInstance()->GetTextureHandle(tex_.index);
+		textureHandle_ = TextureManager::GetInstance()->GetTextureHandle(texInfo_.index);
 	}
 
 	if(jsonIn.contains("behavior")) {
@@ -390,7 +413,7 @@ void ParticleGroup::LoadConfig(const json& jsonIn) {
 		behavior_.transform.translate.z = b["translate"][2];
 
 		// Velocity
-		behavior_.isRandomVelocity = b["isRandomScale"];
+		behavior_.isRandomVelocity = b["isRandomVelocity"];
 		behavior_.minVelocity.x = b["minVelocity"][0];
 		behavior_.minVelocity.y = b["minVelocity"][1];
 		behavior_.minVelocity.z = b["minVelocity"][2];
@@ -418,4 +441,10 @@ void ParticleGroup::LoadConfig(const json& jsonIn) {
 	}
 
 	if(jsonIn.contains("useBillboard")) useBillboard_ = jsonIn["useBillboard"];
+}
+
+void ParticleGroup::SetTextureIndex(int index) {
+	texInfo_.index = index; 
+	// ハンドルもグループ内部で自動的に引き直して保持させる
+	textureHandle_ = TextureManager::GetInstance()->GetTextureHandle(index);
 }
