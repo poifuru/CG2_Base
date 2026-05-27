@@ -36,4 +36,7 @@ private:
 	int currentSelectedEmitter_ = 0;
 	int currentSelectedGroup_ = 0;
 	int currentSelectedField_ = 0;
+
+	// ファイル名を入力・保持するためのバッファ（デフォルトは "particle_edit1"）
+	char fileNameBuffer_[64] = "particle_edit1";
 };

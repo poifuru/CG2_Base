@@ -22,7 +22,8 @@
             },
             "name": "Emitter_0",
             "targetGroups": [
-                "Group_0"
+                "Group_0",
+                "Group_1"
             ]
         }
     ],
@@ -110,6 +111,92 @@
                 ]
             },
             "name": "Group_0",
+            "texturePath": "Resources/Particle/circle2.png",
+            "useBillboard": true
+        },
+        {
+            "behavior": {
+                "isRandomColor": true,
+                "isRandomRotate": false,
+                "isRandomScale": false,
+                "isRandomTranslate": false,
+                "isRandomVelocity": true,
+                "maxColor": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "maxLifeTime": 3.0,
+                "maxRotate": [
+                    3.140000104904175,
+                    3.140000104904175,
+                    3.140000104904175
+                ],
+                "maxScale": [
+                    3.0,
+                    3.0,
+                    3.0
+                ],
+                "maxTranslate": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "maxVelocity": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "minColor": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "minLifeTime": 1.0,
+                "minRotate": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "minScale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "minTranslate": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "minVelocity": [
+                    -1.0,
+                    -1.0,
+                    -1.0
+                ],
+                "rotate": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "translate": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "velocity": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            "name": "Group_1",
             "texturePath": "Resources/Particle/circle2.png",
             "useBillboard": true
         }

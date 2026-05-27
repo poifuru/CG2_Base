@@ -166,7 +166,11 @@ void ParticleSystem::ImGui() {
 		// System (組み合わせ) タブ（関係性の構築）
 		// ----------------------------------------------------
 		if(ImGui::BeginTabItem("Setup")) {
-			ImGui::Columns(2, "SystemSetupColumns");
+
+			// ====================================================
+			// 【上段】エミッター選択 ＆ 接続済みグループ一覧
+			// ====================================================
+			ImGui::Columns(2, "SystemSetupColumns", true);
 
 			// 【左カラム】紐付け対象のエミッターを1つ選択
 			ImGui::Text("1. Select Emitter");
@@ -190,7 +194,7 @@ void ParticleSystem::ImGui() {
 				// ====================================================
 				// パーティクルグループとの紐付け
 				// ====================================================
-				ImGui::Text("2. Connected Particle Groups");
+				ImGui::Text("Connected Particle Groups");
 
 				if(ImGui::BeginListBox("##ConnectedGroupList", ImVec2(-1, 0))) {
 					for(size_t g = 0; g < groups_.size(); ++g) {
@@ -206,36 +210,48 @@ void ParticleSystem::ImGui() {
 					ImGui::EndListBox();
 				}
 
-				ImGui::Columns(1);
+				ImGui::Columns(1); // 上段のカラム終了（一度リセット）
+				ImGui::Spacing();
+				ImGui::Separator();
+				ImGui::Spacing();
 
-				static int comboSelectedGroup = 0;
-				if(comboSelectedGroup >= static_cast<int>(groups_.size())) comboSelectedGroup = 0;
+				// ====================================================
+				// 【下段】グループをリストから選択してコネクト ＆ フィールド一覧
+				// ====================================================
+				ImGui::Columns(2, "LowerSetupColumns", true); // 下段のカラム開始
+
+				// 【下段・左カラム】パーティクルグループをリストから選択してコネクト
+				ImGui::Text("2. Connect Group to Emitter");
+
+				static int listSelectedGroup = 0; // 変数名も分かりやすくlistに変更
+				if(listSelectedGroup >= static_cast<int>(groups_.size())) listSelectedGroup = 0;
 
 				if(!groups_.empty()) {
-					std::string comboPreview = groups_[comboSelectedGroup]->GetName();
-					ImGui::Text("Select Group to Connect");
-					if(ImGui::BeginCombo("##Select Group to Connect", comboPreview.c_str())) {
+					// 【修正】BeginCombo から、右カラムと高さを合わせた BeginListBox に変更！
+					if(ImGui::BeginListBox("##SelectGroupToConnectList", ImVec2(-1, 100))) {
 						for(size_t g = 0; g < groups_.size(); ++g) {
-							bool isSelected = (comboSelectedGroup == static_cast<int>(g));
-							if(ImGui::Selectable(groups_[g]->GetName().c_str(), isSelected)) {
-								comboSelectedGroup = static_cast<int>(g);
+							bool isSelected = (listSelectedGroup == static_cast<int>(g));
+
+							// リスト内の項目を選択可能にする
+							if (ImGui::Selectable(groups_[g]->GetName().c_str(), isSelected)) {
+								listSelectedGroup = static_cast<int>(g);
 							}
 						}
-						ImGui::EndCombo();
+						ImGui::EndListBox();
 					}
 
-					ImGui::SameLine();
-					if(ImGui::Button("Connect Group")) {
-						selectedEmitter->TargetGroup(groups_[comboSelectedGroup].get());
+					// 選択中のグループをエミッターに接続するボタン
+					ImGui::Text("Choice Emitter: %s", selectedEmitter->GetName().c_str());
+					if(ImGui::Button("Connect Group", ImVec2(-1, 0))) {
+						selectedEmitter->TargetGroup(groups_[listSelectedGroup].get());
 					}
 				}
 				else {
-					ImGui::Text("No available groups to connect. Add a group first!");
+					// グループが一つもない時はリストの代わりにグレーアウトしたメッセージを出す
+					ImGui::TextDisabled("No available groups to connect.\nAdd a group first!");
 				}
 
-				ImGui::Text("Choice Emitter: %s", selectedEmitter->GetName().c_str());
-				ImGui::Spacing();
-				ImGui::Separator();
+				ImGui::NextColumn(); // 右カラム（フィールド一覧）へ移動
 
 				// ====================================================
 				// フィールドとの紐付け
@@ -296,18 +312,131 @@ void ParticleSystem::ImGui() {
 				ImGui::Text("Please select or create an emitter first.");
 			}
 
+			ImGui::Columns(1);
+
+			// ====================================================
+			// カスタムセーブ＆ロード機能
+			// ====================================================
+			ImGui::SeparatorText("File Save / Load");
+
+			ImGui::Text("Saved Files List");
+			static int selectedFileIndex = 0;
+			std::vector<std::string> fileNames;
+
+			// Resources/Data/ フォルダの中身を走査してJSONファイルをリストアップ
+			std::string dataDirPath = "Resources/Data";
+			if (std::filesystem::exists(dataDirPath)) {
+				for (const auto& entry : std::filesystem::directory_iterator(dataDirPath)) {
+					if (entry.is_regular_file() && entry.path().extension() == ".json") {
+						// ファイル名（拡張子なし）を取得して配列に入れる
+						fileNames.push_back(entry.path().stem().string());
+					}
+				}
+			}
+
+			// 過去に保存されたファイルがあればコンボボックスで表示
+			if (!fileNames.empty()) {
+				if (selectedFileIndex >= fileNames.size()) selectedFileIndex = 0;
+
+				std::string comboPreview = fileNames[selectedFileIndex];
+				if(ImGui::BeginCombo("choice File", comboPreview.c_str())) {
+					for (size_t f = 0; f < fileNames.size(); ++f) {
+						bool isSelected = (selectedFileIndex == static_cast<int>(f));
+						if (ImGui::Selectable(fileNames[f].c_str(), isSelected)) {
+							selectedFileIndex = static_cast<int>(f);
+							// 選択したファイル名を入力バッファにコピーする
+							snprintf(fileNameBuffer_, sizeof(fileNameBuffer_), "%s", fileNames[f].c_str());
+						}
+					}
+					ImGui::EndCombo();
+				}
+			} else {
+				ImGui::TextDisabled("No saved files found in Resources/Data/");
+			}
+			ImGui::Spacing();
+
+			// ファイル名の入力欄
+			ImGui::InputText("File Name", fileNameBuffer_, sizeof(fileNameBuffer_));
+			ImGui::Text("Save Path: Resources/Data/%s.json", fileNameBuffer_);
+
+			ImGui::Spacing();
+
+			// セーブボタンの処理
 			if (ImGui::Button("Save System")) {
-				SaveToFile("Resources/Data/particle_v1.json");
+				// 入力されたファイル名からフルパスを合成する
+				std::string fullPath = "Resources/Data/" + std::string(fileNameBuffer_) + ".json";
+				SaveToFile(fullPath);
 			}
+
 			ImGui::SameLine();
+
+			// ロードボタンの処理
 			if (ImGui::Button("Load System")) {
-				LoadFromFile("Resources/Data/particle_v1.json");
+				// 入力されたファイル名からフルパスを合成する
+				std::string fullPath = "Resources/Data/" + std::string(fileNameBuffer_) + ".json";
+				LoadFromFile(fullPath);
 			}
+
+			ImGui::SameLine();
+
+			// ----------------------------------------------------
+			// 【修正】プランB：モーダルポップアップ呼び出しボタン
+			// ----------------------------------------------------
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.6f, 0.1f, 0.1f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.5f, 0.0f, 0.0f, 1.0f));
+
+			if (ImGui::Button("Delete File")) {
+				// ボタンが押されたら、指定した識別名のポップアップを開く（トリガーを引く）
+				ImGui::OpenPopup("Delete File?");
+			}
+
+			ImGui::PopStyleColor(3);
+
+			// ----------------------------------------------------
+			// 【新機能】モーダルポップアップのウィンドウ本体
+			// ----------------------------------------------------
+			// 開いている間だけ、このif文の中身が実行されるよ
+			// ImGuiWindowFlags_AlwaysAutoResize をつけて、文字数に合わせて綺麗にフィットさせる
+			if (ImGui::BeginPopupModal("Delete File?", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+
+				ImGui::Text("Warning : この操作は元に戻せません\n");
+				ImGui::Text("このファイルを削除しますか？");
+				ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "Target: Resources/Data/%s.json", fileNameBuffer_);
+				ImGui::Spacing();
+				ImGui::Separator();
+				ImGui::Spacing();
+
+				// [Yes] ボタン（危険なボタンなので真っ赤にする）
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.1f, 0.1f, 1.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
+
+				if (ImGui::Button("Delete", ImVec2(120, 0))) {
+					std::string fullPath = "Resources/Data/" + std::string(fileNameBuffer_) + ".json";
+					if (std::filesystem::exists(fullPath)) {
+						std::filesystem::remove(fullPath);
+					}
+
+					// ファイルを消したらポップアップを閉じる
+					ImGui::CloseCurrentPopup(); 
+				}
+				ImGui::PopStyleColor(2);
+
+				ImGui::SameLine();
+
+				// [No / Cancel] ボタン（安全に引き返す）
+				if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+					// 何もせずにポップアップを閉じる
+					ImGui::CloseCurrentPopup(); 
+				}
+
+				// 【最重要】BeginPopupModal が true を返したときだけ、最後にEndを呼ぶ！
+				ImGui::EndPopup(); 
+			}
+			// ----------------------------------------------------
 
 			ImGui::EndTabItem();
 		}
-
-		// 【修正】EndTabBarとEndのペア関係を正しい位置に修正！
 		ImGui::EndTabBar(); 
 	}
 #endif
