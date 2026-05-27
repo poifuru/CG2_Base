@@ -25,7 +25,7 @@ public:
 
 private:
 	// PSO
-	PSODescriptor desc_{};
+	psoDesc_riptor desc_{};
 
 	// バッファ
 	ComPtr<ID3D12Resource> vertexBuffer_ = nullptr;

@@ -2,6 +2,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 using namespace Microsoft::WRL;
+#include "PSOManager.h"
 
 class DxCommon;
 class RenderTexture;
@@ -33,8 +34,7 @@ private:
 	PostEffect& operator=(const PostEffect&) = delete;
 
 	DxCommon* dxCommon_ = nullptr;
-	ID3D12PipelineState* pso_ = nullptr;
-	ID3D12RootSignature* rootSignature_ = nullptr;
+	psoDesc_riptor psoDesc__{};
 
 	// パラメータ変更用変数
 	ComPtr<ID3D12Resource> postProcessResource_ = nullptr;

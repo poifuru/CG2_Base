@@ -43,7 +43,7 @@ private:
 	Vector3* cameraData_ = nullptr;
 
 	//PSOの設定
-	PSODescriptor desc_;
+	psoDesc_riptor desc_;
 
 	//ポインタ
 	DxCommon* dxCommon_ = nullptr;

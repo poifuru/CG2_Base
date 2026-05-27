@@ -12,36 +12,36 @@ void PostEffect::Initialize(DxCommon* dxCommon) {
 
 	// シェーダーのコンパイル
 	uint32_t vsID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Fullscreen.VS.hlsl", L"vs_6_0");
-	uint32_t psID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/BoxFilter.PS.hlsl", L"ps_6_0");
+	uint32_t psID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/GrayScale.PS.hlsl", L"ps_6_0");
 
 	// RootSignatureの取得
 	uint32_t rootSigID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::PostProcess);
 	rootSignature_ = RootSignatureManager::GetInstance()->GetRootSignature(rootSigID);
 
 	// PSOの設定
-	PSODescriptor psoDesc{};
-	psoDesc.RootSignatureID = rootSigID;
-	psoDesc.VS_ID = vsID;
-	psoDesc.PS_ID = psID;
-	psoDesc.InputLayoutID = InputLayoutType::PostProcess;
-	psoDesc.BlendMode = BlendModeType::Opaque;
+	psoDesc_riptor psoDesc_{};
+	psoDesc_.RootSignatureID = rootSigID;
+	psoDesc_.VS_ID = vsID;
+	psoDesc_.PS_ID = psID;
+	psoDesc_.InputLayoutID = InputLayoutType::PostProcess;
+	psoDesc_.BlendMode = BlendModeType::Opaque;
 	
 	// ラスタライザステート
-	psoDesc.CullMode = D3D12_CULL_MODE_NONE; // カリングなし
-	psoDesc.FillMode = D3D12_FILL_MODE_SOLID;
+	psoDesc_.CullMode = D3D12_CULL_MODE_NONE; // カリングなし
+	psoDesc_.FillMode = D3D12_FILL_MODE_SOLID;
 
 	// デプスステンシルステート (2D描画なのでデプス無効)
-	psoDesc.DepthEnable = FALSE;
-	psoDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	psoDesc_.DepthEnable = FALSE;
+	psoDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 
 	// その他の設定
-	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	psoDesc.NumRenderTargets = 1;
-	psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	psoDesc.SampleCount = 1;
+	psoDesc_.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	psoDesc_.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	psoDesc_.NumRenderTargets = 1;
+	psoDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	psoDesc_.SampleCount = 1;
 
-	pso_ = PSOManager::GetInstance()->GetOrCreatePSO(psoDesc);
+	pso_ = PSOManager::GetInstance()->GetOrCreatePSO(psoDesc_);
 
 	postProcessResource_ = dxCommon_->CreateBufferResource(sizeof(PostProcessData));
 	postProcessResource_->Map(0, nullptr, reinterpret_cast<void**>(&postProcessData_));

@@ -8,7 +8,7 @@ static const float2 kIndex3x3[3][3] =
 {
     { { -1.0f, -1.0f }, { 0.0f, -1.0f }, { 1.0f, -1.0f } },
     { { -1.0f, 0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f } },
-    { { -1.0f, -1.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } },
+    { { -1.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } },
 };
 
 static const float kKernel3x3[3][3] =
@@ -37,15 +37,12 @@ PixelShaderOutput main(VertexShaderOutput input)
         for (int y = 0; y < 3; ++y)
         {
             // 現在のtexcoordを算出
-            float2 texcoord = input.texcoord * kIndex3x3[x][y] * uvStepSize;
+            float2 texcoord = input.texcoord + kIndex3x3[x][y] * uvStepSize;
             // 色に 1/9 掛けて足す
             float3 fetchColor = gTexture.Sample(gSampler, texcoord).rgb;
             output.color.rgb += fetchColor * kKernel3x3[x][y];
         }
     }
- 
-    output.
-        color = gTexture.Sample(gSampler, input.texcoord);
-   
+
     return output;
 }

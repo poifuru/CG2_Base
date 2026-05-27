@@ -81,6 +81,8 @@
     <ClCompile Include="application\entity\enemy\SmallFish.cpp" />
     <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
     <ClCompile Include="magosuya\PostEffect\PostEffect.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\GrayScale.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\BasePosteffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -163,6 +165,8 @@
     <ClInclude Include="application\entity\enemy\SmallFish.h" />
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="magosuya\PostEffect\PostEffect.h" />
+    <ClInclude Include="Magosuya\PostEffect\BasePostEffect.h" />
+    <ClInclude Include="Magosuya\PostEffect\GrayScale.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />

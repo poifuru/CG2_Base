@@ -49,7 +49,7 @@ private:
 	uint32_t currentLineCount_ = 0;
 
 	//PSOの設定
-	PSODescriptor desc_ = {};
+	psoDesc_riptor desc_ = {};
 
 	//GPUリソースとマッピング用データ
 	std::unique_ptr<LineVertexData> lineBuffer_ = nullptr;
