@@ -2,8 +2,8 @@
     "emitters": [
         {
             "emitterData": {
-                "count": 6,
-                "frequency": 2.0,
+                "count": 1,
+                "frequency": 1.0,
                 "rotate": [
                     0.0,
                     0.0,
@@ -20,17 +20,17 @@
                     0.0
                 ]
             },
-            "name": "Emitter_0",
+            "name": "Ring",
             "targetGroups": [
-                "Group_0"
+                "ring"
             ]
         }
     ],
     "groups": [
         {
             "behavior": {
-                "isRandomColor": false,
-                "isRandomRotate": true,
+                "isRandomColor": true,
+                "isRandomRotate": false,
                 "isRandomScale": false,
                 "isRandomTranslate": false,
                 "isRandomVelocity": false,
@@ -42,8 +42,8 @@
                 ],
                 "maxLifeTime": 3.0,
                 "maxRotate": [
-                    0.0,
-                    0.0,
+                    3.140000104904175,
+                    3.140000104904175,
                     3.140000104904175
                 ],
                 "maxScale": [
@@ -67,14 +67,14 @@
                     0.0,
                     0.0
                 ],
-                "minLifeTime": 2.0,
+                "minLifeTime": 1.0,
                 "minRotate": [
                     0.0,
                     0.0,
                     0.0
                 ],
                 "minScale": [
-                    0.05000000074505806,
+                    1.0,
                     1.0,
                     1.0
                 ],
@@ -94,7 +94,7 @@
                     0.0
                 ],
                 "scale": [
-                    0.05000000074505806,
+                    1.0,
                     1.0,
                     1.0
                 ],
@@ -109,8 +109,8 @@
                     0.0
                 ]
             },
-            "name": "Group_0",
-            "texturePath": "Resources\\Particle\\circle2.png",
+            "name": "ring",
+            "texturePath": "Resources\\Particle\\gradationLine.png",
             "useBillboard": true
         }
     ]
