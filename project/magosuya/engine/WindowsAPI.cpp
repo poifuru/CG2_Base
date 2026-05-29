@@ -66,6 +66,17 @@ LRESULT WindowsAPI::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		break;
 	}
 
+	// Alt + Enter によるフルスクリーン切り替え
+	case WM_SYSKEYDOWN:
+		if (wparam == VK_RETURN && (lparam & (1 << 29))) { // Alt + Enter
+			WindowsAPI* pThis = reinterpret_cast<WindowsAPI*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+			if (pThis) {
+				pThis->SetFullscreen(!pThis->IsFullscreen());
+			}
+			return 0;
+		}
+		break;
+
 	//ウィンドウが破棄された
 	case WM_DESTROY:
 		//OSに対して、アプリの終了を伝える
@@ -133,4 +144,45 @@ std::string FileUtils::GetRelativePath(const std::string& absolutePath) {
 
 	// 見つからなければそのまま返す
 	return absolutePath;
+}
+
+void WindowsAPI::SetFullscreen(bool fullscreen) {
+	if (isFullscreen_ == fullscreen) return;
+
+	DWORD style = GetWindowLong(hwnd_, GWL_STYLE);
+
+	if (fullscreen) {
+		// ウィンドウモードの位置を記憶
+		GetWindowPlacement(hwnd_, &windowPlacement_);
+
+		// スタイルをポップアップ（枠なし）に変更
+		style &= ~WS_OVERLAPPEDWINDOW;
+		style |= WS_POPUP;
+		SetWindowLong(hwnd_, GWL_STYLE, style);
+
+		// モニターの情報を取得
+		HMONITOR monitor = MonitorFromWindow(hwnd_, MONITOR_DEFAULTTONEAREST);
+		MONITORINFO monitorInfo = { sizeof(monitorInfo) };
+		GetMonitorInfo(monitor, &monitorInfo);
+
+		// モニター全体にリサイズ
+		SetWindowPos(hwnd_, HWND_TOP,
+			monitorInfo.rcMonitor.left,
+			monitorInfo.rcMonitor.top,
+			monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left,
+			monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top,
+			SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+	} else {
+		// 元のスタイルに戻す
+		style &= ~WS_POPUP;
+		style |= WS_OVERLAPPEDWINDOW;
+		SetWindowLong(hwnd_, GWL_STYLE, style);
+
+		// 元の位置に戻す
+		SetWindowPlacement(hwnd_, &windowPlacement_);
+		SetWindowPos(hwnd_, nullptr, 0, 0, 0, 0,
+			SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+	}
+
+	isFullscreen_ = fullscreen;
 }

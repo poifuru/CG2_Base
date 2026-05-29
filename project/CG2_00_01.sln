@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.6.11819.183 stable
+VisualStudioVersion = 18.6.11819.183
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MagosuyaEngine", "CG2_00_01.vcxproj", "{78CF9FFA-87B4-4851-A7E1-64190D146E94}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -39,8 +39,8 @@ Global
 		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Release|x64.Build.0 = Release|x64
 		{D3CD701B-088D-454A-B9E5-785AD5C4C61B}.Debug|x64.ActiveCfg = Debug|x64
 		{D3CD701B-088D-454A-B9E5-785AD5C4C61B}.Debug|x64.Build.0 = Debug|x64
-		{D3CD701B-088D-454A-B9E5-785AD5C4C61B}.Development|x64.ActiveCfg = Release|x64
-		{D3CD701B-088D-454A-B9E5-785AD5C4C61B}.Development|x64.Build.0 = Release|x64
+		{D3CD701B-088D-454A-B9E5-785AD5C4C61B}.Development|x64.ActiveCfg = Development|x64
+		{D3CD701B-088D-454A-B9E5-785AD5C4C61B}.Development|x64.Build.0 = Development|x64
 		{D3CD701B-088D-454A-B9E5-785AD5C4C61B}.Release|x64.ActiveCfg = Release|x64
 		{D3CD701B-088D-454A-B9E5-785AD5C4C61B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection

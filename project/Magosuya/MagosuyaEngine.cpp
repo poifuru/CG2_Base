@@ -75,6 +75,11 @@ void MagosuyaEngine::Initialize () {
 
 	renderSystem_ = RenderSystem::GetInstance();
 	renderSystem_->Initialize(dxCommon_);
+
+#ifndef _DEBUG
+	// ビルド（Release）時はすべての初期化完了後にフルスクリーンにする
+	winApi_->SetFullscreen(true);
+#endif
 }
 
 void MagosuyaEngine::BeginFrame () {
@@ -108,13 +113,21 @@ void MagosuyaEngine::EndFrame () {
 	dxCommon_->PreDrawImGui();
 
 	imguiManager_->Draw ();
+
+#ifndef USEIMGUI
+	// Release時はImGuiがないので、直接ゲーム画面をSwapchainに描画する
+	postEffect_->Draw(dxCommon_->GetPostEffectRenderTexture());
+#endif
+
 	dxCommon_->EndFrame ();
 
+#ifdef USEIMGUI
 	ImGuiIO& io = ImGui::GetIO();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 	}
+#endif
 
 	texManager_->ClearIntermediateResource ();
 }

@@ -29,6 +29,9 @@ public:		//公開メソッド
 	void Finalize();
 	HWND GetHwnd() { return hwnd_; }
 
+	void SetFullscreen(bool fullscreen);
+	bool IsFullscreen() const { return isFullscreen_; }
+
 private:
 	//コンストラクタを禁止
 	WindowsAPI() = default;
@@ -53,4 +56,8 @@ private:	//メンバ変数
 
 	//ポインタを借りる
 	InputManager* inputManager_ = nullptr;
+
+	// フルスクリーン状態
+	bool isFullscreen_ = false;
+	WINDOWPLACEMENT windowPlacement_ = { sizeof(WINDOWPLACEMENT) };
 };

@@ -423,6 +423,9 @@ void DxCommon::CreateSwapChain() {
 	swapChainDesc_.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;	//モニタにうつしたら、中身を破棄
 	//コマンドキュー,ウィンドウハンドル,設定を渡して生成する
 	hr = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), WindowsAPI::GetInstance()->GetHwnd(), &swapChainDesc_, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(swapChain_.GetAddressOf()));
+
+	// DXGIが勝手にAlt+Enterでフルスクリーンにするのを防ぐ
+	hr = dxgiFactory_->MakeWindowAssociation(WindowsAPI::GetInstance()->GetHwnd(), DXGI_MWA_NO_ALT_ENTER);
 	assert(SUCCEEDED(hr));
 }
 
