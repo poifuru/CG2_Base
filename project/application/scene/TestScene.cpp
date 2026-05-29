@@ -19,6 +19,7 @@ TestScene::TestScene() {
 
 	// パーティクルのテクスチャ
 	TextureManager::GetInstance()->LoadTexture("Resources/Particle/circle2.png");
+	TextureManager::GetInstance()->LoadTexture("Resources/Particle/gradationLine.png");
 
 	TextureManager::GetInstance()->LoadTexture("Resources/Skybox/test2.dds");
 }

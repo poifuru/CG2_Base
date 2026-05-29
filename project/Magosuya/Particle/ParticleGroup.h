@@ -10,6 +10,12 @@ using namespace nlohmann;
 #include "RenderSystem.h"
 #include "CameraComponent.h"
 
+// パーティクルの形状
+enum class ParticlePrimitiveType {
+	Quad,   // 従来の四角形ポリゴン
+	Ring,   // 今回追加するリング（線形）
+};
+
 // パーティクルごとに異なる粒の挙動パラメータ
 struct ParticleBehavior {
 	EulerTransform transform = { {1.0f, 1.0f, 1.0f}, {}, {} };
@@ -110,4 +116,7 @@ private:
 
 	// 出せるパーティクルの最大数
 	const uint32_t kMaxParticleNum_ = 10000;
+
+	// 形状切り替え用
+	ParticlePrimitiveType primitiveType_ = ParticlePrimitiveType::Ring;
 };

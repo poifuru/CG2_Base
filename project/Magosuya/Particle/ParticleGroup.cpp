@@ -1,3 +1,5 @@
+
+#include <numbers>
 #include "ParticleGroup.h"
 #include "IParticleField.h"
 #include "MathFunction.h"
@@ -8,6 +10,11 @@
 
 static inline const uint32_t kParticleVertexNum = 4;
 static inline const uint32_t kParticleIndexNum = 6;
+
+static inline const uint32_t kRingDivide = 32; // リングの分割数
+static inline const float kOutRadius = 1.0f;
+static inline const float kInnerRadius = 0.2f;
+static inline const float radianPerDivide = 2.0f * std::numbers::pi_v<float> / float(kRingDivide);
 
 ParticleGroup::ParticleGroup(DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
@@ -25,33 +32,81 @@ ParticleGroup::~ParticleGroup() {
 void ParticleGroup::Initialize(const std::string& name) {
 	name_ = name;
 
-	// バッファ初期化
 	std::vector<ParticleVertex> vertices(kParticleVertexNum);
-	vertices[0] = {	// 左上
-		{-1.0f, 1.0f, 0.0f, 1.0f},
-		{0.0f, 0.0f},
-	};
-	vertices[1] = {	// 右上
-		{1.0f, 1.0f, 0.0f, 1.0f},
-		{1.0f, 0.0f},
-	};
-	vertices[2] = {	// 左下
-		{-1.0f, -1.0f, 0.0f, 1.0f},
-		{0.0f, 1.0f},
-	};
-	vertices[3] = {	// 右下
-		{1.0f, -1.0f, 0.0f, 1.0f},
-		{1.0f, 1.0f},
-	};
-	vertexBuffer_->Initialize(dxCommon_, vertices);
-	vertexBuffer_->Update(vertices);
+	std::vector<uint32_t> indices(kParticleIndexNum);
 
-	std::vector<uint32_t> indices = {
-	0, 1, 2,
-	1, 3, 2
-	};
-	indexBuffer_->Initialize(dxCommon_, kParticleIndexNum);
-	indexBuffer_->Update(indices);
+	// バッファ初期化
+	if(primitiveType_ == ParticlePrimitiveType::Quad) {
+		
+		vertices[0] = {	// 左上
+			{-1.0f, 1.0f, 0.0f, 1.0f},
+			{0.0f, 0.0f},
+		};
+		vertices[1] = {	// 右上
+			{1.0f, 1.0f, 0.0f, 1.0f},
+			{1.0f, 0.0f},
+		};
+		vertices[2] = {	// 左下
+			{-1.0f, -1.0f, 0.0f, 1.0f},
+			{0.0f, 1.0f},
+		};
+		vertices[3] = {	// 右下
+			{1.0f, -1.0f, 0.0f, 1.0f},
+			{1.0f, 1.0f},
+		};
+		vertexBuffer_->Initialize(dxCommon_, vertices);
+		vertexBuffer_->Update(vertices);
+
+		std::vector<uint32_t> indices = {
+		0, 1, 2,
+		1, 3, 2
+		};
+
+		indexBuffer_->Initialize(dxCommon_, kParticleIndexNum);
+		indexBuffer_->Update(indices);
+	}
+	else if(primitiveType_ == ParticlePrimitiveType::Ring) {
+		// 頂点を1つ増やして、UVの終点(1.0)用の頂点を作るよ！
+		uint32_t totalVertices = (kRingDivide + 1) * 2; 
+		uint32_t totalIndices = kRingDivide * 6;
+		vertices.resize(totalVertices);
+		indices.resize(totalIndices);
+		// 1. 頂点バッファの生成
+		// 「<」ではなく「<=」にして、1周回った最後の頂点(UV=1.0)まで作る
+		for (uint32_t i = 0; i <= kRingDivide; ++i) {
+			float angle = float(i) * radianPerDivide;
+			float cosAngle = std::cos(angle);
+			float sinAngle = std::sin(angle);
+			// 内周の頂点
+			vertices[i].position = { cosAngle * kInnerRadius, sinAngle * kInnerRadius, 0.0f, 1.0f };
+			vertices[i].texcoord = { float(i) / float(kRingDivide), 1.0f }; // UVの割り当て（内側）
+			// 外周の頂点 (オフセットが kRingDivide + 1)
+			vertices[i + (kRingDivide + 1)].position = { cosAngle * kOutRadius, sinAngle * kOutRadius, 0.0f, 1.0f };
+			vertices[i + (kRingDivide + 1)].texcoord = { float(i) / float(kRingDivide), 0.0f }; // UVの割り当て（外側）
+		}
+		// 2. インデックスバッファの生成
+		for (uint32_t i = 0; i < kRingDivide; ++i) {
+			// 1周回って0に戻す「% kRingDivide」を外して、素直に新しく作った終点の頂点を指すようにする
+			uint32_t currentInner = i;
+			uint32_t nextInner = i + 1;
+			// 外周のインデックスも kRingDivide + 1 ずらす
+			uint32_t currentOuter = i + (kRingDivide + 1);
+			uint32_t nextOuter = nextInner + (kRingDivide + 1);
+			// 三角形1枚目 (内側現在 -> 外側現在 -> 内側次)
+			indices[i * 6 + 0] = currentInner;
+			indices[i * 6 + 1] = currentOuter;
+			indices[i * 6 + 2] = nextInner;
+			// 三角形2枚目 (外側現在 -> 外側次 -> 内側次)
+			indices[i * 6 + 3] = currentOuter;
+			indices[i * 6 + 4] = nextOuter;
+			indices[i * 6 + 5] = nextInner;
+		}
+		// 先ほど追加してもらったバッファ転送処理
+		vertexBuffer_->Initialize(dxCommon_, vertices);
+		vertexBuffer_->Update(vertices);
+		indexBuffer_->Initialize(dxCommon_, totalIndices);
+		indexBuffer_->Update(indices);
+	}
 
 	instancingBuffer_->Initialize(dxCommon_, kMaxParticleNum_);
 
@@ -151,7 +206,12 @@ void ParticleGroup::Draw() {
 	// メッシュ情報
 	cmd.vbViews[0] = vertexBuffer_->GetView();
 	cmd.ibv = indexBuffer_->GetView();
-	cmd.indexCount = kParticleIndexNum;
+
+	if (primitiveType_ == ParticlePrimitiveType::Quad) {
+		cmd.indexCount = kParticleIndexNum;
+	} else {
+		cmd.indexCount = kRingDivide * 6;
+	}
 
 	// 現在のパーティクル数をインスタンス数として設定！
 	cmd.instanceCount = static_cast<UINT>(particles_.size());
