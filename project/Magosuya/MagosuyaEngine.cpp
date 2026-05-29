@@ -2,6 +2,7 @@
 #include "LogManager.h"
 #include "PostEffect.h"
 #include "Primitive.h"
+#include "imgui.h"
 
 MagosuyaEngine::~MagosuyaEngine () {
 	audioManager_->Finalize();
@@ -62,8 +63,9 @@ void MagosuyaEngine::Initialize () {
 	audioManager_ = AudioManager::GetInstance();
 	audioManager_->Initialize();
 
-	// SRVManagerが初期化された後でオフスクリーン用のRenderTextureを初期化
+	// SRVManagerが初期化された後でRenderTextureを初期化
 	dxCommon_->InitializeRenderTexture(srvManager_);
+	dxCommon_->InitializePostEffectRenderTexture(srvManager_);
 
 	postEffect_ = PostEffect::GetInstance();
 	postEffect_->Initialize(dxCommon_);
@@ -93,13 +95,26 @@ void MagosuyaEngine::EndFrame () {
 	// 描画が終わったらコマンドを空にする
 	renderSystem_->ClearCommands();
 
-	// ImGuiの描画の前に、描画先をRenderTextureからSwapchainへ切り替える
-	dxCommon_->PreDrawImGui();
+	// ポストプロセス描画の開始
+	dxCommon_->PreDrawPostEffect();
 
 	// RenderTextureの内容をSwapchainにコピー
 	postEffect_->Draw(dxCommon_->GetRenderTexture());
 
+	// ポストプロセス描画の終了
+	dxCommon_->PostDrawPostEffect();
+
+	// ImGuiの描画の前に、描画先をRenderTextureからSwapchainへ切り替える
+	dxCommon_->PreDrawImGui();
+
 	imguiManager_->Draw ();
 	dxCommon_->EndFrame ();
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+	}
+
 	texManager_->ClearIntermediateResource ();
 }

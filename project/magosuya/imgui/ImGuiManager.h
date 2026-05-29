@@ -14,6 +14,9 @@ public:
 	void BeginFrame ();
 
 private:
+	void RenderDockingSpace();
+
+private:
 	//コンストラクタを禁止
 	ImGuiManager () = default;
 	// コピーコンストラクタと代入演算子を禁止

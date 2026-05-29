@@ -31,6 +31,7 @@ public:
 
 	//ディスクリプタヒープ取得
 	ID3D12DescriptorHeap* GetDescriptorHeap() { return descriptorHeap_.Get(); }
+	uint32_t GetIndex(D3D12_CPU_DESCRIPTOR_HANDLE handle);
 
 	//SRV生成(texture)
 	void CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format, UINT MipLevels, const DirectX::TexMetadata& texMetadata);

@@ -60,6 +60,11 @@ D3D12_GPU_DESCRIPTOR_HANDLE SRVManager::GetGPUDescriptorHandle(uint32_t index) {
 	return handleGPU;
 }
 
+uint32_t SRVManager::GetIndex(D3D12_CPU_DESCRIPTOR_HANDLE handle) {
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap_->GetCPUDescriptorHandleForHeapStart();
+	return static_cast<uint32_t>((handle.ptr - handleCPU.ptr) / descriptorSize_);
+}
+
 void SRVManager::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format, UINT MipLevels, const DirectX::TexMetadata& texMetadata) {
 	//metaDataをもとにSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};

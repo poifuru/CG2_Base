@@ -58,6 +58,11 @@ void DxCommon::InitializeRenderTexture(SRVManager* srvManager) {
 	renderTexture_->Initialize(this, srvManager);
 }
 
+void DxCommon::InitializePostEffectRenderTexture(SRVManager* srvManager) {
+	postEffectRenderTexture_ = std::make_unique<RenderTexture>();
+	postEffectRenderTexture_->Initialize(this, srvManager);
+}
+
 void DxCommon::BeginFrame() {
 	// TransitionBarrierの設定 (RenderTextureをSRVからRTVへ遷移)
 	D3D12_RESOURCE_BARRIER barrier{};
@@ -89,24 +94,15 @@ void DxCommon::PreDrawImGui() {
 	// これから書きこむバックバッファのインデックスを取得
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
-	// バリアを設定 (2つ)
-	D3D12_RESOURCE_BARRIER barriers[2] = {};
-	
-	// 1. RenderTextureを RENDER_TARGET から PIXEL_SHADER_RESOURCE に遷移
-	barriers[0].Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	barriers[0].Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barriers[0].Transition.pResource = renderTexture_->GetResource();
-	barriers[0].Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	barriers[0].Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	// Swapchainを PRESENT から RENDER_TARGET に遷移するバリアのみを張る
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = swapChainResources_[backBufferIndex].Get();
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
-	// 2. Swapchainを PRESENT から RENDER_TARGET に遷移
-	barriers[1].Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	barriers[1].Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barriers[1].Transition.pResource = swapChainResources_[backBufferIndex].Get();
-	barriers[1].Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-	barriers[1].Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-
-	commandList_->ResourceBarrier(2, barriers);
+	commandList_->ResourceBarrier(1, &barrier);
 
 	// 描画先をSwapchainのRTVに切り替え (DSVはnullptrを指定して使わない)
 	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex], false, nullptr);
@@ -118,6 +114,47 @@ void DxCommon::PreDrawImGui() {
 	// ViewportとScissorを設定
 	commandList_->RSSetViewports(1, &viewport_);
 	commandList_->RSSetScissorRects(1, &scissorRect_);
+}
+
+void DxCommon::PreDrawPostEffect() {
+	// バリアを設定 (2つ)
+	D3D12_RESOURCE_BARRIER barriers[2] = {};
+
+	// 1. シーン描画用 renderTexture を RENDER_TARGET から PIXEL_SHADER_RESOURCE に遷移
+	barriers[0].Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barriers[0].Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barriers[0].Transition.pResource = renderTexture_->GetResource();
+	barriers[0].Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	barriers[0].Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+
+	// 2. ポストエフェクト用 postEffectRenderTexture を PIXEL_SHADER_RESOURCE から RENDER_TARGET に遷移
+	barriers[1].Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barriers[1].Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barriers[1].Transition.pResource = postEffectRenderTexture_->GetResource();
+	barriers[1].Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	barriers[1].Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	commandList_->ResourceBarrier(2, barriers);
+
+	// 描画先を postEffectRenderTexture の RTV に切り替え (デプスは使わないのでnullptrを指定)
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = postEffectRenderTexture_->GetDescriptorHandle();
+	commandList_->OMSetRenderTargets(1, &rtvHandle, false, nullptr);
+
+	// postEffectRenderTexture を黒でクリア
+	float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	commandList_->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+	// ViewportとScissorを設定
+	commandList_->RSSetViewports(1, &viewport_);
+	commandList_->RSSetScissorRects(1, &scissorRect_);
+}
+
+void DxCommon::PostDrawPostEffect() {
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = postEffectRenderTexture_->GetResource();
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	commandList_->ResourceBarrier(1, &barrier);
 }
 
 void DxCommon::EndFrame() {

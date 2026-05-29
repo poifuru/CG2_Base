@@ -27,12 +27,16 @@ public:		//メンバ関数(mainで呼び出すよう)
 
 	void Initialize();
 	void InitializeRenderTexture(SRVManager* srvManager);
+	void InitializePostEffectRenderTexture(SRVManager* srvManager);
 	void BeginFrame();
 	void PreDrawImGui();
+	void PreDrawPostEffect();
+	void PostDrawPostEffect();
 	void EndFrame();
 	void Finalize() const;
 
 	RenderTexture* GetRenderTexture() const { return renderTexture_.get(); }
+	RenderTexture* GetPostEffectRenderTexture() const { return postEffectRenderTexture_.get(); }
 
 	/// <summary>
 	/// Resource作成関数
@@ -53,6 +57,9 @@ public:		//メンバ関数(mainで呼び出すよう)
 
 	// RTVの空きハンドルを渡す関数
 	D3D12_CPU_DESCRIPTOR_HANDLE AllocateRTV();
+
+	// コマンドキューを取得
+	ID3D12CommandQueue* GetCommandQueue() { return commandQueue_.Get(); }
 
 private:
 	//コンストラクタを禁止
@@ -169,6 +176,9 @@ private://メンバ変数
 	//シザー矩形
 	D3D12_RECT scissorRect_{};
 
-	//オフスクリーン描画用
+	//シーン描画用
 	std::unique_ptr<RenderTexture> renderTexture_ = nullptr;
+
+	//ポストエフェクト描画用
+	std::unique_ptr<RenderTexture> postEffectRenderTexture_ = nullptr;
 };
