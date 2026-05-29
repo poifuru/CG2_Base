@@ -31,8 +31,8 @@ public: // メンバ関数
     void HandleMessageForDebug (LPARAM lParam);
 
     void EndFrame ();
-    long GetMouseDeltaX() const { return mouseDeltaX_; }  
-    long GetMouseDeltaY() const { return mouseDeltaY_; }  
+    long GetMouseDeltaX() const;  
+    long GetMouseDeltaY() const;  
 
 private: // メンバ変数  
     //キーボード

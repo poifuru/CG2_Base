@@ -13,6 +13,9 @@ public:
 	void Draw ();
 	void BeginFrame ();
 
+	bool IsGameWindowHovered() const { return isGameWindowHovered_; }
+	bool IsGameWindowFocused() const { return isGameWindowFocused_; }
+
 private:
 	void RenderDockingSpace();
 
@@ -24,5 +27,9 @@ private:
 	ImGuiManager& operator=(const ImGuiManager&) = delete;
 	ImGuiManager (ImGuiManager&&) = delete;
 	ImGuiManager& operator=(ImGuiManager&&) = delete;
+
+	bool isGameWindowHovered_ = false;
+	bool isGameWindowFocused_ = false;
+	bool isGameWindowDragging_ = false;
 };
 

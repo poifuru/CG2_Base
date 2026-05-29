@@ -104,6 +104,23 @@ void ImGuiManager::RenderDockingSpace() {
 	// ゲーム画面をImGuiウィンドウとして描画する
 	ImGui::Begin("Game");
 
+	// 純粋にウィンドウ上にマウスがあるか
+	bool isHovered = ImGui::IsWindowHovered();
+	isGameWindowFocused_ = ImGui::IsWindowFocused();
+
+	// ドラッグ開始判定：ウィンドウ上でクリックされたらドラッグ中フラグをON
+	if (isHovered && ImGui::IsAnyMouseDown()) {
+		isGameWindowDragging_ = true;
+	}
+
+	// ドラッグ終了判定：マウスボタンが全て離されたらフラグをOFF
+	if (!ImGui::IsAnyMouseDown()) {
+		isGameWindowDragging_ = false;
+	}
+
+	// 「ウィンドウ上にマウスがある」か「ゲームウィンドウからドラッグ中」なら、ホバー状態とみなす
+	isGameWindowHovered_ = isHovered || isGameWindowDragging_;
+
 	// RenderTextureのSRVからGPUハンドルを取得
 	uint32_t srvIndex = DxCommon::GetInstance()->GetPostEffectRenderTexture()->GetSrvIndex();
 	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = SRVManager::GetInstance()->GetGPUDescriptorHandle(srvIndex);

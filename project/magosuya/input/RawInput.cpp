@@ -1,6 +1,8 @@
 #include "RawInput.h"
 #include <hidusage.h>
 #include "function.h"
+#include <imgui.h>
+#include "ImGuiManager.h"
 
 void RawInput::Initialize (HWND hwnd) {
     OutputDebugStringA ("RawInput 登録\n");
@@ -69,18 +71,38 @@ void RawInput::Update (LPARAM lParam) {
 }
 
 bool RawInput::Push (unsigned short key) const {
+    if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureKeyboard) {
+        if (!ImGuiManager::GetInstance()->IsGameWindowFocused()) {
+            return false;
+        }
+    }
     return keys_[key];
 }
 
 bool RawInput::Trigger (unsigned short key) const {
+    if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureKeyboard) {
+        if (!ImGuiManager::GetInstance()->IsGameWindowFocused()) {
+            return false;
+        }
+    }
     return (keys_[key] && !preKeys_[key]);
 }
 
 bool RawInput::Release (unsigned short key) const {
+    if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureKeyboard) {
+        if (!ImGuiManager::GetInstance()->IsGameWindowFocused()) {
+            return false;
+        }
+    }
     return (!keys_[key] && preKeys_[key]);
 }
 
 bool RawInput::PushMouse (int button) const {
+    if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureMouse) {
+        if (!ImGuiManager::GetInstance()->IsGameWindowHovered()) {
+            return false;
+        }
+    }
     if (button >= 0 && button < (int)mouseButtons_.size ()) {
         return mouseButtons_[button];
     }
@@ -89,6 +111,11 @@ bool RawInput::PushMouse (int button) const {
 }
 
 bool RawInput::TriggerMouse (int button) const {
+    if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureMouse) {
+        if (!ImGuiManager::GetInstance()->IsGameWindowHovered()) {
+            return false;
+        }
+    }
     if (button >= 0 && button < (int)mouseButtons_.size ()) {
         return (mouseButtons_[button] && !preMouseButtons_[button]);
     }
@@ -97,6 +124,11 @@ bool RawInput::TriggerMouse (int button) const {
 }
 
 bool RawInput::ReleaseMouse (int button) const {
+    if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureMouse) {
+        if (!ImGuiManager::GetInstance()->IsGameWindowHovered()) {
+            return false;
+        }
+    }
     if (button >= 0 && button < (int)mouseButtons_.size ()) {
         return (!mouseButtons_[button] && preMouseButtons_[button]);
     }
@@ -141,4 +173,22 @@ void RawInput::EndFrame () {
 
     mouseDeltaX_ = 0;
     mouseDeltaY_ = 0;
+}
+
+long RawInput::GetMouseDeltaX() const {
+    if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureMouse) {
+        if (!ImGuiManager::GetInstance()->IsGameWindowHovered()) {
+            return 0;
+        }
+    }
+    return mouseDeltaX_;
+}
+
+long RawInput::GetMouseDeltaY() const {
+    if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureMouse) {
+        if (!ImGuiManager::GetInstance()->IsGameWindowHovered()) {
+            return 0;
+        }
+    }
+    return mouseDeltaY_;
 }
