@@ -2,7 +2,7 @@
 #include <hidusage.h>
 #include "function.h"
 #include <imgui.h>
-#include "ImGuiManager.h"
+#include "EditorManager.h"
 
 void RawInput::Initialize (HWND hwnd) {
     OutputDebugStringA ("RawInput 登録\n");
@@ -72,7 +72,7 @@ void RawInput::Update (LPARAM lParam) {
 
 bool RawInput::Push (unsigned short key) const {
     if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureKeyboard) {
-        if (!ImGuiManager::GetInstance()->IsGameWindowFocused()) {
+        if (!EditorManager::GetInstance()->IsGameWindowFocused()) {
             return false;
         }
     }
@@ -81,7 +81,7 @@ bool RawInput::Push (unsigned short key) const {
 
 bool RawInput::Trigger (unsigned short key) const {
     if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureKeyboard) {
-        if (!ImGuiManager::GetInstance()->IsGameWindowFocused()) {
+        if (!EditorManager::GetInstance()->IsGameWindowFocused()) {
             return false;
         }
     }
@@ -90,7 +90,7 @@ bool RawInput::Trigger (unsigned short key) const {
 
 bool RawInput::Release (unsigned short key) const {
     if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureKeyboard) {
-        if (!ImGuiManager::GetInstance()->IsGameWindowFocused()) {
+        if (!EditorManager::GetInstance()->IsGameWindowFocused()) {
             return false;
         }
     }
@@ -99,7 +99,7 @@ bool RawInput::Release (unsigned short key) const {
 
 bool RawInput::PushMouse (int button) const {
     if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureMouse) {
-        if (!ImGuiManager::GetInstance()->IsGameWindowHovered()) {
+        if (!EditorManager::GetInstance()->IsGameWindowHovered()) {
             return false;
         }
     }
@@ -112,7 +112,7 @@ bool RawInput::PushMouse (int button) const {
 
 bool RawInput::TriggerMouse (int button) const {
     if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureMouse) {
-        if (!ImGuiManager::GetInstance()->IsGameWindowHovered()) {
+        if (!EditorManager::GetInstance()->IsGameWindowHovered()) {
             return false;
         }
     }
@@ -125,7 +125,7 @@ bool RawInput::TriggerMouse (int button) const {
 
 bool RawInput::ReleaseMouse (int button) const {
     if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureMouse) {
-        if (!ImGuiManager::GetInstance()->IsGameWindowHovered()) {
+        if (!EditorManager::GetInstance()->IsGameWindowHovered()) {
             return false;
         }
     }
@@ -177,7 +177,7 @@ void RawInput::EndFrame () {
 
 long RawInput::GetMouseDeltaX() const {
     if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureMouse) {
-        if (!ImGuiManager::GetInstance()->IsGameWindowHovered()) {
+        if (!EditorManager::GetInstance()->IsGameWindowHovered()) {
             return 0;
         }
     }
@@ -186,7 +186,7 @@ long RawInput::GetMouseDeltaX() const {
 
 long RawInput::GetMouseDeltaY() const {
     if (ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureMouse) {
-        if (!ImGuiManager::GetInstance()->IsGameWindowHovered()) {
+        if (!EditorManager::GetInstance()->IsGameWindowHovered()) {
             return 0;
         }
     }

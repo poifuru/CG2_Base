@@ -172,6 +172,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Magosuya\Imgui\EditorManager.cpp" />
     <ClCompile Include="Magosuya\Object\Animation\Animator.cpp" />
     <ClCompile Include="Application\Entity\Entity.cpp" />
     <ClCompile Include="Application\Entity\Enemy\BaseEnemy.cpp" />
@@ -282,6 +283,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Magosuya\Imgui\EditorManager.h" />
     <ClInclude Include="Magosuya\Object\Animation\Animator.h" />
     <ClInclude Include="Application\Scene\BaseScene.h" />
     <ClInclude Include="Application\Entity\Entity.h" />

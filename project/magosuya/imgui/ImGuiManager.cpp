@@ -6,6 +6,7 @@
 #include "Windows.h"
 #include "SRVManager.h"
 #include "RenderTexture.h"
+#include "EditorManager.h"
 
 ImGuiManager::~ImGuiManager () {
 #ifdef USEIMGUI
@@ -101,35 +102,41 @@ void ImGuiManager::RenderDockingSpace() {
 	ImGuiID dockspace_id = ImGui::GetID("MyEngineDockSpace");
 	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
-	// ゲーム画面をImGuiウィンドウとして描画する
-	ImGui::Begin("Game");
-
-	// 純粋にウィンドウ上にマウスがあるか
-	bool isHovered = ImGui::IsWindowHovered();
-	isGameWindowFocused_ = ImGui::IsWindowFocused();
-
-	// ドラッグ開始判定：ウィンドウ上でクリックされたらドラッグ中フラグをON
-	if (isHovered && ImGui::IsAnyMouseDown()) {
-		isGameWindowDragging_ = true;
-	}
-
-	// ドラッグ終了判定：マウスボタンが全て離されたらフラグをOFF
-	if (!ImGui::IsAnyMouseDown()) {
-		isGameWindowDragging_ = false;
-	}
-
-	// 「ウィンドウ上にマウスがある」か「ゲームウィンドウからドラッグ中」なら、ホバー状態とみなす
-	isGameWindowHovered_ = isHovered || isGameWindowDragging_;
-
-	// RenderTextureのSRVからGPUハンドルを取得
-	uint32_t srvIndex = DxCommon::GetInstance()->GetPostEffectRenderTexture()->GetSrvIndex();
-	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = SRVManager::GetInstance()->GetGPUDescriptorHandle(srvIndex);
-
-	// ウィンドウの大きさに合わせてゲーム画面を描画
-	ImVec2 contentSize = ImGui::GetContentRegionAvail();
-	ImGui::Image((ImTextureID)gpuHandle.ptr, contentSize);
-
+	// ビューポートを置く用のウィンドウ
+	ImGui::Begin("Viewport");
 	ImGui::End();
+
+	EditorManager::GetInstance()->UpdateAndDraw();
+
+	//// ゲーム画面をImGuiウィンドウとして描画する
+	//ImGui::Begin("Game");
+
+	//// 純粋にウィンドウ上にマウスがあるか
+	//bool isHovered = ImGui::IsWindowHovered();
+	//isGameWindowFocused_ = ImGui::IsWindowFocused();
+
+	//// ドラッグ開始判定：ウィンドウ上でクリックされたらドラッグ中フラグをON
+	//if (isHovered && ImGui::IsAnyMouseDown()) {
+	//	isGameWindowDragging_ = true;
+	//}
+
+	//// ドラッグ終了判定：マウスボタンが全て離されたらフラグをOFF
+	//if (!ImGui::IsAnyMouseDown()) {
+	//	isGameWindowDragging_ = false;
+	//}
+
+	//// 「ウィンドウ上にマウスがある」か「ゲームウィンドウからドラッグ中」なら、ホバー状態とみなす
+	//isGameWindowHovered_ = isHovered || isGameWindowDragging_;
+
+	//// RenderTextureのSRVからGPUハンドルを取得
+	//uint32_t srvIndex = DxCommon::GetInstance()->GetPostEffectRenderTexture()->GetSrvIndex();
+	//D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = SRVManager::GetInstance()->GetGPUDescriptorHandle(srvIndex);
+
+	//// ウィンドウの大きさに合わせてゲーム画面を描画
+	//ImVec2 contentSize = ImGui::GetContentRegionAvail();
+	//ImGui::Image((ImTextureID)gpuHandle.ptr, contentSize);
+
+	//ImGui::End();
 
 	ImGui::End();
 #endif

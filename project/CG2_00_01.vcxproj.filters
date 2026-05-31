@@ -64,6 +64,7 @@
     <ClCompile Include="Magosuya\Particle\ParticleGroup.cpp" />
     <ClCompile Include="Magosuya\Particle\ParticleEmitter.cpp" />
     <ClCompile Include="Magosuya\Particle\ParticleSystem.cpp" />
+    <ClCompile Include="Magosuya\Imgui\EditorManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Scene\BaseScene.h" />
@@ -148,6 +149,7 @@
     <ClInclude Include="Magosuya\Particle\ParticleGroup.h" />
     <ClInclude Include="Magosuya\Particle\ParticleEmitter.h" />
     <ClInclude Include="Magosuya\Particle\ParticleSystem.h" />
+    <ClInclude Include="Magosuya\Imgui\EditorManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Magosuya\PSO\RootSignatureManager.h" />
