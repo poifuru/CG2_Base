@@ -14,6 +14,7 @@
     <FxCompile Include="Resources\shader\Grayscale.PS.hlsl" />
     <FxCompile Include="Resources\shader\Vignette.PS.hlsl" />
     <FxCompile Include="Resources\shader\BoxFilter.PS.hlsl" />
+    <FxCompile Include="Resources\shader\GaussianFilter.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application\scene\ClearScene.cpp" />
