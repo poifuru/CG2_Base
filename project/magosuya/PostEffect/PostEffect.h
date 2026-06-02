@@ -13,6 +13,11 @@ struct PostProcessData {
 	float dummy2;
 };
 
+struct alignas(16) VignetingData {
+	float intensity;
+	float power;
+};
+
 class PostEffect {
 public:
 	static PostEffect* GetInstance() {
@@ -38,5 +43,5 @@ private:
 
 	// パラメータ変更用変数
 	ComPtr<ID3D12Resource> postProcessResource_ = nullptr;
-	PostProcessData* postProcessData_ = nullptr;
+	VignetingData* postProcessData_ = nullptr;
 };

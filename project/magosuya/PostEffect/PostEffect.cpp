@@ -12,7 +12,7 @@ void PostEffect::Initialize(DxCommon* dxCommon) {
 
 	// シェーダーのコンパイル
 	uint32_t vsID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Fullscreen.VS.hlsl", L"vs_6_0");
-	uint32_t psID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/BoxFilter.PS.hlsl", L"ps_6_0");
+	uint32_t psID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Vignette.PS.hlsl", L"ps_6_0");
 
 	// RootSignatureの取得
 	uint32_t rootSigID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::PostProcess);
@@ -45,8 +45,8 @@ void PostEffect::Initialize(DxCommon* dxCommon) {
 
 	postProcessResource_ = dxCommon_->CreateBufferResource(sizeof(PostProcessData));
 	postProcessResource_->Map(0, nullptr, reinterpret_cast<void**>(&postProcessData_));
-	postProcessData_->intensity = 0.0f;
-	postProcessData_->time = 0.0f;
+	postProcessData_->intensity = 16.0f;
+	postProcessData_->power = 0.8f;
 }
 
 void PostEffect::Draw(RenderTexture* renderTexture) {
@@ -74,8 +74,8 @@ void PostEffect::Draw(RenderTexture* renderTexture) {
 void PostEffect::Imgui() {
 #ifdef USEIMGUI
 	ImGui::Begin("PostEffect");
-	ImGui::DragFloat("intensity", &postProcessData_->intensity, 0.001f);
-	ImGui::DragFloat("time", &postProcessData_->time, 0.001f);
+	ImGui::DragFloat("intensity", &postProcessData_->intensity, 0.1f, 0.0f, 100.0f);
+	ImGui::DragFloat("power", &postProcessData_->power, 0.01f, 0.0f, 10.0f);
 	ImGui::End();
 #endif
 }
