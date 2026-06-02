@@ -4,18 +4,22 @@ Texture2D<float4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
 
 // 定数を定義
-static const float2 kIndex3x3[3][3] =
+static const float2 kIndex5x5[5][5] =
 {
-    { { -1.0f, -1.0f }, { 0.0f, -1.0f }, { 1.0f, -1.0f } },
-    { { -1.0f, 0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f } },
-    { { -1.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } },
+    { { -2.0f, -2.0f }, { -1.0f, -2.0f }, { 0.0f, -2.0f }, { 1.0f, -2.0f }, { 2.0f, -2.0f } },
+    { { -2.0f, -1.0f }, { -1.0f, -1.0f }, { 0.0f, -1.0f }, { 1.0f, -1.0f }, { 2.0f, -1.0f } },
+    { { -2.0f, 0.0f }, { -1.0f, 0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 2.0f, 0.0f } },
+    { { -2.0f, 1.0f }, { -1.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 2.0f, 1.0f } },
+    { { -2.0f, 2.0f }, { -1.0f, 2.0f }, { 0.0f, 2.0f }, { 1.0f, 2.0f }, { 2.0f, 2.0f } },
 };
 
-static const float kKernel3x3[3][3] =
+static const float kKernel5x5[5][5] =
 {
-    { 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f },
-    { 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f },
-    { 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f },
+    { 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f },
+    { 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f },
+    { 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f },
+    { 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f },
+    { 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f, 1.0f / 9.0f },
 };
 
 struct PixelShaderOutput
@@ -32,17 +36,19 @@ PixelShaderOutput main(VertexShaderOutput input)
     PixelShaderOutput output;
     output.color.rgb = float3(0.0f, 0.0f, 0.0f);
     output.color.a = 1.0f;
-    for (int x = 0; x < 3; ++x)
+    
+    // ここでは色を足していくだけ
+    for (int x = 0; x < 5; ++x)
     {
-        for (int y = 0; y < 3; ++y)
+        for (int y = 0; y < 5; ++y)
         {
-            // 現在のtexcoordを算出
-            float2 texcoord = input.texcoord + kIndex3x3[x][y] * uvStepSize;
-            // 色に 1/9 掛けて足す
-            float3 fetchColor = gTexture.Sample(gSampler, texcoord).rgb;
-            output.color.rgb += fetchColor * kKernel3x3[x][y];
+            float2 texcoord = input.texcoord + kIndex5x5[x][y] * uvStepSize;
+            output.color.rgb += gTexture.Sample(gSampler, texcoord).rgb;
         }
     }
+    
+    // 最後に合計ピクセル数(25個)の逆数を掛けて平均化(正規化)
+    output.color.rgb *= rcp(25.0f);
    
     return output;
 }

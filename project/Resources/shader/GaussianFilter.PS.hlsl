@@ -6,11 +6,13 @@ SamplerState gSampler : register(s0);
 // 定数を定義
 static const float PI = 3.14159265f;
 
-static const float2 kIndex3x3[3][3] =
+static const float2 kIndex3x3[5][5] =
 {
-    { { -1.0f, -1.0f }, { 0.0f, -1.0f }, { 1.0f, -1.0f } },
-    { { -1.0f, 0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f } },
-    { { -1.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } },
+    { { -2.0f, -2.0f }, { -1.0f, -2.0f }, { 0.0f, -2.0f }, { 1.0f, -2.0f }, {2.0f, -2.0f } },
+    { { -2.0f, -1.0f }, { -1.0f, -1.0f }, { 0.0f, -1.0f }, { 1.0f, -1.0f }, { 2.0f, -1.0f } },
+    { { -2.0f, 0.0f }, { -1.0f, 0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 2.0f, 0.0f } },
+    { { -2.0f, 1.0f }, { -1.0f, 1.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f }, { 2.0f, 1.0f } },
+    { { -2.0f, 2.0f }, { -1.0f, 2.0f }, { 0.0f, 2.0f }, { 1.0f, 2.0f }, { 2.0f, 2.0f } },
 };
 
 // 構造体定義
@@ -37,24 +39,27 @@ PixelShaderOutput main(VertexShaderOutput input)
     output.color.rgb = float3(0.0f, 0.0f, 0.0f);
     output.color.a = 1.0f;
     
-    float weight = 0.0f;
-    float kernel3x3[3][3];
-    for (int x = 0; x < 3; ++x)
+    float totalWeight = 0.0f;
+    
+    for (int x = 0; x < 5; ++x)
     {
-        for (int y = 0; y < 3; ++y)
+        for (int y = 0; y < 5; ++y)
         {
-            // kernelを求める
-            kernel3x3[x][y] = gauss(kIndex3x3[x][y].x, kIndex3x3[x][y].y, 2.0f);
-            weight += kernel3x3[x][y];
+            // ガウスの重みを計算
+            float weight = gauss(kIndex3x3[x][y].x, kIndex3x3[x][y].y, 2.0f);
+            totalWeight += weight;
             
-            // 現在のtexcoordを算出
+            // サンプリングするUV座標を計算
             float2 texcoord = input.texcoord + kIndex3x3[x][y] * uvStepSize;
-            // 色に 1/9 掛けて足す
             float3 fetchColor = gTexture.Sample(gSampler, texcoord).rgb;
-            output.color.rgb += fetchColor * kernel3x3[x][y];
+            
+            // テクスチャの色に重みを掛けて累積
+            output.color.rgb += fetchColor * weight;
         }
-
     }
+    
+    // 重みの合計が1になるように、溜まった色に逆数を掛けて「正規化」する（これが指摘の解答！）
+    output.color.rgb *= rcp(totalWeight);
     
     return output;
 }
