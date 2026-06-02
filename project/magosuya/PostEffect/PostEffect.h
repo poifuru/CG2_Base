@@ -34,7 +34,7 @@ private:
 	PostEffect& operator=(const PostEffect&) = delete;
 
 	DxCommon* dxCommon_ = nullptr;
-	psoDesc_riptor psoDesc__{};
+	PSODescriptor psoDesc_{};
 
 	// パラメータ変更用変数
 	ComPtr<ID3D12Resource> postProcessResource_ = nullptr;

@@ -29,7 +29,7 @@ public:		//メンバ関数
 	Matrix4x4 GetWorld() { return transformationMatrix_.World; }
 
 private:	//メンバ変数
-	psoDesc_riptor desc_ = {};
+	PSODescriptor desc_ = {};
 
 	ComPtr<ID3D12Resource> vertexBuffer_;
 	//ComPtr<ID3D12Resource> indexBuffer_;

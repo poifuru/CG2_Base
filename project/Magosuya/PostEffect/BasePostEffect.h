@@ -8,5 +8,9 @@ class DxCommon;
 class RenderTexture;
 
 class BasePostEffect {
-
+public:
+	virtual ~BasePostEffect() = default;
+	virtual void Initialize(DxCommon* dxCommon) = 0;
+	virtual void Draw(RenderTexture* renderTexture) = 0;
+	virtual void Imgui() = 0;
 };

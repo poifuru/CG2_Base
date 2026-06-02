@@ -26,7 +26,7 @@ public:		//外部公開メソッド
 	void SetID (const std::string& id) { id_ = id; }
 
 private:	//メンバ変数
-	psoDesc_riptor desc_ = {};
+	PSODescriptor desc_ = {};
 
 	//GPUリソース
 	ComPtr<ID3D12Resource> vertexBuffer_;

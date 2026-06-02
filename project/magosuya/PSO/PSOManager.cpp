@@ -5,7 +5,7 @@ void PSOManager::Initialize (DxCommon* dxCommon) {
 	commandList_ = dxCommon->GetCommandList ();
 }
 
-ID3D12PipelineState* PSOManager::GetOrCreatePSO (const psoDesc_riptor& desc) {
+ID3D12PipelineState* PSOManager::GetOrCreatePSO (const PSODescriptor& desc) {
 	HRESULT hr;
 
 	//引数からハッシュ計算
@@ -91,7 +91,7 @@ ID3D12PipelineState* PSOManager::GetOrCreatePSO (const psoDesc_riptor& desc) {
 	//======//
 }
 
-void PSOManager::SetPSO (const psoDesc_riptor& desc) {
+void PSOManager::SetPSO (const PSODescriptor& desc) {
 	auto pso = GetOrCreatePSO (desc);
 	commandList_->SetPipelineState (pso);
 }
@@ -101,7 +101,7 @@ uint64_t PSOManager::hash_combine_simple (uint64_t h, T val) const {
 	return (h << 5) | (h >> 59) ^ (uint64_t)val;
 }
 
-uint64_t PSOManager::ComputeHash (const psoDesc_riptor& desc) const {
+uint64_t PSOManager::ComputeHash (const PSODescriptor& desc) const {
 	uint64_t hash = 0;
 
 	// --- マネージャー管理のIDをハッシュ化（最重要）---

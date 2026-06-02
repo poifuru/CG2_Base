@@ -73,7 +73,7 @@ private:
 	uint32_t DescriptorFreeIndex_ = 0;
 
 	//PSO
-	psoDesc_riptor desc_ = {};
+	PSODescriptor desc_ = {};
 
 	//GPUリソース
 	ComPtr<ID3D12Resource> matrixBuffer_;

@@ -46,7 +46,7 @@ private:
 	UINT vertexIndex_ = 0;
 
 	//PSOの設定
-	psoDesc_riptor desc_ = {};
+	PSODescriptor desc_ = {};
 
 	//GPUリソースとマッピング用データ
 	std::unique_ptr<CubeVertexData> cubeBuffer_ = nullptr;

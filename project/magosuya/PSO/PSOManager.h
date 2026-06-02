@@ -10,7 +10,7 @@ using namespace Microsoft::WRL;
 #include "BlendModeManager.h"
 #include "InputLayoutManager.h"
 
-struct psoDesc_riptor {
+struct PSODescriptor {
 	// --- マネージャーで管理してるID ---
 	uint32_t RootSignatureID = 0;
 	uint32_t VS_ID = 0;										// ShaderManagerから取得したVertex Shader ID
@@ -54,10 +54,10 @@ public:		//メンバ関数
 
 	void Initialize (DxCommon* dxCommon);
 
-	//psoDesc_riptorを受けとってID3D12PipelineState*を返す
-	ID3D12PipelineState* GetOrCreatePSO (const psoDesc_riptor& desc);
+	//PSODescriptorを受けとってID3D12PipelineState*を返す
+	ID3D12PipelineState* GetOrCreatePSO (const PSODescriptor& desc);
 
-	void SetPSO (const psoDesc_riptor& desc);
+	void SetPSO (const PSODescriptor& desc);
 
 private:
 	//コンストラクタを禁止
@@ -71,7 +71,7 @@ private:
 private:	//ヘルパー関数
 	template<typename T>
 	uint64_t hash_combine_simple (uint64_t h, T val) const;
-	uint64_t ComputeHash (const psoDesc_riptor& desc) const;
+	uint64_t ComputeHash (const PSODescriptor& desc) const;
 
 private:	//メンバ変数
 	// ハッシュ値とPipelineStateの実体データのマップ

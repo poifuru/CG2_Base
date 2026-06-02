@@ -10,19 +10,10 @@
 void PostEffect::Initialize(DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 
-	// シェーダーのコンパイル
-	uint32_t vsID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Fullscreen.VS.hlsl", L"vs_6_0");
-	uint32_t psID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/GrayScale.PS.hlsl", L"ps_6_0");
-
-	// RootSignatureの取得
-	uint32_t rootSigID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::PostProcess);
-	rootSignature_ = RootSignatureManager::GetInstance()->GetRootSignature(rootSigID);
-
 	// PSOの設定
-	psoDesc_riptor psoDesc_{};
-	psoDesc_.RootSignatureID = rootSigID;
-	psoDesc_.VS_ID = vsID;
-	psoDesc_.PS_ID = psID;
+	psoDesc_.VS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Fullscreen.VS.hlsl", L"vs_6_0");
+	psoDesc_.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/GrayScale.PS.hlsl", L"ps_6_0");
+	psoDesc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::PostProcess);
 	psoDesc_.InputLayoutID = InputLayoutType::PostProcess;
 	psoDesc_.BlendMode = BlendModeType::Opaque;
 	
@@ -41,8 +32,6 @@ void PostEffect::Initialize(DxCommon* dxCommon) {
 	psoDesc_.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	psoDesc_.SampleCount = 1;
 
-	pso_ = PSOManager::GetInstance()->GetOrCreatePSO(psoDesc_);
-
 	postProcessResource_ = dxCommon_->CreateBufferResource(sizeof(PostProcessData));
 	postProcessResource_->Map(0, nullptr, reinterpret_cast<void**>(&postProcessData_));
 	postProcessData_->intensity = 0.0f;
@@ -52,11 +41,8 @@ void PostEffect::Initialize(DxCommon* dxCommon) {
 void PostEffect::Draw(RenderTexture* renderTexture) {
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
-	// RootSignatureを設定
-	commandList->SetGraphicsRootSignature(rootSignature_);
-	
-	// PSOを設定
-	commandList->SetPipelineState(pso_);
+	RootSignatureManager::GetInstance()->SetRootSignature(psoDesc_.RootSignatureID);
+	PSOManager::GetInstance()->SetPSO(psoDesc_);
 
 	// プリミティブトポロジーを設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
