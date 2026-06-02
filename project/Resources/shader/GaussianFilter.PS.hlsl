@@ -6,7 +6,7 @@ SamplerState gSampler : register(s0);
 // 定数を定義
 static const float PI = 3.14159265f;
 
-static const float2 kIndex3x3[5][5] =
+static const float2 kIndex5x5[5][5] =
 {
     { { -2.0f, -2.0f }, { -1.0f, -2.0f }, { 0.0f, -2.0f }, { 1.0f, -2.0f }, {2.0f, -2.0f } },
     { { -2.0f, -1.0f }, { -1.0f, -1.0f }, { 0.0f, -1.0f }, { 1.0f, -1.0f }, { 2.0f, -1.0f } },
@@ -46,11 +46,11 @@ PixelShaderOutput main(VertexShaderOutput input)
         for (int y = 0; y < 5; ++y)
         {
             // ガウスの重みを計算
-            float weight = gauss(kIndex3x3[x][y].x, kIndex3x3[x][y].y, 2.0f);
+            float weight = gauss(kIndex5x5[x][y].x, kIndex5x5[x][y].y, 2.0f);
             totalWeight += weight;
             
             // サンプリングするUV座標を計算
-            float2 texcoord = input.texcoord + kIndex3x3[x][y] * uvStepSize;
+            float2 texcoord = input.texcoord + kIndex5x5[x][y] * uvStepSize;
             float3 fetchColor = gTexture.Sample(gSampler, texcoord).rgb;
             
             // テクスチャの色に重みを掛けて累積
