@@ -80,7 +80,7 @@ void PlayScene::Update () {
 }
 
 void PlayScene::Draw () {
-	//skybox_->Draw();
+	skybox_->Draw();
 
 	player_->Draw();
 	enemyManager_->Draw();
