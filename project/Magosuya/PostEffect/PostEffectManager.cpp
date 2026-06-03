@@ -18,11 +18,13 @@ void PostEffectManager::Finalize() {
 }
 
 void PostEffectManager::AddEffect(BasePostEffect* effect) {
-
+	if(effect != nullptr) {
+		effects_.push_back(std::unique_ptr<BasePostEffect>(effect));
+	}
 }
 
 void PostEffectManager::ClearEffects() {
-
+	effects_.clear();
 }
 
 void PostEffectManager::Execute(RenderTexture* srcTexture) {
@@ -45,25 +47,42 @@ void PostEffectManager::Execute(RenderTexture* srcTexture) {
 		// 最後の1個かどうかの判定
 		bool isLast = (i == effects_.size() - 1);
 
-		// 出力先を中間バッファに切り替える
-		RenderTexture* nextOutput = workTextures_[currentTargetIndex].get();
+		// 最後のエフェクトの場合
+		if(isLast) {
+			// バックバッファをレンダーターゲットにするバリアを貼る
+			D3D12_RESOURCE_BARRIER barrier{};
+			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+			barrier.Transition.pResource = dxCommon_->GetCurrentBackBufferResource(); // バックバッファのリソース
+			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT; // 通常、フレーム開始時はPRESENT状態
+			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+			barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+			cmdList->ResourceBarrier(1, &barrier);
 
-		// バリアを貼る
-		D3D12_RESOURCE_BARRIER barrier{};
-		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-		barrier.Transition.pResource = nextOutput->GetResource();	// リソースを取得
-		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-		cmdList->ResourceBarrier(1, &barrier);
+			// レンダーターゲットにバックバッファを設定
+			D3D12_CPU_DESCRIPTOR_HANDLE backBufferRtv = dxCommon_->GetCurrentBackBufferRtvHandle();
+			cmdList->OMSetRenderTargets(1, &backBufferRtv, FALSE, nullptr);
+		}
+		else {
+			// 出力先を中間バッファに切り替える
+			RenderTexture* nextOutput = workTextures_[currentTargetIndex].get();
 
-		// レンダーターゲットを設定(中間バッファのRTVをセット)
-		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = nextOutput->GetDescriptorHandle();
-		cmdList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+			// バリアを貼る
+			D3D12_RESOURCE_BARRIER barrier{};
+			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+			barrier.Transition.pResource = nextOutput->GetResource();	// リソースを取得
+			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+			barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+			cmdList->ResourceBarrier(1, &barrier);
 
-		// 画面のクリア処理
-		float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-		cmdList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+			// レンダーターゲットを設定(中間バッファのRTVをセット)
+			D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = nextOutput->GetDescriptorHandle();
+			cmdList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+
+			// 画面のクリア処理
+			float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+			cmdList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+		}
 
 		// 描画の実行
 		// curerntInput をテクスチャとして読み込んで描画
@@ -92,5 +111,11 @@ void PostEffectManager::Execute(RenderTexture* srcTexture) {
 }
 
 void PostEffectManager::ImGuiUpdate() {
-
+#ifdef USEIMGUI
+	for(size_t i = 0; i < effects_.size(); ++i) {
+		if(effects_[i] != nullptr) {
+			effects_[i]->ImGui();
+		}
+	}
+#endif
 }
