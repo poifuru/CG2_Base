@@ -54,16 +54,6 @@ public:		//メンバ関数(mainで呼び出すよう)
 	// RTVの空きハンドルを渡す関数
 	D3D12_CPU_DESCRIPTOR_HANDLE AllocateRTV();
 
-	// バックバッファのハンドルとリソース取得
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferRtvHandle() {
-		UINT index = swapChain_->GetCurrentBackBufferIndex();
-		return rtvHandles_[index];
-	}
-	ID3D12Resource* GetCurrentBackBufferResource() {
-		UINT index = swapChain_->GetCurrentBackBufferIndex();
-		return swapChainResources_[index].Get();
-	}
-
 private:
 	//コンストラクタを禁止
 	DxCommon();
