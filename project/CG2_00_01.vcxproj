@@ -181,6 +181,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\entity\enemy\BaseEnemy.cpp" />
     <ClCompile Include="application\entity\player\Bullet.cpp" />
     <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
+    <ClCompile Include="Application\Collider\CollisionManager.cpp" />
     <ClCompile Include="magosuya\light\DirectionalLight.cpp" />
     <ClCompile Include="magosuya\light\BaseLight.cpp" />
     <ClCompile Include="magosuya\light\LightManager.cpp" />
@@ -356,6 +357,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\Collider\Collision.h" />
     <ClInclude Include="application\entity\enemy\SmallFish.h" />
     <ClInclude Include="application\mapchip\MapchipStruct.h" />
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -366,6 +368,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\entity\enemy\BaseEnemy.h" />
     <ClInclude Include="application\entity\player\Bullet.h" />
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
+    <ClInclude Include="Application\Collider\CollisionManager.h" />
     <ClInclude Include="magosuya\general\DeltaTime.h" />
     <ClInclude Include="magosuya\light\DirectionalLight.h" />
     <ClInclude Include="magosuya\light\BaseLight.h" />
