@@ -31,7 +31,7 @@ void ColorGrading::Draw(RenderTexture* renderTexture) {
 	// SRVを設定 (t0)
 	SRVManager::GetInstance()->SetGraphicsRootDescriptorTable(1, renderTexture->GetSrvIndex());
 
-	// 頂点バッファ無しで3頂点描画（SV_VertexIDを利用してフルスクリーントライアングルを生成）
+	// 描画
 	cmdList->DrawInstanced(3, 1, 0, 0);
 }
 

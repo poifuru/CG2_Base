@@ -1,7 +1,7 @@
 #pragma once
 #include "BasePostEffect.h"
 
-class ColorGrading : public BasePostEffect {
+class Vignette : public BasePostEffect {
 public:
 	void Initialize(DxCommon* dxCommon) override;
 
@@ -10,7 +10,7 @@ public:
 	void ImGui() override;
 
 private:
-	struct alignas(16) ColorGradingForGPU {
+	struct alignas(16) VignetteForGPU {
 		float intensity = 1.0f;		// エフェクトの強度(0.0 : 通常, 1.0 : 完全な白黒)
 		float sepiaAmount = 0.0f;	// セピア調にする強さ(0.0 : 完全な白黒, 1.0 : セピア)
 
@@ -20,5 +20,5 @@ private:
 	};
 
 public:
-	ColorGradingForGPU* cpuData_ = nullptr;
+	VignetteForGPU* cpuData_ = nullptr;
 };
