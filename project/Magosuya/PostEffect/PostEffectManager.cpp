@@ -145,8 +145,9 @@ void PostEffectManager::Execute(RenderTexture* srcTexture) {
 
 void PostEffectManager::ImGui() {
 #ifdef USEIMGUI
-	for(size_t i = 0; i < effects_.size(); ++i) {
-		if(effects_[i] != nullptr) {
+	// 配列を回して、アクティブなエフェクトのImGuiだけを表示する
+	for (size_t i = 0; i < static_cast<size_t>(PostEffectType::Count); ++i) {
+		if (effects_[i] != nullptr && effects_[i]->GetIsActive()) {
 			effects_[i]->ImGui();
 		}
 	}
