@@ -2,6 +2,8 @@
 #include "Entity.h"
 #include "CameraOrganizer.h"
 
+class BaseEnemy;
+
 class Bullet : public Entity {
 public:
 	Bullet(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input, LightManager* light);
@@ -21,6 +23,7 @@ public:
 	const AABB& GetAABB() const { return aabb_; }
 	void SetIsActive(bool flag) { isActive_ = flag; }
 	void SetDirection(const Vector3& direction) { direction_ = direction; }
+	void SetTarget(BaseEnemy* target) { target_ = target; }
 
 private:
 	void Move();
@@ -31,6 +34,8 @@ private:
 	float activeTimer_ = 0.0f;
 	float speed_ = 0.0f;
 	Vector3 direction_{};
+	BaseEnemy* target_ = nullptr;
+	float homingStrength_ = 5.0f; // ホーミングの強度
 
 	// デバッグ用
 	bool hitbox_ = false;

@@ -55,6 +55,7 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize(dxCommon, lightManager_.get(), camera);
+	player_->SetEnemyManager(enemyManager_.get());
 
 	skybox_ = std::make_unique<Skybox>(dxCommon);
 	skybox_->Initialize("Resources/Skybox/test2.dds", "skybox");

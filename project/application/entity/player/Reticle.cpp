@@ -21,10 +21,12 @@ void Reticle::Initialize() {
 	model_->IsLighting(LightReflectionModel::None);
 	model_->SetAlpha(0.5f);
 	model_->SetScale({ 2.0f, 2.0f, 1.0f });
+	model_->SetColor({ 1.0f, 1.0f, 1.0f, 0.5f }); // 初期色を白にする
 
 	positionOfset_ = { 0.0f, 0.0f, 40.0f };
 	speed_ = 25.0f;
 	localTranslate_ = { 0.0f, 0.0f, 0.0f };
+	isLockOn_ = false;
 }
 
 void Reticle::Update() {
@@ -53,6 +55,7 @@ void Reticle::Update() {
 		transform_.translate.y += localTranslate_.y;
 		transform_.translate.z = playerPos_.z + positionOfset_.z;
 	}
+
 
 	model_->SetPosition(transform_.translate);
 	model_->Update(&camera_->GetCameraData());
@@ -87,5 +90,14 @@ void Reticle::Input() {
 		// 実際に速度、デルタタイムを掛ける
 		localTranslate_.x += moveDir.x * speed_ * kDeltaTime;
 		localTranslate_.y += moveDir.y * speed_ * kDeltaTime;
+	}
+}
+
+void Reticle::SetLockOn(bool lock) {
+	isLockOn_ = lock;
+	if (isLockOn_) {
+		model_->SetColor({ 1.0f, 0.0f, 0.0f, 0.5f }); // 赤
+	} else {
+		model_->SetColor({ 1.0f, 1.0f, 1.0f, 0.5f }); // 白
 	}
 }

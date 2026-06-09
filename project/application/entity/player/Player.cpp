@@ -8,6 +8,8 @@
 #include "PlayScene.h"
 #include "MathFunction.h"
 #include "DeltaTime.h"
+#include "../Enemy/EnemyManager.h"
+#include "../Enemy/BaseEnemy.h"
 
 // キー入力が無いときに速度を減衰させる定数
 static const float kAttenuationRate = 0.95f;
@@ -56,6 +58,7 @@ void Player::Initialize() {
 	velocity_ = { 0.0f, 0.0f, 0.0f };
 	cooltime_ = 0.0f;
 	localTranslate_ = { 0.0f, 0.0f, 0.0f };
+	lockedEnemy_ = nullptr;
 
 	reticle_->Initialize();
 }
@@ -66,10 +69,67 @@ void Player::Update() {
 	CooltimeUpdate();
 	Move();
 	BulletsUpdate();
+
+	// 先にレティクルのパラメータを設定し、Updateをかけて最新のワールド座標を計算する
 	reticle_->SetPlayerPos(transform_.translate);
 	reticle_->SetPlayerLocalPos(localTranslate_);
 	reticle_->SetRail(railPath_);
 	reticle_->Update();
+
+	// --- ロックオン対象の検索 (スクリーン座標2D判定方式) ---
+	lockedEnemy_ = nullptr;
+	if (enemyManager_ && camera_) {
+		Matrix4x4 vpMat = camera_->GetVPMatrix();
+		Vector3 reticlePos = reticle_->GetPosition();
+		
+		// レティクルをスクリーン座標に変換 (1280x720)
+		Vector3 reticleNdc = Math::ChangeTransform(reticlePos, vpMat);
+		Vector2 reticleScreen = {
+			(reticleNdc.x + 1.0f) * 0.5f * 1280.0f,
+			(1.0f - reticleNdc.y) * 0.5f * 720.0f
+		};
+		
+		float minDistance = 999999.0f; // 最もレティクルに近い（スクリーン上で重なっている）敵を優先
+		
+		for (auto& enemy : enemyManager_->GetEnemies()) {
+			if (!enemy || !enemy->IsActive()) continue;
+			
+			Vector3 enemyPos = enemy->GetTransform().translate;
+			
+			// --- カメラの後ろにいる敵は除外する (カメラの前方向ベクトルとの内積で判定) ---
+			Vector3 cameraPos = camera_->GetCameraData().transform.translate;
+			Matrix4x4 camWorld = camera_->GetCameraData().world;
+			Vector3 cameraForward = { camWorld.m[2][0], camWorld.m[2][1], camWorld.m[2][2] };
+			Vector3 toEnemy = Math::Subtract(enemyPos, cameraPos);
+			
+			if (Math::Dot(toEnemy, cameraForward) < 0.0f) continue; // カメラの後ろは無視
+			
+			// スクリーン座標に変換
+			Vector3 enemyNdc = Math::ChangeTransform(enemyPos, vpMat);
+			Vector2 enemyScreen = {
+				(enemyNdc.x + 1.0f) * 0.5f * 1280.0f,
+				(1.0f - enemyNdc.y) * 0.5f * 720.0f
+			};
+			
+			float dx = enemyScreen.x - reticleScreen.x;
+			float dy = enemyScreen.y - reticleScreen.y;
+			float dist = std::sqrt(dx * dx + dy * dy);
+			
+			if (dist < lockRadius_) {
+				if (dist < minDistance) {
+					minDistance = dist;
+					lockedEnemy_ = enemy.get();
+				}
+			}
+		}
+	}
+
+	// レティクルへの状態伝達
+	if (lockedEnemy_) {
+		reticle_->SetLockOn(true);
+	} else {
+		reticle_->SetLockOn(false);
+	}
 
 	// モデルにデータを渡す
 	model_->SetPosition(transform_.translate);
@@ -171,6 +231,10 @@ void Player::Input() {
 		// 求めた数値をBulletに渡す
 		newBullet->SetDirection(direction);
 
+		if (lockedEnemy_) {
+			newBullet->SetTarget(lockedEnemy_);
+		}
+
 		// ****** //
 
 		// リストに追加
@@ -262,6 +326,42 @@ void Player::ImGui() {
 	ImGui::DragFloat3("Position", &transform_.translate.x, 0.01f);
 	ImGui::DragFloat3("Velocity", &velocity_.x, 0.01f);
 	ImGui::DragFloat3("Acceleration", &acceleration_.x, 0.01f);
+	
+	ImGui::Separator();
+	ImGui::Text("--- LockOn Debug ---");
+	if (lockedEnemy_) {
+		ImGui::Text("Locked Enemy: Yes (Address: %p)", lockedEnemy_);
+	} else {
+		ImGui::Text("Locked Enemy: No");
+	}
+	
+	if (enemyManager_) {
+		auto& enemies = enemyManager_->GetEnemies();
+		int activeCount = 0;
+		for (const auto& e : enemies) {
+			if (e && e->IsActive()) activeCount++;
+		}
+		ImGui::Text("Active Enemies: %d / %d", activeCount, (int)enemies.size());
+			
+		if (camera_ && reticle_) {
+			Matrix4x4 vpMat = camera_->GetVPMatrix();
+			Vector3 retPos = reticle_->GetPosition();
+			Vector3 retNdc = Math::ChangeTransform(retPos, vpMat);
+			ImGui::Text("Reticle World: (%.1f, %.1f, %.1f)", retPos.x, retPos.y, retPos.z);
+			ImGui::Text("Reticle NDC: (%.3f, %.3f, %.3f)", retNdc.x, retNdc.y, retNdc.z);
+			
+			int idx = 0;
+			for (auto& enemy : enemies) {
+				if (enemy && enemy->IsActive()) {
+					Vector3 ePos = enemy->GetTransform().translate;
+					Vector3 eNdc = Math::ChangeTransform(ePos, vpMat);
+					ImGui::Text("Enemy[%d] World: (%.1f, %.1f, %.1f)", idx, ePos.x, ePos.y, ePos.z);
+					ImGui::Text("Enemy[%d] NDC: (%.3f, %.3f, %.3f)", idx, eNdc.x, eNdc.y, eNdc.z);
+					idx++;
+				}
+			}
+		}
+	}
 	ImGui::End();
 #endif
 }

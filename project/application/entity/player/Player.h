@@ -6,6 +6,9 @@
 #include "Reticle.h"
 #include "../../RailPath.h"
 
+class EnemyManager;
+class BaseEnemy;
+
 class Player : public Entity {
 public:
 	Player(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input, LightManager* light);
@@ -22,6 +25,7 @@ public:
 	AABB GetAABB() { return aabb_; }
 	std::list<std::unique_ptr<Bullet>>& GetBullets() { return bullets_; }
 	void SetRail(const RailPath* rail) { railPath_ = rail; }
+	void SetEnemyManager(EnemyManager* enemyManager) { enemyManager_ = enemyManager; }
 	
 private:	// プライベート関数
 	void Input();
@@ -45,5 +49,9 @@ private:
 	InputManager* input_ = nullptr;
 	LightManager* light_ = nullptr;
 	const RailPath* railPath_ = nullptr;
+	EnemyManager* enemyManager_ = nullptr;
+	BaseEnemy* lockedEnemy_ = nullptr;
 	Vector3 localTranslate_ = { 0.0f, 0.0f, 0.0f };
+
+	float lockRadius_ = 40.0f; // スクリーン上のロックオン許容ピクセル半径
 };

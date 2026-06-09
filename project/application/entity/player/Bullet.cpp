@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "Mesh.h"
 #include "MathFunction.h"
+#include "../Enemy/BaseEnemy.h"
 
 Bullet::Bullet(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input, LightManager* light) {
 	camera_ = camera;
@@ -53,6 +54,21 @@ void Bullet::ImGui() {
 }
 
 void Bullet::Move() {
+	// ターゲット追従
+	if (target_ && target_->IsActive()) {
+		Vector3 targetPos = target_->GetTransform().translate;
+		Vector3 targetDir = Math::Subtract(targetPos, transform_.translate);
+		if (Math::Length(targetDir) > 0.001f) {
+			targetDir = Math::Normalize(targetDir);
+			
+			// 進行方向を徐々にターゲットの方向へ補間する
+			direction_ = direction_ + (targetDir - direction_) * (homingStrength_ * kDeltaTime);
+			direction_ = Math::Normalize(direction_);
+		}
+	} else {
+		target_ = nullptr; // ターゲットが消えたら誘導解除
+	}
+
 	// 進む向きを調整
 	velocity_ = direction_ * speed_;
 
