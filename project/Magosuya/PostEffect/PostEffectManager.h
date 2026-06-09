@@ -23,7 +23,7 @@ public:
 	// ピンポンレンダリングを実行する関数
 	void Execute(RenderTexture* srcTexture);
 
-	void ImGuiUpdate();
+	void ImGui();
 
 private:
 	PostEffectManager() = default;
@@ -36,7 +36,5 @@ private:
 	std::vector<std::unique_ptr<BasePostEffect>> effects_;
 
 	// ピンポン用の中間テクスチャ2枚
-	// ※RenderTextureクラスに、内部のリソース（ID3D12Resource*）を取得する 
-	// GetResource() や、RTV・SRVハンドルを取得する関数がある前提。
 	std::unique_ptr<RenderTexture> workTextures_[2];
 };

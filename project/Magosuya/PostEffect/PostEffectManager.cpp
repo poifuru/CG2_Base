@@ -110,7 +110,7 @@ void PostEffectManager::Execute(RenderTexture* srcTexture) {
 	}
 }
 
-void PostEffectManager::ImGuiUpdate() {
+void PostEffectManager::ImGui() {
 #ifdef USEIMGUI
 	for(size_t i = 0; i < effects_.size(); ++i) {
 		if(effects_[i] != nullptr) {
