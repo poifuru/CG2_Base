@@ -19,6 +19,8 @@ public:		//公開メソッド
 	bool ProcessMessage();
 	void Finalize();
 	HWND GetHwnd() { return hwnd_; }
+	int32_t GetWindowWidth() { return kClientWidth; }
+	int32_t GetWindowHeight() { return kClientHeight; }
 
 private:
 	//コンストラクタを禁止

@@ -29,7 +29,7 @@ protected:
 	PSODescriptor psoDesc_{};
 
 	// ポストエフェクトを有効にするかのフラグ
-	bool isActive_ = true;
+	bool isActive_ = false;
 
 	ComPtr<ID3D12Resource> constantBuffer_ = nullptr;
 };

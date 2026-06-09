@@ -8,6 +8,12 @@ class BasePostEffect;
 
 class PostEffectManager {
 public:
+	// ポストエフェクトの種類
+	enum class PostEffectType {
+		ColorGrading,
+		Vignette,
+	};
+
 	static PostEffectManager* GetInstance() {
 		static PostEffectManager instance;
 		return &instance;
@@ -17,7 +23,7 @@ public:
 	void Initialize(DxCommon* dxCommon, uint32_t windowWidth, uint32_t windowHeight);
 	void Finalize();
 
-	void AddEffect(BasePostEffect* effect);
+	void EnableEffect(PostEffectType type);
 	void ClearEffects();
 
 	// ピンポンレンダリングを実行する関数

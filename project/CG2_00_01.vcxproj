@@ -248,6 +248,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="magosuya\engine\RenderTexture.cpp" />
     <ClCompile Include="magosuya\PostEffect\PostEffectManager.cpp" />
     <ClCompile Include="application\entity\player\Reticle.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\Vignette.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\BoxFilter.PS.hlsl">
@@ -441,6 +442,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="magosuya\engine\RenderTexture.h" />
     <ClInclude Include="magosuya\PostEffect\PostEffectManager.h" />
     <ClInclude Include="application\entity\player\Reticle.h" />
+    <ClInclude Include="Magosuya\PostEffect\Vignette.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Fullscreen.hlsli" />

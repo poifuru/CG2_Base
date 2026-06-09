@@ -1,6 +1,8 @@
 #include "PostEffectManager.h"
 #include "DxCommon.h"
 #include "BasePostEffect.h"
+#include "ColorGrading.h"
+#include "Vignette.h"
 #include "RenderTexture.h"
 #include "SRVManager.h"
 
@@ -11,15 +13,36 @@ void PostEffectManager::Initialize(DxCommon* dxCommon, uint32_t windowWidth, uin
 		workTextures_[i] = std::make_unique<RenderTexture>();
 		workTextures_[i]->Initialize(dxCommon, SRVManager::GetInstance());
 	}
+
+	// ポストエフェクトをすべて初期化
+
 }
 
 void PostEffectManager::Finalize() {
 
 }
 
-void PostEffectManager::AddEffect(BasePostEffect* effect) {
+void PostEffectManager::EnableEffect(PostEffectType type) {
+	std::unique_ptr<BasePostEffect> effect = nullptr;
+
+	switch(type) {
+	case PostEffectType::ColorGrading:
+		effect = std::make_unique<ColorGrading>();
+		break;
+
+	case PostEffectType::Vignette:
+		effect = std::make_unique<Vignette>();
+		break;
+
+	default:
+		// 未定義のタイプが渡されたら即座に処理を抜ける
+		return;
+	}
+
 	if(effect != nullptr) {
-		effects_.push_back(std::unique_ptr<BasePostEffect>(effect));
+		effect->Initialize(dxCommon_);
+		effect->SetIsActive(true);
+		effects_.push_back(std::move(effect));
 	}
 }
 
