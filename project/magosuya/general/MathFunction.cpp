@@ -55,7 +55,7 @@ namespace Math {
 	Vector3 Cross (const Vector3& v1, const Vector3& v2) {
 		Vector3 result = {
 			v1.y * v2.z - v1.z * v2.y,
-			v1.z * v1.x - v1.x * v2.z,
+			v1.z * v2.x - v1.x * v2.z,
 			v1.x * v2.y - v1.y * v2.x
 		};
 
@@ -671,9 +671,9 @@ namespace Math {
 
 	bool IsCollision (const AABB& aabb1, const AABB& aabb2) {
 		return
-			(aabb1.min.x <= aabb1.max.x && aabb1.max.x >= aabb2.min.x) &&
-			(aabb1.min.y <= aabb1.max.y && aabb1.max.y >= aabb2.min.y) &&
-			(aabb1.min.z <= aabb1.max.z && aabb1.max.z >= aabb2.min.z);
+			(aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x) &&
+			(aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) &&
+			(aabb1.min.z <= aabb2.max.z && aabb1.max.z >= aabb2.min.z);
 	}
 
 	//void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
@@ -823,6 +823,19 @@ namespace Math {
 		Vector3 a = Lerp (p0, p1, t);
 		Vector3 b = Lerp (p1, p2, t);
 		return Lerp (a, b, t);
+	}
+
+	Vector3 CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
+		float t2 = t * t;
+		float t3 = t2 * t;
+
+		Vector3 result =
+			p1 * 2.0f +
+			(p2 - p0) * t +
+			(p0 * 2.0f - p1 * 5.0f + p2 * 4.0f - p3) * t2 +
+			(p0 * -1.0f + p1 * 3.0f - p2 * 3.0f + p3) * t3;
+
+		return result * 0.5f;
 	}
 
 	//void DrawBezier(const Vector3& controlPoint0, const Vector3& controlPoint1, const Vector3& controlPoint2,

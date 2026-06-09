@@ -24,14 +24,35 @@ void Reticle::Initialize() {
 
 	positionOfset_ = { 0.0f, 0.0f, 40.0f };
 	speed_ = 25.0f;
+	localTranslate_ = { 0.0f, 0.0f, 0.0f };
 }
 
 void Reticle::Update() {
 	Input();
-	transform_.translate.z = playerPos_.z + positionOfset_.z;
 
-	transform_.translate.x = std::clamp(transform_.translate.x, -34.0f, 34.0f);
-	transform_.translate.y = std::clamp(transform_.translate.y, -18.0f, 18.0f);
+	// 移動制限（ローカル座標系）
+	localTranslate_.x = std::clamp(localTranslate_.x, -34.0f, 34.0f);
+	localTranslate_.y = std::clamp(localTranslate_.y, -18.0f, 18.0f);
+
+	if (railPath_) {
+		Vector3 railPos = railPath_->GetPosition();
+		Matrix4x4 railRot = railPath_->GetRotationMatrix();
+
+		// レティクルの全ローカル座標（プレイヤー位置 + レティクル自体のズレ + 前方オフセット）
+		Vector3 fullLocal = {
+			playerLocalPos_.x + localTranslate_.x,
+			playerLocalPos_.y + localTranslate_.y,
+			positionOfset_.z
+		};
+
+		Vector3 rotatedLocal = Math::Transform(fullLocal, railRot);
+		transform_.translate = Math::Add(railPos, rotatedLocal);
+	} else {
+		// レールが無いときのフォールバック（デバッグ用）
+		transform_.translate.x += localTranslate_.x;
+		transform_.translate.y += localTranslate_.y;
+		transform_.translate.z = playerPos_.z + positionOfset_.z;
+	}
 
 	model_->SetPosition(transform_.translate);
 	model_->Update(&camera_->GetCameraData());
@@ -64,7 +85,7 @@ void Reticle::Input() {
 		moveDir.y /= length;
 
 		// 実際に速度、デルタタイムを掛ける
-		transform_.translate.x += moveDir.x * speed_ * kDeltaTime;
-		transform_.translate.y += moveDir.y * speed_ * kDeltaTime;
+		localTranslate_.x += moveDir.x * speed_ * kDeltaTime;
+		localTranslate_.y += moveDir.y * speed_ * kDeltaTime;
 	}
 }

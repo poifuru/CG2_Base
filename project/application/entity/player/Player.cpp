@@ -53,8 +53,9 @@ void Player::Initialize() {
 
 	// 固有の数値
 	speed_ = 1.5f;
-	velocity_ = { 0.0f, 0.0f, 3.0f };
+	velocity_ = { 0.0f, 0.0f, 0.0f };
 	cooltime_ = 0.0f;
+	localTranslate_ = { 0.0f, 0.0f, 0.0f };
 
 	reticle_->Initialize();
 }
@@ -66,10 +67,27 @@ void Player::Update() {
 	Move();
 	BulletsUpdate();
 	reticle_->SetPlayerPos(transform_.translate);
+	reticle_->SetPlayerLocalPos(localTranslate_);
+	reticle_->SetRail(railPath_);
 	reticle_->Update();
 
 	// モデルにデータを渡す
 	model_->SetPosition(transform_.translate);
+
+	// レールがある場合、レールの進行方向を向くように回転を設定する
+	if (railPath_) {
+		Matrix4x4 rot = railPath_->GetRotationMatrix();
+		Vector3 direction = { rot.m[2][0], rot.m[2][1], rot.m[2][2] }; // Z軸の方向
+		
+		Vector3 rotate = { 0.0f, 0.0f, 0.0f };
+		if (Math::Length(direction) > 0.001f) {
+			rotate.y = std::atan2(direction.x, direction.z);
+			float xzLength = std::sqrt(direction.x * direction.x + direction.z * direction.z);
+			rotate.x = std::atan2(-direction.y, xzLength);
+		}
+		model_->SetRotate(rotate);
+	}
+
 	model_->Update(&camera_->GetCameraData());
 }
 
@@ -192,14 +210,27 @@ Player::Move() {
 		velocity_.y = 0.0f;
 	}
 
-	// 実際の移動処理
-	transform_.translate.x += velocity_.x;
-	transform_.translate.y += velocity_.y;
-	transform_.translate.z += velocity_.z * kDeltaTime;
+	// ローカル座標の更新
+	localTranslate_.x += velocity_.x;
+	localTranslate_.y += velocity_.y;
 
-	// 移動制限
-	transform_.translate.x = std::clamp(transform_.translate.x, -18.0f, 18.0f);
-	transform_.translate.y = std::clamp(transform_.translate.y, -10.0f, 10.0f);
+	// 移動制限（ローカル座標系）
+	localTranslate_.x = std::clamp(localTranslate_.x, -18.0f, 18.0f);
+	localTranslate_.y = std::clamp(localTranslate_.y, -10.0f, 10.0f);
+
+	if (railPath_) {
+		Vector3 railPos = railPath_->GetPosition();
+		Matrix4x4 railRot = railPath_->GetRotationMatrix();
+
+		// ローカルのズレをレールの向きで回転させ、レールの位置と足し合わせる
+		Vector3 rotatedLocal = Math::Transform(localTranslate_, railRot);
+		transform_.translate = Math::Add(railPos, rotatedLocal);
+	} else {
+		// レールが無いときのフォールバック（デバッグ用）
+		transform_.translate.x += velocity_.x;
+		transform_.translate.y += velocity_.y;
+		transform_.translate.z += velocity_.z * kDeltaTime;
+	}
 }
 
 void Player::BulletsUpdate() {

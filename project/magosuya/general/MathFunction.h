@@ -161,6 +161,9 @@ namespace Math {
 	//ベジェ曲線描画用の点を求める関数
 	Vector3 ComputeBezierPoint (const Vector3& p0, const Vector3& p1, const Vector3& p2, float t);
 
+	// Catmull-Rom スプライン
+	Vector3 CatmullRom(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t);
+
 	//ベジェ曲線描画関数
 	//void DrawBezier(const Vector3& controlPoint0, const Vector3& controlPoint1, const Vector3& controlPoint2,
 	//	const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);

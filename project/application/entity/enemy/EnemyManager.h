@@ -4,6 +4,7 @@
 #include <memory>
 #include "struct.h"
 #include "BaseEnemy.h"
+#include "../../RailPath.h"
 
 class DxCommon;
 class LightManager;
@@ -29,10 +30,10 @@ public:
 	void Initialize(DxCommon* dxCommon, LightManager* light, CameraOrganizer* camera);
 
 	// 毎フレーム、プレイヤーの進行度（Z座標など）を渡して更新する
-	void Update(float playerProgressZ);
+	void Update(float playerProgressZ, const RailPath* railPath);
 	void Draw();
 	// プールから空いている敵を探して出現させる関数
-	void SpawnEnemy(int type, const Vector3& pos);
+	void SpawnEnemy(int type, const Vector3& pos, const RailPath* railPath);
 
 	// アクセッサ
 	const std::array<std::unique_ptr<BaseEnemy>, MAX_ENEMIES>& GetEnemies() const { return enemies_; }

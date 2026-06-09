@@ -32,12 +32,12 @@ void EnemyManager::Initialize(DxCommon* dxCommon, LightManager* light, CameraOrg
 	currentSpawnIndex_ = 0;
 }
 
-void EnemyManager::Update(float playerProgressZ) {
+void EnemyManager::Update(float playerProgressZ, const RailPath* railPath) {
 	// 出現予定リストを見てプレイヤーが一定距離進んでいたらスポーン
 	while (currentSpawnIndex_ < spawnTimeline_.size()) {
 		const auto& cmd = spawnTimeline_[currentSpawnIndex_];
 		if (playerProgressZ >= cmd.triggerZ) {
-			SpawnEnemy(cmd.enemyType, cmd.startPos);
+			SpawnEnemy(cmd.enemyType, cmd.startPos, railPath);
 			currentSpawnIndex_++;
 		}
 		else {
@@ -60,11 +60,19 @@ void EnemyManager::Draw() {
 	}
 }
 
-void EnemyManager::SpawnEnemy(int type, const Vector3& pos) {
+void EnemyManager::SpawnEnemy(int type, const Vector3& pos, const RailPath* railPath) {
 	// プールから非アクティブな敵を探す
 	for (auto& enemy : enemies_) {
 		if (enemy && !enemy->IsActive()) {
-			enemy->SetPosition(pos);
+			if (railPath) {
+				Vector3 railPos = railPath->GetPosition();
+				Matrix4x4 railRot = railPath->GetRotationMatrix();
+				// レールからの相対座標（pos）をレールの向きで回転させ、ワールド座標にする
+				Vector3 worldPos = Math::Add(railPos, Math::Transform(pos, railRot));
+				enemy->SetPosition(worldPos);
+			} else {
+				enemy->SetPosition(pos);
+			}
 			enemy->SetIsActive(true);
 			return;
 		}

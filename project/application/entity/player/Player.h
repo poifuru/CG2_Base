@@ -4,6 +4,7 @@
 #include "CameraOrganizer.h"
 #include "Bullet.h"
 #include "Reticle.h"
+#include "../../RailPath.h"
 
 class Player : public Entity {
 public:
@@ -20,6 +21,7 @@ public:
 	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
 	AABB GetAABB() { return aabb_; }
 	std::list<std::unique_ptr<Bullet>>& GetBullets() { return bullets_; }
+	void SetRail(const RailPath* rail) { railPath_ = rail; }
 	
 private:	// プライベート関数
 	void Input();
@@ -42,4 +44,6 @@ private:
 	DxCommon* dxCommon_ = nullptr;
 	InputManager* input_ = nullptr;
 	LightManager* light_ = nullptr;
+	const RailPath* railPath_ = nullptr;
+	Vector3 localTranslate_ = { 0.0f, 0.0f, 0.0f };
 };

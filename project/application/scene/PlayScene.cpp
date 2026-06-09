@@ -20,7 +20,8 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	input_ = inputManager;
 	dxCommon_ = dxCommon;
 
-	camera_->AddCamera("main2", CameraType::FollowCamera);
+	// 固定カメラを使用して、Update内で手動でレールに追従させる
+	camera_->AddCamera("main2", CameraType::FixedPointCamera);
 	camera_->SetActiveCamera("main2");
 
 	lightManager_ = std::make_unique<LightManager>(dxCommon);
@@ -34,9 +35,23 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	lightManager_->SetDirectionalLightDir(3, { 0.0f, -1.0f, 0.0f });
 	lightManager_->SetDirectionalLightDir(4, { -1.0f, 0.0f, 0.0f });
 
+	// レールパスの初期化 (テスト用のS字/カーブルート)
+	railPath_ = std::make_unique<RailPath>();
+	std::vector<Vector3> controlPoints = {
+		{ 0.0f, 0.0f, -20.0f },  // 補助点 (曲線の入り口用)
+		{ 0.0f, 0.0f, 0.0f },    // 始点
+		{ 0.0f, 0.0f, 100.0f },
+		{ 50.0f, 0.0f, 200.0f }, // 右へゆるやかにカーブする
+		{ 100.0f, 0.0f, 300.0f },
+		{ 100.0f, 0.0f, 500.0f }, // 終点
+		{ 100.0f, 0.0f, 520.0f }  // 補助点 (曲線の出口用)
+	};
+	railPath_->Initialize(controlPoints, 0.0005f); // 進む速さ (フレームごとの進行率)
+
 	//オブジェクトたちの初期化
 	player_ = std::make_unique<Player>(dxCommon_, camera_, input_, lightManager_.get());
 	player_->Initialize();
+	player_->SetRail(railPath_.get()); // プレイヤーにレールを設定
 
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize(dxCommon, lightManager_.get(), camera);
@@ -53,14 +68,41 @@ void PlayScene::Update () {
 	lightManager_->Update();
 	lightManager_->ImGui();
 
-	camera_->SetFollowTarget("main2", player_->GetTransform());
+	// レールの更新
+	if (railPath_) {
+		railPath_->Update();
+	}
+
+	// カメラをレールに追従させる
+	if (railPath_) {
+		Vector3 railPos = railPath_->GetPosition();
+		Matrix4x4 railRot = railPath_->GetRotationMatrix();
+
+		// カメラのレールに対するオフセット (少し後ろ・少し上)
+		Vector3 cameraOffset = { 0.0f, 0.0f, -50.0f };
+		Vector3 rotatedOffset = Math::Transform(cameraOffset, railRot);
+		Vector3 cameraPos = Math::Add(railPos, rotatedOffset);
+
+		camera_->SetPosition(cameraPos);
+
+		// レールの進行方向（前方向）を向くように回転を設定する
+		Vector3 direction = { railRot.m[2][0], railRot.m[2][1], railRot.m[2][2] };
+		Vector3 cameraRotate = { 0.0f, 0.0f, 0.0f };
+		if (Math::Length(direction) > 0.001f) {
+			cameraRotate.y = std::atan2(direction.x, direction.z);
+			float xzLength = std::sqrt(direction.x * direction.x + direction.z * direction.z);
+			cameraRotate.x = std::atan2(-direction.y, xzLength);
+		}
+		camera_->SetRotate(cameraRotate);
+	}
+
 	camera_->Update();
 	camera_->ImGui();
 
 	player_->Update();
 	player_->ImGui();
 
-	enemyManager_->Update(player_->GetTransform().translate.z);
+	enemyManager_->Update(player_->GetTransform().translate.z, railPath_.get());
 
 	// --- 弾と敵の当たり判定 ---
 	for (auto& bullet : player_->GetBullets()) {
