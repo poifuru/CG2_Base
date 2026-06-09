@@ -15,119 +15,129 @@ void PostEffectManager::Initialize(DxCommon* dxCommon, uint32_t windowWidth, uin
 	}
 
 	// ポストエフェクトをすべて初期化
+	// 最初はすべて非アクティブ状態にしておく
+	effects_[static_cast<size_t>(PostEffectType::ColorGrading)] = std::make_unique<ColorGrading>();
+	effects_[static_cast<size_t>(PostEffectType::Vignette)] = std::make_unique<Vignette>();
 
+	for (size_t i = 0; i < static_cast<size_t>(PostEffectType::Count); ++i) {
+		if (effects_[i] != nullptr) {
+			effects_[i]->Initialize(dxCommon_);
+			effects_[i]->SetIsActive(false); // 初期状態はOFF
+		}
+	}
 }
 
 void PostEffectManager::Finalize() {
 
 }
 
-void PostEffectManager::EnableEffect(PostEffectType type) {
-	std::unique_ptr<BasePostEffect> effect = nullptr;
-
-	switch(type) {
-	case PostEffectType::ColorGrading:
-		effect = std::make_unique<ColorGrading>();
-		break;
-
-	case PostEffectType::Vignette:
-		effect = std::make_unique<Vignette>();
-		break;
-
-	default:
-		// 未定義のタイプが渡されたら即座に処理を抜ける
-		return;
-	}
-
-	if(effect != nullptr) {
-		effect->Initialize(dxCommon_);
-		effect->SetIsActive(true);
-		effects_.push_back(std::move(effect));
+void PostEffectManager::SetEffectActive(PostEffectType type, bool flag) {
+	size_t index = static_cast<size_t>(type);
+	if (effects_[index] != nullptr) {
+		effects_[index]->SetIsActive(flag);
 	}
 }
 
 void PostEffectManager::ClearEffects() {
-	effects_.clear();
+	// インスタンスは消さずに、フラグをすべて false にリセットするだけ
+	for (size_t i = 0; i < static_cast<size_t>(PostEffectType::Count); ++i) {
+		if (effects_[i] != nullptr) {
+			effects_[i]->SetIsActive(false);
+		}
+	}
 }
 
 void PostEffectManager::Execute(RenderTexture* srcTexture) {
-	if(effects_.empty()) { return; }
-
 	auto cmdList = dxCommon_->GetCommandList();
 
-	// 現在の入力を指すポインタ(初期状態はゲーム画面のテクスチ)
-	RenderTexture* currentInput = srcTexture;
+	// 今回のフレームで「実際に描画する、最後のアクティブなエフェクト」のインデックスを探す
+	int lastActiveIndex = -1;
+	for (int i = static_cast<int>(PostEffectType::Count) - 1; i >= 0; --i) {
+		if (effects_[i] != nullptr && effects_[i]->GetIsActive()) {
+			lastActiveIndex = i;
+			break; // 末尾から探して最初に見つかったものが「最後のエフェクト」
+		}
+	}
 
-	// ワークバッファのインデックス(0, 1を交互に入れ替えていく)
+	// アクティブなエフェクトが1つもない場合
+	if (lastActiveIndex == -1) {
+		// ポストエフェクトがすべてOFFなら、ゲーム画面（srcTexture）をそのままバックバッファにコピーするか、
+		// そもそもメイン側でポストエフェクトを通さずにバックバッファに直接描画させる必要がある。
+		// ここでは、最低限バックバッファを RENDER_TARGET 状態にするバリアだけ張って処理を戻す。
+		D3D12_RESOURCE_BARRIER barrier{};
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Transition.pResource = dxCommon_->GetCurrentBackBufferResource();
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+		cmdList->ResourceBarrier(1, &barrier);
+
+		// 本来ならここで「何もエフェクトをかけずにsrcTextureを画面にコピーする描画（スルーパス）」を呼ぶのが理想
+		return;
+	}
+
+	// 現在の入力を指すポインタ(初期状態はゲーム画面のテクスチャ)
+	RenderTexture* currentInput = srcTexture;
 	int currentTargetIndex = 0;
 
-	// 登録されたエフェクトをループで回す
-	for(size_t i = 0; i < effects_.size(); ++i) {
-		if(effects_[i] == nullptr) continue;
+	// 2. 固定配列を順番に走査して描画していく
+	for (size_t i = 0; i < static_cast<size_t>(PostEffectType::Count); ++i) {
+		if (effects_[i] == nullptr || !effects_[i]->GetIsActive()) {
+			continue; // OFFになっているエフェクトは、存在自体を完全に無視してスキップ
+		}
 
-		if(!effects_[i]->GetIsActive())	continue;
+		// これが「今回有効なエフェクトの中での最後の1個」かどうかの判定
+		bool isLast = (static_cast<int>(i) == lastActiveIndex);
 
-		// 最後の1個かどうかの判定
-		bool isLast = (i == effects_.size() - 1);
-
-		// 最後のエフェクトの場合
-		if(isLast) {
-			// バックバッファをレンダーターゲットにするバリアを貼る
+		if (isLast) {
+			// 【最後のエフェクトの場合】出力先は本物の画面（バックバッファ）
 			D3D12_RESOURCE_BARRIER barrier{};
 			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-			barrier.Transition.pResource = dxCommon_->GetCurrentBackBufferResource(); // バックバッファのリソース
-			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT; // 通常、フレーム開始時はPRESENT状態
+			barrier.Transition.pResource = dxCommon_->GetCurrentBackBufferResource();
+			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
 			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 			barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 			cmdList->ResourceBarrier(1, &barrier);
 
-			// レンダーターゲットにバックバッファを設定
 			D3D12_CPU_DESCRIPTOR_HANDLE backBufferRtv = dxCommon_->GetCurrentBackBufferRtvHandle();
 			cmdList->OMSetRenderTargets(1, &backBufferRtv, FALSE, nullptr);
 		}
 		else {
-			// 出力先を中間バッファに切り替える
+			// 【途中のエフェクトの場合】出力先を中間バッファに切り替える
 			RenderTexture* nextOutput = workTextures_[currentTargetIndex].get();
 
-			// バリアを貼る
 			D3D12_RESOURCE_BARRIER barrier{};
 			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-			barrier.Transition.pResource = nextOutput->GetResource();	// リソースを取得
+			barrier.Transition.pResource = nextOutput->GetResource();
 			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 			barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 			cmdList->ResourceBarrier(1, &barrier);
 
-			// レンダーターゲットを設定(中間バッファのRTVをセット)
 			D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = nextOutput->GetDescriptorHandle();
 			cmdList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 
-			// 画面のクリア処理
 			float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 			cmdList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 		}
 
 		// 描画の実行
-		// curerntInput をテクスチャとして読み込んで描画
 		effects_[i]->Draw(currentInput);
 
-		if(!isLast) {
-			// 描画が終わったので今書きこんだ中間バッファを次の入力用(読み取り用)として使うために
-			// 「RENDER_TARGET」から「PIXEL_SHADER_RESOURCE」に戻すバリアを貼る
+		if (!isLast) {
+			// 次のエフェクトのために、今書き込んだ中間バッファを読込用にバリア遷移
 			RenderTexture* justRenderOutput = workTextures_[currentTargetIndex].get();
 
 			D3D12_RESOURCE_BARRIER barrier{};
 			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-			barrier.Transition.pResource = justRenderOutput->GetResource();	// リソースを取得
+			barrier.Transition.pResource = justRenderOutput->GetResource();
 			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 			barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 			cmdList->ResourceBarrier(1, &barrier);
 
-			// 次のループのために今回の出力を「次の入力」に設定
+			// 入力ソースをこの中間バッファに更新し、ピンポンインデックスを入れ替え
 			currentInput = justRenderOutput;
-
-			// ターゲットのインデックスを反転させる(0なら1、1なら0)
 			currentTargetIndex = 1 - currentTargetIndex;
 		}
 	}

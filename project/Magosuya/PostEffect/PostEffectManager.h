@@ -6,14 +6,16 @@ class DxCommon;
 class RenderTexture;
 class BasePostEffect;
 
+// ポストエフェクトの種類
+enum class PostEffectType {
+	ColorGrading,
+	Vignette,
+
+	Count	// エフェクトの総数
+};
+
 class PostEffectManager {
 public:
-	// ポストエフェクトの種類
-	enum class PostEffectType {
-		ColorGrading,
-		Vignette,
-	};
-
 	static PostEffectManager* GetInstance() {
 		static PostEffectManager instance;
 		return &instance;
@@ -23,7 +25,7 @@ public:
 	void Initialize(DxCommon* dxCommon, uint32_t windowWidth, uint32_t windowHeight);
 	void Finalize();
 
-	void EnableEffect(PostEffectType type);
+	void SetEffectActive(PostEffectType type, bool flag);
 	void ClearEffects();
 
 	// ピンポンレンダリングを実行する関数
@@ -39,7 +41,9 @@ private:
 
 private:
 	DxCommon* dxCommon_ = nullptr;
-	std::vector<std::unique_ptr<BasePostEffect>> effects_;
+
+	// エフェクトの総数で固定管理する
+	std::unique_ptr<BasePostEffect> effects_[static_cast<size_t>(PostEffectType::Count)];
 
 	// ピンポン用の中間テクスチャ2枚
 	std::unique_ptr<RenderTexture> workTextures_[2];

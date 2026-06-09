@@ -43,6 +43,8 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 
 	skybox_ = std::make_unique<Skybox>(dxCommon);
 	skybox_->Initialize("Resources/Skybox/test2.dds", "skybox");
+
+	//PostEffectManager::GetInstance()->AddEffect()
 }
 
 void PlayScene::Update () {
