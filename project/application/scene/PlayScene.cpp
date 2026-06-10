@@ -46,8 +46,6 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 
 	// ポストエフェクトの状態を初期化
 	PostEffectManager::GetInstance()->ClearEffects();
-	PostEffectManager::GetInstance()->SetEffectActive(PostEffectType::ColorGrading, true);
-	PostEffectManager::GetInstance()->SetEffectActive(PostEffectType::Vignette, true);
 }
 
 void PlayScene::Update () {
