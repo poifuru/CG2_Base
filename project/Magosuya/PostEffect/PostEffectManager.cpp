@@ -1,10 +1,10 @@
 #include "PostEffectManager.h"
 #include "DxCommon.h"
-#include "BasePostEffect.h"
 #include "ColorGrading.h"
 #include "Vignette.h"
 #include "RenderTexture.h"
 #include "SRVManager.h"
+#include "imgui.h"
 
 void PostEffectManager::Initialize(DxCommon* dxCommon, uint32_t windowWidth, uint32_t windowHeight) {
 	dxCommon_ = dxCommon;
@@ -63,14 +63,15 @@ void PostEffectManager::Execute(RenderTexture* srcTexture) {
 	if (lastActiveIndex == -1) {
 		// ポストエフェクトがすべてOFFなら、ゲーム画面（srcTexture）をそのままバックバッファにコピーするか、
 		// そもそもメイン側でポストエフェクトを通さずにバックバッファに直接描画させる必要がある。
-		// ここでは、最低限バックバッファを RENDER_TARGET 状態にするバリアだけ張って処理を戻す。
-		D3D12_RESOURCE_BARRIER barrier{};
-		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-		barrier.Transition.pResource = dxCommon_->GetCurrentBackBufferResource();
-		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-		cmdList->ResourceBarrier(1, &barrier);
+		// レンダーターゲットをバックバッファに設定する
+		D3D12_CPU_DESCRIPTOR_HANDLE backBufferRtv = dxCommon_->GetCurrentBackBufferRtvHandle();
+		cmdList->OMSetRenderTargets(1, &backBufferRtv, FALSE, nullptr);
+
+		// 一番ベースの描画機能（ColorGrading等）を、一時的にパラメータを無効化（強度0）した状態で強制的に1回描くなど
+		if (effects_[static_cast<size_t>(PostEffectType::ColorGrading)] != nullptr) {
+			// 強制的に描画するけど、見た目は変わらないように元の絵を出させる
+			effects_[static_cast<size_t>(PostEffectType::ColorGrading)]->Draw(srcTexture);
+		}
 
 		// 本来ならここで「何もエフェクトをかけずにsrcTextureを画面にコピーする描画（スルーパス）」を呼ぶのが理想
 		return;
@@ -91,14 +92,6 @@ void PostEffectManager::Execute(RenderTexture* srcTexture) {
 
 		if (isLast) {
 			// 【最後のエフェクトの場合】出力先は本物の画面（バックバッファ）
-			D3D12_RESOURCE_BARRIER barrier{};
-			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-			barrier.Transition.pResource = dxCommon_->GetCurrentBackBufferResource();
-			barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-			barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-			barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-			cmdList->ResourceBarrier(1, &barrier);
-
 			D3D12_CPU_DESCRIPTOR_HANDLE backBufferRtv = dxCommon_->GetCurrentBackBufferRtvHandle();
 			cmdList->OMSetRenderTargets(1, &backBufferRtv, FALSE, nullptr);
 		}
@@ -145,11 +138,54 @@ void PostEffectManager::Execute(RenderTexture* srcTexture) {
 
 void PostEffectManager::ImGui() {
 #ifdef USEIMGUI
-	// 配列を回して、アクティブなエフェクトのImGuiだけを表示する
+	// ポストエフェクト全体の管理ウィンドウを開く
+	ImGui::Begin("PostEffect Manager");
+
+	// 全エフェクトの ON/OFF チェックボックスを一覧表示する
+	ImGui::Text("Active Switches");
+	ImGui::Separator();
+
 	for (size_t i = 0; i < static_cast<size_t>(PostEffectType::Count); ++i) {
-		if (effects_[i] != nullptr && effects_[i]->GetIsActive()) {
-			effects_[i]->ImGui();
+		if (effects_[i] == nullptr) continue;
+
+		// 列挙型に応じて表示する名前を決定する
+		const char* effectName = "Unknown";
+		switch (static_cast<PostEffectType>(i)) {
+		case PostEffectType::ColorGrading: effectName = "Color Grading"; break;
+		case PostEffectType::Vignette:     effectName = "Vignette";      break;
+		}
+
+		// 現在のフラグ状態を取得
+		bool isActive = effects_[i]->GetIsActive();
+
+		// チェックボックスを表示（クリックされたら自動で isActive が書き換わる）
+		if (ImGui::Checkbox(effectName, &isActive)) {
+			effects_[i]->SetIsActive(isActive);
 		}
 	}
+
+	ImGui::Text("Parameters");
+	ImGui::Separator();
+
+	// ON になっているエフェクトの内部パラメータだけを下に展開する
+	for (size_t i = 0; i < static_cast<size_t>(PostEffectType::Count); ++i) {
+		// ここでは「実体が存在する」かつ「ONになっている」ものだけパラメータ調整を表示
+		if (effects_[i] != nullptr && effects_[i]->GetIsActive()) {
+
+			// ImGui の折りたたみヘッダー（CollapsingHeader）を使うと画面がスッキリしておすすめ
+			const char* headerName = "Unknown Param";
+			switch (static_cast<PostEffectType>(i)) {
+			case PostEffectType::ColorGrading: headerName = "Color Grading Settings"; break;
+			case PostEffectType::Vignette:     headerName = "Vignette Settings";      break;
+			}
+
+			if (ImGui::CollapsingHeader(headerName, ImGuiTreeNodeFlags_DefaultOpen)) {
+				// 各クラス固有の DragFloat とかを呼び出す
+				effects_[i]->ImGui();
+			}
+		}
+	}
+
+	ImGui::End(); // ポストエフェクト管理ウィンドウを閉じる
 #endif
 }

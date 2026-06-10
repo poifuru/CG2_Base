@@ -1,10 +1,9 @@
 #pragma once
-#include <vector>
 #include <memory>
+#include "BasePostEffect.h"
 
 class DxCommon;
 class RenderTexture;
-class BasePostEffect;
 
 // ポストエフェクトの種類
 enum class PostEffectType {

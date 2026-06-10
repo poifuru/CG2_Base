@@ -44,7 +44,10 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	skybox_ = std::make_unique<Skybox>(dxCommon);
 	skybox_->Initialize("Resources/Skybox/test2.dds", "skybox");
 
-	PostEffectManager::GetInstance()->AddEffect()
+	// ポストエフェクトの状態を初期化
+	PostEffectManager::GetInstance()->ClearEffects();
+	PostEffectManager::GetInstance()->SetEffectActive(PostEffectType::ColorGrading, true);
+	PostEffectManager::GetInstance()->SetEffectActive(PostEffectType::Vignette, true);
 }
 
 void PlayScene::Update () {

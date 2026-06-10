@@ -4,7 +4,7 @@
 void ColorGrading::Initialize(DxCommon* dxCommon) {
 	BasePostEffect::Initialize(dxCommon);
 	psoDesc_.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(
-		L"Resources/shader/GrayScale.PS.hlsl", L"ps_6_0"
+		L"Resources/shader/ColorGrading.PS.hlsl", L"ps_6_0"
 	);
 
 	// リソースの初期化
@@ -17,6 +17,13 @@ void ColorGrading::Initialize(DxCommon* dxCommon) {
 }
 
 void ColorGrading::Draw(RenderTexture* renderTexture) {
+	// アクティブなポストエフェクトが存在しない時のガード用にパラメータを全て0にして描画する(※修正必須)
+	if(!isActive_) {
+		cpuData_->intensity = 0.0f;
+		cpuData_->sepiaAmount = 0.0f;
+		cpuData_->tintColor = { 1.0f, 1.0f, 1.0f };
+	}
+
 	auto cmdList = dxCommon_->GetCommandList();
 
 	RootSignatureManager::GetInstance()->SetRootSignature(psoDesc_.RootSignatureID);
@@ -36,8 +43,8 @@ void ColorGrading::Draw(RenderTexture* renderTexture) {
 }
 
 void ColorGrading::ImGui() {
-	ImGui::Checkbox("isActive", &isActive_);
-	ImGui::DragFloat("intensity", &cpuData_->intensity, 0.01f, 0.0f, 1.0f);
-	ImGui::DragFloat("sepiaAmount", &cpuData_->sepiaAmount, 0.01f, 0.0f, 1.0f);
-	ImGui::DragFloat3("tintColor", &cpuData_->tintColor.x, 0.01f, 0.0f, 1.0f);
+	ImGui::Checkbox("isActive##ColorGrading", &isActive_);
+	ImGui::DragFloat("intensity##ColorGrading", &cpuData_->intensity, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("sepiaAmount##ColorGrading", &cpuData_->sepiaAmount, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat3("tintColor##ColorGrading", &cpuData_->tintColor.x, 0.01f, 0.0f, 1.0f);
 }

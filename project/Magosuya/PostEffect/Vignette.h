@@ -11,12 +11,16 @@ public:
 
 private:
 	struct alignas(16) VignetteForGPU {
-		float intensity = 1.0f;		// エフェクトの強度(0.0 : 通常, 1.0 : 完全な白黒)
-		float sepiaAmount = 0.0f;	// セピア調にする強さ(0.0 : 完全な白黒, 1.0 : セピア)
+		Vector2 center = { 0.5f, 0.5f };	// ビネットの中心座標(基本 0.5, 0.5)
+		float innerRadius = 0.0f;			// 暗くなり始める半径 (0.0 ～ 1.0)
+		float outerRadius = 0.0f;			// 完全に暗くなる半径 (0.0 ～ 1.0)
 
-		Vector3 tintColor {			// 画面に着色したい色(デフォルトはセピア調の RGB : 1.0, 0.95, 0.82)
-			1.0f, 0.95f, 0.82f
+		Vector3 vignetteColor {				// ビネットの色(黒なら　0.0, 0.0, 0.0)
+			0.0f, 0.0f, 0.0f
 		};
+		float intensity = 1.0f;				// ビネットの強度(0.0 なら効果なし、1.0 で完全適用)
+
+		float aspectRatio;					// 画面のアスペクト比(Width / Height)
 	};
 
 public:

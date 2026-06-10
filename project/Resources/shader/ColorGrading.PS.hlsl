@@ -3,9 +3,11 @@
 struct PostProcessData
 {
     float intensity; // エフェクトの強度（0.0 〜 1.0など）
-    float time; // 時間（ノイズのアニメーションや画面の揺れに使う）
-    float dummy1; // 16バイトアライメント用のパディング
-    float dummy2;
+    float sepiaAmount; // セピア調にする強さ(0.0 : 完全な白黒, 1.0 : セピア)
+    float2 padding0;
+
+    float3 tintColor;
+    float padding1;
 };
 
 ConstantBuffer<PostProcessData> gPostProcessData : register(b0);

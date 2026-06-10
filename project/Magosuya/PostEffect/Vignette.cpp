@@ -1,5 +1,6 @@
 #include "Vignette.h"
 #include "imgui.h"
+#include "WindowsAPI.h"
 
 void Vignette::Initialize(DxCommon* dxCommon) {
 	BasePostEffect::Initialize(dxCommon);
@@ -11,9 +12,13 @@ void Vignette::Initialize(DxCommon* dxCommon) {
 	constantBuffer_ = dxCommon_->CreateBufferResource(sizeof(VignetteForGPU));
 	constantBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cpuData_));
 
+	cpuData_->center = { 0.5f, 0.5f };
+	cpuData_->innerRadius = 0.0f;
+	cpuData_->outerRadius = 0.0f;
+	cpuData_->vignetteColor = { 0.0f, 0.0f, 0.0f };
 	cpuData_->intensity = 1.0f;
-	cpuData_->sepiaAmount = 0.0f;
-	cpuData_->tintColor = { 1.0f, 0.95f, 0.82f };
+	cpuData_->aspectRatio =
+		static_cast<float>(WindowsAPI::GetInstance()->GetWindowWidth() / WindowsAPI::GetInstance()->GetWindowHeight());
 }
 
 void Vignette::Draw(RenderTexture* renderTexture) {
@@ -36,8 +41,11 @@ void Vignette::Draw(RenderTexture* renderTexture) {
 }
 
 void Vignette::ImGui() {
-	ImGui::Checkbox("isActive", &isActive_);
-	ImGui::DragFloat("intensity", &cpuData_->intensity, 0.01f, 0.0f, 1.0f);
-	ImGui::DragFloat("sepiaAmount", &cpuData_->sepiaAmount, 0.01f, 0.0f, 1.0f);
-	ImGui::DragFloat3("tintColor", &cpuData_->tintColor.x, 0.01f, 0.0f, 1.0f);
+	ImGui::Checkbox("isActive##Vignette", &isActive_);
+	ImGui::DragFloat2("center##Vignette", &cpuData_->center.x, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("innerRadius##Vignette", &cpuData_->innerRadius, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("outerRadius##Vignette", &cpuData_->outerRadius, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat3("vignetteColor##Vignette", &cpuData_->vignetteColor.x, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("intensity##Vignette", &cpuData_->intensity, 0.01f, 0.0f, 1.0f);
+	ImGui::Text("aspectRatio##Vignette", &cpuData_->aspectRatio);
 }

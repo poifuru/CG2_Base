@@ -11,7 +11,7 @@
     <FxCompile Include="Resources\shader\Skybox.PS.hlsl" />
     <FxCompile Include="Resources\shader\Fullscreen.VS.hlsl" />
     <FxCompile Include="Resources\shader\CopyImage.PS.hlsl" />
-    <FxCompile Include="Resources\shader\Grayscale.PS.hlsl" />
+    <FxCompile Include="Resources\shader\ColorGrading.PS.hlsl" />
     <FxCompile Include="Resources\shader\Vignette.PS.hlsl" />
     <FxCompile Include="Resources\shader\BoxFilter.PS.hlsl" />
   </ItemGroup>
