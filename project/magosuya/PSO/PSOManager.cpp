@@ -98,7 +98,7 @@ void PSOManager::SetPSO (const PSODescriptor& desc) {
 
 template<typename T>
 uint64_t PSOManager::hash_combine_simple (uint64_t h, T val) const {
-	return (h << 5) | (h >> 59) ^ (uint64_t)val;
+	return ((h << 5) | (h >> 59)) ^ (uint64_t)val;
 }
 
 uint64_t PSOManager::ComputeHash (const PSODescriptor& desc) const {

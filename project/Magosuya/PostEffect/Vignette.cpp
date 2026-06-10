@@ -9,16 +9,12 @@ void Vignette::Initialize(DxCommon* dxCommon) {
 	);
 
 	// リソースの初期化
-	constantBuffer_ = dxCommon_->CreateBufferResource(sizeof(VignetteForGPU));
+	constantBuffer_ = dxCommon_->CreateBufferResource((sizeof(VignetteForGPU) + 255) & ~255);
 	constantBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cpuData_));
 
-	cpuData_->center = { 0.5f, 0.5f };
-	cpuData_->innerRadius = 0.0f;
-	cpuData_->outerRadius = 0.0f;
-	cpuData_->vignetteColor = { 0.0f, 0.0f, 0.0f };
-	cpuData_->intensity = 1.0f;
-	cpuData_->aspectRatio =
-		static_cast<float>(WindowsAPI::GetInstance()->GetWindowWidth() / WindowsAPI::GetInstance()->GetWindowHeight());
+	cpuData_->centerAndRadius = { 0.5f, 0.5f, 0.2f, 0.6f };
+	cpuData_->colorAndIntensity = { 0.0f, 0.0f, 0.0f, 1.0f };
+	cpuData_->aspectAndPadding = { WindowsAPI::GetInstance()->GetAspectRatio(), 0.0f, 0.0f, 0.0f };
 }
 
 void Vignette::Draw(RenderTexture* renderTexture) {
@@ -41,11 +37,10 @@ void Vignette::Draw(RenderTexture* renderTexture) {
 }
 
 void Vignette::ImGui() {
-	ImGui::Checkbox("isActive##Vignette", &isActive_);
-	ImGui::DragFloat2("center##Vignette", &cpuData_->center.x, 0.01f, 0.0f, 1.0f);
-	ImGui::DragFloat("innerRadius##Vignette", &cpuData_->innerRadius, 0.01f, 0.0f, 1.0f);
-	ImGui::DragFloat("outerRadius##Vignette", &cpuData_->outerRadius, 0.01f, 0.0f, 1.0f);
-	ImGui::DragFloat3("vignetteColor##Vignette", &cpuData_->vignetteColor.x, 0.01f, 0.0f, 1.0f);
-	ImGui::DragFloat("intensity##Vignette", &cpuData_->intensity, 0.01f, 0.0f, 1.0f);
-	ImGui::Text("aspectRatio##Vignette", &cpuData_->aspectRatio);
+	ImGui::DragFloat2("center##Vignette", &cpuData_->centerAndRadius.x, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("innerRadius##Vignette", &cpuData_->centerAndRadius.z, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("outerRadius##Vignette", &cpuData_->centerAndRadius.w, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat3("vignetteColor##Vignette", &cpuData_->colorAndIntensity.x, 0.01f, 0.0f, 1.0f);
+	ImGui::DragFloat("intensity##Vignette", &cpuData_->colorAndIntensity.w, 0.01f, 0.0f, 1.0f);
+	ImGui::Text("aspectRatio : %.3f", cpuData_->aspectAndPadding.x);
 }

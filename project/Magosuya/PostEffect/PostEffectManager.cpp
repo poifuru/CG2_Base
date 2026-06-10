@@ -143,7 +143,6 @@ void PostEffectManager::ImGui() {
 
 	// 全エフェクトの ON/OFF チェックボックスを一覧表示する
 	ImGui::Text("Active Switches");
-	ImGui::Separator();
 
 	for (size_t i = 0; i < static_cast<size_t>(PostEffectType::Count); ++i) {
 		if (effects_[i] == nullptr) continue;
@@ -164,8 +163,8 @@ void PostEffectManager::ImGui() {
 		}
 	}
 
-	ImGui::Text("Parameters");
 	ImGui::Separator();
+	ImGui::Text("Parameters");
 
 	// ON になっているエフェクトの内部パラメータだけを下に展開する
 	for (size_t i = 0; i < static_cast<size_t>(PostEffectType::Count); ++i) {

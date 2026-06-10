@@ -43,7 +43,6 @@ void ColorGrading::Draw(RenderTexture* renderTexture) {
 }
 
 void ColorGrading::ImGui() {
-	ImGui::Checkbox("isActive##ColorGrading", &isActive_);
 	ImGui::DragFloat("intensity##ColorGrading", &cpuData_->intensity, 0.01f, 0.0f, 1.0f);
 	ImGui::DragFloat("sepiaAmount##ColorGrading", &cpuData_->sepiaAmount, 0.01f, 0.0f, 1.0f);
 	ImGui::DragFloat3("tintColor##ColorGrading", &cpuData_->tintColor.x, 0.01f, 0.0f, 1.0f);

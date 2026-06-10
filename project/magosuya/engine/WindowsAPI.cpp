@@ -49,6 +49,13 @@ void WindowsAPI::Initialize(InputManager* inputManager) {
 	//ウィンドウを表示
 	ShowWindow(hwnd_, SW_SHOW);
 
+	// 実際のクライアント領域のサイズを取得して保持する
+	RECT clientRect{};
+	if (GetClientRect(hwnd_, &clientRect)) {
+		windowWidth_ = static_cast<float>(clientRect.right - clientRect.left);
+		windowHeight_ = static_cast<float>(clientRect.bottom - clientRect.top);
+	}
+
 	//インプットマネージャーのポインタ
 	inputManager_ = inputManager;
 }

@@ -21,6 +21,7 @@ public:		//公開メソッド
 	HWND GetHwnd() { return hwnd_; }
 	int32_t GetWindowWidth() { return kClientWidth; }
 	int32_t GetWindowHeight() { return kClientHeight; }
+	float GetAspectRatio() { return windowWidth_ / windowHeight_; }
 
 private:
 	//コンストラクタを禁止
@@ -43,6 +44,8 @@ private:	//メンバ変数
 	//ウィンドウ
 	WNDCLASS windowClass_{};
 	HWND hwnd_{};
+	float windowWidth_ = 1280.0f;
+	float windowHeight_ = 720.0f;
 
 	//ポインタを借りる
 	InputManager* inputManager_ = nullptr;
