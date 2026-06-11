@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "EnemyManager.h"
 #include "Skybox.h"
+#include "../RailPath.h"
 
 class PlayScene : public BaseScene {
 public:		//メンバ関数
@@ -24,6 +25,7 @@ private:	//メンバ変数
 	std::unique_ptr<EnemyManager> enemyManager_ = nullptr;
 
 	std::unique_ptr<Skybox> skybox_ = nullptr;
+	std::unique_ptr<RailPath> railPath_ = nullptr;
 
 	DxCommon* dxCommon_ = nullptr;
 };
