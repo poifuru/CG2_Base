@@ -1,6 +1,5 @@
 #include "MagosuyaEngine.h"
 #include "LogManager.h"
-#include "PostEffect.h"
 
 MagosuyaEngine::~MagosuyaEngine () {
 	audioManager_->Finalize();
@@ -64,8 +63,8 @@ void MagosuyaEngine::Initialize () {
 	// SRVManagerが初期化された後でオフスクリーン用のRenderTextureを初期化
 	dxCommon_->InitializeRenderTexture(srvManager_);
 
-	postEffect_ = PostEffect::GetInstance();
-	postEffect_->Initialize(dxCommon_);
+	postEffect_ = PostEffectManager::GetInstance();
+	postEffect_->Initialize(dxCommon_, winApi_->GetWindowWidth(), winApi_->GetWindowHeight());
 }
 
 void MagosuyaEngine::BeginFrame () {
@@ -84,8 +83,8 @@ void MagosuyaEngine::EndFrame () {
 	// ImGuiの描画の前に、描画先をRenderTextureからSwapchainへ切り替える
 	dxCommon_->PreDrawImGui();
 
-	// RenderTextureの内容をSwapchainにコピー
-	postEffect_->Draw(dxCommon_->GetRenderTexture());
+	// ポストエフェクトの描画を回す
+	postEffect_->Execute(dxCommon_->GetRenderTexture());
 
 	imguiManager_->Draw ();
 	dxCommon_->EndFrame ();

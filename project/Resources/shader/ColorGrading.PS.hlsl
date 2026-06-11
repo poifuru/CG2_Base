@@ -1,4 +1,4 @@
-﻿#include "Fullscreen.hlsli"
+#include "Fullscreen.hlsli"
 
 struct PostProcessData
 {

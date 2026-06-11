@@ -533,20 +533,20 @@ bool    ImGui_ImplDX12_CreateDeviceObjects()
 
     // By using D3DCompile() from <d3dcompiler.h> / d3dcompiler.lib, we introduce a dependency to a given version of d3dcompiler_XX.dll (see D3DCOMPILER_DLL_A)
     // If you would like to use this DX12 sample code but remove this dependency you can:
-    //  1) compile once, save the compiled shader blobs into a file or source code and assign them to psoDesc.VS/PS [preferred solution]
+    //  1) compile once, save the compiled shader blobs into a file or source code and assign them to psoDesc_.VS/PS [preferred solution]
     //  2) use code to detect any version of the DLL and grab a pointer to D3DCompile from the DLL.
     // See https://github.com/ocornut/imgui/pull/638 for sources and details.
 
-    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
-    memset(&psoDesc, 0, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
-    psoDesc.NodeMask = 1;
-    psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-    psoDesc.pRootSignature = bd->pRootSignature;
-    psoDesc.SampleMask = UINT_MAX;
-    psoDesc.NumRenderTargets = 1;
-    psoDesc.RTVFormats[0] = bd->RTVFormat;
-    psoDesc.SampleDesc.Count = 1;
-    psoDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc_;
+    memset(&psoDesc_, 0, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+    psoDesc_.NodeMask = 1;
+    psoDesc_.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    psoDesc_.pRootSignature = bd->pRootSignature;
+    psoDesc_.SampleMask = UINT_MAX;
+    psoDesc_.NumRenderTargets = 1;
+    psoDesc_.RTVFormats[0] = bd->RTVFormat;
+    psoDesc_.SampleDesc.Count = 1;
+    psoDesc_.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
 
     ID3DBlob* vertexShaderBlob;
     ID3DBlob* pixelShaderBlob;
@@ -583,7 +583,7 @@ bool    ImGui_ImplDX12_CreateDeviceObjects()
 
         if (FAILED(D3DCompile(vertexShader, strlen(vertexShader), nullptr, nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertexShaderBlob, nullptr)))
             return false; // NB: Pass ID3DBlob* pErrorBlob to D3DCompile() to get error showing in (const char*)pErrorBlob->GetBufferPointer(). Make sure to Release() the blob!
-        psoDesc.VS = { vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize() };
+        psoDesc_.VS = { vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize() };
 
         // Create the input layout
         static D3D12_INPUT_ELEMENT_DESC local_layout[] =
@@ -592,7 +592,7 @@ bool    ImGui_ImplDX12_CreateDeviceObjects()
             { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,   0, (UINT)IM_OFFSETOF(ImDrawVert, uv),  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
             { "COLOR",    0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, (UINT)IM_OFFSETOF(ImDrawVert, col), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
         };
-        psoDesc.InputLayout = { local_layout, 3 };
+        psoDesc_.InputLayout = { local_layout, 3 };
     }
 
     // Create the pixel shader
@@ -618,12 +618,12 @@ bool    ImGui_ImplDX12_CreateDeviceObjects()
             vertexShaderBlob->Release();
             return false; // NB: Pass ID3DBlob* pErrorBlob to D3DCompile() to get error showing in (const char*)pErrorBlob->GetBufferPointer(). Make sure to Release() the blob!
         }
-        psoDesc.PS = { pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize() };
+        psoDesc_.PS = { pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize() };
     }
 
     // Create the blending setup
     {
-        D3D12_BLEND_DESC& desc = psoDesc.BlendState;
+        D3D12_BLEND_DESC& desc = psoDesc_.BlendState;
         desc.AlphaToCoverageEnable = false;
         desc.RenderTarget[0].BlendEnable = true;
         desc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
@@ -637,7 +637,7 @@ bool    ImGui_ImplDX12_CreateDeviceObjects()
 
     // Create the rasterizer state
     {
-        D3D12_RASTERIZER_DESC& desc = psoDesc.RasterizerState;
+        D3D12_RASTERIZER_DESC& desc = psoDesc_.RasterizerState;
         desc.FillMode = D3D12_FILL_MODE_SOLID;
         desc.CullMode = D3D12_CULL_MODE_NONE;
         desc.FrontCounterClockwise = FALSE;
@@ -653,7 +653,7 @@ bool    ImGui_ImplDX12_CreateDeviceObjects()
 
     // Create depth-stencil State
     {
-        D3D12_DEPTH_STENCIL_DESC& desc = psoDesc.DepthStencilState;
+        D3D12_DEPTH_STENCIL_DESC& desc = psoDesc_.DepthStencilState;
         desc.DepthEnable = false;
         desc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
         desc.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;
@@ -663,7 +663,7 @@ bool    ImGui_ImplDX12_CreateDeviceObjects()
         desc.BackFace = desc.FrontFace;
     }
 
-    HRESULT result_pipeline_state = bd->pd3dDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&bd->pPipelineState));
+    HRESULT result_pipeline_state = bd->pd3dDevice->CreateGraphicsPipelineState(&psoDesc_, IID_PPV_ARGS(&bd->pPipelineState));
     vertexShaderBlob->Release();
     pixelShaderBlob->Release();
     if (result_pipeline_state != S_OK)

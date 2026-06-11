@@ -14,7 +14,7 @@
 #include "CameraOrganizer.h"
 #include "SceneManager.h"
 #include "AudioManager.h"
-#include "PostEffect.h"
+#include "PostEffectManager.h"
 
 class MagosuyaEngine {
 public:		//メンバ関数
@@ -56,5 +56,5 @@ private:
 	CameraOrganizer* cameraOrganizer_ = nullptr;
 	SceneManager* sceneManager_ = nullptr;
 	AudioManager* audioManager_ = nullptr;
-	PostEffect* postEffect_ = nullptr;
+	PostEffectManager* postEffect_ = nullptr;
 };

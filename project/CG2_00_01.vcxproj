@@ -182,6 +182,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\entity\player\Bullet.cpp" />
     <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
     <ClCompile Include="Application\Collider\CollisionManager.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\ColorGrading.cpp" />
     <ClCompile Include="magosuya\light\DirectionalLight.cpp" />
     <ClCompile Include="magosuya\light\BaseLight.cpp" />
     <ClCompile Include="magosuya\light\LightManager.cpp" />
@@ -190,6 +191,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="magosuya\object\3d\BaseRenderer.cpp" />
     <ClCompile Include="magosuya\object\3d\BaseObject3d.cpp" />
     <ClCompile Include="magosuya\general\Easing.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\BasePosteffect.cpp" />
     <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
     <ClCompile Include="magosuya\audio\AudioManager.cpp" />
     <ClCompile Include="magosuya\camera\LookAtCamera.cpp" />
@@ -245,9 +247,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\scene\TestScene.cpp" />
     <ClCompile Include="magosuya\object\3d\Skybox.cpp" />
     <ClCompile Include="magosuya\engine\RenderTexture.cpp" />
-    <ClCompile Include="magosuya\PostEffect\PostEffect.cpp" />
+    <ClCompile Include="magosuya\PostEffect\PostEffectManager.cpp" />
     <ClCompile Include="application\entity\player\Reticle.cpp" />
     <ClCompile Include="Application\RailPath.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\Vignette.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\BoxFilter.PS.hlsl">
@@ -265,15 +268,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="Resources\shader\GaussianFilter.PS.hlsl">
+    <FxCompile Include="Resources\shader\ColorGrading.PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="Resources\shader\Grayscale.PS.hlsl">
+    <FxCompile Include="Resources\shader\GaussianFilter.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Resources\shader\Line.PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -370,6 +373,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\entity\player\Bullet.h" />
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="Application\Collider\CollisionManager.h" />
+    <ClInclude Include="Magosuya\PostEffect\ColorGrading.h" />
     <ClInclude Include="magosuya\general\DeltaTime.h" />
     <ClInclude Include="magosuya\light\DirectionalLight.h" />
     <ClInclude Include="magosuya\light\BaseLight.h" />
@@ -379,6 +383,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="magosuya\object\3d\BaseRenderer.h" />
     <ClInclude Include="magosuya\object\3d\BaseObject3d.h" />
     <ClInclude Include="magosuya\general\Easing.h" />
+    <ClInclude Include="Magosuya\PostEffect\BasePostEffect.h" />
     <ClInclude Include="magosuya\PSO\ShaderManager.h" />
     <ClInclude Include="magosuya\audio\AudioManager.h" />
     <ClInclude Include="magosuya\camera\LookAtCamera.h" />
@@ -444,9 +449,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\TestScene.h" />
     <ClInclude Include="magosuya\object\3d\Skybox.h" />
     <ClInclude Include="magosuya\engine\RenderTexture.h" />
-    <ClInclude Include="magosuya\PostEffect\PostEffect.h" />
+    <ClInclude Include="magosuya\PostEffect\PostEffectManager.h" />
     <ClInclude Include="application\entity\player\Reticle.h" />
     <ClInclude Include="Application\RailPath.h" />
+    <ClInclude Include="Magosuya\PostEffect\Vignette.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Fullscreen.hlsli" />

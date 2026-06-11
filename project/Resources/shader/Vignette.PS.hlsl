@@ -1,14 +1,13 @@
 #include "Fullscreen.hlsli"
 
-struct VignetingData
+struct Vignette
 {
-    float intensity; // エフェクトの強度（0.0 〜 1.0など）
-    float power; // 時間（ノイズのアニメーションや画面の揺れに使う）
-    float dummy1; // 16バイトアライメント用のパディング
-    float dummy2;
+    float4 centerAndRadius;      // xy: center, z: innerRadius, w: outerRadius
+    float4 colorAndIntensity;    // xyz: color, w: intensity
+    float4 aspectAndPadding;     // x: aspectRatio, yzw: padding
 };
 
-ConstantBuffer<VignetingData> gVignetingData : register(b0);
+ConstantBuffer<Vignette> gVignette : register(b0);
 Texture2D<float4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
 
@@ -20,17 +19,25 @@ struct PixelShaderOutput
 PixelShaderOutput main(VertexShaderOutput input)
 {
     PixelShaderOutput output;
- 
     output.color = gTexture.Sample(gSampler, input.texcoord);
     
-    // 周囲を0に、中心になるほど明るくなるように計算で調整
-    float2 correct = input.texcoord * (1.0f - input.texcoord.yx);
-    // correctだけで計算すると中心の最大値が0.0625で暗すぎるのでintensityで調整
-    float vignette = correct.x * correct.y * gVignetingData.intensity;
-    // 係数
-    vignette = saturate(pow(vignette, gVignetingData.power));
-    // 係数として乗算
-    output.color.rgb *= vignette;
+    // アスペクト比を考慮したUV座標の調整（中心からのディレクション）
+    float2 toCenter = input.texcoord - gVignette.centerAndRadius.xy;
+    toCenter.x *= gVignette.aspectAndPadding.x; // 横のスケールを補正して真円にする
+    
+    // 中心からの距離を計算
+    float dist = length(toCenter);
+    
+    // smoothstep を用いて滑らかな減衰係数を計算
+    // 指定した Inner から Outer にかけて 0.0 ～ 1.0 に変化する
+    float vignetteFactor = smoothstep(gVignette.centerAndRadius.z, gVignette.centerAndRadius.w, dist);
+    
+    // 強度（Intensity）を適用
+    vignetteFactor *= gVignette.colorAndIntensity.w;
+    
+    // ビネット色との線形補間（lerp）
+    // vignetteFactor が 1.0 に近づくほど colorAndIntensity.rgb になる
+    output.color.rgb = lerp(output.color.rgb, gVignette.colorAndIntensity.rgb, vignetteFactor);
    
     return output;
 }

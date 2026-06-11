@@ -34,7 +34,7 @@ private:	//内部関数
 
 private:
 	//PSOの設定
-	PSODescriptor desc_ = {};
+	psoDesc_riptor desc_ = {};
 
 	//モデルデータ
 	std::unique_ptr<ModelData> data_ = nullptr;
