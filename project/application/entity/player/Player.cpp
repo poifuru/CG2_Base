@@ -278,9 +278,55 @@ Player::Move() {
 	localTranslate_.x += velocity_.x;
 	localTranslate_.y += velocity_.y;
 
-	// 移動制限（ローカル座標系）
-	localTranslate_.x = std::clamp(localTranslate_.x, -18.0f, 18.0f);
-	localTranslate_.y = std::clamp(localTranslate_.y, -10.0f, 10.0f);
+	// カメラの画角内に移動を制限
+	if (camera_) {
+		// カメラとプレイヤー（レール）の現在のワールド座標を取得
+		Vector3 cameraPos = camera_->GetCameraData().transform.translate;
+		Vector3 basePos = transform_.translate;
+		if (railPath_) {
+			basePos = railPath_->GetPosition();
+		}
+
+		// カメラとレールの「実際の距離（Z軸）」を計算
+		float distanceToCamera = basePos.z - cameraPos.z;
+		if (distanceToCamera <= 0.0f) {
+			distanceToCamera = 50.0f;
+		}
+
+		// 画角とアスペクト比から画面の半分サイズを計算 (FOV: 0.45f)
+		float fovY = 0.45f; 
+		float aspect = 1280.0f / 720.0f; 
+
+		float halfHeight = std::tan(fovY * 0.5f) * distanceToCamera;
+		float halfWidth = halfHeight * aspect;
+
+		// プレイヤーのモデルサイズに合わせたマージン
+		float marginX = 2.0f;
+		float marginY = 2.0f;
+
+		// 左右の制限幅（X軸はカメラが真ん中なので左右対称でOK）
+		float limitX = (std::max)(0.0f, halfWidth - marginX);
+
+		// カメラの高さのズレ（オフセット）を計算する
+		// レールの高さ（basePos.y）に対して、カメラがどれだけ高い位置にいるか
+		float cameraHeightOffset = cameraPos.y - basePos.y; // PlaySceneの設定通りなら約3.0fになる
+
+		// 本来の画面端（halfHeight）に対して、カメラが上に上がった分だけ制限を「下にシフト」させる
+		float limitTop    =  halfHeight - marginY + cameraHeightOffset; // 上方向の限界（引き上げられるので広くなる）
+		float limitBottom = -halfHeight + marginY + cameraHeightOffset; // 下方向の限界（引き上げられるので狭くなる）
+
+		// 上下のバウンドが逆転しないように最低限の幅を保証
+		if (limitTop < limitBottom) {
+			limitTop = marginY;
+			limitBottom = -marginY;
+		}
+
+		// クランプ処理
+		// X軸は今まで通り（左右対称）
+		localTranslate_.x = std::clamp(localTranslate_.x, -limitX, limitX);
+		// Y軸はカメラの高さで補正した「個別の上下限値」でクランプ！
+		localTranslate_.y = std::clamp(localTranslate_.y, limitBottom, limitTop);
+	}
 
 	if (railPath_) {
 		Vector3 railPos = railPath_->GetPosition();

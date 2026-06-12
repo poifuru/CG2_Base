@@ -32,15 +32,67 @@ void Reticle::Initialize() {
 void Reticle::Update() {
 	Input();
 
-	// 移動制限（ローカル座標系）
-	localTranslate_.x = std::clamp(localTranslate_.x, -34.0f, 34.0f);
-	localTranslate_.y = std::clamp(localTranslate_.y, -18.0f, 18.0f);
+	if (camera_) {
+		// カメラとレティクルベース位置（レール位置）の座標を取得
+		Vector3 cameraPos = camera_->GetCameraData().transform.translate;
+		Vector3 basePos = transform_.translate;
+		if (railPath_) {
+			basePos = railPath_->GetPosition();
+		}
+
+		// カメラからの実際の距離を計算
+		float distanceToCamera = basePos.z - cameraPos.z + positionOfset_.z;
+		if (distanceToCamera <= 0.0f) {
+			distanceToCamera = 40.0f;
+		}
+
+		// 画角とアスペクト比から画面の半分サイズを計算
+		float fovY = 0.45f;
+		float aspect = 1280.0f / 720.0f;
+
+		float halfHeight = std::tan(fovY * 0.5f) * distanceToCamera;
+		float halfWidth = halfHeight * aspect;
+
+		// レティクル用のマージンを設定（画面ギリギリまで狙えるように少し小さめ）
+		float marginX = 1.0f;
+		float marginY = 1.0f;
+
+		// 画面全体の左右制限幅 (X軸)
+		float limitX = (std::max)(0.0f, halfWidth - marginX);
+
+		// カメラの高さ（Y軸のオフセット）のズレを計算して上下の限界値をシフト
+		float cameraHeightOffset = cameraPos.y - basePos.y;
+		float limitTop    =  halfHeight - marginY + cameraHeightOffset;
+		float limitBottom = -halfHeight + marginY + cameraHeightOffset;
+
+		if (limitTop < limitBottom) {
+			limitTop = marginY;
+			limitBottom = -marginY;
+		}
+
+		// -------------------------------------------------------------
+		// 【ココが修正のキモ！】
+		// 入力によって移動しようとしている「最終的な画面ローカル座標」を一度計算する
+		float finalLocalX = playerLocalPos_.x + localTranslate_.x;
+		float finalLocalY = playerLocalPos_.y + localTranslate_.y;
+
+		// その最終座標が、画面の限界（limitX, limitBottom, limitTop）を超えないようにクランプ！
+		finalLocalX = std::clamp(finalLocalX, -limitX, limitX);
+		finalLocalY = std::clamp(finalLocalY, limitBottom, limitTop);
+
+		// クランプした後の最終座標から、プレイヤーの座標を引いて、
+		// レティクル独自の純粋なズレ量（localTranslate_）に逆算して戻す！
+		localTranslate_.x = finalLocalX - playerLocalPos_.x;
+		localTranslate_.y = finalLocalY - playerLocalPos_.y;
+		// -------------------------------------------------------------
+	}
+	// =================================================================
 
 	if (railPath_) {
 		Vector3 railPos = railPath_->GetPosition();
 		Matrix4x4 railRot = railPath_->GetRotationMatrix();
 
-		// レティクルの全ローカル座標（プレイヤー位置 + レティクル自体のズレ + 前方オフセット）
+		// ここは今までの計算のままでOK（上記で localTranslate_ が正しく補正されたため）
 		Vector3 fullLocal = {
 			playerLocalPos_.x + localTranslate_.x,
 			playerLocalPos_.y + localTranslate_.y,
@@ -55,7 +107,6 @@ void Reticle::Update() {
 		transform_.translate.y += localTranslate_.y;
 		transform_.translate.z = playerPos_.z + positionOfset_.z;
 	}
-
 
 	model_->SetPosition(transform_.translate);
 	model_->Update(&camera_->GetCameraData());
