@@ -60,6 +60,9 @@ public:
 	void SetPosition (const Vector3& position) { activeCamera_->SetTranslate (position); }
 	void SetRotate (const Vector3& rotate) { activeCamera_->SetRotate (rotate); }
 
+	const float& GetNear() { return activeCamera_->GetNear(); }
+	const float& GetFar() { return activeCamera_->GetFar(); }
+
 private:
 	//コンストラクタを禁止
 	CameraOrganizer () = default;

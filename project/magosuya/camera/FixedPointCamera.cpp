@@ -8,6 +8,8 @@ FixedPointCamera::FixedPointCamera () {
 	camera_.world = Math::MakeIdentity4x4 ();
 	camera_.view = Math::MakeIdentity4x4 ();
 	camera_.proj = Math::MakeIdentity4x4 ();
+	near_ = 0.1f;
+	far_ = 1000.0f;
 
 	instanceNum_++;
 }
@@ -18,7 +20,7 @@ FixedPointCamera::~FixedPointCamera () {
 
 void FixedPointCamera::Initialize (const EulerTransform& transform) {
 	camera_.transform = transform;
-	camera_.proj = Math::MakePerspectiveFOVMatrix (0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, 0.1f, 1000.0f);
+	camera_.proj = Math::MakePerspectiveFOVMatrix (0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, near_, far_);
 }
 
 void FixedPointCamera::Update () {

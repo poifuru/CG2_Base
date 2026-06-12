@@ -64,6 +64,9 @@ public:		//メンバ関数(mainで呼び出すよう)
 		return swapChainResources_[index].Get();
 	}
 
+	// DSVのリソースを取得
+	ID3D12Resource* GetDSV() { return depthStencilResource_.Get(); }
+
 private:
 	//コンストラクタを禁止
 	DxCommon();

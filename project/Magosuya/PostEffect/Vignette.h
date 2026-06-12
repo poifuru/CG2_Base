@@ -5,7 +5,7 @@ class Vignette : public BasePostEffect {
 public:
 	void Initialize(DxCommon* dxCommon) override;
 
-	void Draw(RenderTexture* renderTexture) override;
+	void Draw(RenderTexture* renderTexture, CameraOrganizer* camera) override;
 
 	void ImGui() override;
 
@@ -16,6 +16,6 @@ private:
 		Vector4 aspectAndPadding;     // x: aspectRatio, yzw: padding
 	};
 
-public:
+private:
 	VignetteForGPU* cpuData_ = nullptr;
 };

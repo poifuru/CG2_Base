@@ -7,6 +7,8 @@ FollowCamera::FollowCamera () {
 	camera_.world = Math::MakeIdentity4x4 ();
 	camera_.view = Math::MakeIdentity4x4 ();
 	camera_.proj = Math::MakeIdentity4x4 ();
+	near_ = 0.1f;
+	far_ = 1000.0f;
 
 	offset_ = { 0.0f, 0.0f, -60.0f };
 
@@ -19,7 +21,7 @@ FollowCamera::~FollowCamera () {
 
 void FollowCamera::Initialize (const EulerTransform& transform) {
 	camera_.transform = transform;
-	camera_.proj = Math::MakePerspectiveFOVMatrix (0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, 0.1f, 1000.0f);
+	camera_.proj = Math::MakePerspectiveFOVMatrix (0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, near_, far_);
 }
 
 void FollowCamera::SetTarget (const EulerTransform* target) {

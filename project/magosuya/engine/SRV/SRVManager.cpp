@@ -10,6 +10,20 @@ void SRVManager::Initialize(DxCommon* dxCommon) {
 
 	//ディスクリプタ1個分のサイズを取得して記録
 	descriptorSize_ = dxCommon_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+	// DSVのSRVを作成する
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	uint32_t index = Allocate();
+
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU;
+	handleCPU = GetCPUDescriptorHandle(index);
+
+	dxCommon_->GetDevice()->CreateShaderResourceView(dxCommon_->GetDSV(), &srvDesc, handleCPU);
 }
 
 uint32_t SRVManager::Allocate() {
@@ -98,6 +112,22 @@ void SRVManager::CreateSRVStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pR
 	srvDesc.Buffer.StructureByteStride = structureByteStride;
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = GetCPUDescriptorHandle(srvIndex);
 	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = GetGPUDescriptorHandle(srvIndex);
+	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, handleCPU);
+}
+
+void SRVManager::CreateSRVforRenderTexture(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT format) {
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 固定で2Dテクスチャとして生成
+	srvDesc.Texture2D.MipLevels = 1;                        // レンダーテクスチャなのでミップは1固定
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.PlaneSlice = 0;
+	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = GetCPUDescriptorHandle(srvIndex);
+
+	// SRVの生成
 	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, handleCPU);
 }
 

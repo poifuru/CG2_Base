@@ -15,6 +15,7 @@
     <FxCompile Include="Resources\shader\Vignette.PS.hlsl" />
     <FxCompile Include="Resources\shader\BoxFilter.PS.hlsl" />
     <FxCompile Include="Resources\shader\GaussianFilter.PS.hlsl" />
+    <FxCompile Include="Resources\shader\Fog.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application\scene\ClearScene.cpp" />
@@ -87,6 +88,7 @@
     <ClCompile Include="Magosuya\PostEffect\BasePosteffect.cpp" />
     <ClCompile Include="Magosuya\PostEffect\ColorGrading.cpp" />
     <ClCompile Include="Magosuya\PostEffect\Vignette.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\Fog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -175,6 +177,7 @@
     <ClInclude Include="Magosuya\PostEffect\BasePostEffect.h" />
     <ClInclude Include="Magosuya\PostEffect\ColorGrading.h" />
     <ClInclude Include="Magosuya\PostEffect\Vignette.h" />
+    <ClInclude Include="Magosuya\PostEffect\Fog.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />

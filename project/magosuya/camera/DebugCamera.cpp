@@ -11,6 +11,8 @@ DebugCamera::DebugCamera(InputManager* inputManager) {
 	camera_.world = {};
 	camera_.view = {};
 	camera_.proj = {};
+	near_ = 0.1f;
+	far_ = 1000.0f;
 
 	forward_ = {};
 	right_ = {};
@@ -33,7 +35,7 @@ void DebugCamera::Initialize(const EulerTransform& transform) {
 	camera_.transform = transform;
 	camera_.world = Math::MakeAffineMatrix (camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);
 	camera_.view = Math::Inverse (camera_.world);
-	camera_.proj = Math::MakePerspectiveFOVMatrix(0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, 0.1f, 1000.0f);
+	camera_.proj = Math::MakePerspectiveFOVMatrix(0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, near_, far_);
 
 	speed_ = 0.3f;
 }

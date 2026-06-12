@@ -8,7 +8,7 @@ using namespace Microsoft::WRL;
 #include "struct.h"
 
 class DxCommon;
-class RenderTexture;
+class CameraOrganizer;
 
 class BasePostEffect {
 public:
@@ -18,7 +18,7 @@ public:
 	virtual void Initialize(DxCommon* dxCommon) = 0;
 
 	// 継承先でCBVをセットする
-	virtual void Draw(RenderTexture* renderTexture) = 0;
+	virtual void Draw(RenderTexture* renderTexture, CameraOrganizer* camera) = 0;
 	virtual void ImGui() = 0;
 
 	bool GetIsActive() { return isActive_; }

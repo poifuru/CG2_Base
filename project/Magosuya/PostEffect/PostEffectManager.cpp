@@ -1,6 +1,7 @@
 #include "PostEffectManager.h"
 #include "DxCommon.h"
 #include "ColorGrading.h"
+#include "Fog.h"
 #include "Vignette.h"
 #include "RenderTexture.h"
 #include "SRVManager.h"
@@ -17,6 +18,7 @@ void PostEffectManager::Initialize(DxCommon* dxCommon, uint32_t windowWidth, uin
 	// ポストエフェクトをすべて初期化
 	// 最初はすべて非アクティブ状態にしておく
 	effects_[static_cast<size_t>(PostEffectType::ColorGrading)] = std::make_unique<ColorGrading>();
+	effects_[static_cast<size_t>(PostEffectType::Fog)] = std::make_unique<Fog>();
 	effects_[static_cast<size_t>(PostEffectType::Vignette)] = std::make_unique<Vignette>();
 
 	for (size_t i = 0; i < static_cast<size_t>(PostEffectType::Count); ++i) {
@@ -47,7 +49,7 @@ void PostEffectManager::ClearEffects() {
 	}
 }
 
-void PostEffectManager::Execute(RenderTexture* srcTexture) {
+void PostEffectManager::Execute(RenderTexture* srcTexture, CameraOrganizer* camera) {
 	auto cmdList = dxCommon_->GetCommandList();
 
 	// 今回のフレームで「実際に描画する、最後のアクティブなエフェクト」のインデックスを探す
@@ -70,7 +72,7 @@ void PostEffectManager::Execute(RenderTexture* srcTexture) {
 		// 一番ベースの描画機能（ColorGrading等）を、一時的にパラメータを無効化（強度0）した状態で強制的に1回描くなど
 		if (effects_[static_cast<size_t>(PostEffectType::ColorGrading)] != nullptr) {
 			// 強制的に描画するけど、見た目は変わらないように元の絵を出させる
-			effects_[static_cast<size_t>(PostEffectType::ColorGrading)]->Draw(srcTexture);
+			effects_[static_cast<size_t>(PostEffectType::ColorGrading)]->Draw(srcTexture, camera);
 		}
 
 		// 本来ならここで「何もエフェクトをかけずにsrcTextureを画面にコピーする描画（スルーパス）」を呼ぶのが理想
@@ -115,7 +117,7 @@ void PostEffectManager::Execute(RenderTexture* srcTexture) {
 		}
 
 		// 描画の実行
-		effects_[i]->Draw(currentInput);
+		effects_[i]->Draw(currentInput, camera);
 
 		if (!isLast) {
 			// 次のエフェクトのために、今書き込んだ中間バッファを読込用にバリア遷移
@@ -151,6 +153,7 @@ void PostEffectManager::ImGui() {
 		const char* effectName = "Unknown";
 		switch (static_cast<PostEffectType>(i)) {
 		case PostEffectType::ColorGrading: effectName = "Color Grading"; break;
+		case PostEffectType::Fog:		   effectName = "Fog";			 break;
 		case PostEffectType::Vignette:     effectName = "Vignette";      break;
 		}
 
@@ -175,6 +178,7 @@ void PostEffectManager::ImGui() {
 			const char* headerName = "Unknown Param";
 			switch (static_cast<PostEffectType>(i)) {
 			case PostEffectType::ColorGrading: headerName = "Color Grading Settings"; break;
+			case PostEffectType::Fog:		   headerName = "Fog Settings";			  break;
 			case PostEffectType::Vignette:     headerName = "Vignette Settings";      break;
 			}
 

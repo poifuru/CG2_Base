@@ -84,7 +84,7 @@ void MagosuyaEngine::EndFrame () {
 	dxCommon_->PreDrawImGui();
 
 	// ポストエフェクトの描画を回す
-	postEffect_->Execute(dxCommon_->GetRenderTexture());
+	postEffect_->Execute(dxCommon_->GetRenderTexture(), cameraOrganizer_);
 
 	imguiManager_->Draw ();
 	dxCommon_->EndFrame ();

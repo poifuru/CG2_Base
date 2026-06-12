@@ -33,7 +33,7 @@ void RenderTexture::Initialize(DxCommon* dxCommon, SRVManager* srvManager) {
 
 	// SRV作成
 	srvIndex_ = srvManager->Allocate();
-	srvManager->CreateSRVforTexture2D(srvIndex_, resource_.Get(), DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, 1, texData);
+	srvManager->CreateSRVforRenderTexture(srvIndex_, resource_.Get(), DXGI_FORMAT_R8G8B8A8_UNORM_SRGB);
 }
 
 ComPtr<ID3D12Resource> RenderTexture::CreateRenderTextureResource(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format, const Vector4& clearColor) {

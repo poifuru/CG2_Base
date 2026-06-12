@@ -182,6 +182,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\entity\player\Bullet.cpp" />
     <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
     <ClCompile Include="Application\Collider\CollisionManager.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\Fog.cpp" />
     <ClCompile Include="Magosuya\PostEffect\ColorGrading.cpp" />
     <ClCompile Include="magosuya\light\DirectionalLight.cpp" />
     <ClCompile Include="magosuya\light\BaseLight.cpp" />
@@ -262,6 +263,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Resources\shader\Fog.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Resources\shader\Fullscreen.VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Vertex</ShaderType>
@@ -373,6 +379,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\entity\player\Bullet.h" />
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="Application\Collider\CollisionManager.h" />
+    <ClInclude Include="Magosuya\PostEffect\Fog.h" />
     <ClInclude Include="Magosuya\PostEffect\ColorGrading.h" />
     <ClInclude Include="magosuya\general\DeltaTime.h" />
     <ClInclude Include="magosuya\light\DirectionalLight.h" />

@@ -5,7 +5,7 @@ class ColorGrading : public BasePostEffect {
 public:
 	void Initialize(DxCommon* dxCommon) override;
 
-	void Draw(RenderTexture* renderTexture) override;
+	void Draw(RenderTexture* renderTexture, CameraOrganizer* camera) override;
 
 	void ImGui() override;
 
@@ -19,6 +19,6 @@ private:
 		};
 	};
 
-public:
+private:
 	ColorGradingForGPU* cpuData_ = nullptr;
 };

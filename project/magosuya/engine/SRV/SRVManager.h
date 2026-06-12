@@ -32,10 +32,12 @@ public:
 	//ディスクリプタヒープ取得
 	ID3D12DescriptorHeap* GetDescriptorHeap() { return descriptorHeap_.Get(); }
 
-	//SRV生成(texture)
+	// SRV生成(texture)
 	void CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format, UINT MipLevels, TextureData texData);
-	//SRV生成(Structured Buffer)
+	// SRV生成(Structured Buffer)
 	void CreateSRVStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByteStride);
+	// SRV生成(RenderTexture)
+	void CreateSRVforRenderTexture(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT format);
 
 private:
 	//ディスクリプタヒープ作成関数

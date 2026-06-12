@@ -8,6 +8,7 @@ class RenderTexture;
 // ポストエフェクトの種類
 enum class PostEffectType {
 	ColorGrading,
+	Fog,
 	Vignette,
 
 	Count	// エフェクトの総数
@@ -28,7 +29,7 @@ public:
 	void ClearEffects();
 
 	// ピンポンレンダリングを実行する関数
-	void Execute(RenderTexture* srcTexture);
+	void Execute(RenderTexture* srcTexture, CameraOrganizer* camera);
 
 	void ImGui();
 

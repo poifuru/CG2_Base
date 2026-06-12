@@ -17,7 +17,7 @@ void Vignette::Initialize(DxCommon* dxCommon) {
 	cpuData_->aspectAndPadding = { WindowsAPI::GetInstance()->GetAspectRatio(), 0.0f, 0.0f, 0.0f };
 }
 
-void Vignette::Draw(RenderTexture* renderTexture) {
+void Vignette::Draw(RenderTexture* renderTexture, CameraOrganizer* /*camera*/) {
 	auto cmdList = dxCommon_->GetCommandList();
 
 	RootSignatureManager::GetInstance()->SetRootSignature(psoDesc_.RootSignatureID);
