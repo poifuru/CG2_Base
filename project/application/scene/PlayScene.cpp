@@ -83,7 +83,7 @@ void PlayScene::Update () {
 		Matrix4x4 railRot = railPath_->GetRotationMatrix();
 
 		// カメラのレールに対するオフセット (少し後ろ・少し上)
-		Vector3 cameraOffset = { 0.0f, 0.0f, -50.0f };
+		Vector3 cameraOffset = { 0.0f, 3.0f, -50.0f };
 		Vector3 rotatedOffset = Math::Transform(cameraOffset, railRot);
 		Vector3 cameraPos = Math::Add(railPos, rotatedOffset);
 
