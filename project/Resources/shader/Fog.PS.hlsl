@@ -26,6 +26,14 @@ PixelShaderOutput main(VertexShaderOutput input)
     float4 sceneColor = gTexture.Sample(gSampler, input.texcoord);
     float depthAttr = gDepthTexture.Sample(gSampler, input.texcoord);
     
+    // ★追加：深度が 1.0（初期値＝オブジェクトが何も描画されていない背景）ならフォグをかけない
+    // ※ 浮動小数点の誤差を考慮して、1.0 ではなく 0.99999f などの閾値で比較するとより安全
+    if (depthAttr >= 0.99999f)
+    {
+        output.color = sceneColor;
+        return output;
+    }
+    
     // カメラの値を扱いやすく
     float near = gFogBuffer.cameraNear;
     float far = gFogBuffer.cameraFar;
