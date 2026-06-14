@@ -12,7 +12,7 @@ void Vignette::Initialize(DxCommon* dxCommon) {
 	constantBuffer_ = dxCommon_->CreateBufferResource((sizeof(VignetteForGPU) + 255) & ~255);
 	constantBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cpuData_));
 
-	cpuData_->centerAndRadius = { 0.5f, 0.5f, 0.2f, 0.6f };
+	cpuData_->centerAndRadius = { 0.5f, 0.5f, 0.8f, 1.f };
 	cpuData_->colorAndIntensity = { 0.0f, 0.0f, 0.0f, 1.0f };
 	cpuData_->aspectAndPadding = { WindowsAPI::GetInstance()->GetAspectRatio(), 0.0f, 0.0f, 0.0f };
 }

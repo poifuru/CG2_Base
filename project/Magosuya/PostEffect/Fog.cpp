@@ -13,9 +13,9 @@ void Fog::Initialize(DxCommon* dxCommon) {
 	constantBuffer_ = dxCommon_->CreateBufferResource(sizeof(FogForGPU));
 	constantBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cpuData_));
 
-	cpuData_->color = { 0.0f, 0.1f, 0.2f, 0.3f };
-	cpuData_->start = 60.0f;
-	cpuData_->end = 80.0f;
+	cpuData_->color = { 0.0f, 0.1f, 0.2f, 0.85f };
+	cpuData_->start = 50.0f;
+	cpuData_->end = 70.0f;
 	cpuData_->cameraNear = 0.1f;
 	cpuData_->cameraFar = 1000.0f;
 }
