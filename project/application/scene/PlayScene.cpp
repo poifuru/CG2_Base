@@ -62,6 +62,7 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 
 	// ポストエフェクトの状態を初期化
 	PostEffectManager::GetInstance()->ClearEffects();
+	PostEffectManager::GetInstance()->SetEffectActive(PostEffectType::Fog, true);
 }
 
 void PlayScene::Update () {
@@ -126,7 +127,9 @@ void PlayScene::Update () {
 }
 
 void PlayScene::Draw () {
-	skybox_->Draw();
+	if(!player_->InWater()) {
+		skybox_->Draw();
+	}
 
 	player_->Draw();
 	enemyManager_->Draw();
