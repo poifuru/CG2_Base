@@ -14,9 +14,6 @@ public:
 	virtual void OnDamage() {} // ダメージを受けた時の処理
 
 	//アクセッサ
-	void SetScale(const Vector3& scale) { transform_.scale = scale; }
-	void SetRotate(const Vector3& rotate) { transform_.rotate = rotate; }
-	void SetTranslate(const Vector3& translate) { transform_.translate = translate; }
 	void SetVelocity(const Vector3& velocity) { velocity_ = velocity_; }
 	void SetAcceleration(const Vector3& acceleration) { acceleration_ = acceleration; }
 	void SetAABBSize(const Vector3& size) { aabbSize_ = size; }
@@ -26,7 +23,6 @@ protected:
 
 protected:
 	std::unique_ptr<Model> model_;
-	EulerTransform transform_{};
 	Vector3 velocity_{};
 	Vector3 acceleration_{};
 	AABB aabb_{};
