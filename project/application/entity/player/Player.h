@@ -11,16 +11,19 @@ public:
 	~Player();
 
 	void Initialize() override;
-	void Update() override;
-	void Draw() override;
-	void ImGui();
 
-	//ゲッター
-	EulerTransform GetTransform() { return transform_; }
+	void Update() override;
+
+	void Draw() override;
+
+	void Inspector() override;
+
+	//アクセッサ
+	std::string GetTypeName() const override { return "Player"; }
 	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
 	AABB GetAABB() { return aabb_; }
 	std::list<std::unique_ptr<Bullet>>& GetBullets() { return bullets_; }
-	
+
 private:	// プライベート関数
 	void Input();
 	void CooltimeUpdate();

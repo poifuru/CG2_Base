@@ -11,7 +11,7 @@ struct TimelineEvent {
 	nlohmann::json customParams{};	// 敵の速度やHPなど、個別の追加パラメータ
 
 	// シリアライズ用
-	void Save(nlohmann::json& json) {
+	void Save(nlohmann::json& json) const {
 		json["triggerTime"] = triggerTime;
 		json["objectType"] = objectType;
 		json["localPos"] = { spawnLocalPosition.x, spawnLocalPosition.y, spawnLocalPosition.z };

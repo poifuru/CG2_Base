@@ -17,11 +17,18 @@ public:
 		return &instance;
 	}
 
-	void Update(DxCommon* dx, LightManager* light, InputManager* input, CameraOrganizer* camera);
+	void Initialize(DxCommon* dx, LightManager* light, InputManager* input, CameraOrganizer* camera) {
+		dx_ = dx;
+		light_ = light;
+		input_ = input;
+		camera_ = camera;
+	}
+
+	void Update();
 	void Draw();
 
 	// タイムラインの時間を直接設定する(シークバー用)
-	void SetCurrentTime(float time, DxCommon* dx, LightManager* light, InputManager* input, CameraOrganizer* camera);
+	void SetCurrentTime(float time);
 	float GetCurrentTime() const { return currentTime_; }
 
 	// 再生・一時停止の切り替え
@@ -42,7 +49,7 @@ private:
 	TimelineManager(const TimelineManager&) = delete;
 	TimelineManager& operator=(const TimelineManager&) = delete;
 	// 現在時間において、アクティブになるべきオブジェクトを再構築する
-	void RebuildActiveObjects(DxCommon* dx, LightManager* light, InputManager* input, CameraOrganizer* camera);
+	void RebuildActiveObjects();
 
 private:
 	float currentTime_ = 0.0f;
@@ -51,5 +58,15 @@ private:
 	std::vector<TimelineEvent> events_;	// 全てのイベントデータ
 
 	// 現在アクティブなオブジェクトたち
-	std::vector<std::unique_ptr<GameObject>> activeObjects_;
+	struct ActiveObject {
+		std::unique_ptr<GameObject> obj;
+		float triggerTime;	// 出現した時間
+	};
+	std::vector<ActiveObject> activeObjects_;
+
+	// ポインタ登録
+	DxCommon* dx_ = nullptr;
+	LightManager* light_ = nullptr;
+	InputManager* input_ = nullptr;
+	CameraOrganizer* camera_ = nullptr;
 };

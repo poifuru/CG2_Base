@@ -9,13 +9,8 @@ std::unique_ptr<GameObject> GameObjectFactory::Create(
 	InputManager* input,
 	CameraOrganizer* camera
 ) {
-	if(typeName == "Player") {
-		auto obj = std::make_unique<Player>(dxCommon, camera, input);
-		obj->Initialize();
-
-		return obj;
-	}
-
+	// 複数生成するオブジェクトの名前で分岐
+	
 	// 未知のタイプの場合はnullptrを返す
 	return nullptr;
 }
