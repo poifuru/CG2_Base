@@ -66,6 +66,7 @@
     <ClCompile Include="Magosuya\Object\Particle\ParticleSystem.cpp" />
     <ClCompile Include="Magosuya\Imgui\EditorManager.cpp" />
     <ClCompile Include="Magosuya\Event\TimelineManager.cpp" />
+    <ClCompile Include="Magosuya\Object\GameObject\GameObjectFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Scene\BaseScene.h" />
@@ -151,9 +152,10 @@
     <ClInclude Include="Magosuya\Object\Particle\ParticleEmitter.h" />
     <ClInclude Include="Magosuya\Object\Particle\ParticleSystem.h" />
     <ClInclude Include="Magosuya\Imgui\EditorManager.h" />
-    <ClInclude Include="Magosuya\Object\GameObject.h" />
+    <ClInclude Include="Magosuya\Object\GameObject\GameObject.h" />
     <ClInclude Include="Magosuya\Event\TimelineEvent.h" />
     <ClInclude Include="Magosuya\Event\TimelineManager.h" />
+    <ClInclude Include="Magosuya\Object\GameObject\GameObjectFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Magosuya\PSO\RootSignatureManager.h" />
