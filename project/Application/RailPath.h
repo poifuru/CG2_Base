@@ -15,9 +15,11 @@ public:
     const Matrix4x4& GetRotationMatrix() const { return rotationMatrix_; }
     bool IsFinished() const { return isFinished_; }
 
+    void Draw(const Matrix4x4& vpMatrix, const Vector4& color = { 0.0f, 1.0f, 0.0f, 1.0f });
+
 private:
     std::vector<Vector3> controlPoints_;
-    float speed_ = 0.005f; // セグメントごとの進む速さ
+    float speed_ = 0.05f; // セグメントごとの進む速さ
 
     size_t currentSegment_ = 0;
     float t_ = 0.0f;

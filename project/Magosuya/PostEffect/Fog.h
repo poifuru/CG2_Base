@@ -11,11 +11,15 @@ public:
 
 private:
 	struct alignas(16) FogForGPU {
+		Matrix4x4 inverseVP;
 		Vector4 color;
 		float start;
 		float end;
 		float cameraNear;
 		float cameraFar;
+		float heightStart;
+		float heightEnd;
+		float padding[2];
 	};
 
 private:

@@ -88,6 +88,7 @@ public:	//メンバ関数
 	void SetAlpha(const float& alpha) { renderer_->SetAlpha(alpha); }
 	void SetRoughness(const float& roughness) { renderer_->SetRoughness(roughness); }
 	void SetMetallic(const float& metallic) { renderer_->SetMetallic(metallic); }
+	void SetEnvironmentCoefficient(const float& environment) { renderer_->SetEnvironmentCoefficient(environment); }
 	void IsLighting (const LightReflectionModel& lighting) { renderer_->IsLighting (lighting); }
 	void SetDepthEnable(bool flag) { renderer_->SetDepthEnable(flag); }
 

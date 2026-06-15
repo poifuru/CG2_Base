@@ -64,6 +64,14 @@ void Player::Initialize() {
 }
 
 void Player::Update() {
+	if(camera_->GetActiveCameraName() != "main2") {
+		model_->SetAlpha(0.0f);
+		return;
+	}
+	else {
+		model_->SetAlpha(1.0f);
+	}
+
 	//プレイヤーの挙動をここに
 	Input();
 	CooltimeUpdate();
@@ -152,8 +160,19 @@ void Player::Update() {
 }
 
 void Player::Draw() {
+	if(camera_->GetActiveCameraName() != "main2") {
+		return;
+	}
+
 	model_->Draw();
 	BulletsDraw();
+}
+
+void Player::DrawUI() {
+	if(camera_->GetActiveCameraName() != "main2") {
+		return;
+	}
+
 	reticle_->Draw();
 }
 

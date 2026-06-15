@@ -15,6 +15,7 @@ public:		//メンバ関数
 	void Initialize(CameraOrganizer* camera, InputManager* input, DxCommon* dxCommon);
 	void Update ();
 	void Draw ();
+	void DrawUI () { if(scene_) scene_->DrawUI(); }
 	
 	//次シーンの予約
 	void SetNextScene(std::unique_ptr<BaseScene> nextScene) { nextScene_ = std::move(nextScene); }

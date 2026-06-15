@@ -89,6 +89,12 @@ void CameraOrganizer::SetActiveCamera (const std::string& cameraName) {
 	}
 	activeCamera_ = it->second;
 	activeCameraName_ = cameraName;
+
+	// 切り替わった瞬間に最新の行列を1回更新しておく（同期ズレ防止）
+	if (activeCamera_) {
+		activeCamera_->Update();
+		vpMatrix_ = activeCamera_->GetVPMat();
+	}
 }
 
 void CameraOrganizer::Update () {

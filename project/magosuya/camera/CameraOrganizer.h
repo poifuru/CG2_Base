@@ -51,6 +51,9 @@ public:
 	//CameraData取得用
 	CameraData& GetCameraData() { return activeCamera_->GetCameraData(); }
 
+	// 現在アクティブなカメラの名前を取得
+	const std::string& GetActiveCameraName() const { return activeCameraName_; }
+
 	//描画用のvp行列取得関数
 	Matrix4x4& GetVPMatrix () { return vpMatrix_; }
 
@@ -62,6 +65,11 @@ public:
 
 	const float& GetNear() { return activeCamera_->GetNear(); }
 	const float& GetFar() { return activeCamera_->GetFar(); }
+
+	// カメラが水中にあるかを高さで判定(仮)
+	bool InWater() { 
+		return (activeCamera_->GetTranslate().y < 0.0f);
+	}
 
 private:
 	//コンストラクタを禁止

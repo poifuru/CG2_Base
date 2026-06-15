@@ -20,10 +20,10 @@ void Reticle::Initialize() {
 	model_->SetDepthEnable(false);
 	model_->IsLighting(LightReflectionModel::None);
 	model_->SetAlpha(0.5f);
-	model_->SetScale({ 2.0f, 2.0f, 1.0f });
-	model_->SetColor({ 1.0f, 1.0f, 1.0f, 0.5f }); // 初期色を白にする
+	model_->SetScale({ 1.5f, 1.5f, 1.0f });
+	model_->SetColor({ 0.0f, 0.0f, 0.0f, 0.5f }); // 初期色を黒にする
 
-	positionOfset_ = { 0.0f, 0.0f, 40.0f };
+	positionOfset_ = { 0.0f, 0.0f, 20.0f };
 	speed_ = 25.0f;
 	localTranslate_ = { 0.0f, 0.0f, 0.0f };
 	isLockOn_ = false;
@@ -149,6 +149,6 @@ void Reticle::SetLockOn(bool lock) {
 	if (isLockOn_) {
 		model_->SetColor({ 1.0f, 0.0f, 0.0f, 0.5f }); // 赤
 	} else {
-		model_->SetColor({ 1.0f, 1.0f, 1.0f, 0.5f }); // 白
+		model_->SetColor({ 0.0f, 0.0f, 0.0f, 0.5f }); // 黒
 	}
 }

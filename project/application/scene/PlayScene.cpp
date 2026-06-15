@@ -9,7 +9,8 @@
 #include "PostEffectManager.h"
 
 PlayScene::PlayScene () {
-
+	ModelManager::GetInstance()->LoadModelData("Resources/plane", "plane.obj");
+	TextureManager::GetInstance()->LoadTexture("Resources/plane/plane.png", "plane");
 }
 
 PlayScene::~PlayScene () {
@@ -39,11 +40,11 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	railPath_ = std::make_unique<RailPath>();
 	std::vector<Vector3> controlPoints = {
 		{ 0.0f, 0.0f, -20.0f },  // 補助点 (曲線の入り口用)
-		{ 0.0f, 0.0f, 0.0f },    // 始点
-		{ 0.0f, 0.0f, 100.0f },
-		{ 50.0f, 0.0f, 200.0f }, // 右へゆるやかにカーブする
-		{ 100.0f, 0.0f, 300.0f },
-		{ 100.0f, 0.0f, 500.0f }, // 終点
+		{ 0.0f, -10.0f, 0.0f },    // 始点
+		{ 0.0f, -10.0f, 100.0f },
+		{ 50.0f, -30.0f, 200.0f }, // 右へゆるやかにカーブする
+		{ 100.0f, -10.0f, 300.0f },
+		{ 100.0f, -10.0f, 500.0f }, // 終点
 		{ 100.0f, 0.0f, 520.0f }  // 補助点 (曲線の出口用)
 	};
 	railPath_->Initialize(controlPoints, 0.0005f); // 進む速さ (フレームごとの進行率)
@@ -59,6 +60,13 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 
 	skybox_ = std::make_unique<Skybox>(dxCommon);
 	skybox_->Initialize("Resources/Skybox/test2.dds", "skybox");
+
+	waterSurface_ = std::make_unique<Model>(dxCommon, lightManager_.get());
+	waterSurface_->SetModelData("plane.obj");
+	waterSurface_->SetTexture("plane");
+	waterSurface_->Initialize({ 1000.0f, 1000.0f, 1.0f }, { Math::Deg2Rad(90.0f), 0.0f, 0.0f }, {});
+	waterSurface_->SetMetallic(0.0f);
+	waterSurface_->SetEnvironmentCoefficient(0.0f);
 
 	// ポストエフェクトの状態を初期化
 	PostEffectManager::GetInstance()->ClearEffects();
@@ -78,13 +86,13 @@ void PlayScene::Update () {
 		railPath_->Update();
 	}
 
-	// カメラをレールに追従させる
-	if (railPath_) {
+	// カメラをレールに追従させる (アクティブカメラが "main2" の場合のみ)
+	if (railPath_ && camera_->GetActiveCameraName() == "main2") {
 		Vector3 railPos = railPath_->GetPosition();
 		Matrix4x4 railRot = railPath_->GetRotationMatrix();
 
 		// カメラのレールに対するオフセット (少し後ろ・少し上)
-		Vector3 cameraOffset = { 0.0f, 3.0f, -50.0f };
+		Vector3 cameraOffset = { 0.0f, 0.0f, -50.0f };
 		Vector3 rotatedOffset = Math::Transform(cameraOffset, railRot);
 		Vector3 cameraPos = Math::Add(railPos, rotatedOffset);
 
@@ -123,16 +131,34 @@ void PlayScene::Update () {
 	}
 
 	skybox_->Update(&camera_->GetCameraData());
+	waterSurface_->Update(&camera_->GetCameraData());
+	waterSurface_->ImGui("waterSurface");
 	PostEffectManager::GetInstance()->ImGui();
 }
 
 void PlayScene::Draw () {
-	if(!player_->InWater()) {
+	if(!camera_->InWater()) {
 		skybox_->Draw();
+		PostEffectManager::GetInstance()->SetEffectActive(PostEffectType::Fog, false);
+	}
+	else {
+		PostEffectManager::GetInstance()->SetEffectActive(PostEffectType::Fog, true);
 	}
 
+	if (railPath_) {
+		railPath_->Draw(camera_->GetVPMatrix(), { 0.0f, 0.0f, 0.0f, 1.0f });
+	}
+
+	
+	waterSurface_->Draw();
 	player_->Draw();
 	enemyManager_->Draw();
+}
+
+void PlayScene::DrawUI() {
+	if (player_) {
+		player_->DrawUI();
+	}
 }
 
 void PlayScene::StopToResources() {

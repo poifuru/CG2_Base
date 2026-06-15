@@ -77,7 +77,6 @@ void MagosuyaEngine::BeginFrame () {
 	audioManager_->Update();
 }
 void MagosuyaEngine::EndFrame () {
-	Mesh::AllDrawing ();
 	inputManager_->EndFrame ();
 
 	// ImGuiの描画の前に、描画先をRenderTextureからSwapchainへ切り替える
@@ -85,6 +84,12 @@ void MagosuyaEngine::EndFrame () {
 
 	// ポストエフェクトの描画を回す
 	postEffect_->Execute(dxCommon_->GetRenderTexture(), cameraOrganizer_);
+
+	// ポストエフェクト適用後のバックバッファにUIやレティクルなどを描画する
+	sceneManager_->DrawUI();
+
+	// ポストエフェクト適用後のバックバッファにレールなどのプリミティブを描画する
+	Mesh::AllDrawing ();
 
 	imguiManager_->Draw ();
 	dxCommon_->EndFrame ();

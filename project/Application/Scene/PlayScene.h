@@ -16,6 +16,7 @@ public:		//メンバ関数
 	void Initialize (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) override;
 	void Update () override;
 	void Draw () override;
+	void DrawUI () override;
 	void StopToResources() override;
 
 private:	//メンバ変数
@@ -26,6 +27,9 @@ private:	//メンバ変数
 
 	std::unique_ptr<Skybox> skybox_ = nullptr;
 	std::unique_ptr<RailPath> railPath_ = nullptr;
+
+	// 水面の板ポリ(仮)
+	std::unique_ptr<Model> waterSurface_ = nullptr;
 
 	DxCommon* dxCommon_ = nullptr;
 };

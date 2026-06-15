@@ -29,6 +29,7 @@ public:
 	void SetAlpha(const float& alpha) { materialData_->color.w = alpha; }
 	void SetRoughness(const float& roughness) { materialData_->roughness = roughness; }
 	void SetMetallic(const float& metallic) { materialData_->metallic = metallic; }
+	void SetEnvironmentCoefficient(const float& environment) { materialData_->environmentCoefficient = environment; }
 	void SetImGuiID (const std::string& id) { tag_ = id; }
 	void SetModelData (const std::weak_ptr<ModelData>& data){ modelData_ = data; }
 	void SetDepthEnable(bool flag) { desc_.DepthEnable = flag; }

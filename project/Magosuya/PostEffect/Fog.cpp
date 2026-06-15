@@ -1,6 +1,7 @@
 #include "Fog.h"
 #include "CameraOrganizer.h"
 #include "SRVManager.h"
+#include "MathFunction.h"
 #include "imgui.h"
 
 void Fog::Initialize(DxCommon* dxCommon) {
@@ -13,11 +14,13 @@ void Fog::Initialize(DxCommon* dxCommon) {
 	constantBuffer_ = dxCommon_->CreateBufferResource(sizeof(FogForGPU));
 	constantBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cpuData_));
 
-	cpuData_->color = { 0.0f, 0.1f, 0.2f, 0.85f };
+	cpuData_->color = { 0.0f, 0.782f, 1.0f, 1.0f };
 	cpuData_->start = 50.0f;
-	cpuData_->end = 70.0f;
+	cpuData_->end = 80.0f;
 	cpuData_->cameraNear = 0.1f;
 	cpuData_->cameraFar = 1000.0f;
+	cpuData_->heightStart = 0.0f;
+	cpuData_->heightEnd = -50.0f;
 }
 
 void Fog::Draw(RenderTexture* renderTexture, CameraOrganizer* camera) {
@@ -62,6 +65,7 @@ void Fog::Draw(RenderTexture* renderTexture, CameraOrganizer* camera) {
 	D3D12_RESOURCE_BARRIER barrier{};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	barrier.Transition.pResource = depthResource;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_DEPTH_WRITE; // あるいは DEPTH_READ
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	cmdList->ResourceBarrier(1, &barrier);
@@ -70,9 +74,11 @@ void Fog::Draw(RenderTexture* renderTexture, CameraOrganizer* camera) {
 	if (camera) {
 		cpuData_->cameraNear = camera->GetNear();
 		cpuData_->cameraFar  = camera->GetFar();
+		cpuData_->inverseVP  = Math::Inverse(camera->GetVPMatrix());
 	} else {
 		cpuData_->cameraNear = 0.1f;
 		cpuData_->cameraFar  = 1000.0f;
+		cpuData_->inverseVP  = Math::MakeIdentity4x4();
 	}
 
 	RootSignatureManager::GetInstance()->SetRootSignature(psoDesc_.RootSignatureID);
@@ -104,6 +110,8 @@ void Fog::ImGui() {
 	ImGui::ColorEdit4("color##Fog", &cpuData_->color.x);
 	ImGui::DragFloat("start##Fog", &cpuData_->start, 0.1f, 0.0f, 1000.0f);
 	ImGui::DragFloat("end##Fog", &cpuData_->end, 0.1f, 0.0f, 1000.0f);
+	ImGui::DragFloat("heightStart##Fog", &cpuData_->heightStart, 0.1f, -100.0f, 100.0f);
+	ImGui::DragFloat("heightEnd##Fog", &cpuData_->heightEnd, 0.1f, -100.0f, 100.0f);
 	ImGui::Text("cameraNear : %.3f", cpuData_->cameraNear);
 	ImGui::Text("cameraFar : %.3f", cpuData_->cameraFar);
 }

@@ -11,6 +11,7 @@ public:		//メンバ関数
 	virtual void Initialize (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) = 0;
 	virtual void Update () = 0;
 	virtual void Draw () = 0;
+	virtual void DrawUI () {}
 	virtual void StopToResources() = 0;
 
 protected:	//メンバ変数

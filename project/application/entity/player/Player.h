@@ -17,6 +17,7 @@ public:
 	void Initialize() override;
 	void Update() override;
 	void Draw() override;
+	void DrawUI();
 	void ImGui();
 
 	//ゲッター
@@ -26,11 +27,6 @@ public:
 	std::list<std::unique_ptr<Bullet>>& GetBullets() { return bullets_; }
 	void SetRail(const RailPath* rail) { railPath_ = rail; }
 	void SetEnemyManager(EnemyManager* enemyManager) { enemyManager_ = enemyManager; }
-
-	// プレイヤーが水中にいるかを高さで判定(仮)
-	bool InWater() { 
-		return (transform_.translate.y < 0.0f); 
-	}
 	
 private:	// プライベート関数
 	void Input();

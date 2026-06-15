@@ -1,5 +1,6 @@
 #include "RailPath.h"
 #include "MathFunction.h"
+#include "Mesh.h"
 #include <algorithm>
 
 RailPath::RailPath() {
@@ -85,4 +86,38 @@ void RailPath::Update() {
 
     // 標準のZ方向（0, 0, 1）から進行方向への回転行列を計算
     rotationMatrix_ = Math::DirectionToDirection({ 0.0f, 0.0f, 1.0f }, direction);
+}
+
+void RailPath::Draw(const Matrix4x4& vpMatrix, const Vector4& color) {
+#ifdef USEIMGUI
+    if (controlPoints_.size() < 4) {
+        return;
+    }
+
+    size_t numSegments = controlPoints_.size() - 3;
+    float tStep = 0.05f; // 分割精度
+
+    Vector3 prevPos;
+    bool isFirst = true;
+
+    for (size_t i = 0; i < numSegments; ++i) {
+        const Vector3& p0 = controlPoints_[i];
+        const Vector3& p1 = controlPoints_[i + 1];
+        const Vector3& p2 = controlPoints_[i + 2];
+        const Vector3& p3 = controlPoints_[i + 3];
+
+        for (float t = 0.0f; t <= 1.0f + 0.0001f; t += tStep) {
+            Vector3 pos = Math::CatmullRom(p0, p1, p2, p3, (std::min)(t, 1.0f));
+            if (!isFirst) {
+                Mesh::DrawLine(
+                    prevPos.x, prevPos.y, prevPos.z,
+                    pos.x, pos.y, pos.z,
+                    color, vpMatrix
+                );
+            }
+            prevPos = pos;
+            isFirst = false;
+        }
+    }
+#endif
 }
