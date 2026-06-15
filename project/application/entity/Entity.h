@@ -3,8 +3,9 @@
 #include "struct.h"
 #include "Model.h"
 #include "CameraOrganizer.h"
+#include "GameObject.h"
 
-class Entity {
+class Entity : public GameObject {
 public:
 	virtual void Initialize() = 0;
 	virtual void Update() = 0;
