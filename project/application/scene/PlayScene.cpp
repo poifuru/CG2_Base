@@ -43,11 +43,11 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	railPath_ = std::make_unique<RailPath>();
 	std::vector<Vector3> controlPoints = {
 		{ 0.0f, 0.0f, -20.0f },  // 補助点 (曲線の入り口用)
-		{ 0.0f, -20.0f, 0.0f },    // 始点
+		{ 0.0f, -10.0f, 0.0f },    // 始点
 		{ 0.0f, -20.0f, 100.0f },
 		{ 50.0f, -40.0f, 200.0f }, // 右へゆるやかにカーブする
 		{ 100.0f, -20.0f, 300.0f },
-		{ 100.0f, -20.0f, 500.0f }, // 終点
+		{ 100.0f, -10.0f, 500.0f }, // 終点
 		{ 100.0f, 0.0f, 520.0f }  // 補助点 (曲線の出口用)
 	};
 	railPath_->Initialize(controlPoints, 0.0005f); // 進む速さ (フレームごとの進行率)
@@ -74,7 +74,7 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	stage_ = std::make_unique<Model>(dxCommon, lightManager_.get());
 	stage_->SetModelData("stage.obj");
 	stage_->SetTexture("stage");
-	stage_->Initialize({ 0.5f, 1.0f, 1.0f }, { 0.0f, 0.0f, Math::Deg2Rad(-90.0f) }, {0.0f, -40.0f, 0.0f});
+	stage_->Initialize({ 0.5f, 1.0f, 1.0f }, { 0.0f, 0.0f, Math::Deg2Rad(-90.0f) }, {0.0f, -50.0f, 0.0f});
 	stage_->SetMetallic(0.0f);
 	stage_->SetEnvironmentCoefficient(0.0f);
 	stage_->SetColor({ 0.492f, 0.238f, 0.0f, 1.0f });
