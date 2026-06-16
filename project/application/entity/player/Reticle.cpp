@@ -33,66 +33,70 @@ void Reticle::Update() {
 	Input();
 
 	if (camera_) {
-		// カメラとレティクルベース位置（レール位置）の座標を取得
-		Vector3 cameraPos = camera_->GetCameraData().transform.translate;
-		Vector3 basePos = transform_.translate;
+		// 1. クランプ前の予測ワールド座標を計算する
+		Vector3 worldPos = transform_.translate;
 		if (railPath_) {
-			basePos = railPath_->GetPosition();
+			Vector3 railPos = railPath_->GetPosition();
+			Matrix4x4 railRot = railPath_->GetRotationMatrix();
+			Vector3 fullLocal = {
+				playerLocalPos_.x + localTranslate_.x,
+				playerLocalPos_.y + localTranslate_.y,
+				positionOfset_.z
+			};
+			Vector3 rotatedLocal = Math::Transform(fullLocal, railRot);
+			worldPos = Math::Add(railPos, rotatedLocal);
 		}
 
-		// カメラからの実際の距離を計算
-		float distanceToCamera = basePos.z - cameraPos.z + positionOfset_.z;
+		// 2. カメラのビュー空間に変換する
+		Matrix4x4 viewMat = camera_->GetCameraData().view;
+		Vector3 viewPos = Math::Transform(worldPos, viewMat);
+
+		// 3. ビュー空間のZ軸（カメラからの距離）を基準に、制限限界値を計算
+		float distanceToCamera = viewPos.z;
 		if (distanceToCamera <= 0.0f) {
-			distanceToCamera = 40.0f;
+			distanceToCamera = 50.0f;
 		}
 
-		// 画角とアスペクト比から画面の半分サイズを計算
 		float fovY = 0.45f;
 		float aspect = 1280.0f / 720.0f;
 
 		float halfHeight = std::tan(fovY * 0.5f) * distanceToCamera;
 		float halfWidth = halfHeight * aspect;
 
-		// レティクル用のマージンを設定（画面ギリギリまで狙えるように少し小さめ）
 		float marginX = 1.0f;
 		float marginY = 1.0f;
 
-		// 画面全体の左右制限幅 (X軸)
 		float limitX = (std::max)(0.0f, halfWidth - marginX);
+		float limitY = (std::max)(0.0f, halfHeight - marginY);
 
-		// カメラの高さ（Y軸のオフセット）のズレを計算して上下の限界値をシフト
-		float cameraHeightOffset = cameraPos.y - basePos.y;
-		float limitTop    =  halfHeight - marginY + cameraHeightOffset;
-		float limitBottom = -halfHeight + marginY + cameraHeightOffset;
+		// 4. ビュー空間上でクランプ
+		viewPos.x = std::clamp(viewPos.x, -limitX, limitX);
+		viewPos.y = std::clamp(viewPos.y, -limitY, limitY);
 
-		if (limitTop < limitBottom) {
-			limitTop = marginY;
-			limitBottom = -marginY;
+		// 5. ワールド座標に戻す
+		Matrix4x4 cameraWorld = camera_->GetCameraData().world;
+		worldPos = Math::Transform(viewPos, cameraWorld);
+
+		// 6. レールのローカル座標 (localTranslate_) に逆変換して戻す
+		if (railPath_) {
+			Vector3 railPos = railPath_->GetPosition();
+			Matrix4x4 railRot = railPath_->GetRotationMatrix();
+			Matrix4x4 invRailRot = Math::Inverse(railRot);
+
+			Vector3 diff = Math::Subtract(worldPos, railPos);
+			Vector3 localResult = Math::Transform(diff, invRailRot);
+			localTranslate_.x = localResult.x - playerLocalPos_.x;
+			localTranslate_.y = localResult.y - playerLocalPos_.y;
+		} else {
+			localTranslate_.x = viewPos.x - playerLocalPos_.x;
+			localTranslate_.y = viewPos.y - playerLocalPos_.y;
 		}
-
-		// -------------------------------------------------------------
-		// 【ココが修正のキモ！】
-		// 入力によって移動しようとしている「最終的な画面ローカル座標」を一度計算する
-		float finalLocalX = playerLocalPos_.x + localTranslate_.x;
-		float finalLocalY = playerLocalPos_.y + localTranslate_.y;
-
-		// その最終座標が、画面の限界（limitX, limitBottom, limitTop）を超えないようにクランプ！
-		finalLocalX = std::clamp(finalLocalX, -limitX, limitX);
-		finalLocalY = std::clamp(finalLocalY, limitBottom, limitTop);
-
-		// クランプした後の最終座標から、プレイヤーの座標を引いて、
-		// レティクル独自の純粋なズレ量（localTranslate_）に逆算して戻す！
-		localTranslate_.x = finalLocalX - playerLocalPos_.x;
-		localTranslate_.y = finalLocalY - playerLocalPos_.y;
-		// -------------------------------------------------------------
 	}
-	// =================================================================
 
 	if (railPath_) {
 		Vector3 railPos = railPath_->GetPosition();
 		Matrix4x4 railRot = railPath_->GetRotationMatrix();
 
-		// ここは今までの計算のままでOK（上記で localTranslate_ が正しく補正されたため）
 		Vector3 fullLocal = {
 			playerLocalPos_.x + localTranslate_.x,
 			playerLocalPos_.y + localTranslate_.y,
@@ -102,10 +106,14 @@ void Reticle::Update() {
 		Vector3 rotatedLocal = Math::Transform(fullLocal, railRot);
 		transform_.translate = Math::Add(railPos, rotatedLocal);
 	} else {
-		// レールが無いときのフォールバック（デバッグ用）
 		transform_.translate.x += localTranslate_.x;
 		transform_.translate.y += localTranslate_.y;
 		transform_.translate.z = playerPos_.z + positionOfset_.z;
+	}
+
+	// レティクルモデルの回転をカメラの回転と同期（ビルボード化）
+	if (camera_) {
+		model_->SetRotate(camera_->GetCameraData().transform.rotate);
 	}
 
 	model_->SetPosition(transform_.translate);

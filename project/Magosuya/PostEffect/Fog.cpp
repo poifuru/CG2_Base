@@ -75,10 +75,12 @@ void Fog::Draw(RenderTexture* renderTexture, CameraOrganizer* camera) {
 		cpuData_->cameraNear = camera->GetNear();
 		cpuData_->cameraFar  = camera->GetFar();
 		cpuData_->inverseVP  = Math::Inverse(camera->GetVPMatrix());
+		cpuData_->cameraPosition = camera->GetCameraData().transform.translate;
 	} else {
 		cpuData_->cameraNear = 0.1f;
 		cpuData_->cameraFar  = 1000.0f;
 		cpuData_->inverseVP  = Math::MakeIdentity4x4();
+		cpuData_->cameraPosition = { 0.0f, 0.0f, 0.0f };
 	}
 
 	RootSignatureManager::GetInstance()->SetRootSignature(psoDesc_.RootSignatureID);

@@ -19,7 +19,9 @@ private:
 		float cameraFar;
 		float heightStart;
 		float heightEnd;
-		float padding[2];
+		float padding1[2];
+		Vector3 cameraPosition;
+		float padding2;
 	};
 
 private:

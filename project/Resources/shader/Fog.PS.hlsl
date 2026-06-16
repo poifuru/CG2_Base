@@ -10,7 +10,9 @@ struct FogBuffer
     float cameraFar;    // 4バイト
     float heightStart;  // 4バイト
     float heightEnd;    // 4バイト
-    float2 padding;     // 8バイト
+    float2 padding1;    // 8バイト
+    float3 cameraPosition; // 12バイト
+    float padding2;     // 4バイト
 };
 
 ConstantBuffer<FogBuffer> gFogBuffer : register(b0);
@@ -46,11 +48,14 @@ PixelShaderOutput main(VertexShaderOutput input)
     // 深度バッファの値を実際の距離(ビュー空間のZ)に復元
     float viewZ = (near * far) / (far - depthAttr * (far - near));
     
-    // 線形フォグの係数(f)を計算 (0.0〜1.0)
-    float fogFactor = saturate((gFogBuffer.end - viewZ) / (gFogBuffer.end - gFogBuffer.start));
+    // カメラからの3D直線距離を計算
+    float distance = length(worldPos.xyz - gFogBuffer.cameraPosition);
     
-    // 高さフォグの係数 (0.0: 深い 〜 1.0: 浅い)
-    float heightFactor = saturate((worldPos.y - gFogBuffer.heightEnd) / (gFogBuffer.heightStart - gFogBuffer.heightEnd));
+    // 3D直線距離ベースのフォグ係数を計算 (0.0〜1.0)
+    float fogFactor = saturate((gFogBuffer.end - distance) / (gFogBuffer.end - gFogBuffer.start));
+    
+    // カメラの現在の水深(Y座標)に基づく高さフォグ係数 (0.0: 深い 〜 1.0: 浅い)
+    float heightFactor = saturate((gFogBuffer.cameraPosition.y - gFogBuffer.heightEnd) / (gFogBuffer.heightStart - gFogBuffer.heightEnd));
     
     // 奥行と高さのフォグを合成 (いずれか一方が濃ければ濃くなる)
     float combinedFactor = fogFactor * heightFactor;
