@@ -82,6 +82,7 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	// ポストエフェクトの状態を初期化
 	PostEffectManager::GetInstance()->ClearEffects();
 	PostEffectManager::GetInstance()->SetEffectActive(PostEffectType::Fog, true);
+	PostEffectManager::GetInstance()->SetEffectActive(PostEffectType::Vignette, true);
 
 	// マリンスノー用テクスチャのロードとパーティクル初期化
 	TextureManager::GetInstance()->LoadTexture("Resources/circle2.png", "circle");
@@ -168,9 +169,11 @@ void PlayScene::Draw () {
 	if(!camera_->InWater()) {
 		skybox_->Draw();
 		PostEffectManager::GetInstance()->SetEffectActive(PostEffectType::Fog, false);
+		PostEffectManager::GetInstance()->SetEffectActive(PostEffectType::Vignette, false);
 	}
 	else {
 		PostEffectManager::GetInstance()->SetEffectActive(PostEffectType::Fog, true);
+		PostEffectManager::GetInstance()->SetEffectActive(PostEffectType::Vignette, true);
 	}
 
 	if (railPath_) {
