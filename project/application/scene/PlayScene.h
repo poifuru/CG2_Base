@@ -7,6 +7,7 @@
 #include "EnemyManager.h"
 #include "Skybox.h"
 #include "../RailPath.h"
+#include "Particle.h"
 
 class PlayScene : public BaseScene {
 public:		//メンバ関数
@@ -30,6 +31,11 @@ private:	//メンバ変数
 
 	// 水面の板ポリ(仮)
 	std::unique_ptr<Model> waterSurface_ = nullptr;
+	// ステージ(仮)
+	std::unique_ptr<Model> stage_ = nullptr;
+
+	// パーティクルシステム (マリンスノー用)
+	std::unique_ptr<Particle> particle_ = nullptr;
 
 	DxCommon* dxCommon_ = nullptr;
 };
