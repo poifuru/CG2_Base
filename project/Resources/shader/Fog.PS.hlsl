@@ -2,17 +2,17 @@
 
 struct FogBuffer
 {
-    matrix inverseVP;   // 64バイト
-    float4 color;       // 16バイト
-    float start;        // 4バイト
-    float end;          // 4バイト
-    float cameraNear;   // 4バイト
-    float cameraFar;    // 4バイト
-    float heightStart;  // 4バイト
-    float heightEnd;    // 4バイト
-    float2 padding1;    // 8バイト
-    float3 cameraPosition; // 12バイト
-    float padding2;     // 4バイト
+    matrix inverseVP;   
+    float4 color;       
+    float start;        
+    float end;          
+    float cameraNear;   
+    float cameraFar;    
+    float heightStart;  
+    float heightEnd;    
+    float2 padding1;    
+    float3 cameraPosition; 
+    float padding2;     
 };
 
 ConstantBuffer<FogBuffer> gFogBuffer : register(b0);

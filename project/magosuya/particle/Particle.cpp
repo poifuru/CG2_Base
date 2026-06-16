@@ -223,6 +223,7 @@ void Particle::Draw () {
 }
 
 void Particle::ImGui () {
+#ifdef USEIMGUI
 	//BlendMode切り替え
 	ImGui::Begin ("Particle");
 	if (ImGui::Combo ("BlendMode", &currentBlendMode_, blendModeNames_, kBlendModeCount_)) {
@@ -262,6 +263,7 @@ void Particle::ImGui () {
 	}
 
 	ImGui::End ();
+#endif
 }
 
 ParticleData Particle::MakeNewParticle (std::mt19937 randomEngine, const Emitter& emitter_) {
