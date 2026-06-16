@@ -93,7 +93,7 @@ private:
 	std::uniform_real_distribution<float> randTime_;	//パーティクルの生存可能時間
 
 	//ビルボードの変数
-	bool useBillBoard = true;
+	bool useBillBoard = false;
 	Matrix4x4 billBoardMatrix_ = {};
 
 	//ImGui用の変数

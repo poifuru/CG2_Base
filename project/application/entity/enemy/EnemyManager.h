@@ -30,7 +30,7 @@ public:
 	void Initialize(DxCommon* dxCommon, LightManager* light, CameraOrganizer* camera);
 
 	// 毎フレーム、プレイヤーの進行度（Z座標など）を渡して更新する
-	void Update(float playerProgressZ, const RailPath* railPath);
+	void Update(const Vector3& playerPos, const RailPath* railPath);
 	void Draw();
 	// プールから空いている敵を探して出現させる関数
 	void SpawnEnemy(int type, const Vector3& pos, const RailPath* railPath);

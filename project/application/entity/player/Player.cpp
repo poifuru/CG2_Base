@@ -104,13 +104,15 @@ void Player::Update() {
 			
 			Vector3 enemyPos = enemy->GetTransform().translate;
 			
-			// --- カメラの後ろにいる敵は除外する (カメラの前方向ベクトルとの内積で判定) ---
+			// --- プレイヤーより手前（カメラ側）に回り込んだ敵は除外する ---
 			Vector3 cameraPos = camera_->GetCameraData().transform.translate;
 			Matrix4x4 camWorld = camera_->GetCameraData().world;
 			Vector3 cameraForward = { camWorld.m[2][0], camWorld.m[2][1], camWorld.m[2][2] };
 			Vector3 toEnemy = Math::Subtract(enemyPos, cameraPos);
 			
-			if (Math::Dot(toEnemy, cameraForward) < 0.0f) continue; // カメラの後ろは無視
+			float playerDist = Math::Dot(Math::Subtract(transform_.translate, cameraPos), cameraForward);
+			float enemyDist = Math::Dot(toEnemy, cameraForward);
+			if (enemyDist < playerDist) continue;
 			
 			// スクリーン座標に変換
 			Vector3 enemyNdc = Math::ChangeTransform(enemyPos, vpMat);
@@ -249,6 +251,7 @@ void Player::Input() {
 
 		// 求めた数値をBulletに渡す
 		newBullet->SetDirection(direction);
+		newBullet->SetPlayer(this);
 
 		if (lockedEnemy_) {
 			newBullet->SetTarget(lockedEnemy_);

@@ -24,3 +24,15 @@ void BaseEnemy::Draw() {
 void BaseEnemy::ImGui() {
 	model_->ImGui("enemy");
 }
+
+void BaseEnemy::SetAlpha(float alpha) {
+	if (model_) {
+		model_->SetAlpha(alpha);
+	}
+}
+
+void BaseEnemy::SetScale(const Vector3& scale) {
+	if (model_) {
+		model_->SetScale(scale);
+	}
+}

@@ -3,6 +3,7 @@
 #include "CameraOrganizer.h"
 
 class BaseEnemy;
+class Player;
 
 class Bullet : public Entity {
 public:
@@ -24,6 +25,7 @@ public:
 	void SetIsActive(bool flag) { isActive_ = flag; }
 	void SetDirection(const Vector3& direction) { direction_ = direction; }
 	void SetTarget(BaseEnemy* target) { target_ = target; }
+	void SetPlayer(const Player* player) { player_ = player; }
 
 private:
 	void Move();
@@ -35,6 +37,7 @@ private:
 	float speed_ = 0.0f;
 	Vector3 direction_{};
 	BaseEnemy* target_ = nullptr;
+	const Player* player_ = nullptr;
 	float homingStrength_ = 5.0f; // ホーミングの強度
 
 	// デバッグ用

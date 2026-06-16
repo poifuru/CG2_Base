@@ -19,7 +19,7 @@ public:
 
 private:
     std::vector<Vector3> controlPoints_;
-    float speed_ = 0.05f; // セグメントごとの進む速さ
+    float speed_ = 1.0f; // セグメントごとの進む速さ
 
     size_t currentSegment_ = 0;
     float t_ = 0.0f;

@@ -74,7 +74,7 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	stage_ = std::make_unique<Model>(dxCommon, lightManager_.get());
 	stage_->SetModelData("stage.obj");
 	stage_->SetTexture("stage");
-	stage_->Initialize({ 0.5f, 0.5f, 0.5f }, { 0.0f, 0.0f, Math::Deg2Rad(-90.0f) }, {0.0f, -40.0f, 0.0f});
+	stage_->Initialize({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, Math::Deg2Rad(-90.0f) }, {0.0f, -40.0f, 0.0f});
 	stage_->SetMetallic(0.0f);
 	stage_->SetEnvironmentCoefficient(0.0f);
 	stage_->SetColor({ 0.492f, 0.238f, 0.0f, 1.0f });
@@ -133,7 +133,7 @@ void PlayScene::Update () {
 	player_->Update();
 	player_->ImGui();
 
-	enemyManager_->Update(player_->GetTransform().translate.z, railPath_.get());
+	enemyManager_->Update(player_->GetTransform().translate, railPath_.get());
 
 	// --- 弾と敵の当たり判定 ---
 	for (auto& bullet : player_->GetBullets()) {

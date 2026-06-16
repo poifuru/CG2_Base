@@ -19,6 +19,8 @@ public:
 	void SetAABBSize(const Vector3& size) { aabbSize_ = size; }
 	bool IsActive() { return isActive_; }
 	void SetIsActive(bool flag) { isActive_ = flag; }
+	void SetAlpha(float alpha);
+	void SetScale(const Vector3& scale);
 
 protected:
 	bool isActive_ = false;

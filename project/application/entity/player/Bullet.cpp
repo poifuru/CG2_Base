@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "MathFunction.h"
 #include "../Enemy/BaseEnemy.h"
+#include "Player.h"
 
 Bullet::Bullet(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input, LightManager* light) {
 	camera_ = camera;
@@ -57,13 +58,37 @@ void Bullet::Move() {
 	// ターゲット追従
 	if (target_ && target_->IsActive()) {
 		Vector3 targetPos = target_->GetTransform().translate;
-		Vector3 targetDir = Math::Subtract(targetPos, transform_.translate);
-		if (Math::Length(targetDir) > 0.001f) {
-			targetDir = Math::Normalize(targetDir);
+		
+		bool targetPassed = false;
+
+		// 1. ターゲットがプレイヤーを通り過ぎたか（手前側に来たか）
+		if (camera_ && player_) {
+			Vector3 cameraPos = camera_->GetCameraData().transform.translate;
+			Matrix4x4 camWorld = camera_->GetCameraData().world;
+			Vector3 cameraForward = { camWorld.m[2][0], camWorld.m[2][1], camWorld.m[2][2] };
+
+			float playerDist = Math::Dot(Math::Subtract(player_->GetTransform().translate, cameraPos), cameraForward);
+			float targetDist = Math::Dot(Math::Subtract(targetPos, cameraPos), cameraForward);
+
+			if (targetDist < playerDist) {
+				targetPassed = true;
+			}
+		}
+
+		// 2. ターゲットが弾自身を追い越した（弾より後ろに回り込んだ）か
+		Vector3 toTarget = Math::Subtract(targetPos, transform_.translate);
+		if (Math::Dot(toTarget, direction_) < 0.0f) {
+			targetPassed = true;
+		}
+
+		if (!targetPassed && Math::Length(toTarget) > 0.001f) {
+			toTarget = Math::Normalize(toTarget);
 			
 			// 進行方向を徐々にターゲットの方向へ補間する
-			direction_ = direction_ + (targetDir - direction_) * (homingStrength_ * kDeltaTime);
+			direction_ = direction_ + (toTarget - direction_) * (homingStrength_ * kDeltaTime);
 			direction_ = Math::Normalize(direction_);
+		} else {
+			target_ = nullptr; // ターゲットが通り過ぎたら誘導解除
 		}
 	} else {
 		target_ = nullptr; // ターゲットが消えたら誘導解除
