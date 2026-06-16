@@ -12,6 +12,14 @@ using namespace Microsoft::WRL;
 #include "SRVManager.h"
 #include "ParticleRenderer.h"
 
+struct ParticleData {
+	EulerTransform transform;
+	Vector3 velocity;
+	Vector4 color;
+	float lifeTime;
+	float currentTime;
+};
+
 class DxCommon;
 
 class Particle {
@@ -27,19 +35,25 @@ public:
 	uint32_t GetParticleNum () { return kMaxParticleNum_; };
 	void SetTexHandle (D3D12_GPU_DESCRIPTOR_HANDLE handle) { handle_ = handle; }
 
+	// マリンスノー機能を有効にするか
+	void SetMarineSnow(bool active) { isMarineSnow_ = active; }
+	bool IsMarineSnow() const { return isMarineSnow_; }
+
 private:	//内部関数
 	ParticleData MakeNewParticle (std::mt19937 randomEngine, const Emitter& emitter_);
+	ParticleData MakeNewMarineSnow (std::mt19937 randomEngine, const Vector3& cameraPos);
 	std::list<ParticleData> Emit (const Emitter& emitter, std::mt19937& randomEngine);
 	void EmitterUpdate ();
+	void EmitterUpdateMarineSnow (const Vector3& cameraPos);
 
 private:
 	//PSOの設定
-	psoDesc_riptor desc_ = {};
+	PSODescriptor desc_ = {};
 
 	//モデルデータ
 	std::unique_ptr<ModelData> data_ = nullptr;
 	//何個のパーティクルを出すのか
-	const uint32_t kMaxParticleNum_ = 5000;
+	const uint32_t kMaxParticleNum_ = 500;
 	uint32_t numInstance_ = 0; //描画すべきインスタンス数
 
 	//GPUリソース
@@ -60,7 +74,7 @@ private:
 	//位置データ
 	std::list<ParticleData> particles_;
 	std::list<ParticleData>::iterator particleIterator_;
-	Transform uvTransform_;
+	EulerTransform uvTransform_;
 	Emitter emitter_ = {};
 
 	//速度をランダムに割り当てるための乱数生成器
@@ -79,13 +93,23 @@ private:
 	std::uniform_real_distribution<float> randTime_;	//パーティクルの生存可能時間
 
 	//ビルボードの変数
-	bool useBillBoard = false;
+	bool useBillBoard = true;
 	Matrix4x4 billBoardMatrix_ = {};
 
 	//ImGui用の変数
 	int currentBlendMode_ = static_cast<int>(BlendModeType::Additive); // 現在のブレンドモードのインデックス
 	const char* blendModeNames_[6] = { "Opaque", "Alpha", "Additive", "Subtract", "Multiply", "Screen" };
 	const int kBlendModeCount_ = 6;
+
+	// マリンスノー用パラメータ
+	bool isMarineSnow_ = false;               // マリンスノーモードのフラグ
+	Vector3 marineSnowRange_ = { 30.0f, 20.0f, 30.0f }; // カメラ周囲の発生/存在範囲 (幅, 高さ, 奥行き)
+	float marineSnowFallSpeed_ = 0.5f;        // 落下速度
+	float marineSnowDriftSpeed_ = 5.0f;       // ゆらゆら揺れる速度（周波数）
+	float marineSnowDriftScale_ = 1.0f;       // ゆらゆら揺れる幅（振幅）
+	float marineSnowNearFadeLimit_ = 2.0f;    // カメラにこれ以上近づいたらフェードアウトする距離
+	float marineSnowMinSize_ = 0.001f;         // 粒の最小サイズ
+	float marineSnowMaxSize_ = 0.003f;          // 粒の最大サイズ
 
 	//ポインタを借りる
 	DxCommon* dxCommon_ = nullptr;

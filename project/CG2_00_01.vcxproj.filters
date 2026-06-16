@@ -89,6 +89,8 @@
     <ClCompile Include="Magosuya\PostEffect\ColorGrading.cpp" />
     <ClCompile Include="Magosuya\PostEffect\Vignette.cpp" />
     <ClCompile Include="Magosuya\PostEffect\Fog.cpp" />
+    <ClCompile Include="magosuya\particle\Particle.cpp" />
+    <ClCompile Include="magosuya\particle\ParticleRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -178,6 +180,8 @@
     <ClInclude Include="Magosuya\PostEffect\ColorGrading.h" />
     <ClInclude Include="Magosuya\PostEffect\Vignette.h" />
     <ClInclude Include="Magosuya\PostEffect\Fog.h" />
+    <ClInclude Include="magosuya\particle\Particle.h" />
+    <ClInclude Include="magosuya\particle\ParticleRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />

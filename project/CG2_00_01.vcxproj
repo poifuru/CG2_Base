@@ -252,6 +252,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\entity\player\Reticle.cpp" />
     <ClCompile Include="Application\RailPath.cpp" />
     <ClCompile Include="Magosuya\PostEffect\Vignette.cpp" />
+    <ClCompile Include="magosuya\particle\Particle.cpp" />
+    <ClCompile Include="magosuya\particle\ParticleRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\BoxFilter.PS.hlsl">
@@ -460,6 +462,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\entity\player\Reticle.h" />
     <ClInclude Include="Application\RailPath.h" />
     <ClInclude Include="Magosuya\PostEffect\Vignette.h" />
+    <ClInclude Include="magosuya\particle\Particle.h" />
+    <ClInclude Include="magosuya\particle\ParticleRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Fullscreen.hlsli" />

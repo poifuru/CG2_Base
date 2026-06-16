@@ -11,6 +11,9 @@
 PlayScene::PlayScene () {
 	ModelManager::GetInstance()->LoadModelData("Resources/plane", "plane.obj");
 	TextureManager::GetInstance()->LoadTexture("Resources/plane/plane.png", "plane");
+
+	ModelManager::GetInstance()->LoadModelData("Resources/stage", "stage.obj");
+	TextureManager::GetInstance()->LoadTexture("Resources/stage/stage.png", "stage");
 }
 
 PlayScene::~PlayScene () {
@@ -68,9 +71,24 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	waterSurface_->SetMetallic(0.0f);
 	waterSurface_->SetEnvironmentCoefficient(0.0f);
 
+	stage_ = std::make_unique<Model>(dxCommon, lightManager_.get());
+	stage_->SetModelData("stage.obj");
+	stage_->SetTexture("stage");
+	stage_->Initialize({ 0.5f, 0.5f, 0.5f }, { 0.0f, 0.0f, Math::Deg2Rad(-90.0f) }, {0.0f, -40.0f, 0.0f});
+	stage_->SetMetallic(0.0f);
+	stage_->SetEnvironmentCoefficient(0.0f);
+	stage_->SetColor({ 0.492f, 0.238f, 0.0f, 1.0f });
+
 	// ポストエフェクトの状態を初期化
 	PostEffectManager::GetInstance()->ClearEffects();
 	PostEffectManager::GetInstance()->SetEffectActive(PostEffectType::Fog, true);
+
+	// マリンスノー用テクスチャのロードとパーティクル初期化
+	TextureManager::GetInstance()->LoadTexture("Resources/circle2.png", "circle");
+	particle_ = std::make_unique<Particle>(dxCommon_);
+	particle_->Initialize();
+	particle_->SetTexHandle(TextureManager::GetInstance()->GetTextureHandle("circle"));
+	particle_->SetMarineSnow(true);
 }
 
 void PlayScene::Update () {
@@ -133,6 +151,16 @@ void PlayScene::Update () {
 	skybox_->Update(&camera_->GetCameraData());
 	waterSurface_->Update(&camera_->GetCameraData());
 	waterSurface_->ImGui("waterSurface");
+
+	stage_->Update(&camera_->GetCameraData());
+	stage_->ImGui("stage");
+
+	// パーティクルの更新とデバッグUI
+	if (particle_) {
+		particle_->Update(&camera_->GetCameraData().world, &camera_->GetVPMatrix());
+		particle_->ImGui();
+	}
+
 	PostEffectManager::GetInstance()->ImGui();
 }
 
@@ -151,11 +179,17 @@ void PlayScene::Draw () {
 
 	
 	waterSurface_->Draw();
+	stage_->Draw();
 	player_->Draw();
 	enemyManager_->Draw();
 }
 
 void PlayScene::DrawUI() {
+	// ポストエフェクト適用後にマリンスノーを描画 (フォグに飲まれないようにするため)
+	if (particle_) {
+		particle_->Draw();
+	}
+
 	if (player_) {
 		player_->DrawUI();
 	}

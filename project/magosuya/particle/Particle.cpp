@@ -75,37 +75,74 @@ void Particle::Initialize () {
 
 	//PSO設定
 	desc_.RootSignatureID = RootSignatureManager::GetInstance ()->GetOrCreateRootSignature (RootSigType::Particle);
-	desc_.VS_ID = ShaderManager::GetInstance ()->CompileAndCasheShader (L"Resources/shader/Particle.VS.hlsl", L"vs_6_0");
-	desc_.PS_ID = ShaderManager::GetInstance ()->CompileAndCasheShader (L"Resources/shader/Particle.PS.hlsl", L"ps_6_0");
+	desc_.VS_ID = ShaderManager::GetInstance ()->CompileAndCacheShader (L"Resources/shader/Particle.VS.hlsl", L"vs_6_0");
+	desc_.PS_ID = ShaderManager::GetInstance ()->CompileAndCacheShader (L"Resources/shader/Particle.PS.hlsl", L"ps_6_0");
 	desc_.InputLayoutID = InputLayoutType::Particle;
 	desc_.BlendMode = BlendModeType::Additive;
 	desc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;	//Depthの書き込みを行わない
+	desc_.DepthEnable = FALSE;								//デプステストを無効化
 
 	UINT useIndex = srvManager_->Allocate();
 
 	srvManager_->CreateSRVStructuredBuffer(useIndex, instancingBuffer_.Get(), kMaxParticleNum_, sizeof(ParticleForGPU));
 
+	particleSrvHandleCPU = srvManager_->GetCPUDescriptorHandle (useIndex);
+	particleSrvHandleGPU = srvManager_->GetGPUDescriptorHandle (useIndex);
+
 	billBoardMatrix_ = Math::MakeIdentity4x4 ();
 }
 
 void Particle::Update (Matrix4x4* cameraMatrix, Matrix4x4* vp) {
+	// カメラのワールド位置を取得
+	Vector3 cameraPos = { cameraMatrix->m[3][0], cameraMatrix->m[3][1], cameraMatrix->m[3][2] };
+
 	//Emitter更新
-	EmitterUpdate ();
+	if (isMarineSnow_) {
+		EmitterUpdateMarineSnow (cameraPos);
+	}
+	else {
+		EmitterUpdate ();
+	}
 
 	//numInstanceのリセット
 	numInstance_ = 0;
 	uint32_t dstIndex = 0; //書き込み先インデックス
 	for (particleIterator_ = particles_.begin (); particleIterator_ != particles_.end ();) {
-		//生存可能時間を過ぎていたら更新処理をしない
-		if (particleIterator_->lifeTime <= particleIterator_->currentTime) {
+		// 生存可能時間を過ぎていたら更新処理をしない (マリンスノー以外)
+		if (!isMarineSnow_ && particleIterator_->lifeTime <= particleIterator_->currentTime) {
 			particleIterator_ = particles_.erase (particleIterator_);	//生存時間をすぎたパーティクルはリストから削除
 			continue;
 		}
 
 		if (dstIndex < kMaxParticleNum_) {
-			//速度を反映させる
-			particleIterator_->transform.translate += particleIterator_->velocity * kDeltaTime;
+			// 時間を進める
 			particleIterator_->currentTime += kDeltaTime;
+
+			if (isMarineSnow_) {
+				// Y方向は落下、X, Z方向はゆっくりサイン・コサイン波でゆらゆらさせる
+				particleIterator_->transform.translate.y += particleIterator_->velocity.y * kDeltaTime;
+				particleIterator_->transform.translate.x += sinf (particleIterator_->currentTime * marineSnowDriftSpeed_) * marineSnowDriftScale_ * kDeltaTime;
+				particleIterator_->transform.translate.z += cosf (particleIterator_->currentTime * marineSnowDriftSpeed_) * marineSnowDriftScale_ * kDeltaTime;
+
+				// カメラ周囲の範囲外に出た場合のラッピング処理
+				float diffX = particleIterator_->transform.translate.x - cameraPos.x;
+				float diffY = particleIterator_->transform.translate.y - cameraPos.y;
+				float diffZ = particleIterator_->transform.translate.z - cameraPos.z;
+
+				if (diffX < -marineSnowRange_.x) particleIterator_->transform.translate.x += marineSnowRange_.x * 2.0f;
+				else if (diffX > marineSnowRange_.x) particleIterator_->transform.translate.x -= marineSnowRange_.x * 2.0f;
+
+				if (diffY < -marineSnowRange_.y) particleIterator_->transform.translate.y += marineSnowRange_.y * 2.0f;
+				else if (diffY > marineSnowRange_.y) particleIterator_->transform.translate.y -= marineSnowRange_.y * 2.0f;
+
+				if (diffZ < -marineSnowRange_.z) particleIterator_->transform.translate.z += marineSnowRange_.z * 2.0f;
+				else if (diffZ > marineSnowRange_.z) particleIterator_->transform.translate.z -= marineSnowRange_.z * 2.0f;
+			}
+			else {
+				// 通常の速度反映
+				particleIterator_->transform.translate += particleIterator_->velocity * kDeltaTime;
+			}
+
 			instancingData_[dstIndex].World = Math::MakeAffineMatrix (
 				particleIterator_->transform.scale,
 				particleIterator_->transform.rotate,
@@ -127,12 +164,38 @@ void Particle::Update (Matrix4x4* cameraMatrix, Matrix4x4* vp) {
 			else {
 				instancingData_[dstIndex].WVP = Math::Multiply (instancingData_[dstIndex].World, *vp);
 			}
-			instancingData_[dstIndex].color = particleIterator_->color;
-			//徐々に透明度を下げて消えるように
-			float alpha = 1.0f - (particleIterator_->currentTime / particleIterator_->lifeTime);
-			instancingData_[dstIndex].color.w = alpha;
 
-			//uvTranform更新
+			// 色と不透明度(アルファ)の計算
+			instancingData_[dstIndex].color = particleIterator_->color;
+
+			if (isMarineSnow_) {
+				// カメラからの距離
+				float dist = Math::Length (Math::Subtract (particleIterator_->transform.translate, cameraPos));
+				float alpha = particleIterator_->color.w;
+
+				// 1. 近接フェード (カメラに近すぎると消える)
+				if (dist < marineSnowNearFadeLimit_) {
+					alpha *= (dist / marineSnowNearFadeLimit_);
+				}
+
+				// 2. 境界フェード (存在範囲の端に近づくと消える。ラッピング時のチラつき防止)
+				float distRatioX = fabsf (particleIterator_->transform.translate.x - cameraPos.x) / marineSnowRange_.x;
+				float distRatioY = fabsf (particleIterator_->transform.translate.y - cameraPos.y) / marineSnowRange_.y;
+				float distRatioZ = fabsf (particleIterator_->transform.translate.z - cameraPos.z) / marineSnowRange_.z;
+				float maxRatio = (std::max) ( (std::max) (distRatioX, distRatioY), distRatioZ);
+				if (maxRatio > 0.8f) {
+					alpha *= (1.0f - maxRatio) / 0.2f;
+				}
+
+				instancingData_[dstIndex].color.w = alpha;
+			}
+			else {
+				// 通常のパーティクルは寿命で消える
+				float alpha = 1.0f - (particleIterator_->currentTime / particleIterator_->lifeTime);
+				instancingData_[dstIndex].color.w = alpha;
+			}
+
+			//uvTransform更新
 			materialData_[dstIndex].uvTransform = Math::MakeAffineMatrix (
 				uvTransform_.scale,
 				uvTransform_.rotate,
@@ -174,9 +237,29 @@ void Particle::ImGui () {
 
 	ImGui::Separator ();
 
-	ImGui::DragFloat3 ("scale", &emitter_.transform.scale.x, 0.01f, 0.0f, 100.f);
-	ImGui::DragFloat3 ("rotate", &emitter_.transform.rotate.x, 0.01f, -100.0f, 100.f);
-	ImGui::DragFloat3 ("translate", &emitter_.transform.translate.x, 0.01f, -100.0f, 100.f);
+	// マリンスノーモードの切り替え
+	bool prevMarineSnow = isMarineSnow_;
+	if (ImGui::Checkbox ("isMarineSnow", &isMarineSnow_)) {
+		if (prevMarineSnow != isMarineSnow_) {
+			particles_.clear (); // モードが切り替わったらパーティクルをリセット
+		}
+	}
+
+	if (isMarineSnow_) {
+		ImGui::Text ("Marine Snow Settings");
+		ImGui::DragFloat3 ("Range", &marineSnowRange_.x, 0.1f, 1.0f, 100.0f);
+		ImGui::DragFloat ("Fall Speed", &marineSnowFallSpeed_, 0.01f, 0.0f, 10.0f);
+		ImGui::DragFloat ("Drift Speed", &marineSnowDriftSpeed_, 0.01f, 0.0f, 10.0f);
+		ImGui::DragFloat ("Drift Scale", &marineSnowDriftScale_, 0.01f, 0.0f, 5.0f);
+		ImGui::DragFloat ("Near Fade Limit", &marineSnowNearFadeLimit_, 0.1f, 0.0f, 20.0f);
+		ImGui::DragFloat ("Min Size", &marineSnowMinSize_, 0.005f, 0.001f, marineSnowMaxSize_);
+		ImGui::DragFloat ("Max Size", &marineSnowMaxSize_, 0.005f, marineSnowMinSize_, 5.0f);
+	}
+	else {
+		ImGui::DragFloat3 ("scale", &emitter_.transform.scale.x, 0.01f, 0.0f, 100.f);
+		ImGui::DragFloat3 ("rotate", &emitter_.transform.rotate.x, 0.01f, -100.0f, 100.f);
+		ImGui::DragFloat3 ("translate", &emitter_.transform.translate.x, 0.01f, -100.0f, 100.f);
+	}
 
 	ImGui::End ();
 }
@@ -223,5 +306,48 @@ void Particle::EmitterUpdate () {
 	if (emitter_.frequency <= emitter_.frequencyTime) {		//頻度より大きいなら
 		particles_.splice (particles_.end (), Emit (emitter_, randomEngine_));	//particle発生
 		emitter_.frequencyTime -= emitter_.frequency;	//進めた時間を戻す
+	}
+}
+
+ParticleData Particle::MakeNewMarineSnow (std::mt19937 randomEngine, const Vector3& cameraPos) {
+	randomEngine.seed (rd ());
+
+	ParticleData data;
+
+	// 使う分布を初期化する (カメラ位置を中心とした範囲)
+	std::uniform_real_distribution<float> snow_x (-marineSnowRange_.x, marineSnowRange_.x);
+	std::uniform_real_distribution<float> snow_y (-marineSnowRange_.y, marineSnowRange_.y);
+	std::uniform_real_distribution<float> snow_z (-marineSnowRange_.z, marineSnowRange_.z);
+	std::uniform_real_distribution<float> scale_rand (0.05f, 0.2f); // 粒の大きさ
+	std::uniform_real_distribution<float> speed_y_offset (-0.1f, 0.1f); // 落下速度のばらつき
+	std::uniform_real_distribution<float> color_rand (0.8f, 1.0f);
+	std::uniform_real_distribution<float> time_offset (0.0f, 100.0f); // サイン波の位相ズレ用
+
+	float size = scale_rand (randomEngine);
+	data.transform.scale = { size, size, size };
+	data.transform.rotate = { 0.0f, 0.0f, 0.0f };
+	data.transform.translate = {
+		cameraPos.x + snow_x (randomEngine),
+		cameraPos.y + snow_y (randomEngine),
+		cameraPos.z + snow_z (randomEngine)
+	};
+	// Y方向は設定落下速度 + ランダムな揺らぎ
+	data.velocity = { 0.0f, -(marineSnowFallSpeed_ + speed_y_offset (randomEngine)), 0.0f };
+	// マリンスノーらしい白〜少し薄水色のランダム
+	float r = color_rand (randomEngine);
+	float g = color_rand (randomEngine);
+	data.color = { r, (r + g) * 0.5f, 1.0f, 0.8f }; // 青寄りの白
+
+	data.lifeTime = 999999.0f; // ほぼ無限寿命（ラッピングでループさせる）
+	// currentTime を位相ズレ（シード）用としてランダムにずらしておく
+	data.currentTime = time_offset (randomEngine);
+
+	return data;
+}
+
+void Particle::EmitterUpdateMarineSnow (const Vector3& cameraPos) {
+	// 最大数に達するまでマリンスノーを生成して追加
+	while (particles_.size() < kMaxParticleNum_) {
+		particles_.push_back (MakeNewMarineSnow (randomEngine_, cameraPos));
 	}
 }

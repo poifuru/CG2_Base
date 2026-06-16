@@ -9,7 +9,7 @@ using namespace Microsoft::WRL;
 #include "PSOManager.h"
 
 //パーティクルの種類
-enum ParticleType {
+enum class ParticleType {
 	Standard,
 	Mesh
 };
