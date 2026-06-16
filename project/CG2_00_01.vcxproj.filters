@@ -16,6 +16,7 @@
     <FxCompile Include="Resources\shader\BoxFilter.PS.hlsl" />
     <FxCompile Include="Resources\shader\GaussianFilter.PS.hlsl" />
     <FxCompile Include="Resources\shader\Fog.PS.hlsl" />
+    <FxCompile Include="Resources\shader\Outline.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application\scene\ClearScene.cpp" />
@@ -85,12 +86,14 @@
     <ClCompile Include="Application\Collider\CollisionManager.cpp" />
     <ClCompile Include="Application\RailPath.cpp" />
     <ClCompile Include="magosuya\PostEffect\PostEffectManager.cpp" />
-    <ClCompile Include="Magosuya\PostEffect\BasePosteffect.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\BasePostEffect.cpp" />
     <ClCompile Include="Magosuya\PostEffect\ColorGrading.cpp" />
     <ClCompile Include="Magosuya\PostEffect\Vignette.cpp" />
     <ClCompile Include="Magosuya\PostEffect\Fog.cpp" />
     <ClCompile Include="magosuya\particle\Particle.cpp" />
     <ClCompile Include="magosuya\particle\ParticleRenderer.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\Outline.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\CopyImage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -182,6 +185,8 @@
     <ClInclude Include="Magosuya\PostEffect\Fog.h" />
     <ClInclude Include="magosuya\particle\Particle.h" />
     <ClInclude Include="magosuya\particle\ParticleRenderer.h" />
+    <ClInclude Include="Magosuya\PostEffect\Outline.h" />
+    <ClInclude Include="Magosuya\PostEffect\CopyImage.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />

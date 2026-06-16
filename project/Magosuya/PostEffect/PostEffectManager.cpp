@@ -1,11 +1,18 @@
 #include "PostEffectManager.h"
 #include "DxCommon.h"
+#include "Outline.h"
 #include "ColorGrading.h"
 #include "Fog.h"
 #include "Vignette.h"
+#include "CopyImage.h"
 #include "RenderTexture.h"
 #include "SRVManager.h"
 #include "imgui.h"
+
+PostEffectManager* PostEffectManager::GetInstance() {
+	static PostEffectManager instance;
+	return &instance;
+}
 
 void PostEffectManager::Initialize(DxCommon* dxCommon, uint32_t windowWidth, uint32_t windowHeight) {
 	dxCommon_ = dxCommon;
@@ -17,6 +24,7 @@ void PostEffectManager::Initialize(DxCommon* dxCommon, uint32_t windowWidth, uin
 
 	// ポストエフェクトをすべて初期化
 	// 最初はすべて非アクティブ状態にしておく
+	effects_[static_cast<size_t>(PostEffectType::Outline)] = std::make_unique<Outline>();
 	effects_[static_cast<size_t>(PostEffectType::ColorGrading)] = std::make_unique<ColorGrading>();
 	effects_[static_cast<size_t>(PostEffectType::Fog)] = std::make_unique<Fog>();
 	effects_[static_cast<size_t>(PostEffectType::Vignette)] = std::make_unique<Vignette>();
@@ -27,11 +35,17 @@ void PostEffectManager::Initialize(DxCommon* dxCommon, uint32_t windowWidth, uin
 			effects_[i]->SetIsActive(false); // 初期状態はOFF
 		}
 	}
+
+	// スルーパス用エフェクトの初期化
+	copyImage_ = std::make_unique<CopyImageEffect>();
+	copyImage_->Initialize(dxCommon_);
 }
 
 void PostEffectManager::Finalize() {
 
 }
+
+PostEffectManager::~PostEffectManager() = default;
 
 void PostEffectManager::SetEffectActive(PostEffectType type, bool flag) {
 	size_t index = static_cast<size_t>(type);
@@ -63,19 +77,12 @@ void PostEffectManager::Execute(RenderTexture* srcTexture, CameraOrganizer* came
 
 	// アクティブなエフェクトが1つもない場合
 	if (lastActiveIndex == -1) {
-		// ポストエフェクトがすべてOFFなら、ゲーム画面（srcTexture）をそのままバックバッファにコピーするか、
-		// そもそもメイン側でポストエフェクトを通さずにバックバッファに直接描画させる必要がある。
 		// レンダーターゲットをバックバッファに設定する
 		D3D12_CPU_DESCRIPTOR_HANDLE backBufferRtv = dxCommon_->GetCurrentBackBufferRtvHandle();
 		cmdList->OMSetRenderTargets(1, &backBufferRtv, FALSE, nullptr);
 
-		// 一番ベースの描画機能（ColorGrading等）を、一時的にパラメータを無効化（強度0）した状態で強制的に1回描くなど
-		if (effects_[static_cast<size_t>(PostEffectType::ColorGrading)] != nullptr) {
-			// 強制的に描画するけど、見た目は変わらないように元の絵を出させる
-			effects_[static_cast<size_t>(PostEffectType::ColorGrading)]->Draw(srcTexture, camera);
-		}
-
-		// 本来ならここで「何もエフェクトをかけずにsrcTextureを画面にコピーする描画（スルーパス）」を呼ぶのが理想
+		// スルーパス描画でゲーム画面をそのままバックバッファに描画
+		copyImage_->Draw(srcTexture, camera);
 		return;
 	}
 
@@ -152,6 +159,7 @@ void PostEffectManager::ImGui() {
 		// 列挙型に応じて表示する名前を決定する
 		const char* effectName = "Unknown";
 		switch (static_cast<PostEffectType>(i)) {
+		case PostEffectType::Outline:      effectName = "Outline";       break;
 		case PostEffectType::ColorGrading: effectName = "Color Grading"; break;
 		case PostEffectType::Fog:		   effectName = "Fog";			 break;
 		case PostEffectType::Vignette:     effectName = "Vignette";      break;
@@ -177,6 +185,7 @@ void PostEffectManager::ImGui() {
 			// ImGui の折りたたみヘッダー（CollapsingHeader）を使うと画面がスッキリしておすすめ
 			const char* headerName = "Unknown Param";
 			switch (static_cast<PostEffectType>(i)) {
+			case PostEffectType::Outline:      headerName = "Outline Settings";       break;
 			case PostEffectType::ColorGrading: headerName = "Color Grading Settings"; break;
 			case PostEffectType::Fog:		   headerName = "Fog Settings";			  break;
 			case PostEffectType::Vignette:     headerName = "Vignette Settings";      break;

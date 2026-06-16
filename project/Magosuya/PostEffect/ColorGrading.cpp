@@ -17,13 +17,6 @@ void ColorGrading::Initialize(DxCommon* dxCommon) {
 }
 
 void ColorGrading::Draw(RenderTexture* renderTexture, CameraOrganizer* /*camera*/) {
-	// アクティブなポストエフェクトが存在しない時のガード用にパラメータを全て0にして描画する(※修正必須)
-	if(!isActive_) {
-		cpuData_->intensity = 0.0f;
-		cpuData_->sepiaAmount = 0.0f;
-		cpuData_->tintColor = { 1.0f, 1.0f, 1.0f };
-	}
-
 	auto cmdList = dxCommon_->GetCommandList();
 
 	RootSignatureManager::GetInstance()->SetRootSignature(psoDesc_.RootSignatureID);

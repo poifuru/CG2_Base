@@ -89,6 +89,9 @@ void DxCommon::PreDrawImGui() {
 	// これから書きこむバックバッファのインデックスを取得
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
+	// バリア遷移の前に、一旦レンダーターゲットのバインドを完全に解除する
+	commandList_->OMSetRenderTargets(0, nullptr, FALSE, nullptr);
+
 	// バリアを設定 (2つ)
 	D3D12_RESOURCE_BARRIER barriers[2] = {};
 	

@@ -4,9 +4,13 @@
 
 class DxCommon;
 class RenderTexture;
+class CopyImageEffect;
+class CameraOrganizer;
 
 // ポストエフェクトの種類
 enum class PostEffectType {
+	CopyImage,
+	Outline,
 	ColorGrading,
 	Fog,
 	Vignette,
@@ -16,10 +20,7 @@ enum class PostEffectType {
 
 class PostEffectManager {
 public:
-	static PostEffectManager* GetInstance() {
-		static PostEffectManager instance;
-		return &instance;
-	}
+	static PostEffectManager* GetInstance();
 
 	// 初期化時に画面サイズに合わせた中間テクスチャを二枚生成する
 	void Initialize(DxCommon* dxCommon, uint32_t windowWidth, uint32_t windowHeight);
@@ -35,7 +36,7 @@ public:
 
 private:
 	PostEffectManager() = default;
-	~PostEffectManager() = default;
+	~PostEffectManager();
 	PostEffectManager(const PostEffectManager&) = delete;
 	PostEffectManager& operator=(const PostEffectManager&) = delete;
 
@@ -47,4 +48,7 @@ private:
 
 	// ピンポン用の中間テクスチャ2枚
 	std::unique_ptr<RenderTexture> workTextures_[2];
+
+	// スルーパス用エフェクト
+	std::unique_ptr<CopyImageEffect> copyImage_ = nullptr;
 };
