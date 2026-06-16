@@ -302,52 +302,57 @@ Player::Move() {
 
 	// カメラの画角内に移動を制限
 	if (camera_) {
-		// カメラとプレイヤー（レール）の現在のワールド座標を取得
-		Vector3 cameraPos = camera_->GetCameraData().transform.translate;
-		Vector3 basePos = transform_.translate;
+		// 1. クランプ前の予測ワールド位置を計算する
+		Vector3 worldPos = transform_.translate;
 		if (railPath_) {
-			basePos = railPath_->GetPosition();
+			Vector3 railPos = railPath_->GetPosition();
+			Matrix4x4 railRot = railPath_->GetRotationMatrix();
+			Vector3 rotatedLocal = Math::Transform(localTranslate_, railRot);
+			worldPos = Math::Add(railPos, rotatedLocal);
 		}
 
-		// カメラとレールの「実際の距離（Z軸）」を計算
-		float distanceToCamera = basePos.z - cameraPos.z;
+		// 2. ビュー空間に変換する
+		Matrix4x4 viewMat = camera_->GetCameraData().view;
+		Vector3 viewPos = Math::Transform(worldPos, viewMat);
+
+		// 3. ビュー空間のZ軸（カメラからの距離）を基準に、制限限界値を計算
+		float distanceToCamera = viewPos.z;
 		if (distanceToCamera <= 0.0f) {
 			distanceToCamera = 50.0f;
 		}
 
-		// 画角とアスペクト比から画面の半分サイズを計算 (FOV: 0.45f)
-		float fovY = 0.45f; 
-		float aspect = 1280.0f / 720.0f; 
+		float fovY = 0.45f;
+		float aspect = 1280.0f / 720.0f;
 
 		float halfHeight = std::tan(fovY * 0.5f) * distanceToCamera;
 		float halfWidth = halfHeight * aspect;
 
-		// プレイヤーのモデルサイズに合わせたマージン
 		float marginX = 2.0f;
 		float marginY = 2.0f;
 
-		// 左右の制限幅（X軸はカメラが真ん中なので左右対称でOK）
 		float limitX = (std::max)(0.0f, halfWidth - marginX);
+		float limitY = (std::max)(0.0f, halfHeight - marginY);
 
-		// カメラの高さのズレ（オフセット）を計算する
-		// レールの高さ（basePos.y）に対して、カメラがどれだけ高い位置にいるか
-		float cameraHeightOffset = cameraPos.y - basePos.y; // PlaySceneの設定通りなら約3.0fになる
+		// 4. ビュー空間上でクランプ
+		viewPos.x = std::clamp(viewPos.x, -limitX, limitX);
+		viewPos.y = std::clamp(viewPos.y, -limitY, limitY);
 
-		// 本来の画面端（halfHeight）に対して、カメラが上に上がった分だけ制限を「下にシフト」させる
-		float limitTop    =  halfHeight - marginY + cameraHeightOffset; // 上方向の限界（引き上げられるので広くなる）
-		float limitBottom = -halfHeight + marginY + cameraHeightOffset; // 下方向の限界（引き上げられるので狭くなる）
+		// 5. ワールド座標に戻す
+		Matrix4x4 cameraWorld = camera_->GetCameraData().world;
+		worldPos = Math::Transform(viewPos, cameraWorld);
 
-		// 上下のバウンドが逆転しないように最低限の幅を保証
-		if (limitTop < limitBottom) {
-			limitTop = marginY;
-			limitBottom = -marginY;
+		// 6. レールのローカル座標 (localTranslate_) に逆変換する
+		if (railPath_) {
+			Vector3 railPos = railPath_->GetPosition();
+			Matrix4x4 railRot = railPath_->GetRotationMatrix();
+			Matrix4x4 invRailRot = Math::Inverse(railRot);
+
+			Vector3 diff = Math::Subtract(worldPos, railPos);
+			localTranslate_ = Math::Transform(diff, invRailRot);
+			localTranslate_.z = 0.0f; // レール前進方向へのズレは無効化
+		} else {
+			transform_.translate = worldPos;
 		}
-
-		// クランプ処理
-		// X軸は今まで通り（左右対称）
-		localTranslate_.x = std::clamp(localTranslate_.x, -limitX, limitX);
-		// Y軸はカメラの高さで補正した「個別の上下限値」でクランプ！
-		localTranslate_.y = std::clamp(localTranslate_.y, limitBottom, limitTop);
 	}
 
 	if (railPath_) {
