@@ -1,0 +1,257 @@
+#include "InputLayoutManager.h"
+#include <cassert>
+
+void InputLayoutManager::Initialize () {
+	InputLayoutData data;
+
+	//InputLayoutの設定
+	//***Standard3D***//
+	//POSITION
+	data.elements.push_back ({
+		"POSITION",
+		0,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		0
+	});
+	//TEXCOORD
+	data.elements.push_back ({
+		"TEXCOORD",
+		0,
+		DXGI_FORMAT_R32G32_FLOAT,
+		0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		0
+	});
+	//NORMAL
+	data.elements.push_back ({
+		"NORMAL",
+		0,
+		DXGI_FORMAT_R32G32B32_FLOAT,
+		0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		0
+	});
+
+	//Descの作成
+	data.desc.pInputElementDescs = data.elements.data ();
+	data.desc.NumElements = (UINT)data.elements.size ();
+
+	//キャッシュに登録
+	m_LayoutCache[InputLayoutType::Standard3D] = std::move (data);
+	//新しい設定を登録するためにdataをclear
+	data.elements.clear ();
+	//******//
+
+	//***SkinningStandard3D***//
+	//POSITION
+	data.elements.push_back({
+		"POSITION",
+		0,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		0
+							});
+	//TEXCOORD
+	data.elements.push_back({
+		"TEXCOORD",
+		0,
+		DXGI_FORMAT_R32G32_FLOAT,
+		0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		0
+							});
+	//NORMAL
+	data.elements.push_back({
+		"NORMAL",
+		0,
+		DXGI_FORMAT_R32G32B32_FLOAT,
+		0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		0
+							});
+	//WEIGHT
+	data.elements.push_back({
+		"WEIGHT",
+		0,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		1,	// 1番目のslotVBVのことだと伝える
+		D3D12_APPEND_ALIGNED_ELEMENT
+							});
+	//INDEX
+	data.elements.push_back({
+		"INDEX",
+		0,
+		DXGI_FORMAT_R32G32B32A32_SINT,
+		1,	// 1番目のslotVBVのことだと伝える
+		D3D12_APPEND_ALIGNED_ELEMENT
+							});
+
+	//Descの作成
+	data.desc.pInputElementDescs = data.elements.data();
+	data.desc.NumElements = (UINT)data.elements.size();
+
+	//キャッシュに登録
+	m_LayoutCache[InputLayoutType::SkinningStandard3D] = std::move(data);
+	//新しい設定を登録するためにdataをclear
+	data.elements.clear();
+	//******//
+
+	//***Particle***//
+	//POSITION
+	data.elements.push_back ({
+		"POSITION",
+		0,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		0
+	});
+	//TEXCOORD
+	data.elements.push_back ({
+		"TEXCOORD",
+		0,
+		DXGI_FORMAT_R32G32_FLOAT,
+		0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		0
+	});
+	//COLOR
+	data.elements.push_back ({
+		"COLOR",
+		0,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		0
+	});
+
+	//Descの作成
+	data.desc.pInputElementDescs = data.elements.data ();
+	data.desc.NumElements = (UINT)data.elements.size ();
+
+	//キャッシュに登録
+	m_LayoutCache[InputLayoutType::Particle] = std::move (data);
+	//新しい設定を登録するためにdataをclear
+	data.elements.clear ();
+	//******//
+
+	//***LineMesh***//
+	//POSITION
+	data.elements.push_back ({
+		"POSITION",
+		0,
+		DXGI_FORMAT_R32G32B32_FLOAT,
+		0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		0
+	});
+	//COLOR
+	data.elements.push_back ({
+		"COLOR",
+		0,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		0
+	});
+
+	//Descの作成
+	data.desc.pInputElementDescs = data.elements.data ();
+	data.desc.NumElements = (UINT)data.elements.size ();
+
+	//キャッシュに登録
+	m_LayoutCache[InputLayoutType::LineMesh] = std::move (data);
+	//新しい設定を登録するためにdataをclear
+	data.elements.clear ();
+	//******//
+
+	//***LineMesh***//
+	//POSITION
+	data.elements.push_back ({
+		"POSITION",
+		0,
+		DXGI_FORMAT_R32G32B32_FLOAT,
+		0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		0
+							 });
+	//COLOR
+	data.elements.push_back ({
+		"COLOR",
+		0,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		0
+							 });
+
+	//Descの作成
+	data.desc.pInputElementDescs = data.elements.data ();
+	data.desc.NumElements = (UINT)data.elements.size ();
+
+	//キャッシュに登録
+	m_LayoutCache[InputLayoutType::CubeMesh] = std::move (data);
+	//新しい設定を登録するためにdataをclear
+	data.elements.clear ();
+	//******//
+
+	//***Skybox***//
+	//POSITION
+	data.elements.push_back ({
+		"POSITION",
+		0,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		0,
+		D3D12_APPEND_ALIGNED_ELEMENT,
+		D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+		0
+							 });
+
+	//Descの作成
+	data.desc.pInputElementDescs = data.elements.data ();
+	data.desc.NumElements = (UINT)data.elements.size ();
+
+	//キャッシュに登録
+	m_LayoutCache[InputLayoutType::Skybox] = std::move (data);
+	//新しい設定を登録するためにdataをclear
+	data.elements.clear ();
+	//******//
+
+	//***PostProcess***//
+	data.desc.pInputElementDescs = nullptr;
+	data.desc.NumElements = 0;
+	m_LayoutCache[InputLayoutType::PostProcess] = std::move (data);
+	data.elements.clear ();
+	//******//
+
+	//***MeshShader***//
+	data.desc.pInputElementDescs = nullptr;
+	data.desc.NumElements = 0;
+	m_LayoutCache[InputLayoutType::MeshShader] = std::move (data);
+	data.elements.clear ();
+	//******//
+}
+
+const D3D12_INPUT_LAYOUT_DESC* InputLayoutManager::GetInputLayout (InputLayoutType type) const {
+	if (m_LayoutCache.count (type)) {
+		return &m_LayoutCache.at (type).desc;
+	}
+	assert (false && "InputLayoutType not found in cache!");
+	return nullptr;
+}

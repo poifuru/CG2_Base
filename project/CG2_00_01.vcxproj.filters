@@ -94,6 +94,11 @@
     <ClCompile Include="magosuya\particle\ParticleRenderer.cpp" />
     <ClCompile Include="Magosuya\PostEffect\Outline.cpp" />
     <ClCompile Include="Magosuya\PostEffect\CopyImage.cpp" />
+    <ClCompile Include="magosuya\engine\GraphicsDevice.cpp" />
+    <ClCompile Include="magosuya\engine\CommandContext.cpp" />
+    <ClCompile Include="magosuya\engine\SwapChain.cpp" />
+    <ClCompile Include="magosuya\engine\FrameRateController.cpp" />
+    <ClCompile Include="magosuya\engine\Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -187,6 +192,12 @@
     <ClInclude Include="magosuya\particle\ParticleRenderer.h" />
     <ClInclude Include="Magosuya\PostEffect\Outline.h" />
     <ClInclude Include="Magosuya\PostEffect\CopyImage.h" />
+    <ClInclude Include="magosuya\engine\GraphicsDevice.h" />
+    <ClInclude Include="magosuya\engine\CommandContext.h" />
+    <ClInclude Include="magosuya\engine\SwapChain.h" />
+    <ClInclude Include="magosuya\engine\FrameRateController.h" />
+    <ClInclude Include="magosuya\engine\IEngine.h" />
+    <ClInclude Include="magosuya\engine\Engine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />

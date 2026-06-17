@@ -5,15 +5,14 @@
 #include "GamePad.h"
 
 class InputManager {
-public:	//メンバ関数
-	static InputManager* GetInstance () {
-		//初めて呼び出されたときに一回だけ初期化
-		static InputManager instance;
-		return &instance;
-	}
+public:
+	InputManager() = default;
+	~InputManager() = default;
 
 	void Initialize (HWND hwnd);
-	void Update (LPARAM lparam);
+
+	void Update ();
+
 	//preKeys更新用
 	void EndFrame ();
 
@@ -21,12 +20,10 @@ public:	//メンバ関数
 	GamePad* GetGamePad () { return gamePad_.get (); }
 
 private:
-	//コンストラクタを禁止
-	InputManager () = default;
-	// コピーコンストラクタと代入演算子を禁止
-	InputManager (const InputManager&) = delete;
+	// コピー・移動禁止
+	InputManager(const InputManager&) = delete;
 	InputManager& operator=(const InputManager&) = delete;
-	InputManager (InputManager&&) = delete;
+	InputManager(InputManager&&) = delete;
 	InputManager& operator=(InputManager&&) = delete;
 
 private://メンバ変数

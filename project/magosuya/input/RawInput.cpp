@@ -18,54 +18,38 @@ void RawInput::Initialize (HWND hwnd) {
     rid[1].dwFlags = RIDEV_INPUTSINK;
     rid[1].hwndTarget = hwnd;
 
-    if (!RegisterRawInputDevices (rid, 2, sizeof (rid[0]))) {
-        MessageBoxA (hwnd, "RawInput 登録失敗", "Error", MB_OK);
-    }
-    else {
-        OutputDebugStringA ("RawInput 登録成功\n");
-    }
+	BOOL result = RegisterRawInputDevices(rid, 2, sizeof(rid[0]));
+	assert(result && "RawInputの登録に失敗しました");
 }
 
-void RawInput::Update (LPARAM lParam) {
+void RawInput::Update () {
     UINT size = 0;
-    GetRawInputData ((HRAWINPUT)lParam, RID_INPUT, nullptr, &size, sizeof (RAWINPUTHEADER));
-    if (buffer_.size () < size)
-        buffer_.resize (size);
+	// 溜まっているバッファのサイズを取得
+	GetRawInputBuffer(nullptr, &size, sizeof(RAWINPUTHEADER));
+	if(size == 0) return;
 
-    if (GetRawInputData ((HRAWINPUT)lParam, RID_INPUT, buffer_.data (), &size, sizeof (RAWINPUTHEADER)) != size)
-        return;
+	// 安全策として少し大きめにバッファを確保
+	UINT alignmentSize = size * 2;
+	if(buffer_.size() < alignmentSize) {
+		buffer_.resize(alignmentSize);
+	}
 
-    RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(buffer_.data ());
+	// バッファから一括で入力を引き抜く
+	UINT count = GetRawInputBuffer(reinterpret_cast<RAWINPUT*>(buffer_.data()), &alignmentSize, sizeof(RAWINPUTHEADER));
+	if(count == static_cast<UINT>(-1)) return;
 
-    // キーボード入力
-    if (raw->header.dwType == RIM_TYPEKEYBOARD) {
-        const RAWKEYBOARD& kb = raw->data.keyboard;
-        USHORT key = kb.VKey;
-        bool down = !(kb.Flags & RI_KEY_BREAK);
-        if (key < 256) keys_[key] = down;
-    }
+	// 取得した配列を順番に解析していく
+	BYTE* pData = buffer_.data();
+	for (UINT i = 0; i < count; ++i) {
+		RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(pData);
+		ParseInputData(raw);
 
-    // マウス入力
-    if (raw->header.dwType == RIM_TYPEMOUSE) {
-        const RAWMOUSE& ms = raw->data.mouse;
-        mouseDeltaX_ += ms.lLastX;
-        mouseDeltaY_ += ms.lLastY;
+		// データのサイズを8の倍数に切り上げる計算
+		UINT rawSize = raw->header.dwSize;
+		UINT alignedSize = (rawSize + 7) & ~7; 
 
-        // マウスボタンの状態を更新
-        USHORT buttonFlags = ms.usButtonFlags;
-
-        // 左ボタン
-        if (buttonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) mouseButtons_[LEFT] = true;
-        if (buttonFlags & RI_MOUSE_LEFT_BUTTON_UP) mouseButtons_[LEFT] = false;
-
-        // 右ボタン
-        if (buttonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN) mouseButtons_[RIGHT] = true;
-        if (buttonFlags & RI_MOUSE_RIGHT_BUTTON_UP) mouseButtons_[RIGHT] = false;
-
-        // 中ボタン
-        if (buttonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN) mouseButtons_[MIDDLE] = true;
-        if (buttonFlags & RI_MOUSE_MIDDLE_BUTTON_UP) mouseButtons_[MIDDLE] = false;
-    }
+		pData += alignedSize; 
+	}
 }
 
 bool RawInput::Push (unsigned short key) const {
@@ -141,4 +125,35 @@ void RawInput::EndFrame () {
 
     mouseDeltaX_ = 0;
     mouseDeltaY_ = 0;
+}
+
+void RawInput::ParseInputData(const RAWINPUT* raw) {
+	// キーボード入力の解析
+	if (raw->header.dwType == RIM_TYPEKEYBOARD) {
+		const RAWKEYBOARD& kb = raw->data.keyboard;
+		USHORT key = kb.VKey;
+		bool down = !(kb.Flags & RI_KEY_BREAK);
+		if (key < 256) {
+			keys_[key] = down;
+		}
+	}
+
+	// マウス入力の解析
+	if (raw->header.dwType == RIM_TYPEMOUSE) {
+		const RAWMOUSE& ms = raw->data.mouse;
+
+		// 移動量の加算
+		if (!(ms.usFlags & MOUSE_MOVE_ABSOLUTE)) {
+			mouseDeltaX_ += ms.lLastX;
+			mouseDeltaY_ += ms.lLastY;
+		}
+
+		USHORT buttonFlags = ms.usButtonFlags;
+		if (buttonFlags & RI_MOUSE_LEFT_BUTTON_DOWN)   mouseButtons_[LEFT] = true;
+		if (buttonFlags & RI_MOUSE_LEFT_BUTTON_UP)     mouseButtons_[LEFT] = false;
+		if (buttonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN)  mouseButtons_[RIGHT] = true;
+		if (buttonFlags & RI_MOUSE_RIGHT_BUTTON_UP)    mouseButtons_[RIGHT] = false;
+		if (buttonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN) mouseButtons_[MIDDLE] = true;
+		if (buttonFlags & RI_MOUSE_MIDDLE_BUTTON_UP)   mouseButtons_[MIDDLE] = false;
+	}
 }

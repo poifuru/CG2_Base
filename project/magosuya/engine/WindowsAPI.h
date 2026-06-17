@@ -1,32 +1,27 @@
 #pragma once
-#ifndef __HLSL_VERSION
-#include <Windows.h>  // HLSL側では __HLSL_VERSION が定義されてないのでスキップできる
-#endif
-#include <memory>
-#include "InputManager.h"
+#include <Windows.h>
+#include <cstdint>
 
 class InputManager; // 前方宣言
 
 class WindowsAPI {
-public:		//公開メソッド
-	static WindowsAPI* GetInstance() {
-		//初めて呼び出されたときに一回だけ初期化
-		static WindowsAPI instance;
-		return &instance;
-	}
+public:
+	WindowsAPI() = default;
+	~WindowsAPI() = default;
 
-	void Initialize(InputManager* inputManager);
+	void Initialize(int32_t width, int32_t height);
+
 	bool ProcessMessage();
+
 	void Finalize();
+
 	HWND GetHwnd() { return hwnd_; }
-	int32_t GetWindowWidth() { return kClientWidth; }
-	int32_t GetWindowHeight() { return kClientHeight; }
-	float GetAspectRatio() { return windowWidth_ / windowHeight_; }
+	int32_t GetWindowWidth() { return windowWidth_; }
+	int32_t GetWindowHeight() { return windowHeight_; }
+	float GetAspectRatio() const { return static_cast<float>(windowWidth_) / static_cast<float>(windowHeight_); }
 
 private:
-	//コンストラクタを禁止
-	WindowsAPI() = default;
-	// コピーコンストラクタと代入演算子を禁止
+	// コピー・移動禁止
 	WindowsAPI(const WindowsAPI&) = delete;
 	WindowsAPI& operator=(const WindowsAPI&) = delete;
 	WindowsAPI(WindowsAPI&&) = delete;
@@ -35,18 +30,9 @@ private:
 private:	//staticメンバ関数
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-public:		//定数
-	//クライアント領域のサイズ
-	static const int32_t kClientWidth = 1280;
-	static const int32_t kClientHeight = 720;
-
 private:	//メンバ変数
-	//ウィンドウ
 	WNDCLASS windowClass_{};
-	HWND hwnd_{};
-	float windowWidth_ = 1280.0f;
-	float windowHeight_ = 720.0f;
-
-	//ポインタを借りる
-	InputManager* inputManager_ = nullptr;
+	HWND hwnd_ = nullptr;
+	int32_t windowWidth_ = 1280;
+	int32_t windowHeight_ = 720;
 };

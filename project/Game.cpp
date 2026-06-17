@@ -1,16 +1,14 @@
 #include "Game.h"
 #include "CameraOrganizer.h"
-#include "InputManager.h"
-#include "DxCommon.h"
 #include "BaseScene.h"
 #include "SceneType.h"
 
 Game::Game() {
-	magosuya_ = MagosuyaEngine::GetInstance();
-	magosuya_->Initialize();
-	std::unique_ptr<BaseScene> scene = std::make_unique<PlayScene>();
+	engine_ = std::make_unique<Engine>();
+	engine_->Initialize();
+	/*std::unique_ptr<BaseScene> scene = std::make_unique<PlayScene>();
 	sceneManager_ = SceneManager::GetInstance();
-	sceneManager_->SetNextScene(std::move(scene));
+	sceneManager_->SetNextScene(std::move(scene));*/
 }
 
 Game::~Game() {
@@ -22,22 +20,22 @@ void Game::Run() {
 	//ウィンドウの×ボタンが押されるまでループ
 	while(true) {
 
-		if(WindowsAPI::GetInstance()->ProcessMessage()) {
+		if(engine_->ProcessMessage()) {
 			break;
 		}
 
 		//フレーム開始
-		magosuya_->BeginFrame();
+		engine_->BeginFrame();
 
 		//***更新処理***//
-		sceneManager_->Update();
+		//sceneManager_->Update();
 		//*************//
 
 		//***描画処理***//
-		sceneManager_->Draw();
+		//sceneManager_->Draw();
 		//*************//
 
 		//フレーム終了
-		magosuya_->EndFrame();
+		engine_->EndFrame();
 	}
 }

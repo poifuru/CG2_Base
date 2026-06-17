@@ -3,12 +3,13 @@
 void InputManager::Initialize (HWND hwnd) {
 	rawInput_ = std::make_unique<RawInput> ();
 	rawInput_->Initialize (hwnd);
+
 	gamePad_ = std::make_unique<GamePad> ();
 	gamePad_->Initialize ();
 }
 
-void InputManager::Update (LPARAM lparam) {
-	rawInput_->Update (lparam);
+void InputManager::Update () {
+	rawInput_->Update ();
 	gamePad_->Update ();
 }
 

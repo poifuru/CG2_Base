@@ -1,0 +1,84 @@
+#include "SwapChain.h"
+#include <cassert>
+
+SwapChain::SwapChain() = default;
+
+void SwapChain::Initialize(
+	IDXGIFactory7* dxgiFactory,
+	ID3D12CommandQueue* cmdQueue,
+	HWND hwnd,
+	int32_t width,
+	int32_t height) {
+	// もらった引数が有効かチェック
+	assert(dxgiFactory != nullptr && cmdQueue != nullptr && hwnd != nullptr);
+
+	HRESULT hr = S_OK;
+
+	// スワップチェーンの設定(トリプルバッファ用)
+	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
+	swapChainDesc.Width = width;
+	swapChainDesc.Height = height;
+	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // RTV側で_SRGBにするため、ここはUNORM
+	swapChainDesc.SampleDesc.Count = 1;
+	swapChainDesc.SampleDesc.Quality = 0;
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.BufferCount = kBufferCount;	// 3つ分
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	swapChainDesc.Flags = 0;
+
+	Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain1;
+	hr = dxgiFactory->CreateSwapChainForHwnd(
+		cmdQueue,
+		hwnd,
+		&swapChainDesc,
+		nullptr, nullptr,
+		swapChain1.GetAddressOf()
+	);
+	assert(SUCCEEDED(hr));
+
+	// 4にキャストして保持
+	hr = swapChain1.As(&swapChain_);
+	assert(SUCCEEDED(hr));
+
+	// RTV用のディスクリプタヒープを作成（数は3つ分）
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc{};
+	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	heapDesc.NumDescriptors = kBufferCount; // 3つ分
+	heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE; // シェーダーからは見せない
+
+	// 瞬間的に生デバイスを取得するために、一時的にcommandQueueからDeviceを引っ張り出す（裏技的だけど安全）
+	Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice;
+	hr = cmdQueue->QueryInterface(IID_PPV_ARGS(d3dDevice.GetAddressOf()));
+	assert(SUCCEEDED(hr));
+
+	hr = d3dDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(rtvHeap_.GetAddressOf()));
+	assert(SUCCEEDED(hr));
+
+	uint32_t rtvDescriptorSize = d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+	// バックバッファリソースの取得とRTVの生成
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
+	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; // ガンマ補正を自動でかけるためSRGB
+	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandleStart = rtvHeap_->GetCPUDescriptorHandleForHeapStart();
+
+	for (uint32_t i = 0; i < kBufferCount; ++i) {
+		// スワップチェーンからバッファ（ID3D12Resource）を引き出す
+		hr = swapChain_->GetBuffer(i, IID_PPV_ARGS(&swapChainResources_[i]));
+		assert(SUCCEEDED(hr));
+
+		// ハンドル位置を計算
+		rtvHandles_[i] = rtvHandleStart;
+		rtvHandles_[i].ptr += static_cast<SIZE_T>(i) * rtvDescriptorSize;
+
+		// レンダーターゲットビューの生成
+		d3dDevice->CreateRenderTargetView(swapChainResources_[i].Get(), &rtvDesc, rtvHandles_[i]);
+	}
+}
+
+void SwapChain::Present() {
+	// 垂直同期（V-Sync）を有効にするなら第1引数を 1 に、無制限にするなら 0 にする
+	HRESULT hr = swapChain_->Present(1, 0);
+	assert(SUCCEEDED(hr));
+}

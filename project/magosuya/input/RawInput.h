@@ -10,9 +10,13 @@ enum MouseButton {
 };
 
 class RawInput {  
-public: // メンバ関数  
+public:
+	RawInput() = default;
+	~RawInput() = default;
+
     void Initialize(HWND hwnd);
-    void Update(LPARAM lParam);  
+
+    void Update();  
 
     //キーボードの入力関数
     bool Push (unsigned short key) const;
@@ -32,7 +36,10 @@ public: // メンバ関数
 
     void EndFrame ();
     long GetMouseDeltaX() const { return mouseDeltaX_; }  
-    long GetMouseDeltaY() const { return mouseDeltaY_; }  
+    long GetMouseDeltaY() const { return mouseDeltaY_; }
+
+private:
+	void ParseInputData(const RAWINPUT* raw);
 
 private: // メンバ変数  
     //キーボード

@@ -182,6 +182,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\entity\player\Bullet.cpp" />
     <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
     <ClCompile Include="Application\Collider\CollisionManager.cpp" />
+    <ClCompile Include="magosuya\engine\Engine.cpp" />
+    <ClCompile Include="magosuya\engine\CommandContext.cpp" />
+    <ClCompile Include="magosuya\engine\FrameRateController.cpp" />
+    <ClCompile Include="magosuya\engine\GraphicsDevice.cpp" />
     <ClCompile Include="Magosuya\PostEffect\CopyImage.cpp" />
     <ClCompile Include="Magosuya\PostEffect\Fog.cpp" />
     <ClCompile Include="Magosuya\PostEffect\ColorGrading.cpp" />
@@ -256,6 +260,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="magosuya\particle\Particle.cpp" />
     <ClCompile Include="magosuya\particle\ParticleRenderer.cpp" />
     <ClCompile Include="Magosuya\PostEffect\Outline.cpp" />
+    <ClCompile Include="magosuya\engine\SwapChain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\BoxFilter.PS.hlsl">
@@ -388,6 +393,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\entity\player\Bullet.h" />
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="Application\Collider\CollisionManager.h" />
+    <ClInclude Include="magosuya\engine\Engine.h" />
+    <ClInclude Include="magosuya\engine\CommandContext.h" />
+    <ClInclude Include="magosuya\engine\FrameRateController.h" />
+    <ClInclude Include="magosuya\engine\GraphicsDevice.h" />
+    <ClInclude Include="magosuya\engine\IEngine.h" />
     <ClInclude Include="Magosuya\PostEffect\CopyImage.h" />
     <ClInclude Include="Magosuya\PostEffect\Fog.h" />
     <ClInclude Include="Magosuya\PostEffect\ColorGrading.h" />
@@ -473,6 +483,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="magosuya\particle\Particle.h" />
     <ClInclude Include="magosuya\particle\ParticleRenderer.h" />
     <ClInclude Include="Magosuya\PostEffect\Outline.h" />
+    <ClInclude Include="magosuya\engine\SwapChain.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Fullscreen.hlsli" />

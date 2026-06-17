@@ -1,5 +1,6 @@
 #pragma once
-#include "MagosuyaEngine.h"
+#include <memory>
+#include "Engine.h"
 #include "SceneManager.h"
 
 class Game {
@@ -10,6 +11,6 @@ public:
 	void Run();
 
 private:
-	MagosuyaEngine* magosuya_ = nullptr;
-	SceneManager* sceneManager_ = nullptr;
+	std::unique_ptr<Engine> engine_ = nullptr;
+	std::unique_ptr<SceneManager> sceneManager_ = nullptr;
 };
