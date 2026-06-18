@@ -203,6 +203,10 @@
     <ClInclude Include="Engine\Core\DescriptorHeapManager.h" />
     <ClInclude Include="Engine\Core\RenderSystem.h" />
     <ClInclude Include="Engine\Core\RenderCommand.h" />
+    <ClInclude Include="Engine\Core\DirectXResource\VertexBuffer.h" />
+    <ClInclude Include="Engine\Core\DirectXResource\IndexBuffer.h" />
+    <ClInclude Include="Engine\Core\DirectXResource\StructuredBuffer.h" />
+    <ClInclude Include="Engine\Core\DirectXResource\ConstantBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />
