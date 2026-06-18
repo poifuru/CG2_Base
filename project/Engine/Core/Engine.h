@@ -4,6 +4,7 @@
 #include "LeakChecker.h"
 
 // 前方宣言でアプリケーション側に詳細な型を隠す
+struct ID3D12Device;
 class WindowsAPI;
 class FrameRateController;
 class GraphicsDevice;
@@ -25,6 +26,12 @@ public:
 	bool ProcessMessage() override;
 	void BeginFrame() override;
 	void EndFrame() override;
+
+	// 一時的なアクセッサ
+	ID3D12Device* GetDevice();
+	DescriptorHeapManager* GetHeapManager()  { return heapManager_.get(); }
+	ShaderManager* GetShaderManager()  { return shaderManager_.get(); }
+	RenderSystem* GetRenderSystem()  { return renderSystem_.get(); }
 
 private:
 	// リークチェッカー

@@ -35,7 +35,9 @@ void RenderSystem::ExecuteCommands(
 	cmdList->SetGraphicsRootDescriptorTable(2, heapManager.GetGpuHandle(0));
 
 	// Slot 0 にカメラバッファのアドレスをセット（1回固定！）
-	cmdList->SetGraphicsRootConstantBufferView(0, cameraCBVAddress);
+	if (cameraCBVAddress != 0) {
+		cmdList->SetGraphicsRootConstantBufferView(0, cameraCBVAddress);
+	}
 
 	// トポロジーは三角形
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

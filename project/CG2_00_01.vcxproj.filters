@@ -17,6 +17,8 @@
     <FxCompile Include="Resources\shader\GaussianFilter.PS.hlsl" />
     <FxCompile Include="Resources\shader\Fog.PS.hlsl" />
     <FxCompile Include="Resources\shader\Outline.PS.hlsl" />
+    <FxCompile Include="Resources\shader\Triangle.VS.hlsl" />
+    <FxCompile Include="Resources\shader\Triangle.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application\scene\ClearScene.cpp" />
@@ -257,6 +259,7 @@
     <None Include="Resources\shader\Sprite.hlsli" />
     <None Include="Resources\shader\Skybox.hlsli" />
     <None Include="Resources\shader\Fullscreen.hlsli" />
+    <None Include="Resources\shader\Triangle.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

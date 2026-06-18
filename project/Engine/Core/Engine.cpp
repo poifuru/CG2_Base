@@ -10,6 +10,8 @@
 #include "PSOManager.h"
 #include "RenderSystem.h"
 #include "InputManager.h"
+#include "InputLayoutManager.h"
+#include "BlendModeManager.h"
 
 Engine::Engine() = default;
 Engine::~Engine() = default;
@@ -59,6 +61,12 @@ void Engine::Initialize() {
 	// PSOマネージャーの生成
 	psoManager_ = std::make_unique<PSOManager>();
 
+	// インプットレイアウトマネージャーの初期化
+	InputLayoutManager::GetInstance()->Initialize();
+
+	// ブレンドモードマネージャーの初期化
+	BlendModeManager::GetInstance()->Initialize();
+
 	// レンダーシステム生成
 	renderSystem_ = std::make_unique<RenderSystem>();
 
@@ -85,6 +93,37 @@ void Engine::BeginFrame() {
 }
 
 void Engine::EndFrame() {
+	// ビューポートとシザー矩形の設定（描画の出力範囲を指定）
+	D3D12_VIEWPORT viewport{};
+	viewport.Width = static_cast<float>(winApi_->GetWindowWidth());
+	viewport.Height = static_cast<float>(winApi_->GetWindowHeight());
+	viewport.TopLeftX = 0.0f;
+	viewport.TopLeftY = 0.0f;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+
+	D3D12_RECT scissorRect{};
+	scissorRect.left = 0;
+	scissorRect.top = 0;
+	scissorRect.right = winApi_->GetWindowWidth();
+	scissorRect.bottom = winApi_->GetWindowHeight();
+
+	ID3D12GraphicsCommandList* cmdList = cmdContext_->GetCommandList();
+	cmdList->RSSetViewports(1, &viewport);
+	cmdList->RSSetScissorRects(1, &scissorRect);
+
+	// 溜まった描画コマンドを実行してクリアする
+	renderSystem_->ExecuteCommands(
+		device_->GetDevice(),
+		cmdList,
+		rootSigManager_->GetCommonRootSignature(),
+		0, // cameraCBVAddress (今回は未使用なので0)
+		*heapManager_,
+		*psoManager_,
+		*shaderManager_
+	);
+	renderSystem_->ClearCommands();
+
 	// 描画終了をスワップチェーンに通知(PRESENTにバリア切り替え)
 	swapChain_->EndRender(cmdContext_.get());
 
@@ -95,4 +134,8 @@ void Engine::EndFrame() {
 	cmdContext_->SignalAndWait();
 
 	input_->EndFrame();
+}
+
+ID3D12Device* Engine::GetDevice() {
+	return device_->GetDevice();;
 }
