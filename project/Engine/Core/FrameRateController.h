@@ -15,6 +15,13 @@ public:
 	float GetDeltaTime() const { return deltaTime_; }
 	float GetFrameRate() const { return frameRate_; }
 
+public:
+	// コピー・移動禁止
+	FrameRateController(const FrameRateController&) = delete;
+	FrameRateController& operator=(const FrameRateController&) = delete;
+	FrameRateController(FrameRateController&&) = delete;
+	FrameRateController& operator=(FrameRateController&&) = delete;
+
 private:
 	// 精密な時間計測のためのタイムスタンプ型
 	std::chrono::steady_clock::time_point lastTime_;

@@ -12,7 +12,7 @@ public:		// メンバ関数
 	// レンダラーやPSOManagerが使うゲッター
 	ID3D12RootSignature* GetCommonRootSignature() const { return rootSignature_.Get(); }
 
-private:
+public:
 	// コピー・移動禁止
 	RootSignatureManager(const RootSignatureManager&) = delete;
 	RootSignatureManager& operator=(const RootSignatureManager&) = delete;

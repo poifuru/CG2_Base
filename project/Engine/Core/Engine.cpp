@@ -8,6 +8,7 @@
 #include "RootSignatureManager.h"
 #include "ShaderManager.h"
 #include "PSOManager.h"
+#include "RenderSystem.h"
 #include "InputManager.h"
 
 Engine::Engine() = default;
@@ -57,6 +58,9 @@ void Engine::Initialize() {
 
 	// PSOマネージャーの生成
 	psoManager_ = std::make_unique<PSOManager>();
+
+	// レンダーシステム生成
+	renderSystem_ = std::make_unique<RenderSystem>();
 
 	// インプットマネージャーの生成
 	input_ = std::make_unique<InputManager>();

@@ -13,6 +13,7 @@ class DescriptorHeapManager;
 class RootSignatureManager;
 class ShaderManager;
 class PSOManager;
+class RenderSystem;
 class InputManager;
 
 class Engine : public IEngine {
@@ -44,5 +45,6 @@ private:
 	std::unique_ptr<RootSignatureManager> rootSigManager_;
 	std::unique_ptr<ShaderManager> shaderManager_;
 	std::unique_ptr<PSOManager> psoManager_;
+	std::unique_ptr<RenderSystem> renderSystem_;
 	std::unique_ptr<InputManager> input_;
 };

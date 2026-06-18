@@ -18,7 +18,7 @@ public:
 	virtual void Initialize(DxCommon* dxCommon) = 0;
 
 	// 継承先でCBVをセットする
-	virtual void Draw(RenderTexture* renderTexture, CameraOrganizer* camera) = 0;
+	//virtual void Draw(RenderTexture* renderTexture, CameraOrganizer* camera) = 0;
 	virtual void ImGui() = 0;
 
 	bool GetIsActive() { return isActive_; }

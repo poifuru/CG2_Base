@@ -53,7 +53,7 @@ public:		//メンバ関数
 		const ShaderManager& shaderManager
 	);
 
-private:
+public:
 	// コピー・移動禁止
 	PSOManager(const PSOManager&) = delete;
 	PSOManager& operator=(const PSOManager&) = delete;

@@ -88,7 +88,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)magosuya;$(SolutionDir)magosuya\general;$(SolutionDir)magosuya\engine;$(SolutionDir)magosuya\engine\SRV;$(SolutionDir)magosuya\object\2d;$(SolutionDir)magosuya\object\3d;$(SolutionDir)magosuya\audio;$(SolutionDir)magosuya\camera;$(SolutionDir)magosuya\input;$(SolutionDir)magosuya\imgui;$(SolutionDir)magosuya\particle;$(SolutionDir)magosuya\PostEffect;$(SolutionDir)magosuya\PSO;$(SolutionDir)magosuya\primitive;$(SolutionDir)magosuya\primitive\line;$(SolutionDir)magosuya\primitive\cube;$(SolutionDir)magosuya\light;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\general;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Debug\ImGui;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -117,7 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)magosuya;$(SolutionDir)magosuya\general;$(SolutionDir)magosuya\engine;$(SolutionDir)magosuya\engine\SRV;$(SolutionDir)magosuya\object\2d;$(SolutionDir)magosuya\object\3d;$(SolutionDir)magosuya\audio;$(SolutionDir)magosuya\camera;$(SolutionDir)magosuya\input;$(SolutionDir)magosuya\imgui;$(SolutionDir)magosuya\particle;$(SolutionDir)magosuya\PostEffect;$(SolutionDir)magosuya\PSO;$(SolutionDir)magosuya\primitive;$(SolutionDir)magosuya\primitive\line;$(SolutionDir)magosuya\primitive\cube;$(SolutionDir)magosuya\light;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\general;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Debug\ImGui;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,7 +151,7 @@ echo "MaoSuya Engine Builded"</Command>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)magosuya;$(SolutionDir)magosuya\general;$(SolutionDir)magosuya\engine;$(SolutionDir)magosuya\engine\SRV;$(SolutionDir)magosuya\object\2d;$(SolutionDir)magosuya\object\3d;$(SolutionDir)magosuya\audio;$(SolutionDir)magosuya\camera;$(SolutionDir)magosuya\input;$(SolutionDir)magosuya\imgui;$(SolutionDir)magosuya\particle;$(SolutionDir)magosuya\PostEffect;$(SolutionDir)magosuya\PSO;$(SolutionDir)magosuya\primitive;$(SolutionDir)magosuya\primitive\line;$(SolutionDir)magosuya\primitive\cube;$(SolutionDir)magosuya\light;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\general;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Debug\ImGui;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -182,86 +182,87 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\entity\player\Bullet.cpp" />
     <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
     <ClCompile Include="Application\Collider\CollisionManager.cpp" />
-    <ClCompile Include="magosuya\engine\DescriptorHeapManager.cpp" />
-    <ClCompile Include="magosuya\engine\Engine.cpp" />
-    <ClCompile Include="magosuya\engine\CommandContext.cpp" />
-    <ClCompile Include="magosuya\engine\FrameRateController.cpp" />
-    <ClCompile Include="magosuya\engine\GraphicsDevice.cpp" />
-    <ClCompile Include="Magosuya\PostEffect\CopyImage.cpp" />
-    <ClCompile Include="Magosuya\PostEffect\Fog.cpp" />
-    <ClCompile Include="Magosuya\PostEffect\ColorGrading.cpp" />
-    <ClCompile Include="magosuya\light\DirectionalLight.cpp" />
-    <ClCompile Include="magosuya\light\BaseLight.cpp" />
-    <ClCompile Include="magosuya\light\LightManager.cpp" />
+    <ClCompile Include="Engine\Core\DescriptorHeapManager.cpp" />
+    <ClCompile Include="Engine\Core\Engine.cpp" />
+    <ClCompile Include="Engine\Core\CommandContext.cpp" />
+    <ClCompile Include="Engine\Core\FrameRateController.cpp" />
+    <ClCompile Include="Engine\Core\GraphicsDevice.cpp" />
+    <ClCompile Include="Engine\Render\PostEffect\CopyImage.cpp" />
+    <ClCompile Include="Engine\Render\PostEffect\Fog.cpp" />
+    <ClCompile Include="Engine\Render\PostEffect\ColorGrading.cpp" />
+    <ClCompile Include="Engine\Render\Light\DirectionalLight.cpp" />
+    <ClCompile Include="Engine\Render\Light\BaseLight.cpp" />
+    <ClCompile Include="Engine\Render\Light\LightManager.cpp" />
     <ClCompile Include="application\entity\boss\Boss.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="magosuya\object\3d\BaseRenderer.cpp" />
-    <ClCompile Include="magosuya\object\3d\BaseObject3d.cpp" />
-    <ClCompile Include="magosuya\general\Easing.cpp" />
-    <ClCompile Include="Magosuya\PostEffect\BasePostEffect.cpp" />
-    <ClCompile Include="magosuya\PSO\ShaderManager.cpp" />
-    <ClCompile Include="magosuya\audio\AudioManager.cpp" />
-    <ClCompile Include="magosuya\camera\LookAtCamera.cpp" />
-    <ClCompile Include="magosuya\camera\CameraOrganizer.cpp" />
-    <ClCompile Include="magosuya\camera\FixedPointCamera.cpp" />
-    <ClCompile Include="magosuya\primitive\cube\CubeRenderer.cpp" />
-    <ClCompile Include="magosuya\primitive\line\LineRenderer.cpp" />
-    <ClCompile Include="magosuya\PSO\BlendModeManager.cpp" />
-    <ClCompile Include="magosuya\general\LogManager.cpp" />
-    <ClCompile Include="magosuya\general\ChangeString.cpp" />
-    <ClCompile Include="magosuya\PSO\InputLayoutManager.cpp" />
-    <ClCompile Include="magosuya\camera\FollowCamera.cpp" />
-    <ClCompile Include="magosuya\imgui\ImGuiManager.cpp" />
-    <ClCompile Include="magosuya\engine\LeakChecker.cpp" />
-    <ClCompile Include="magosuya\engine\DxCommon.cpp">
+    <ClCompile Include="Engine\Framework\Object\3d\BaseRenderer.cpp" />
+    <ClCompile Include="Engine\Framework\Object\3d\BaseObject3d.cpp" />
+    <ClCompile Include="Engine\Core\General\Easing.cpp" />
+    <ClCompile Include="Engine\Render\PostEffect\BasePostEffect.cpp" />
+    <ClCompile Include="Engine\Render\PSO\ShaderManager.cpp" />
+    <ClCompile Include="Engine\Audio\AudioManager.cpp" />
+    <ClCompile Include="Engine\Framework\Camera\LookAtCamera.cpp" />
+    <ClCompile Include="Engine\Framework\Camera\CameraOrganizer.cpp" />
+    <ClCompile Include="Engine\Framework\Camera\FixedPointCamera.cpp" />
+    <ClCompile Include="Engine\Render\Primitive\cube\CubeRenderer.cpp" />
+    <ClCompile Include="Engine\Render\Primitive\line\LineRenderer.cpp" />
+    <ClCompile Include="Engine\Render\PSO\BlendModeManager.cpp" />
+    <ClCompile Include="Engine\Core\General\LogManager.cpp" />
+    <ClCompile Include="Engine\Core\General\ChangeString.cpp" />
+    <ClCompile Include="Engine\Render\PSO\InputLayoutManager.cpp" />
+    <ClCompile Include="Engine\Framework\Camera\FollowCamera.cpp" />
+    <ClCompile Include="Engine\Debug\ImGui\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\Core\LeakChecker.cpp" />
+    <ClCompile Include="Engine\Core\DxCommon.cpp">
       <DebugInformationFormat Condition="'$(Configuration)|$(Platform)'=='Release|x64'">None</DebugInformationFormat>
     </ClCompile>
-    <ClCompile Include="magosuya\camera\DebugCamera.cpp" />
-    <ClCompile Include="magosuya\general\function.cpp" />
-    <ClCompile Include="magosuya\input\GamePad.cpp" />
-    <ClCompile Include="magosuya\input\InputManager.cpp" />
+    <ClCompile Include="Engine\Framework\Camera\DebugCamera.cpp" />
+    <ClCompile Include="Engine\Core\General\function.cpp" />
+    <ClCompile Include="Engine\Core\Input\GamePad.cpp" />
+    <ClCompile Include="Engine\Core\Input\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="magosuya\general\MathFunction.cpp" />
-    <ClCompile Include="magosuya\object\3d\SphereMesh.cpp">
+    <ClCompile Include="Engine\Core\General\MathFunction.cpp" />
+    <ClCompile Include="Engine\Framework\Object\3d\SphereMesh.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="magosuya\object\2d\Sprite.cpp" />
-    <ClCompile Include="magosuya\object\3d\Model.cpp" />
-    <ClCompile Include="magosuya\input\RawInput.cpp">
+    <ClCompile Include="Engine\Framework\Object\2d\Sprite.cpp" />
+    <ClCompile Include="Engine\Framework\Object\3d\Model.cpp" />
+    <ClCompile Include="Engine\Core\Input\RawInput.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
       </ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="magosuya\object\3d\ModelManager.cpp" />
-    <ClCompile Include="magosuya\MagosuyaEngine.cpp" />
-    <ClCompile Include="magosuya\engine\WindowsAPI.cpp" />
-    <ClCompile Include="magosuya\object\2d\TextureManager.cpp" />
-    <ClCompile Include="magosuya\object\2d\SpriteRenderer.cpp" />
-    <ClCompile Include="magosuya\object\3d\ModelRenderer.cpp" />
+    <ClCompile Include="Engine\Framework\Object\3d\ModelManager.cpp" />
+    <ClCompile Include="Engine\MagosuyaEngine.cpp" />
+    <ClCompile Include="Engine\Core\WindowsAPI.cpp" />
+    <ClCompile Include="Engine\Framework\Object\2d\TextureManager.cpp" />
+    <ClCompile Include="Engine\Framework\Object\2d\SpriteRenderer.cpp" />
+    <ClCompile Include="Engine\Framework\Object\3d\ModelRenderer.cpp" />
     <ClCompile Include="application\scene\SceneManager.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
     <ClCompile Include="application\scene\PlayScene.cpp" />
-    <ClCompile Include="magosuya\PSO\RootSignatureManager.cpp" />
-    <ClCompile Include="magosuya\PSO\PSOManager.cpp" />
-    <ClCompile Include="magosuya\primitive\Mesh.cpp" />
-    <ClCompile Include="magosuya\engine\SRV\SRVManager.cpp" />
+    <ClCompile Include="Engine\Render\PSO\RootSignatureManager.cpp" />
+    <ClCompile Include="Engine\Render\PSO\PSOManager.cpp" />
+    <ClCompile Include="Engine\Render\Primitive\Mesh.cpp" />
+    <ClCompile Include="Engine\Core\SRV\SRVManager.cpp" />
     <ClCompile Include="application\mapchip\mapchip.cpp" />
     <ClCompile Include="application\mapchip\mapChipRenderer.cpp" />
-    <ClCompile Include="magosuya\light\PointLight.cpp" />
-    <ClCompile Include="magosuya\light\SpotLight.cpp" />
-    <ClCompile Include="magosuya\light\RectLight.cpp" />
+    <ClCompile Include="Engine\Render\Light\PointLight.cpp" />
+    <ClCompile Include="Engine\Render\Light\SpotLight.cpp" />
+    <ClCompile Include="Engine\Render\Light\RectLight.cpp" />
     <ClCompile Include="application\scene\TestScene.cpp" />
-    <ClCompile Include="magosuya\object\3d\Skybox.cpp" />
-    <ClCompile Include="magosuya\engine\RenderTexture.cpp" />
-    <ClCompile Include="magosuya\PostEffect\PostEffectManager.cpp" />
+    <ClCompile Include="Engine\Framework\Object\3d\Skybox.cpp" />
+    <ClCompile Include="Engine\Core\RenderTexture.cpp" />
+    <ClCompile Include="Engine\Render\PostEffect\PostEffectManager.cpp" />
     <ClCompile Include="application\entity\player\Reticle.cpp" />
     <ClCompile Include="Application\RailPath.cpp" />
-    <ClCompile Include="Magosuya\PostEffect\Vignette.cpp" />
-    <ClCompile Include="magosuya\particle\Particle.cpp" />
-    <ClCompile Include="magosuya\particle\ParticleRenderer.cpp" />
-    <ClCompile Include="Magosuya\PostEffect\Outline.cpp" />
-    <ClCompile Include="magosuya\engine\SwapChain.cpp" />
+    <ClCompile Include="Engine\Render\PostEffect\Vignette.cpp" />
+    <ClCompile Include="Engine\Framework\Particle\Particle.cpp" />
+    <ClCompile Include="Engine\Framework\Particle\ParticleRenderer.cpp" />
+    <ClCompile Include="Engine\Render\PostEffect\Outline.cpp" />
+    <ClCompile Include="Engine\Core\SwapChain.cpp" />
+    <ClCompile Include="Engine\Core\RenderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\BoxFilter.PS.hlsl">
@@ -394,37 +395,38 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\entity\player\Bullet.h" />
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="Application\Collider\CollisionManager.h" />
-    <ClInclude Include="magosuya\engine\DescriptorHeapManager.h" />
-    <ClInclude Include="magosuya\engine\Engine.h" />
-    <ClInclude Include="magosuya\engine\CommandContext.h" />
-    <ClInclude Include="magosuya\engine\FrameRateController.h" />
-    <ClInclude Include="magosuya\engine\GraphicsDevice.h" />
-    <ClInclude Include="magosuya\engine\IEngine.h" />
-    <ClInclude Include="Magosuya\PostEffect\CopyImage.h" />
-    <ClInclude Include="Magosuya\PostEffect\Fog.h" />
-    <ClInclude Include="Magosuya\PostEffect\ColorGrading.h" />
-    <ClInclude Include="magosuya\general\DeltaTime.h" />
-    <ClInclude Include="magosuya\light\DirectionalLight.h" />
-    <ClInclude Include="magosuya\light\BaseLight.h" />
-    <ClInclude Include="magosuya\light\LightManager.h" />
+    <ClInclude Include="Engine\Core\DescriptorHeapManager.h" />
+    <ClInclude Include="Engine\Core\Engine.h" />
+    <ClInclude Include="Engine\Core\CommandContext.h" />
+    <ClInclude Include="Engine\Core\FrameRateController.h" />
+    <ClInclude Include="Engine\Core\GraphicsDevice.h" />
+    <ClInclude Include="Engine\Core\IEngine.h" />
+    <ClInclude Include="Engine\Core\RenderCommand.h" />
+    <ClInclude Include="Engine\Render\PostEffect\CopyImage.h" />
+    <ClInclude Include="Engine\Render\PostEffect\Fog.h" />
+    <ClInclude Include="Engine\Render\PostEffect\ColorGrading.h" />
+    <ClInclude Include="Engine\Core\General\DeltaTime.h" />
+    <ClInclude Include="Engine\Render\Light\DirectionalLight.h" />
+    <ClInclude Include="Engine\Render\Light\BaseLight.h" />
+    <ClInclude Include="Engine\Render\Light\LightManager.h" />
     <ClInclude Include="application\scene\SceneType.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="magosuya\object\3d\BaseRenderer.h" />
-    <ClInclude Include="magosuya\object\3d\BaseObject3d.h" />
-    <ClInclude Include="magosuya\general\Easing.h" />
-    <ClInclude Include="Magosuya\PostEffect\BasePostEffect.h" />
-    <ClInclude Include="magosuya\PSO\ShaderManager.h" />
-    <ClInclude Include="magosuya\audio\AudioManager.h" />
-    <ClInclude Include="magosuya\camera\LookAtCamera.h" />
-    <ClInclude Include="magosuya\camera\CameraOrganizer.h" />
-    <ClInclude Include="magosuya\camera\FixedPointCamera.h" />
-    <ClInclude Include="magosuya\camera\CameraComponent.h" />
-    <ClInclude Include="magosuya\primitive\cube\CubeRenderer.h" />
-    <ClInclude Include="magosuya\primitive\cube\CubeRenderData.h" />
-    <ClInclude Include="magosuya\primitive\line\LineRenderData.h" />
-    <ClInclude Include="magosuya\primitive\line\LineRenderer.h" />
-    <ClInclude Include="magosuya\primitive\MaxMeshNum.h" />
-    <ClInclude Include="magosuya\PSO\BlendModeManager.h" />
+    <ClInclude Include="Engine\Framework\Object\3d\BaseRenderer.h" />
+    <ClInclude Include="Engine\Framework\Object\3d\BaseObject3d.h" />
+    <ClInclude Include="Engine\Core\General\Easing.h" />
+    <ClInclude Include="Engine\Render\PostEffect\BasePostEffect.h" />
+    <ClInclude Include="Engine\Render\PSO\ShaderManager.h" />
+    <ClInclude Include="Engine\Audio\AudioManager.h" />
+    <ClInclude Include="Engine\Framework\Camera\LookAtCamera.h" />
+    <ClInclude Include="Engine\Framework\Camera\CameraOrganizer.h" />
+    <ClInclude Include="Engine\Framework\Camera\FixedPointCamera.h" />
+    <ClInclude Include="Engine\Framework\Camera\CameraComponent.h" />
+    <ClInclude Include="Engine\Render\Primitive\cube\CubeRenderer.h" />
+    <ClInclude Include="Engine\Render\Primitive\cube\CubeRenderData.h" />
+    <ClInclude Include="Engine\Render\Primitive\line\LineRenderData.h" />
+    <ClInclude Include="Engine\Render\Primitive\line\LineRenderer.h" />
+    <ClInclude Include="Engine\Render\Primitive\MaxMeshNum.h" />
+    <ClInclude Include="Engine\Render\PSO\BlendModeManager.h" />
     <ClInclude Include="externals\externals.h" />
     <ClInclude Include="application\scene\GameoverScene.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
@@ -435,57 +437,58 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="magosuya\general\LogManager.h" />
-    <ClInclude Include="magosuya\general\ChangeString.h" />
-    <ClInclude Include="magosuya\PSO\InputLayoutManager.h" />
-    <ClInclude Include="magosuya\camera\FollowCamera.h" />
-    <ClInclude Include="magosuya\imgui\ImGuiManager.h" />
-    <ClInclude Include="magosuya\engine\LeakChecker.h" />
-    <ClInclude Include="magosuya\engine\DxCommon.h" />
-    <ClInclude Include="magosuya\camera\DebugCamera.h" />
-    <ClInclude Include="magosuya\input\GamePad.h" />
-    <ClInclude Include="magosuya\general\function.h" />
-    <ClInclude Include="magosuya\general\MathFunction.h" />
-    <ClInclude Include="magosuya\object\3d\SphereMesh.h" />
-    <ClInclude Include="magosuya\object\2d\Sprite.h" />
-    <ClInclude Include="magosuya\general\struct.h" />
-    <ClInclude Include="magosuya\object\3d\Model.h" />
-    <ClInclude Include="magosuya\input\InputManager.h" />
-    <ClInclude Include="magosuya\input\RawInput.h">
+    <ClInclude Include="Engine\Core\General\LogManager.h" />
+    <ClInclude Include="Engine\Core\General\ChangeString.h" />
+    <ClInclude Include="Engine\Render\PSO\InputLayoutManager.h" />
+    <ClInclude Include="Engine\Framework\Camera\FollowCamera.h" />
+    <ClInclude Include="Engine\Debug\ImGui\ImGuiManager.h" />
+    <ClInclude Include="Engine\Core\LeakChecker.h" />
+    <ClInclude Include="Engine\Core\DxCommon.h" />
+    <ClInclude Include="Engine\Framework\Camera\DebugCamera.h" />
+    <ClInclude Include="Engine\Core\Input\GamePad.h" />
+    <ClInclude Include="Engine\Core\General\function.h" />
+    <ClInclude Include="Engine\Core\General\MathFunction.h" />
+    <ClInclude Include="Engine\Framework\Object\3d\SphereMesh.h" />
+    <ClInclude Include="Engine\Framework\Object\2d\Sprite.h" />
+    <ClInclude Include="Engine\Core\General\struct.h" />
+    <ClInclude Include="Engine\Framework\Object\3d\Model.h" />
+    <ClInclude Include="Engine\Core\Input\InputManager.h" />
+    <ClInclude Include="Engine\Core\Input\RawInput.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
       </ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="magosuya\object\3d\ModelManager.h" />
-    <ClInclude Include="magosuya\MagosuyaEngine.h" />
-    <ClInclude Include="magosuya\engine\WindowsAPI.h" />
-    <ClInclude Include="magosuya\object\2d\TextureManager.h" />
-    <ClInclude Include="magosuya\object\2d\SpriteRenderer.h" />
-    <ClInclude Include="magosuya\object\3d\ModelRenderer.h" />
+    <ClInclude Include="Engine\Framework\Object\3d\ModelManager.h" />
+    <ClInclude Include="Engine\MagosuyaEngine.h" />
+    <ClInclude Include="Engine\Core\WindowsAPI.h" />
+    <ClInclude Include="Engine\Framework\Object\2d\TextureManager.h" />
+    <ClInclude Include="Engine\Framework\Object\2d\SpriteRenderer.h" />
+    <ClInclude Include="Engine\Framework\Object\3d\ModelRenderer.h" />
     <ClInclude Include="application\scene\SceneManager.h" />
     <ClInclude Include="application\scene\TitleScene.h" />
     <ClInclude Include="application\scene\PlayScene.h" />
-    <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />
-    <ClInclude Include="magosuya\PSO\PSOManager.h" />
-    <ClInclude Include="magosuya\primitive\Mesh.h" />
-    <ClInclude Include="magosuya\engine\SRV\SRVManager.h" />
+    <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />
+    <ClInclude Include="Engine\Render\PSO\PSOManager.h" />
+    <ClInclude Include="Engine\Render\Primitive\Mesh.h" />
+    <ClInclude Include="Engine\Core\SRV\SRVManager.h" />
     <ClInclude Include="application\mapchip\mapchip.h" />
     <ClInclude Include="application\mapchip\mapChipRenderer.h" />
     <ClInclude Include="application\entity\player\Player.h" />
-    <ClInclude Include="magosuya\light\PointLight.h" />
-    <ClInclude Include="magosuya\light\SpotLight.h" />
-    <ClInclude Include="magosuya\light\RectLight.h" />
-    <ClInclude Include="magosuya\audio\VoiceCallback.h" />
+    <ClInclude Include="Engine\Render\Light\PointLight.h" />
+    <ClInclude Include="Engine\Render\Light\SpotLight.h" />
+    <ClInclude Include="Engine\Render\Light\RectLight.h" />
+    <ClInclude Include="Engine\Audio\VoiceCallback.h" />
     <ClInclude Include="application\scene\TestScene.h" />
-    <ClInclude Include="magosuya\object\3d\Skybox.h" />
-    <ClInclude Include="magosuya\engine\RenderTexture.h" />
-    <ClInclude Include="magosuya\PostEffect\PostEffectManager.h" />
+    <ClInclude Include="Engine\Framework\Object\3d\Skybox.h" />
+    <ClInclude Include="Engine\Core\RenderTexture.h" />
+    <ClInclude Include="Engine\Render\PostEffect\PostEffectManager.h" />
     <ClInclude Include="application\entity\player\Reticle.h" />
     <ClInclude Include="Application\RailPath.h" />
-    <ClInclude Include="Magosuya\PostEffect\Vignette.h" />
-    <ClInclude Include="magosuya\particle\Particle.h" />
-    <ClInclude Include="magosuya\particle\ParticleRenderer.h" />
-    <ClInclude Include="Magosuya\PostEffect\Outline.h" />
-    <ClInclude Include="magosuya\engine\SwapChain.h" />
+    <ClInclude Include="Engine\Render\PostEffect\Vignette.h" />
+    <ClInclude Include="Engine\Framework\Particle\Particle.h" />
+    <ClInclude Include="Engine\Framework\Particle\ParticleRenderer.h" />
+    <ClInclude Include="Engine\Render\PostEffect\Outline.h" />
+    <ClInclude Include="Engine\Core\SwapChain.h" />
+    <ClInclude Include="Engine\Core\RenderSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Fullscreen.hlsli" />

@@ -25,7 +25,7 @@ public:		// メンバ関数
 	// IDに基づいてD3D12_SHADER_BYTECODEを返す
 	D3D12_SHADER_BYTECODE GetShaderBytecode(uint32_t shaderID) const;
 
-private:
+public:
 	// コピー・移動禁止
 	ShaderManager(const ShaderManager&) = delete;
 	ShaderManager& operator=(const ShaderManager&) = delete;
