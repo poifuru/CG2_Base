@@ -1,4 +1,5 @@
 #pragma once
+#include <Windows.h>
 #include <memory>
 #include "Engine.h"
 #include "SceneManager.h"
@@ -12,5 +13,5 @@ public:
 
 private:
 	std::unique_ptr<Engine> engine_ = nullptr;
-	std::unique_ptr<SceneManager> sceneManager_ = nullptr;
+	//std::unique_ptr<SceneManager> sceneManager_ = nullptr;
 };

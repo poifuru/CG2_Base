@@ -1,45 +1,35 @@
 #pragma once
-#include <Windows.h>
-#include <Wrl.h>
-using namespace Microsoft::WRL;
 #include <d3d12.h>
 #include <dxcapi.h>
+#include <wrl.h>
 #include <string>
 #include <unordered_map>
-#include <fstream>
-
-class DxCommon;
 
 //シェーダー情報を保持する構造体
 struct ShaderInfo {
-	ComPtr<IDxcBlob> ShaderBlob;
+	Microsoft::WRL::ComPtr<IDxcBlob> ShaderBlob;
 	std::wstring FilePath;	//シェーダーのファイルパス
 	std::wstring Profile;	//コンパイルにつかったプロファイル
 };
 
 class ShaderManager {
 public:		// メンバ関数
-	static ShaderManager* GetInstance () {
-		//初めて呼び出されたときに一回だけ初期化
-		static ShaderManager instance;
-		return &instance;
-	}
+	ShaderManager() = default;
+	~ShaderManager() = default;
 
-	void Initialize (DxCommon* dxCommon);
+	void Initialize (IDxcCompiler3* compiler, IDxcUtils* utils, IDxcIncludeHandler* includeHandler);
 
-	// ファイルパスとプロファイルを受け取ってコンパイルしてIDを返す
-	uint32_t CompileAndCacheShader (const std::wstring& filePath, const wchar_t* profile);
+	// シェーダーのコンパイルとキャッシュ登録
+	uint32_t CompileAndCacheShader(const std::wstring& filePath, const wchar_t* profile);
 
 	// IDに基づいてD3D12_SHADER_BYTECODEを返す
-	D3D12_SHADER_BYTECODE GetShaderBytecode (uint32_t shaderID) const;
+	D3D12_SHADER_BYTECODE GetShaderBytecode(uint32_t shaderID) const;
 
 private:
-	//コンストラクタを禁止
-	ShaderManager () = default;
-	// コピーコンストラクタと代入演算子を禁止
-	ShaderManager (const ShaderManager&) = delete;
+	// コピー・移動禁止
+	ShaderManager(const ShaderManager&) = delete;
 	ShaderManager& operator=(const ShaderManager&) = delete;
-	ShaderManager (ShaderManager&&) = delete;
+	ShaderManager(ShaderManager&&) = delete;
 	ShaderManager& operator=(ShaderManager&&) = delete;
 
 private:	// ヘルパー関数
@@ -48,23 +38,15 @@ private:	// ヘルパー関数
 	/// </summary>
 	/// <param name="filePath">shaderファイルへのパス</param>
 	/// <param name="profile">使用するプロファイル</param>
-	/// <param name="os">ログストリーム</param>
 	/// <returns>shader</returns>
-	ComPtr<IDxcBlob> CompilerShader (const std::wstring& filePath, const wchar_t* profile);
+	Microsoft::WRL::ComPtr<IDxcBlob> CompilerShader (const std::wstring& filePath, const wchar_t* profile);
 
 private:	// メンバ変数
-	//ファイルパスとプロファイルのマップ(ShaderInfoの逆引き用)
-	std::unordered_map<std::wstring, uint32_t> pathProfileToID_;
-
-	//逆引きマップに入れるID(0は無効なリソースとして扱われてしまう可能性があるので1から連番)
-	uint32_t nextID_ = 1;
-
-	//IDとShaderInfoの実体データのマップ
 	std::unordered_map<uint32_t, ShaderInfo> shaderCache_;
+	std::unordered_map<std::wstring, uint32_t> pathProfileToID_;
+	uint32_t nextID_ = 0;
 
-	//ログ用の変数
-	std::ofstream os_;
-
-	//ポインタを借りる
-	DxCommon* dxCommon_ = nullptr;
+	IDxcCompiler3* dxcCompiler_ = nullptr;
+	IDxcUtils* dxcUtils_ = nullptr;
+	IDxcIncludeHandler* includeHandler_ = nullptr;
 };

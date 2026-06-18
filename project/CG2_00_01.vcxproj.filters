@@ -99,6 +99,7 @@
     <ClCompile Include="magosuya\engine\SwapChain.cpp" />
     <ClCompile Include="magosuya\engine\FrameRateController.cpp" />
     <ClCompile Include="magosuya\engine\Engine.cpp" />
+    <ClCompile Include="magosuya\engine\DescriptorHeapManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="magosuya\engine\FrameRateController.h" />
     <ClInclude Include="magosuya\engine\IEngine.h" />
     <ClInclude Include="magosuya\engine\Engine.h" />
+    <ClInclude Include="magosuya\engine\DescriptorHeapManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />

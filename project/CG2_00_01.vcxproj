@@ -182,6 +182,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\entity\player\Bullet.cpp" />
     <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
     <ClCompile Include="Application\Collider\CollisionManager.cpp" />
+    <ClCompile Include="magosuya\engine\DescriptorHeapManager.cpp" />
     <ClCompile Include="magosuya\engine\Engine.cpp" />
     <ClCompile Include="magosuya\engine\CommandContext.cpp" />
     <ClCompile Include="magosuya\engine\FrameRateController.cpp" />
@@ -393,6 +394,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\entity\player\Bullet.h" />
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="Application\Collider\CollisionManager.h" />
+    <ClInclude Include="magosuya\engine\DescriptorHeapManager.h" />
     <ClInclude Include="magosuya\engine\Engine.h" />
     <ClInclude Include="magosuya\engine\CommandContext.h" />
     <ClInclude Include="magosuya\engine\FrameRateController.h" />

@@ -1,18 +1,14 @@
 #pragma once
-#include <Windows.h>
-#include <Wrl.h>
-using namespace Microsoft::WRL;
 #include <d3d12.h>
+#include <wrl.h>
 #include <unordered_map>
-#include "DxCommon.h"
-#include "ShaderManager.h"
-#include "RootSignatureManager.h"
-#include "BlendModeManager.h"
 #include "InputLayoutManager.h"
+#include "BlendModeManager.h"
+
+class ShaderManager;
 
 struct PSODescriptor {
 	// --- マネージャーで管理してるID ---
-	uint32_t RootSignatureID = 0;
 	uint32_t VS_ID = 0;										// ShaderManagerから取得したVertex Shader ID
 	uint32_t PS_ID = 0;										// ShaderManagerから取得したPixel Shader ID							// RootSignatureManagerから取得したID
 	InputLayoutType InputLayoutID = (InputLayoutType)0;		// InputLayoutManagerから取得したID
@@ -46,38 +42,28 @@ struct PSODescriptor {
 
 class PSOManager {
 public:		//メンバ関数
-	static PSOManager* GetInstance () {
-		//初めて呼び出されたときに一回だけ初期化
-		static PSOManager instance;
-		return &instance;
-	}
-
-	void Initialize (DxCommon* dxCommon);
+	PSOManager() = default;
+	~PSOManager() = default;
 
 	//PSODescriptorを受けとってID3D12PipelineState*を返す
-	ID3D12PipelineState* GetOrCreatePSO (const PSODescriptor& desc);
-
-	void SetPSO (const PSODescriptor& desc);
+	ID3D12PipelineState* GetOrCreatePSO (
+		ID3D12Device* device,
+		const PSODescriptor& desc,
+		ID3D12RootSignature* commonRootSignature,
+		const ShaderManager& shaderManager
+	);
 
 private:
-	//コンストラクタを禁止
-	PSOManager () = default;
-	// コピーコンストラクタと代入演算子を禁止
-	PSOManager (const PSOManager&) = delete;
+	// コピー・移動禁止
+	PSOManager(const PSOManager&) = delete;
 	PSOManager& operator=(const PSOManager&) = delete;
-	PSOManager (PSOManager&&) = delete;
+	PSOManager(PSOManager&&) = delete;
 	PSOManager& operator=(PSOManager&&) = delete;
 
 private:	//ヘルパー関数
-	template<typename T>
-	uint64_t hash_combine_simple (uint64_t h, T val) const;
-	uint64_t ComputeHash (const PSODescriptor& desc) const;
+	uint64_t ComputeHash(const PSODescriptor& desc) const;
 
 private:	//メンバ変数
 	// ハッシュ値とPipelineStateの実体データのマップ
-	std::unordered_map<uint64_t, ComPtr<ID3D12PipelineState>> m_PSOCache;
-
-	//ポインタを借りる
-	DxCommon* dxCommon_ = nullptr;
-	ID3D12GraphicsCommandList* commandList_ = nullptr;
+	std::unordered_map<uint64_t, Microsoft::WRL::ComPtr<ID3D12PipelineState>> psoCache_;
 };

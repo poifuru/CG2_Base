@@ -1,4 +1,5 @@
 #include "SwapChain.h"
+#include "CommandContext.h"
 #include <cassert>
 
 SwapChain::SwapChain() = default;
@@ -48,7 +49,7 @@ void SwapChain::Initialize(
 
 	// 瞬間的に生デバイスを取得するために、一時的にcommandQueueからDeviceを引っ張り出す（裏技的だけど安全）
 	Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice;
-	hr = cmdQueue->QueryInterface(IID_PPV_ARGS(d3dDevice.GetAddressOf()));
+	hr = cmdQueue->GetDevice(IID_PPV_ARGS(d3dDevice.GetAddressOf()));
 	assert(SUCCEEDED(hr));
 
 	hr = d3dDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(rtvHeap_.GetAddressOf()));
@@ -81,4 +82,21 @@ void SwapChain::Present() {
 	// 垂直同期（V-Sync）を有効にするなら第1引数を 1 に、無制限にするなら 0 にする
 	HRESULT hr = swapChain_->Present(1, 0);
 	assert(SUCCEEDED(hr));
+}
+
+void SwapChain::BeginRender(CommandContext* cmdContext, const float clearColor[4]) {
+	uint32_t bbIndex = GetCurrentBackBufferIndex();
+	ID3D12Resource* backBuffer = GetBackBufferResource(bbIndex);
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = GetRtvHandle(bbIndex);
+
+	cmdContext->TransitionBarrier(backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	cmdContext->SetRenderTargets(rtvHandle);
+	cmdContext->ClearRenderTarget(rtvHandle, clearColor);
+}
+
+void SwapChain::EndRender(CommandContext* cmdContext) {
+	uint32_t bbIndex = GetCurrentBackBufferIndex();
+	ID3D12Resource* backBuffer = GetBackBufferResource(bbIndex);
+
+	cmdContext->TransitionBarrier(backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 }

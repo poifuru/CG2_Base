@@ -9,6 +9,8 @@
 #include <array>
 #include <cstdint>
 
+class CommandContext;
+
 class SwapChain {
 public:
 	// トリプルバッファリングのためのバッファ数定数
@@ -37,6 +39,16 @@ public:
 	/// 画面をフリップさせる
 	/// </summary>
 	void Present();
+
+	/// <summary>
+	/// 描画開始処理（バリア遷移・クリア・ターゲット設定をまとめて行う）
+	/// </summary>
+	void BeginRender(CommandContext* cmdContext, const float clearColor[4]);
+
+	/// <summary>
+	/// 描画終了処理（バリアをPRESENTに戻す）
+	/// </summary>
+	void EndRender(CommandContext* cmdContext);
 
 	// --- アクセッサ --- //
 	uint32_t GetCurrentBackBufferIndex() const { return swapChain_->GetCurrentBackBufferIndex(); }

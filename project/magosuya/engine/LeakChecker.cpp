@@ -6,6 +6,8 @@ using namespace Microsoft::WRL;
 #include <d3d12.h>
 #include <dxgi1_6.h>
 
+#pragma comment(lib, "dxguid.lib")
+
 LeakChecker::~LeakChecker() {
 	ComPtr<IDXGIDebug> debug;
 	if(SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(debug.GetAddressOf())))) {
