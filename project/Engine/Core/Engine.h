@@ -3,9 +3,11 @@
 #include "IEngine.h"
 #include "LeakChecker.h"
 
-// 前方宣言でアプリケーション側に詳細な型を隠す
+// 前方宣言
 struct ID3D12Device;
+struct ID3D12GraphicsCommandList;
 class WindowsAPI;
+class InputManager;
 class FrameRateController;
 class GraphicsDevice;
 class CommandContext;
@@ -13,9 +15,10 @@ class SwapChain;
 class DescriptorHeapManager;
 class RootSignatureManager;
 class ShaderManager;
+class InputLayoutManager;
+class BlendModeManager;
 class PSOManager;
 class RenderSystem;
-class InputManager;
 
 class Engine : public IEngine {
 public:
@@ -27,31 +30,37 @@ public:
 	void BeginFrame() override;
 	void EndFrame() override;
 
-	// 一時的なアクセッサ
+	RenderSystem* GetRenderSystem() override { return renderSystem_.get(); }
+
+	// アセットロード用コマンド制御
+	void ResetCommandList();
+	void ExecuteCommandList();
+
+	// 低レイヤーアクセッサ
 	ID3D12Device* GetDevice();
-	DescriptorHeapManager* GetHeapManager()  { return heapManager_.get(); }
-	ShaderManager* GetShaderManager()  { return shaderManager_.get(); }
-	RenderSystem* GetRenderSystem()  { return renderSystem_.get(); }
+	GraphicsDevice* GetGraphicsDevice() { return device_.get(); }
+	DescriptorHeapManager* GetDescriptorHeapManager() { return heapManager_.get(); }
+	ID3D12GraphicsCommandList* GetCommandList();
+	InputManager* GetInputManager() { return input_.get(); }
+	ShaderManager& GetShaderManager();
 
 private:
-	// リークチェッカー
 	LeakChecker leakCheck_{};
 
-	// ---上から順に初期化、下から順に破棄する --- //
-	//  *** 低レイヤー層 *** //
+	// ---上から順に初期化、下から順に破棄--- //
 	std::unique_ptr<WindowsAPI> winApi_;
+	std::unique_ptr<InputManager> input_;
 	std::unique_ptr<FrameRateController> frameRateController_;
 	std::unique_ptr<GraphicsDevice> device_;
 	std::unique_ptr<CommandContext> cmdContext_;
 	std::unique_ptr<SwapChain> swapChain_;
-
-	// *** 中間レイヤー層 *** //
 	std::unique_ptr<DescriptorHeapManager> heapManager_;
 
-	// *** 描画パイプライン*** //
 	std::unique_ptr<RootSignatureManager> rootSigManager_;
 	std::unique_ptr<ShaderManager> shaderManager_;
+	std::unique_ptr<InputLayoutManager> inputLayoutManager_;
+	std::unique_ptr<BlendModeManager> blendModeManager_;
 	std::unique_ptr<PSOManager> psoManager_;
+
 	std::unique_ptr<RenderSystem> renderSystem_;
-	std::unique_ptr<InputManager> input_;
 };

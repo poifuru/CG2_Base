@@ -50,7 +50,9 @@ public:		//メンバ関数
 		ID3D12Device* device,
 		const PSODescriptor& desc,
 		ID3D12RootSignature* commonRootSignature,
-		const ShaderManager& shaderManager
+		const ShaderManager& shaderManager,
+		const InputLayoutManager& inputLayoutManager,
+		const BlendModeManager& blendModeManager
 	);
 
 public:

@@ -6,7 +6,9 @@ ID3D12PipelineState* PSOManager::GetOrCreatePSO (
 	ID3D12Device* device,
 	const PSODescriptor& desc,
 	ID3D12RootSignature* commonRootSignature,
-	const ShaderManager& shaderManager
+	const ShaderManager& shaderManager,
+	const InputLayoutManager& inputLayoutManager,
+	const BlendModeManager& blendModeManager
 ) {
 	assert(device != nullptr && commonRootSignature != nullptr);
 
@@ -30,11 +32,11 @@ ID3D12PipelineState* PSOManager::GetOrCreatePSO (
 	psoDesc.PS = shaderManager.GetShaderBytecode(desc.PS_ID);
 
 	// InputLayoutを取得(InputLayoutManagerから)
-	const D3D12_INPUT_LAYOUT_DESC* inputLayoutDesc = InputLayoutManager::GetInstance()->GetInputLayout(desc.InputLayoutID);
+	const D3D12_INPUT_LAYOUT_DESC* inputLayoutDesc = inputLayoutManager.GetInputLayout(desc.InputLayoutID);
 	psoDesc.InputLayout = *inputLayoutDesc;
 
 	// ブレンドステートを取得(BlendModeManagerから)
-	psoDesc.BlendState = BlendModeManager::GetInstance()->GetBlendDesc(desc.BlendMode);
+	psoDesc.BlendState = blendModeManager.GetBlendDesc(desc.BlendMode);
 
 	// ラスタライザーステート (Descriptorから直接設定)
 	D3D12_RASTERIZER_DESC rasterizerDesc = {};

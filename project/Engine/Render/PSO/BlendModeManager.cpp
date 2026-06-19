@@ -7,7 +7,7 @@ void BlendModeManager::Initialize () {
 	m_BlendDescs[0].RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
 	//共通設定なのでfor文で回す
-	for (int i = 1; i < kBlendDescNum; i++) {
+	for (int i = 1; i < static_cast<int>(BlendModeType::Count); i++) {
 		m_BlendDescs[i].RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 		m_BlendDescs[i].RenderTarget[0].BlendEnable = TRUE;
 		m_BlendDescs[i].RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;

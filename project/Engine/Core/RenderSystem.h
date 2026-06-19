@@ -23,7 +23,9 @@ public:
 		D3D12_GPU_VIRTUAL_ADDRESS cameraCBVAddress, // Slot 0 用のカメラアドレス
 		DescriptorHeapManager& heapManager,         // Slot 2 用の巨大ヒープ
 		PSOManager& psoManager,
-		const ShaderManager& shaderManager
+		const ShaderManager& shaderManager,
+		const InputLayoutManager& inputLayoutManager,
+		const BlendModeManager& blendModeManager
 	);
 
 	void ClearCommands();

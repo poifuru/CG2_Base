@@ -1,69 +1,67 @@
-//#pragma once
-//#include <Windows.h>
-//#include <wrl.h>
-//using namespace Microsoft::WRL;
-//#include <unordered_map>
-//#include <string>
-//#include <queue>
-//#include <vector>
-//#include "DxCommon.h"
-//#include "struct.h"
-//#include "SRVManager.h"
-//
-//class TextureManager {
-//public:		//外部公開メソッド
-//	static TextureManager* GetInstance () {
-//		////初めて呼び出されたときに一回だけ初期化
-//		static TextureManager instance;
-//		return &instance;
-//	}
-//
-//	void Initialize (DxCommon* dxCommon);
-//
-//	//画像をロードする関数
-//	TextureData* LoadTexture (const std::string& filePath, const std::string& ID);
-//
-//	//登録した画像のGPUハンドルを取得する関数
-//	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureHandle (const std::string& ID);
-//
-//	//テクスチャのアンロード関数
-//	void UnloadTexture (const std::string& filePath);
-//
-//	//中間リソース解放関数
-//	void ClearIntermediateResource ();
-//
-//	//アクセッサ
-//	const std::vector<ComPtr<ID3D12Resource>>& GetIntermediateResource () const { return intermediateResource_; }
-//	const DirectX::TexMetadata& GetMetaData (const std::string& id);
-//
-//private:
-//	//コンストラクタを禁止
-//	TextureManager () = default;
-//	// コピーコンストラクタと代入演算子を禁止
-//	TextureManager (const TextureManager&) = delete;
-//	TextureManager& operator=(const TextureManager&) = delete;
-//	TextureManager (TextureManager&&) = delete;
-//	TextureManager& operator=(TextureManager&&) = delete;
-//
-//private:	//内部関数
-//	//LoadTextureのヘルパー関数
-//	//DirectXのTexrureResourceを作る関数
-//	ComPtr<ID3D12Resource> CreateTextureResource (const DirectX::TexMetadata& metadata);
-//	//TextureResourceにデータを転送する関数
-//	[[nodiscard]]
-//	ComPtr<ID3D12Resource> UploadTextureData (const ComPtr<ID3D12Resource>& texture, const DirectX::ScratchImage& mipImages);
-//
-//	//ダミーのテクスチャを作成する関数
-//	TextureData* CreateDummyTexture (const std::string& ID);
-//
-//private:	//メンバ変数
-//	std::unordered_map<std::string, TextureData> textureMap_;
-//
-//	//中間リソースの解放待ちリスト
-//	std::vector<ComPtr<ID3D12Resource>> intermediateResource_;
-//
-//	//ポインタ借りてくる
-//	DxCommon* dxCommon_ = nullptr;
-//	SRVManager* srvManager_ = nullptr;
-//};
-//
+#pragma once
+#include <string>
+#include <unordered_map>
+#include <vector>
+#include <d3d12.h>
+#include <wrl.h>
+#include "TextureData.h"
+
+class DescriptorHeapManager;
+
+class TextureManager {
+public:		//外部公開メソッド
+	TextureManager() = default;
+	~TextureManager(); // 終了時に残ったテクスチャがあれば解放する
+
+	void Initialize (ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, DescriptorHeapManager& heapManager);
+
+	//画像をロードする関数
+	uint32_t LoadTexture (
+		const std::string& filePath,
+		const std::string& id,
+		ID3D12Device* device,
+		ID3D12GraphicsCommandList* cmdList,
+		DescriptorHeapManager& heapManager
+	);
+
+	// テクスチャアンロード（使い終わったら参照カウントを減らす）
+	void UnloadTexture(const std::string& id, DescriptorHeapManager& heapManager);
+
+	//中間リソース解放関数
+	void ClearIntermediateResource ();
+
+	// テクスチャIDからバインドレスヒープ内のインデックスを取得する
+	uint32_t GetTextureIndex(const std::string& id) const {
+		auto it = textureMap_.find(id);
+		if (it != textureMap_.end()) {
+			return it->second.textureIndex;
+		}
+		return 0; // 見つからない場合はデフォルトの0番
+	}
+
+public:
+	// コピー・移動禁止
+	TextureManager(const TextureManager&) = delete;
+	TextureManager& operator=(const TextureManager&) = delete;
+	TextureManager(TextureManager&&) = delete;
+	TextureManager& operator=(TextureManager&&) = delete;
+
+private:	//内部関数
+	// 内部用ヘルパー関数群
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata);
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(
+		ID3D12Device* device,
+		ID3D12GraphicsCommandList* cmdList,
+		const Microsoft::WRL::ComPtr<ID3D12Resource>& texture,
+		const DirectX::ScratchImage& mipImages
+	);
+
+private:	//メンバ変数
+	// テクスチャID（"Player"など）と実体データのマップ
+	std::unordered_map<std::string, TextureData> textureMap_;
+
+	// GPUにデータをコピーする間だけ生きている必要がある一時的なバッファのゴミ箱
+	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> intermediateResources_;
+};
+

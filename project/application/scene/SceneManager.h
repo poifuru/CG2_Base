@@ -1,41 +1,54 @@
-//#pragma once
-//#include "BaseScene.h"
-//#include <memory>
-//#include <string>
-//
-//class SceneManager {
-//public:		//メンバ関数
-//	static SceneManager* GetInstance() {
-//		//初めて呼び出されたときに一回だけ初期化
-//		static SceneManager instance;
-//		return &instance;
-//	}
-//	~SceneManager ();
-//
-//	void Initialize(CameraOrganizer* camera, InputManager* input, DxCommon* dxCommon);
-//	void Update ();
-//	void Draw ();
-//	void DrawUI () { if(scene_) scene_->DrawUI(); }
-//	
-//	//次シーンの予約
-//	void SetNextScene(std::unique_ptr<BaseScene> nextScene) { nextScene_ = std::move(nextScene); }
-//
-//private:
-//	//コンストラクタを禁止
-//	SceneManager() = default;
-//	// コピーコンストラクタと代入演算子を禁止
-//	SceneManager(const SceneManager&) = delete;
-//	SceneManager& operator=(const SceneManager&) = delete;
-//	SceneManager(SceneManager&&) = delete;
-//	SceneManager& operator=(SceneManager&&) = delete;
-//
-//private:	//メンバ変数
-//	//実行中のシーン
-//	std::unique_ptr<BaseScene> scene_ = nullptr;
-//	//次のシーン
-//	std::unique_ptr<BaseScene> nextScene_ = nullptr;
-//
-//	CameraOrganizer* camera_ = nullptr;
-//	InputManager* input_ = nullptr;
-//	DxCommon* dxCommon_ = nullptr;
-//};
+#pragma once
+#include "BaseScene.h"
+#include <memory>
+#include "ModelManager.h"
+#include "TextureManager.h"
+#include "ModelFactory.h"
+
+struct ID3D12Device;
+struct ID3D12GraphicsCommandList;
+class GraphicsDevice;
+class DescriptorHeapManager;
+class ShaderManager;
+class InputManager;
+struct CameraData;
+
+class SceneManager {
+public:
+	SceneManager() = default;
+	~SceneManager() = default;
+
+	// 各マネージャーの初期化に必要なポインタ群を受け取って初期化
+	void Initialize(
+		ID3D12Device* device,
+		GraphicsDevice* graphicsDevice,
+		ID3D12GraphicsCommandList* cmdList,
+		DescriptorHeapManager* heapManager,
+		ShaderManager* shaderManager,
+		InputManager* input
+	);
+
+	void Update(CameraData* cameraData);
+	void Draw(class RenderSystem* renderSystem);
+	void DrawUI();
+
+	// シーン遷移用のテンプレート関数
+	template <typename T>
+	void ChangeScene() {
+		auto nextScene = std::make_unique<T>();
+		nextScene->SetContext(&context_);
+		nextScene->Initialize();
+		currentScene_ = std::move(nextScene);
+	}
+
+private:
+	std::unique_ptr<BaseScene> currentScene_ = nullptr;
+
+	// マネージャーの実体を SceneManager が所有する
+	ModelManager modelManager_;
+	TextureManager textureManager_;
+	ModelFactory modelFactory_;
+
+	// 各シーンへ配布する SceneContext の情報
+	SceneContext context_;
+};

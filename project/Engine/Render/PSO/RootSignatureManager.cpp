@@ -6,8 +6,8 @@ void RootSignatureManager::Initialize (ID3D12Device* device) {
 	assert(device != nullptr);
 	HRESULT hr = S_OK;
 
-	// === バインドレス用共通ルートパラメータの設定（3スロット固定） ===
-	D3D12_ROOT_PARAMETER rootParameters[3] = {};
+	// === バインドレス用共通ルートパラメータの設定（4スロット固定） ===
+	D3D12_ROOT_PARAMETER rootParameters[4] = {};
 
 	// Slot0 : フレーム共通定数バッファ (b0, space0) -> Vertex, Pixel両方から見えるようにする
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -24,17 +24,31 @@ void RootSignatureManager::Initialize (ID3D12Device* device) {
 
 	// Slot2 : バインドレスヒープ全体を指すディスクリプタテーブル (t0, space1)
 	// レンジの設定
-	D3D12_DESCRIPTOR_RANGE range{};
-	range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	range.NumDescriptors = UINT_MAX; // ヒープ内のすべてのSRVにアクセスできるように無限（UINT_MAX）にする！
-	range.BaseShaderRegister = 0;
-	range.RegisterSpace = 1; // space1 に配置する
-	range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+	D3D12_DESCRIPTOR_RANGE range1{};
+	range1.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	range1.NumDescriptors = UINT_MAX; // ヒープ内のすべてのSRVにアクセスできるように無限（UINT_MAX）にする！
+	range1.BaseShaderRegister = 0;
+	range1.RegisterSpace = 1; // space1 に配置する
+	range1.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // テクスチャはPixelShaderで使う
-	rootParameters[2].DescriptorTable.pDescriptorRanges = &range;
+	rootParameters[2].DescriptorTable.pDescriptorRanges = &range1;
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
+
+	// Slot3 : バインドレスヒープ全体を指すディスクリプタテーブル (t0, space2)
+	// レンジの設定
+	D3D12_DESCRIPTOR_RANGE range2{};
+	range2.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	range2.NumDescriptors = UINT_MAX; // ヒープ内のすべてのSRVにアクセスできるように無限（UINT_MAX）にする！
+	range2.BaseShaderRegister = 0;
+	range2.RegisterSpace = 2; // space2 に配置する
+	range2.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // テクスチャはPixelShaderで使う
+	rootParameters[3].DescriptorTable.pDescriptorRanges = &range2;
+	rootParameters[3].DescriptorTable.NumDescriptorRanges = 1;
 
 	// --- 静的サンプラーの設定（s0, space0） --- //
 	D3D12_STATIC_SAMPLER_DESC staticSampler{};

@@ -239,18 +239,18 @@ struct TransformationMatrix {
 };
 
 // テクスチャデータ構造体
-struct TextureData {
-	// テクスチャリソースハンドル
-	D3D12_GPU_DESCRIPTOR_HANDLE handle;
-	// テクスチャリソース
-	ComPtr<ID3D12Resource> textureResource = nullptr;
-	// メタデータ
-	DirectX::TexMetadata metadata = {};
-	// どのディスクリプタヒープを使ったか
-	UINT descriptorIndex = 0;
-	// 参照カウント
-	int ref_count = 0;
-};
+//struct TextureData {
+//	// テクスチャリソースハンドル
+//	D3D12_GPU_DESCRIPTOR_HANDLE handle;
+//	// テクスチャリソース
+//	ComPtr<ID3D12Resource> textureResource = nullptr;
+//	// メタデータ
+//	DirectX::TexMetadata metadata = {};
+//	// どのディスクリプタヒープを使ったか
+//	UINT descriptorIndex = 0;
+//	// 参照カウント
+//	int ref_count = 0;
+//};
 
 // Sprite構造体
 struct SpriteData {
@@ -266,132 +266,10 @@ struct MaterialFile {
 	std::string textureFilePath;
 };
 
-// Node構造体
-struct Node {
-	QuaternionTransform transform;
-	Matrix4x4 localMatrix;
-	std::string name;
-	std::vector<Node> children;
-};
-
-// 頂点のウェイトデータ
-struct VertexWeightData {
-	float weight;
-	uint32_t vertexIndex;
-};
-
-// ジョイントのウェイトデータ
-struct JointWeightData {
-	Matrix4x4 inverseBindPoseMatrix;
-	std::vector<VertexWeightData> vertexWeights;
-};
-
-// ModelData構造体
-struct ModelData {
-	// 形状情報 (CPU側データ)
-	MaterialFile material;
-	std::vector<VertexData> vertices;
-	size_t vertexCount = 0;
-
-	// インデックス描画用のCPU側データ
-	std::vector<uint32_t> indices;
-	size_t indexCount = 0;
-
-	// Dxリソース (GPU側データ) インスタンス間で共有される
-	// 頂点バッファ
-	ComPtr<ID3D12Resource> vertexBuffer;
-	D3D12_VERTEX_BUFFER_VIEW vbView{};
-
-	// インデックスバッファ
-	ComPtr<ID3D12Resource> indexBuffer;
-	D3D12_INDEX_BUFFER_VIEW ibView{};
-
-	// ルートノード(階層構造)
-	Node rootNode;
-
-	// スキンクラスターのデータ
-	std::map<std::string, JointWeightData> skinClusterData;
-};
-
 // エミッター構造体
 struct Emitter {
 	EulerTransform transform;	//transform
 	uint32_t count;			//発生数
 	float frequency;		//発生頻度
 	float frequencyTime;	//頻度用時刻
-};
-
-// キーフレーム構造体(Vector3やQuaternionに対応させる)
-template<typename tValue>
-struct Keyframe {
-	float time;
-	tValue value;
-};
-using KeyframeVector3 = Keyframe<Vector3>;
-using KeyframeQuaternion = Keyframe<Quaternion>;
-
-template<typename tValue>
-// AnimationCurve構造体
-struct AnimationCurve {
-	std::vector<Keyframe<tValue>> keyframes;
-};
-
-// NodeAnimation構造体
-struct NodeAnimation {
-	AnimationCurve<Vector3> translate;
-	AnimationCurve<Quaternion> rotate;
-	AnimationCurve<Vector3> scale;
-};
-
-// Animation構造体
-struct Animation {
-	float duration;	// アニメーション全体の尺
-	// NodeAnimationの集合。Node名で引けるようにする(map)
-	std::map<std::string, NodeAnimation> nodeAnimations;
-};
-
-// Joint構造体
-struct Joint {
-	QuaternionTransform transform;	//Transform情報
-	Matrix4x4 localMatrix;	// localMatrix
-	Matrix4x4 skeletonSpaceMatrix;	 // skeletonSpaceでの変換行列
-	std::string name;	// 名前
-	std::vector<int32_t> children;	// 子JointのIndexのリスト。いなければ空
-	int32_t index;	// 自身のIndex
-	std::optional<int32_t> parent;	// 親JointのIndex。いなければnull
-};
-
-// Skeleton構造体
-struct Skeleton {
-	int32_t	root;	// RootJointのIndex
-	std::map<std::string, int32_t> jointMap;	// joint名とIndexとの辞書
-	std::vector<Joint> joints;	// 所属しているジョイント
-};
-
-// jointの影響を受ける最大数(大体4つで問題なし)
-const uint32_t kNumMaxInfluence = 4;
-
-// VertexInfluence構造体
-struct VertexInfluence {
-	std::array<float, kNumMaxInfluence> weights;
-	std::array<int32_t, kNumMaxInfluence> jointIndices;
-};
-
-// WellForGPU構造体
-struct WellForGPU {
-	Matrix4x4 skeletonSpaceMatrix;	// 位置用
-	Matrix4x4 skeletonSpaceInverseTransposeMatrix;	// 法線用
-};
-
-// SkinCluster構造体
-struct SkinCluster {
-	std::vector<Matrix4x4> inverseBinePoseMatrices;
-
-	ComPtr<ID3D12Resource> influenceResource;
-	D3D12_VERTEX_BUFFER_VIEW influenceBufferView;
-	std::span<VertexInfluence> mappedInfluence;
-
-	ComPtr<ID3D12Resource> paletteResource;
-	std::span<WellForGPU> mappedPalette;
-	std::pair<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE> paletteSrvHandle;
 };

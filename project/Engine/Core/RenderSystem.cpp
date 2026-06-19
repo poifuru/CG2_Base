@@ -16,7 +16,9 @@ void RenderSystem::ExecuteCommands(
 	D3D12_GPU_VIRTUAL_ADDRESS cameraCBVAddress,
 	DescriptorHeapManager& heapManager,
 	PSOManager& psoManager,
-	const ShaderManager& shaderManager
+	const ShaderManager& shaderManager,
+	const InputLayoutManager& inputLayoutManager,
+	const BlendModeManager& blendModeManager
 ) {
 	if (commandQueue_.empty()) return;
 
@@ -31,8 +33,9 @@ void RenderSystem::ExecuteCommands(
 	// 巨大ディスクリプタヒープをガツンとステージング（1回固定！）
 	heapManager.SetGraphicsHeap(cmdList);
 
-	// Slot 2 に、巨大ヒープの「先頭のGPUハンドル」をセットして配列アクセス可能にする
+	// Slot 2 と Slot 3 に、巨大ヒープの「先頭のGPUハンドル」をセットして配列アクセス可能にする
 	cmdList->SetGraphicsRootDescriptorTable(2, heapManager.GetGpuHandle(0));
+	cmdList->SetGraphicsRootDescriptorTable(3, heapManager.GetGpuHandle(0));
 
 	// Slot 0 にカメラバッファのアドレスをセット（1回固定！）
 	if (cameraCBVAddress != 0) {
@@ -49,7 +52,9 @@ void RenderSystem::ExecuteCommands(
 	for (const auto& cmd : commandQueue_) {
 
 		// 直前と同じパイプライン（PSO）なら、切り替え（SetPipelineState）を完全にスキップ！
-		ID3D12PipelineState* currentPSO = psoManager.GetOrCreatePSO(device, cmd.psoDesc, commonRootSignature, shaderManager);
+		ID3D12PipelineState* currentPSO = psoManager.GetOrCreatePSO(
+			device, cmd.psoDesc, commonRootSignature, shaderManager, inputLayoutManager, blendModeManager
+		);
 		if (currentPSO != lastPSO) {
 			cmdList->SetPipelineState(currentPSO);
 			lastPSO = currentPSO;

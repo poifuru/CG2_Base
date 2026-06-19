@@ -3,6 +3,12 @@
 // ========================================= //
 
 #pragma once
+#include <string>
+#include <cstdint>
+#include <memory>
+
+class Model;
+class RenderSystem;
 
 class IEngine {
 public:
@@ -12,4 +18,7 @@ public:
 	virtual bool ProcessMessage() = 0;
 	virtual void BeginFrame() = 0;
 	virtual void EndFrame() = 0;
+
+	// レンダーシステムを取得するインターフェース
+	virtual RenderSystem* GetRenderSystem() = 0;
 };

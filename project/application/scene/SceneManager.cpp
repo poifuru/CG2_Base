@@ -1,36 +1,43 @@
-//#include "SceneManager.h"
-//#include "CameraOrganizer.h"
-//#include "ModelManager.h"
-//
-//SceneManager::~SceneManager () {
-//	scene_->StopToResources();
-//}
-//
-//void SceneManager::Initialize(CameraOrganizer* camera, InputManager* input, DxCommon* dxCommon) {
-//	camera_ = camera;
-//	input_ = input;
-//	dxCommon_ = dxCommon;
-//}
-//
-//void SceneManager::Update () {
-//	//次のシーンの予約があるなら
-//	if(nextScene_) {
-//		//旧シーンを終了
-//		if(scene_) {
-//			scene_->StopToResources();
-//		}
-//
-//		//シーン切り替え
-//		scene_ = std::move(nextScene_);
-//		//次シーンの初期化
-//		scene_->Initialize(camera_, input_, dxCommon_);
-//	}
-//
-//	if(scene_) {
-//		scene_->Update();
-//	}
-//}
-//
-//void SceneManager::Draw () {
-//	scene_->Draw ();
-//}
+#include "SceneManager.h"
+#include "RenderSystem.h"
+
+void SceneManager::Initialize(
+	ID3D12Device* device,
+	GraphicsDevice* graphicsDevice,
+	ID3D12GraphicsCommandList* cmdList,
+	DescriptorHeapManager* heapManager,
+	ShaderManager* shaderManager,
+	InputManager* input
+) {
+	// マネージャー群を初期化
+	textureManager_.Initialize(device, cmdList, *heapManager);
+	modelManager_.Initialize(device, &textureManager_);
+	modelFactory_.Initialize(graphicsDevice, heapManager, &modelManager_, &textureManager_);
+
+	// シーン配布用のコンテキストを組み立てる
+	context_.input = input;
+	context_.textureManager = &textureManager_;
+	context_.modelFactory = &modelFactory_;
+	context_.shaderManager = shaderManager;
+	context_.device = device;
+	context_.cmdList = cmdList;
+	context_.heapManager = heapManager;
+}
+
+void SceneManager::Update(CameraData* cameraData) {
+	if (currentScene_) {
+		currentScene_->Update(cameraData);
+	}
+}
+
+void SceneManager::Draw(RenderSystem* renderSystem) {
+	if (currentScene_) {
+		currentScene_->Draw(renderSystem);
+	}
+}
+
+void SceneManager::DrawUI() {
+	if (currentScene_) {
+		currentScene_->DrawUI();
+	}
+}

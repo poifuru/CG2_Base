@@ -44,6 +44,7 @@
     <ClCompile Include="Engine\Framework\Object\3d\SphereMesh.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\Sprite.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\Model.cpp" />
+    <ClCompile Include="Engine\Framework\Object\3d\ModelFactory.cpp" />
     <ClCompile Include="Engine\Core\Input\RawInput.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\ModelManager.cpp" />
     <ClCompile Include="Engine\MagosuyaEngine.cpp" />
@@ -141,6 +142,7 @@
     <ClInclude Include="Engine\Framework\Object\2d\Sprite.h" />
     <ClInclude Include="Engine\Core\General\struct.h" />
     <ClInclude Include="Engine\Framework\Object\3d\Model.h" />
+    <ClInclude Include="Engine\Framework\Object\3d\ModelFactory.h" />
     <ClInclude Include="Engine\Core\Input\InputManager.h" />
     <ClInclude Include="Engine\Core\Input\RawInput.h" />
     <ClInclude Include="Engine\Framework\Object\3d\ModelManager.h" />
@@ -209,6 +211,7 @@
     <ClInclude Include="Engine\Core\DirectXResource\IndexBuffer.h" />
     <ClInclude Include="Engine\Core\DirectXResource\StructuredBuffer.h" />
     <ClInclude Include="Engine\Core\DirectXResource\ConstantBuffer.h" />
+    <ClInclude Include="Engine\Framework\Object\2d\TextureData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

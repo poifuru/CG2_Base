@@ -26,17 +26,20 @@ struct InputLayoutData {
 
 class InputLayoutManager {
 public:     //メンバ関数
-    static InputLayoutManager* GetInstance () {
-        //初めて呼び出されたときに一回だけ初期化
-        static InputLayoutManager instance;
-        return &instance;
-    }
+	InputLayoutManager() = default;
+	~InputLayoutManager() = default;
 
     //登録したい設定を全部初期化
     void Initialize ();
 
     // D3D12_INPUT_LAYOUT_DESCへのポインタを返す
     const D3D12_INPUT_LAYOUT_DESC* GetInputLayout (InputLayoutType type) const;
+
+public:
+	InputLayoutManager(const InputLayoutManager&) = delete;
+	InputLayoutManager& operator=(const InputLayoutManager&) = delete;
+	InputLayoutManager(InputLayoutManager&&) = delete;
+	InputLayoutManager& operator=(InputLayoutManager&&) = delete;
 
 private:    //メンバ変数
     // InputLayoutTypeと実体データのマップ

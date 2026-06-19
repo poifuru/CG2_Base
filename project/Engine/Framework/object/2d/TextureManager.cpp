@@ -1,246 +1,217 @@
-//#include "TextureManager.h"
-//#include <d3dx12.h>
-//#include <DirectXTex.h>
-//#include <filesystem>
-//#include "ChangeString.h"
-//
-//void TextureManager::Initialize (DxCommon* dxCommon) {
-//	dxCommon_ = dxCommon;
-//	srvManager_ = SRVManager::GetInstance();
-//	CreateDummyTexture ("Dummy");
-//}
-//
-//TextureData* TextureManager::LoadTexture (const std::string& filePath, const std::string& ID) {
-//	//そのパスの画像をすでに読み込んでいたら
-//	if (textureMap_.count (ID)) {
-//		//既存データを取得
-//		TextureData& existingData = textureMap_.at (ID);
-//		//参照カウントを増やす
-//		existingData.ref_count++;
-//		//存在していたら既存のデータを返す
-//		return &existingData;
-//	}
-//
-//	HRESULT hr;
-//
-//	//returnするデータを詰める箱
-//	TextureData newData{};
-//	newData.ref_count = 1;
-//
-//	//実際に読み込む処理
-//	//テクスチャファイルを読み込んでプログラムで扱えるようにする
-//	DirectX::ScratchImage image{};
-//	std::wstring filePathW = String::ConvertString (filePath);
-//	OutputDebugStringW ((L"探してるファイル: " + filePathW + L"\n").c_str ());
-//
-//	// ファイルパスの拡張子で分岐
-//	if(filePathW.ends_with(L".dds")) {
-//		hr = DirectX::LoadFromDDSFile(filePathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
-//	}
-//	else {
-//		hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
-//	}
-//
-//	if (FAILED (hr)) {
-//		std::wstringstream ss;
-//		ss << L"[エラー] テクスチャ読み込み失敗！ ダミーのテクスチャを返します HRESULT: 0x" << std::hex << hr << std::endl;
-//		OutputDebugStringW (ss.str ().c_str ());
-//		//ダミーテクスチャデータを取得
-//		TextureData& dummyData = textureMap_.at ("Dummy");
-//		//参照カウントを増やす
-//		dummyData.ref_count++;
-//		//元のIDでダミーテクスチャの情報を登録(そのIDが通らないので同じIDが来た時にすぐにダミーデータを返せるように)
-//		TextureData failureCacheData = dummyData; // ダミーの情報をコピー
-//		failureCacheData.ref_count = 1;           // このID自体の参照は1からスタート
-//		//IDをキャッシュに登録
-//		textureMap_[ID] = failureCacheData;
-//
-//		//新しく登録したキャッシュデータを返す
-//		return &textureMap_.at (ID);
-//	}
-//	assert (SUCCEEDED (hr));
-//
-//	//ミップマップの作成
-//	DirectX::ScratchImage mipImage{};
-//	if(DirectX::IsCompressed(image.GetMetadata().format)) {
-//		mipImage = std::move(image);
-//	}
-//	else {
-//		hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 4, mipImage);
-//	}
-//
-//	assert (SUCCEEDED (hr));
-//
-//	//mipImageを使ってmetaDataを作る
-//	newData.metadata = mipImage.GetMetadata ();
-//	//作ったmetaDataをもとにテクスチャリソースを作成
-//	newData.textureResource = CreateTextureResource (newData.metadata);
-//	//実際にデータを転送
-//	intermediateResource_.push_back(UploadTextureData (newData.textureResource, mipImage));
-//
-//	//srvManagerで空きディスクリプタのインデックスを確保
-//	UINT newIndex = srvManager_->Allocate();
-//
-//	//srvManagerでSRVの生成
-//	srvManager_->CreateSRVforTexture2D(
-//		newIndex,
-//		newData.textureResource.Get(),
-//		newData.metadata.format,
-//		(UINT)newData.metadata.mipLevels,
-//		newData
-//	);
-//
-//	//生成物をmapに渡すためにデータを詰める
-//	newData.handle = srvManager_->GetGPUDescriptorHandle(newIndex);
-//	//どのインデックスを使ったかを保存しておくと解放時に便利
-//	newData.descriptorIndex = newIndex;
-//
-//	//mapに登録
-//	textureMap_[ID] = newData;
-//	return &textureMap_.at (ID);
-//}
-//
-//D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetTextureHandle (const std::string& ID) {
-//	//ID指定してmapから持ってくる
-//	assert (textureMap_.count (ID));
-//	return textureMap_.at (ID).handle;
-//}
-//
-//void TextureManager::UnloadTexture (const std::string& ID) {
-//	//参照カウントを減らす
-//	if (!textureMap_.count (ID)) { return; }
-//	textureMap_.at (ID).ref_count--;
-//
-//	// 参照を取得する
-//	TextureData& data = textureMap_.at (ID);
-//
-//	//参照カウントがゼロになったらテクスチャ削除
-//	if (data.ref_count <= 0) {
-//		//GPUリソースはComPtrで自動開放
-//		//使っていたインデックスを空きリストに戻す
-//		srvManager_->Free(data.descriptorIndex);
-//		//キャッシュマップからデータを削除
-//		textureMap_.erase (ID);
-//	}
-//}
-//
-//void TextureManager::ClearIntermediateResource () {
-//	intermediateResource_.clear ();
-//}
-//
-//const DirectX::TexMetadata& TextureManager::GetMetaData (const std::string& id) {
-//	assert (textureMap_.count (id));
-//
-//	return textureMap_.at (id).metadata;
-//}
-//
-//ComPtr<ID3D12Resource> TextureManager::CreateTextureResource (const DirectX::TexMetadata& metadata) {
-//	//1.metadataを基にResourceの設定
-//	D3D12_RESOURCE_DESC resourceDesc{};
-//	resourceDesc.Width = UINT (metadata.width);								//Textureの幅
-//	resourceDesc.Height = UINT (metadata.height);							//Textureの高さ
-//	resourceDesc.MipLevels = UINT (metadata.mipLevels);						//mipmapの数
-//	resourceDesc.DepthOrArraySize = UINT (metadata.arraySize);				//奥行　or　配列Textureの配列数
-//	resourceDesc.Format = metadata.format;									//TextureのFormat
-//	resourceDesc.SampleDesc.Count = 1;										//サンプリングカウント。1固定
-//	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION (metadata.dimension);	//Textureの次元数。普段使っているのは2次元
-//
-//	//2.利用するHeapの設定。非常に特殊な運用。
-//	D3D12_HEAP_PROPERTIES heapProperties{};
-//	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;			//細かい設定を行う
-//
-//	//3.Resourceを生成する
-//	ComPtr<ID3D12Resource> resource = nullptr;
-//	HRESULT hr = dxCommon_->GetDevice ()->CreateCommittedResource (
-//		&heapProperties,					//Heapの設定
-//		D3D12_HEAP_FLAG_NONE,				//Heapの特殊な設定。特になし。
-//		&resourceDesc,						//Resourceの設定
-//		D3D12_RESOURCE_STATE_COPY_DEST,		//データ転送される設定
-//		nullptr,							//Clear最適値。使わないのでnullptr。
-//		IID_PPV_ARGS (resource.GetAddressOf ()));			//作成するResourceポインタへのポインタ
-//	assert (SUCCEEDED (hr));
-//	return resource;
-//}
-//
-//ComPtr<ID3D12Resource> TextureManager::UploadTextureData (const ComPtr<ID3D12Resource>& texture, const DirectX::ScratchImage& mipImages) {
-//	std::vector<D3D12_SUBRESOURCE_DATA> subresources;
-//	DirectX::PrepareUpload (dxCommon_->GetDevice (), mipImages.GetImages (), mipImages.GetImageCount (), mipImages.GetMetadata (), subresources);
-//	uint64_t intermediateSize = GetRequiredIntermediateSize (texture.Get (), 0, UINT (subresources.size ()));
-//	ComPtr<ID3D12Resource> intermediateResource = dxCommon_->CreateBufferResource (intermediateSize);
-//	UpdateSubresources (dxCommon_->GetCommandList (), texture.Get (), intermediateResource.Get (), 0, 0, UINT (subresources.size ()), subresources.data ());
-//
-//	//Textureへの転送後は利用できるよう、D3D12_RESOURCE_STATE_COPY_DESTからD3D12_RESOURCE_STATE_GENERIC_READへResourceStateを変更する
-//	D3D12_RESOURCE_BARRIER barrier{};
-//	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-//	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-//	barrier.Transition.pResource = texture.Get ();
-//	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-//	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-//	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
-//	dxCommon_->GetCommandList ()->ResourceBarrier (1, &barrier);
-//	return intermediateResource;
-//}
-//
-//TextureData* TextureManager::CreateDummyTexture (const std::string& ID) {
-//	//returnするデータを詰める箱
-//	TextureData newData{};
-//	newData.ref_count = 1;
-//
-//	HRESULT hr;
-//
-//	//真っ白な1x1ピクセルのDirectX::ScratchImageを作る
-//	DirectX::ScratchImage image{};
-//
-//	//テクスチャの初期化とデータの設定
-//	//RGBA,8bit(32bit)フォーマットで1x1の画像として初期化
-//	const size_t width = 1;
-//	const size_t height = 1;
-//	const DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM; //一般的なフォーマット
-//
-//	//画像を初期化
-//	hr = image.Initialize2D (format, width, height, 1, 1);
-//	assert (SUCCEEDED (hr));
-//
-//	//ピクセルデータポインタを取得
-//	uint32_t* pixelData = reinterpret_cast<uint32_t*>(image.GetPixels ());
-//	// 真っ白な色を設定
-//	*pixelData = 0xFFFFFFFF;
-//
-//	//ミップマップの作成
-//	DirectX::ScratchImage& mipImage = image;
-//
-//	//mipImageを使ってmetaDataを作る
-//	newData.metadata = mipImage.GetMetadata ();
-//	//作ったmetaDataをもとにテクスチャリソースを作成
-//	newData.textureResource = CreateTextureResource (newData.metadata);
-//	//実際にデータを転送
-//	intermediateResource_.push_back (UploadTextureData (newData.textureResource, mipImage));
-//
-//	//metaDataをもとにSRVの設定
-//	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-//	srvDesc.Format = newData.metadata.format;
-//	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-//	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
-//	srvDesc.Texture2D.MipLevels = UINT (newData.metadata.mipLevels);
-//
-//	//SRVを作成するDescriptorHeapの場所を決める
-//	UINT newIndex = srvManager_->Allocate();
-//
-//	//srvManagerでSRVの生成
-//	srvManager_->CreateSRVforTexture2D(
-//		newIndex,
-//		newData.textureResource.Get(),
-//		newData.metadata.format,
-//		(UINT)newData.metadata.mipLevels,
-//		newData
-//	);
-//
-//	//生成物をmapに渡すためにデータを詰める
-//	newData.handle = srvManager_->GetGPUDescriptorHandle(newIndex);
-//	//どのインデックスを使ったかを保存しておくと解放時に便利
-//	newData.descriptorIndex = newIndex;
-//
-//	//mapに登録
-//	textureMap_[ID] = newData;
-//	return &textureMap_.at (ID);
-//}
+#include "TextureManager.h"
+#include <cassert>
+#include <sstream>
+#include <d3dx12.h>
+#include "DescriptorHeapManager.h"
+#include "ChangeString.h"
+
+TextureManager::~TextureManager() {
+	// 念のためテクスチャマップを空にする
+	textureMap_.clear();
+	intermediateResources_.clear();
+}
+
+void TextureManager::Initialize (ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, DescriptorHeapManager& heapManager) {
+	// 何も読み込まれなかった時用の真っ白なダミーテクスチャを登録しておく
+	// RGBAの1x1ピクセルの画像をメモリ上で即席で作る
+	DirectX::ScratchImage image;
+	HRESULT hr = image.Initialize2D(DXGI_FORMAT_R8G8B8A8_UNORM, 1, 1, 1, 1);
+	assert(SUCCEEDED(hr));
+
+	uint32_t* pixelData = reinterpret_cast<uint32_t*>(image.GetPixels());
+	*pixelData = 0xFFFFFFFF; // 白
+
+	TextureData dummyData{};
+	dummyData.refCount = 1;
+	dummyData.metadata = image.GetMetadata();
+	dummyData.textureResource = CreateTextureResource(device, dummyData.metadata);
+
+	// コピー用のコマンドを積む
+	intermediateResources_.push_back(UploadTextureData(device, cmdList, dummyData.textureResource, image));
+
+	// バインドレスヒープからダミー用の枠を1つ確保
+	dummyData.textureIndex = heapManager.AllocateIndex();
+
+	// SRVの設定をして焼き付ける
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = dummyData.metadata.format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	heapManager.CreateSRVforTexture2D(dummyData.textureIndex, dummyData.textureResource.Get(), srvDesc);
+
+	// "white1x1" という名前で本棚に保管
+	textureMap_["white1x1"] = dummyData;
+}
+
+uint32_t TextureManager::LoadTexture (
+	const std::string& filePath,
+	const std::string& id,
+	ID3D12Device* device,
+	ID3D12GraphicsCommandList* cmdList,
+	DescriptorHeapManager& heapManager
+) {
+	// すでに同じIDで読み込まれていたら、新しく作らずに参照カウントだけ増やしてインデックスを返す
+	if (textureMap_.count(id)) {
+		textureMap_.at(id).refCount++;
+		return textureMap_.at(id).textureIndex;
+	}
+
+	HRESULT hr = S_OK;
+	DirectX::ScratchImage image;
+
+	//実際に読み込む処理
+	//テクスチャファイルを読み込んでプログラムで扱えるようにする
+	std::wstring filePathW = String::ConvertString (filePath);
+	OutputDebugStringW ((L"探してるファイル: " + filePathW + L"\n").c_str ());
+
+	// 拡張子を見てDDSかそれ以外（WIC）か自動で切り替える
+	if (filePathW.ends_with(L".dds")) {
+		hr = DirectX::LoadFromDDSFile(filePathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+	} else {
+		hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	}
+
+	// 読み込みに失敗したらログを出して、安全のためにダミーテクスチャの番号を返す
+	if (FAILED(hr)) {
+		OutputDebugStringW((L"[Warning] テクスチャのロードに失敗しました: " + filePathW + L"\n").c_str());
+
+		// ダミーの参照を1個増やして、ダミーのインデックスを返す
+		textureMap_.at("white1x1").refCount++;
+		return textureMap_.at("white1x1").textureIndex;
+	}
+
+	// ミップマップの自動生成
+	DirectX::ScratchImage mipImage;
+	if (DirectX::IsCompressed(image.GetMetadata().format)) {
+		mipImage = std::move(image);
+	} else {
+		hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 4, mipImage);
+		if (FAILED(hr)) {
+			mipImage = std::move(image); // 失敗したら元の画像で妥協
+		}
+	}
+
+	TextureData newData{};
+	newData.refCount = 1;
+	newData.metadata = mipImage.GetMetadata();
+	newData.textureResource = CreateTextureResource(device, newData.metadata);
+
+	// VRAMに転送するコマンドを記録（中間リソースをゴミ箱に積む）
+	intermediateResources_.push_back(UploadTextureData(device, cmdList, newData.textureResource, mipImage));
+
+	// バインドレスヒープのインデックスを1つ切り出す
+	newData.textureIndex = heapManager.AllocateIndex();
+
+	// 案内札（SRV）の記述を組み立てる
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = newData.metadata.format;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = static_cast<UINT>(newData.metadata.mipLevels);
+
+	// ヒープマネージャーに、指定されたインデックス位置へSRVを生成してもらう
+	heapManager.CreateSRVforTexture2D(newData.textureIndex, newData.textureResource.Get(), srvDesc);
+
+	// マップに登録して、割り当てられたインデックス番号を返す
+	textureMap_[id] = newData;
+	return newData.textureIndex;
+}
+
+void TextureManager::UnloadTexture(const std::string& id, DescriptorHeapManager& heapManager) {
+	if (!textureMap_.count(id)) return;
+
+	TextureData& data = textureMap_.at(id);
+	data.refCount--;
+
+	// 誰も使わなくなったら完全にメモリから削除する
+	if (data.refCount <= 0) {
+		// 使い終わったインデックスを巨大ヒープの空きリストに返却する
+		heapManager.FreeIndex(data.textureIndex);
+
+		// キャッシュマップから削除
+		textureMap_.erase(id);
+	}
+}
+
+void TextureManager::ClearIntermediateResource () {
+	// コピーが完全に終わった中間リソースを一斉掃除する
+	intermediateResources_.clear();
+}
+
+Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata) {
+	D3D12_RESOURCE_DESC resourceDesc{};
+	resourceDesc.Width = static_cast<UINT>(metadata.width);
+	resourceDesc.Height = static_cast<UINT>(metadata.height);
+	resourceDesc.MipLevels = static_cast<UINT>(metadata.mipLevels);
+	resourceDesc.DepthOrArraySize = static_cast<UINT>(metadata.arraySize);
+	resourceDesc.Format = metadata.format;
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.Dimension = static_cast<D3D12_RESOURCE_DIMENSION>(metadata.dimension);
+
+	D3D12_HEAP_PROPERTIES heapProperties{};
+	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT; // 最速のビデオメモリ領域
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
+	HRESULT hr = device->CreateCommittedResource(
+		&heapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&resourceDesc,
+		D3D12_RESOURCE_STATE_COPY_DEST, // まずはデータ転送を受ける状態
+		nullptr,
+		IID_PPV_ARGS(resource.GetAddressOf())
+	);
+	assert(SUCCEEDED(hr));
+	return resource;
+}
+
+Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::UploadTextureData(
+	ID3D12Device* device,
+	ID3D12GraphicsCommandList* cmdList,
+	const Microsoft::WRL::ComPtr<ID3D12Resource>& texture,
+	const DirectX::ScratchImage& mipImages
+) {
+	std::vector<D3D12_SUBRESOURCE_DATA> subresources;
+	DirectX::PrepareUpload(device, mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
+
+	uint64_t intermediateSize = GetRequiredIntermediateSize(texture.Get(), 0, static_cast<UINT>(subresources.size()));
+
+	// アップロード用の中間バッファを自前で作成
+	D3D12_HEAP_PROPERTIES uploadHeapProps{};
+	uploadHeapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+
+	D3D12_RESOURCE_DESC bufferDesc{};
+	bufferDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	bufferDesc.Width = intermediateSize;
+	bufferDesc.Height = 1;
+	bufferDesc.DepthOrArraySize = 1;
+	bufferDesc.MipLevels = 1;
+	bufferDesc.SampleDesc.Count = 1;
+	bufferDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource;
+	HRESULT hr = device->CreateCommittedResource(
+		&uploadHeapProps,
+		D3D12_HEAP_FLAG_NONE,
+		&bufferDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(intermediateResource.GetAddressOf())
+	);
+	assert(SUCCEEDED(hr));
+
+	// コマンドリストにデータ転送を記録
+	UpdateSubresources(cmdList, texture.Get(), intermediateResource.Get(), 0, 0, static_cast<UINT>(subresources.size()), subresources.data());
+
+	// 転送が終わったらシェーダーから読める状態（GENERIC_READ）にバリアを張る
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Transition.pResource = texture.Get();
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
+	cmdList->ResourceBarrier(1, &barrier);
+
+	return intermediateResource;
+}

@@ -1,24 +1,41 @@
-//#pragma once
-//#include <memory>
-//#include "CameraOrganizer.h"
-//#include "InputManager.h"
-//#include "DxCommon.h"
-//
-//class BaseScene {
-//public:		//メンバ関数
-//	virtual ~BaseScene () = default;
-//
-//	virtual void Initialize (CameraOrganizer* camera, InputManager* inputManager, DxCommon* dxCommon) = 0;
-//	virtual void Update () = 0;
-//	virtual void Draw () = 0;
-//	virtual void DrawUI () {}
-//	virtual void StopToResources() = 0;
-//
-//protected:	//メンバ変数
-//	//次に行きたいシーンを持たせる
-//	std::unique_ptr<BaseScene> nextScene_ = nullptr;
-//
-//	//ポインタを借りる
-//	CameraOrganizer* camera_ = nullptr;
-//	InputManager* input_ = nullptr;
-//};
+#pragma once
+#include <memory>
+
+class TextureManager;
+class ModelFactory;
+class ShaderManager;
+class InputManager;
+struct CameraData;
+struct ID3D12Device;
+struct ID3D12GraphicsCommandList;
+class DescriptorHeapManager;
+
+// シーンで必要になる高レベルマネージャーや低レイヤー参照のポインタを束ねた薄い構造体
+struct SceneContext {
+	InputManager* input = nullptr;
+	TextureManager* textureManager = nullptr;
+	ModelFactory* modelFactory = nullptr;
+	ShaderManager* shaderManager = nullptr;
+	ID3D12Device* device = nullptr;
+	ID3D12GraphicsCommandList* cmdList = nullptr;
+	DescriptorHeapManager* heapManager = nullptr;
+};
+
+class BaseScene {
+public:
+	virtual ~BaseScene () = default;
+
+	// コンテキストの注入
+	void SetContext(SceneContext* context) {
+		context_ = context;
+	}
+
+	virtual void Initialize () = 0;
+	virtual void Update (CameraData* cameraData) = 0;
+	virtual void Draw (class RenderSystem* renderSystem) = 0;
+	virtual void DrawUI () {}
+
+protected:
+	// 借りてきたポインタ群
+	SceneContext* context_ = nullptr;
+};
