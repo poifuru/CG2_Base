@@ -17,7 +17,7 @@ void CameraOrganizer::Initialize () {
 	//初期状態ではデバッグカメラをセット
 	SetActiveCamera ("Debug");
 	//positionとrotateをセット
-	SetPosition ({ 0.0f, 15.0f, -50.0f });
+	SetPosition ({ 0.0f, 5.0f, -20.0f });
 	SetRotate ({ 0.3f, 0.0f, 0.0f });
 }
 

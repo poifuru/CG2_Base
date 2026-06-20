@@ -6,6 +6,7 @@
 // 前方宣言
 struct ID3D12Device;
 struct ID3D12GraphicsCommandList;
+struct ID3D12CommandQueue;
 class FrameRateController;
 class GraphicsDevice;
 class CommandContext;
@@ -17,6 +18,7 @@ class InputLayoutManager;
 class BlendModeManager;
 class PSOManager;
 class RenderSystem;
+class RenderTexture;
 
 class Engine : public IEngine {
 public:
@@ -27,6 +29,7 @@ public:
 	bool ProcessMessage() override;
 	void BeginFrame() override;
 	void EndFrame() override;
+	void PreImGui();
 
 	RenderSystem* GetRenderSystem() override { return renderSystem_.get(); }
 
@@ -39,7 +42,9 @@ public:
 	GraphicsDevice* GetGraphicsDevice() override { return device_.get(); }
 	DescriptorHeapManager* GetDescriptorHeapManager() override { return heapManager_.get(); }
 	ID3D12GraphicsCommandList* GetCommandList() override;
+	ID3D12CommandQueue* GetCommandQueue() override;
 	ShaderManager& GetShaderManager() override;
+	RenderTexture* GetRenderTexture() override { return renderTexture_.get(); }
 
 private:
 	LeakChecker leakCheck_{};
@@ -58,4 +63,5 @@ private:
 	std::unique_ptr<PSOManager> psoManager_;
 
 	std::unique_ptr<RenderSystem> renderSystem_;
+	std::unique_ptr<RenderTexture> renderTexture_;
 };

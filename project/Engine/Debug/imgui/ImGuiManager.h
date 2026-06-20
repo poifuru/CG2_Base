@@ -1,25 +1,30 @@
 #pragma once
+#include "IEngine.h"
 
 class ImGuiManager {
 public:
-	static ImGuiManager* GetInstance () {
-		//初めて呼び出されたときに一回だけ初期化
+	static ImGuiManager* GetInstance() {
 		static ImGuiManager instance;
 		return &instance;
 	}
-	~ImGuiManager ();
+	~ImGuiManager();
 
-	void Initialize ();
-	void Draw ();
-	void BeginFrame ();
+	void Initialize(IEngine* engine);
+	void Draw();
+	void BeginFrame();
+
+	IEngine* GetEngine() const { return engine_; }
 
 private:
-	//コンストラクタを禁止
-	ImGuiManager () = default;
-	// コピーコンストラクタと代入演算子を禁止
-	ImGuiManager (const ImGuiManager&) = delete;
+	void RenderDockingSpace();
+
+private:
+	ImGuiManager() = default;
+	ImGuiManager(const ImGuiManager&) = delete;
 	ImGuiManager& operator=(const ImGuiManager&) = delete;
-	ImGuiManager (ImGuiManager&&) = delete;
+	ImGuiManager(ImGuiManager&&) = delete;
 	ImGuiManager& operator=(ImGuiManager&&) = delete;
+
+	IEngine* engine_ = nullptr;
 };
 

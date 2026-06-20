@@ -7,9 +7,11 @@ class Model;
 class RenderSystem;
 struct ID3D12Device;
 struct ID3D12GraphicsCommandList;
+struct ID3D12CommandQueue;
 class GraphicsDevice;
 class DescriptorHeapManager;
 class ShaderManager;
+class RenderTexture;
 
 class IEngine {
 public:
@@ -27,8 +29,10 @@ public:
 	virtual ID3D12Device* GetDevice() = 0;
 	virtual GraphicsDevice* GetGraphicsDevice() = 0;
 	virtual ID3D12GraphicsCommandList* GetCommandList() = 0;
+	virtual ID3D12CommandQueue* GetCommandQueue() = 0;
 	virtual DescriptorHeapManager* GetDescriptorHeapManager() = 0;
 	virtual ShaderManager& GetShaderManager() = 0;
+	virtual RenderTexture* GetRenderTexture() = 0;
 
 	// コマンドリスト制御
 	virtual void ResetCommandList() = 0;

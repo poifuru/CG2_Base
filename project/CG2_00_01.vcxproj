@@ -88,7 +88,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\DirectXResource;$(SolutionDir)Engine\Core\General;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Debug\ImGui;$(SolutionDir)Engine\Framework\Buffer;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\DirectXResource;$(SolutionDir)Engine\Core\General;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\LowLevel;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Debug\ImGui;$(SolutionDir)Engine\Framework\Buffer;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -117,7 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\DirectXResource;$(SolutionDir)Engine\Core\General;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Debug\ImGui;$(SolutionDir)Engine\Framework\Buffer;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\DirectXResource;$(SolutionDir)Engine\Core\General;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\LowLevel;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Debug\ImGui;$(SolutionDir)Engine\Framework\Buffer;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,7 +151,7 @@ echo "MaoSuya Engine Builded"</Command>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\DirectXResource;$(SolutionDir)Engine\Core\General;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Debug\ImGui;$(SolutionDir)Engine\Framework\Buffer;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)application\scene;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\assimp\include;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\DirectXResource;$(SolutionDir)Engine\Core\General;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\LowLevel;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Debug\ImGui;$(SolutionDir)Engine\Framework\Buffer;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -187,6 +187,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Core\CommandContext.cpp" />
     <ClCompile Include="Engine\Core\FrameRateController.cpp" />
     <ClCompile Include="Engine\Core\GraphicsDevice.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\CommandContext.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\DescriptorHeapManager.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\FrameRateController.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\GraphicsDevice.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\SwapChain.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\WindowsAPI.cpp" />
     <ClCompile Include="Engine\Framework\Buffer\Animation.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\CopyImage.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\Fog.cpp" />
@@ -213,6 +219,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Render\PSO\InputLayoutManager.cpp" />
     <ClCompile Include="Engine\Framework\Camera\FollowCamera.cpp" />
     <ClCompile Include="Engine\Debug\ImGui\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\Debug\ImGui\EditorManager.cpp" />
     <ClCompile Include="Engine\Core\LeakChecker.cpp" />
     <ClCompile Include="Engine\Core\DxCommon.cpp">
       <DebugInformationFormat Condition="'$(Configuration)|$(Platform)'=='Release|x64'">None</DebugInformationFormat>
@@ -417,6 +424,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Core\FrameRateController.h" />
     <ClInclude Include="Engine\Core\GraphicsDevice.h" />
     <ClInclude Include="Engine\Core\IEngine.h" />
+    <ClInclude Include="Engine\Core\LowLevel\CommandContext.h" />
+    <ClInclude Include="Engine\Core\LowLevel\DescriptorHeapManager.h" />
+    <ClInclude Include="Engine\Core\LowLevel\FrameRateController.h" />
+    <ClInclude Include="Engine\Core\LowLevel\GraphicsDevice.h" />
+    <ClInclude Include="Engine\Core\LowLevel\SwapChain.h" />
+    <ClInclude Include="Engine\Core\LowLevel\WindowsAPI.h" />
     <ClInclude Include="Engine\Core\RenderCommand.h" />
     <ClInclude Include="Engine\Framework\Buffer\Animation.h" />
     <ClInclude Include="Engine\Framework\Buffer\CameraBufferData.h" />
@@ -468,6 +481,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Render\PSO\InputLayoutManager.h" />
     <ClInclude Include="Engine\Framework\Camera\FollowCamera.h" />
     <ClInclude Include="Engine\Debug\ImGui\ImGuiManager.h" />
+    <ClInclude Include="Engine\Debug\ImGui\EditorManager.h" />
     <ClInclude Include="Engine\Core\LeakChecker.h" />
     <ClInclude Include="Engine\Core\DxCommon.h" />
     <ClInclude Include="Engine\Framework\Camera\DebugCamera.h" />

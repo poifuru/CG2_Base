@@ -31,7 +31,8 @@ public:
 	// --- コマンド記録のヘルパー --- //
 	void TransitionBarrier(ID3D12Resource* resource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
 	void ClearRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, const float color[4]);
-	void SetRenderTargets(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle);
+	void ClearDepthBuffer(D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle, float depth = 1.0f);
+	void SetRenderTargets(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, const D3D12_CPU_DESCRIPTOR_HANDLE* dsvHandle = nullptr);
 
 public:
 	// コピー・移動禁止

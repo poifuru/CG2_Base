@@ -74,3 +74,13 @@ D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeapManager::GetGpuHandle(uint32_t index) 
 	handle.ptr += static_cast<SIZE_T>(index) * descriptorSize_;
 	return handle;
 }
+
+uint32_t DescriptorHeapManager::GetIndex(D3D12_CPU_DESCRIPTOR_HANDLE handle) const {
+	D3D12_CPU_DESCRIPTOR_HANDLE startHandle = heap_->GetCPUDescriptorHandleForHeapStart();
+	return static_cast<uint32_t>((handle.ptr - startHandle.ptr) / descriptorSize_);
+}
+
+uint32_t DescriptorHeapManager::GetIndex(D3D12_GPU_DESCRIPTOR_HANDLE handle) const {
+	D3D12_GPU_DESCRIPTOR_HANDLE startHandle = heap_->GetGPUDescriptorHandleForHeapStart();
+	return static_cast<uint32_t>((handle.ptr - startHandle.ptr) / descriptorSize_);
+}

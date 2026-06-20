@@ -87,6 +87,10 @@ void CommandContext::ClearRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, co
 	commandList_->ClearRenderTargetView(rtvHandle, color, 0, nullptr);
 }
 
-void CommandContext::SetRenderTargets(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle) {
-	commandList_->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+void CommandContext::ClearDepthBuffer(D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle, float depth) {
+	commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, depth, 0, 0, nullptr);
+}
+
+void CommandContext::SetRenderTargets(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, const D3D12_CPU_DESCRIPTOR_HANDLE* dsvHandle) {
+	commandList_->OMSetRenderTargets(1, &rtvHandle, FALSE, dsvHandle);
 }

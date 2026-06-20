@@ -1,5 +1,6 @@
 #include "SwapChain.h"
 #include "CommandContext.h"
+#include "function.h"
 #include <cassert>
 
 SwapChain::SwapChain() = default;
@@ -76,6 +77,24 @@ void SwapChain::Initialize(
 		// レンダーターゲットビューの生成
 		d3dDevice->CreateRenderTargetView(swapChainResources_[i].Get(), &rtvDesc, rtvHandles_[i]);
 	}
+
+	// 深度バッファの作成
+	depthBuffer_ = CreateDepthStencilTextureResource(d3dDevice.Get(), width, height);
+
+	// DSV用ディスクリプタヒープの作成
+	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc{};
+	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	dsvHeapDesc.NumDescriptors = 1;
+	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	hr = d3dDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(dsvHeap_.GetAddressOf()));
+	assert(SUCCEEDED(hr));
+
+	// DSVの作成
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	dsvHandle_ = dsvHeap_->GetCPUDescriptorHandleForHeapStart();
+	d3dDevice->CreateDepthStencilView(depthBuffer_.Get(), &dsvDesc, dsvHandle_);
 }
 
 void SwapChain::Present() {
@@ -90,8 +109,9 @@ void SwapChain::BeginRender(CommandContext* cmdContext, const float clearColor[4
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = GetRtvHandle(bbIndex);
 
 	cmdContext->TransitionBarrier(backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	cmdContext->SetRenderTargets(rtvHandle);
+	cmdContext->SetRenderTargets(rtvHandle, &dsvHandle_);
 	cmdContext->ClearRenderTarget(rtvHandle, clearColor);
+	cmdContext->ClearDepthBuffer(dsvHandle_, 1.0f);
 }
 
 void SwapChain::EndRender(CommandContext* cmdContext) {

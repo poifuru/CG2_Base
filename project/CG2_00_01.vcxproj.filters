@@ -33,6 +33,7 @@
     <ClCompile Include="Engine\Render\PSO\InputLayoutManager.cpp" />
     <ClCompile Include="Engine\Framework\Camera\FollowCamera.cpp" />
     <ClCompile Include="Engine\Debug\ImGui\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\Debug\ImGui\EditorManager.cpp" />
     <ClCompile Include="Engine\Core\LeakChecker.cpp" />
     <ClCompile Include="Engine\Core\DxCommon.cpp" />
     <ClCompile Include="Engine\Framework\Camera\DebugCamera.cpp" />
@@ -105,6 +106,12 @@
     <ClCompile Include="Engine\Core\DescriptorHeapManager.cpp" />
     <ClCompile Include="Engine\Core\RenderSystem.cpp" />
     <ClCompile Include="Engine\Framework\Buffer\Animation.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\CommandContext.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\DescriptorHeapManager.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\FrameRateController.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\GraphicsDevice.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\SwapChain.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\WindowsAPI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -133,6 +140,7 @@
     <ClInclude Include="Engine\Render\PSO\InputLayoutManager.h" />
     <ClInclude Include="Engine\Framework\Camera\FollowCamera.h" />
     <ClInclude Include="Engine\Debug\ImGui\ImGuiManager.h" />
+    <ClInclude Include="Engine\Debug\ImGui\EditorManager.h" />
     <ClInclude Include="Engine\Core\LeakChecker.h" />
     <ClInclude Include="Engine\Core\DxCommon.h" />
     <ClInclude Include="Engine\Framework\Camera\DebugCamera.h" />
@@ -222,6 +230,12 @@
     <ClInclude Include="Engine\Framework\Buffer\MeshData.h" />
     <ClInclude Include="Engine\Framework\Buffer\MaterialData.h" />
     <ClInclude Include="Engine\Framework\Buffer\Animation.h" />
+    <ClInclude Include="Engine\Core\LowLevel\CommandContext.h" />
+    <ClInclude Include="Engine\Core\LowLevel\DescriptorHeapManager.h" />
+    <ClInclude Include="Engine\Core\LowLevel\FrameRateController.h" />
+    <ClInclude Include="Engine\Core\LowLevel\GraphicsDevice.h" />
+    <ClInclude Include="Engine\Core\LowLevel\SwapChain.h" />
+    <ClInclude Include="Engine\Core\LowLevel\WindowsAPI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "PlayScene.h"
 #include "CameraOrganizer.h"
+#include "ImGuiManager.h"
 
 #pragma comment(lib, "DirectXTex.lib")
 
@@ -30,6 +31,9 @@ Game::Game() {
 
 	// カメラの初期化
 	CameraOrganizer::GetInstance()->Initialize();
+
+	// ImGuiの初期化
+	ImGuiManager::GetInstance()->Initialize(engine_.get());
 }
 
 Game::~Game() {
@@ -43,6 +47,9 @@ void Game::Run() {
 			break;
 		}
 
+		// ImGui 新しいフレーム開始
+		ImGuiManager::GetInstance()->BeginFrame();
+
 		//フレーム開始
 		engine_->BeginFrame();
 
@@ -50,6 +57,12 @@ void Game::Run() {
 
 		// シーンの描画コマンドの積み込み
 		sceneManager_->Draw(engine_->GetRenderSystem());
+
+		// シーン描画の実行とSwapChainへの切り替え
+		engine_->PreImGui();
+
+		// ImGuiの描画コマンド積み込み
+		ImGuiManager::GetInstance()->Draw();
 
 		//フレーム終了
 		engine_->EndFrame();

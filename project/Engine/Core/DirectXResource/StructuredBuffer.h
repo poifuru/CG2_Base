@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
-#include "DescriptorHeapManager.h" // 新しいマネージャー
+#include "DescriptorHeapManager.h"
 
 // 構造化バッファのクラステンプレート
 template <typename T>

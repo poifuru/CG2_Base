@@ -12,6 +12,7 @@
 #include "BlendModeManager.h"
 #include "PSOManager.h"
 #include "RenderSystem.h"
+#include "RenderTexture.h"
 #include "CameraOrganizer.h"
 #include "LogManager.h"
 
@@ -67,6 +68,9 @@ void Engine::Initialize() {
 
 	renderSystem_ = std::make_unique<RenderSystem>();
 	renderSystem_->Initialize(device_->GetDevice());
+
+	renderTexture_ = std::make_unique<RenderTexture>();
+	renderTexture_->Initialize(device_->GetDevice(), heapManager_.get());
 }
 
 bool Engine::ProcessMessage() {
@@ -78,11 +82,31 @@ void Engine::BeginFrame() {
 	InputManager::GetInstance()->Update();
 	cmdContext_->Reset();
 
+	// RenderTextureをレンダーターゲットに設定
+	ID3D12GraphicsCommandList* cmdList = cmdContext_->GetCommandList();
+	cmdContext_->TransitionBarrier(renderTexture_->GetResource(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = renderTexture_->GetDescriptorHandle();
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
-	swapChain_->BeginRender(cmdContext_.get(), clearColor);
+	cmdContext_->ClearRenderTarget(rtvHandle, clearColor);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = swapChain_->GetDsvHandle();
+	cmdContext_->ClearDepthBuffer(dsvHandle);
+
+	cmdContext_->SetRenderTargets(rtvHandle, &dsvHandle);
 }
 
 void Engine::EndFrame() {
+
+	swapChain_->EndRender(cmdContext_.get());
+	cmdContext_->Execute();
+	swapChain_->Present();
+	cmdContext_->SignalAndWait();
+
+	InputManager::GetInstance()->EndFrame();
+}
+
+void Engine::PreImGui() {
 	D3D12_VIEWPORT viewport{};
 	viewport.Width = static_cast<float>(WindowsAPI::GetInstance()->GetWindowWidth());
 	viewport.Height = static_cast<float>(WindowsAPI::GetInstance()->GetWindowHeight());
@@ -117,12 +141,12 @@ void Engine::EndFrame() {
 	);
 	renderSystem_->ClearCommands();
 
-	swapChain_->EndRender(cmdContext_.get());
-	cmdContext_->Execute();
-	swapChain_->Present();
-	cmdContext_->SignalAndWait();
+	// RenderTextureへの描画が終わったのでSRVに遷移
+	cmdContext_->TransitionBarrier(renderTexture_->GetResource(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-	InputManager::GetInstance()->EndFrame();
+	// SwapChainの準備 (ImGuiの描画先)
+	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
+	swapChain_->BeginRender(cmdContext_.get(), clearColor);
 }
 
 void Engine::ResetCommandList() {
@@ -140,6 +164,10 @@ ID3D12Device* Engine::GetDevice() {
 
 ID3D12GraphicsCommandList* Engine::GetCommandList() {
 	return cmdContext_->GetCommandList();
+}
+
+ID3D12CommandQueue* Engine::GetCommandQueue() {
+	return cmdContext_->GetCommandQueue();
 }
 
 ShaderManager& Engine::GetShaderManager() {

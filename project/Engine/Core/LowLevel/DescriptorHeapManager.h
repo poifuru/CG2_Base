@@ -30,6 +30,8 @@ public:
 	ID3D12DescriptorHeap* GetHeap() const { return heap_.Get(); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCpuHandle(uint32_t index) const;
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGpuHandle(uint32_t index) const;
+	uint32_t GetIndex(D3D12_CPU_DESCRIPTOR_HANDLE handle) const;
+	uint32_t GetIndex(D3D12_GPU_DESCRIPTOR_HANDLE handle) const;
 
 public:
 	// コピー・移動の禁止
