@@ -4,7 +4,7 @@
 class TextureManager;
 class ModelFactory;
 class ShaderManager;
-class InputManager;
+class ModelManager;
 struct CameraData;
 struct ID3D12Device;
 struct ID3D12GraphicsCommandList;
@@ -12,10 +12,10 @@ class DescriptorHeapManager;
 
 // シーンで必要になる高レベルマネージャーや低レイヤー参照のポインタを束ねた薄い構造体
 struct SceneContext {
-	InputManager* input = nullptr;
 	TextureManager* textureManager = nullptr;
 	ModelFactory* modelFactory = nullptr;
 	ShaderManager* shaderManager = nullptr;
+	ModelManager* modelManager = nullptr;
 	ID3D12Device* device = nullptr;
 	ID3D12GraphicsCommandList* cmdList = nullptr;
 	DescriptorHeapManager* heapManager = nullptr;

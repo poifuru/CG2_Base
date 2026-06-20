@@ -15,56 +15,72 @@ void ModelManager::Initialize(ID3D12Device* device, TextureManager* textureManag
 
 	// --- デフォルトの三角形アセット "Triangle" のダミー作成 ---
 	auto triangleData = std::make_shared<ModelData>();
-	triangleData->vertexCount = 3;
-	triangleData->indexCount = 3;
+	
+	Mesh triangleMesh{};
+	triangleMesh.vertexCount = 3;
+	triangleMesh.indexCount = 3;
 
 	// 頂点データ
 	VertexData v0{ { 0.0f,  0.5f, 0.0f, 1.0f }, { 0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f } };
 	VertexData v1{ { 0.5f, -0.5f, 0.0f, 1.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } };
 	VertexData v2{ {-0.5f, -0.5f, 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } };
-	triangleData->meshData.vertices = { v0, v1, v2 };
-	triangleData->meshData.indices = { 0, 1, 2 };
+	triangleMesh.meshData.vertices = { v0, v1, v2 };
+	triangleMesh.meshData.indices = { 0, 1, 2 };
 
-	// 頂点バッファ・インデックスバッファの生成と設定 (カプセル化されたInitializeを使用)
-	triangleData->meshResource.Initialize(device_, triangleData->meshData);
+	// 頂点バッファ・インデックスバッファの生成と設定
+	triangleMesh.meshResource.Initialize(device_, triangleMesh.meshData);
 
 	// ビューの情報を設定
-	triangleData->vbView = triangleData->meshResource.vertexBuffer.GetView();
-	triangleData->ibView = triangleData->meshResource.indexBuffer.GetView();
+	triangleMesh.vbView = triangleMesh.meshResource.vertexBuffer.GetView();
+	triangleMesh.ibView = triangleMesh.meshResource.indexBuffer.GetView();
 
-	// マップへ登録
-	modelMap_["Triangle"] = triangleData;
+	triangleData->meshes.push_back(std::move(triangleMesh));
+
+	// ベクターへ登録
+	models_.push_back(triangleData);
+	modelPathToIndexMap_["Triangle"] = 0;
 }
 
-ModelData* ModelManager::LoadModelData(const std::string& directoryPath, const std::string& fileName, bool inversion) {
+uint32_t ModelManager::LoadModelData(const std::string& filePath, bool inversion) {
 	// すでに読み込まれていたら既存データを返す
-	if(modelMap_.count(fileName)) {
-		return modelMap_.at(fileName).get();
+	if(modelPathToIndexMap_.count(filePath)) {
+		return modelPathToIndexMap_.at(filePath);
 	}
 
 	// 新規読み込み
-	ModelData cpuData = LoadModelFile(directoryPath, fileName, inversion);
+	ModelData cpuData = LoadModelFile(filePath, inversion);
+	
+	// 頂点バッファ・インデックスバッファの生成と設定、及びテクスチャ自動ロード
+	for (auto& mesh : cpuData.meshes) {
+		mesh.meshResource.Initialize(device_, mesh.meshData);
+		mesh.vbView = mesh.meshResource.vertexBuffer.GetView();
+		mesh.ibView = mesh.meshResource.indexBuffer.GetView();
+
+		if (!mesh.textureFilePath.empty()) {
+			mesh.textureIndex = textureManager_->LoadTexture(mesh.textureFilePath);
+		} else {
+			mesh.textureIndex = 0; // デフォルトはwhite1x1 (0番)
+		}
+	}
+
 	std::shared_ptr<ModelData> newData = std::make_shared<ModelData>(std::move(cpuData));
 
-	// 頂点バッファ・インデックスバッファの生成と設定 (カプセル化されたInitializeを使用)
-	newData->meshResource.Initialize(device_, newData->meshData);
+	uint32_t index = static_cast<uint32_t>(models_.size());
+	models_.push_back(newData);
+	modelPathToIndexMap_[filePath] = index;
 
-	// ビューの情報を設定
-	newData->vbView = newData->meshResource.vertexBuffer.GetView();
-	newData->ibView = newData->meshResource.indexBuffer.GetView();
-
-	modelMap_[fileName] = newData;
-
-	return modelMap_.at(fileName).get();
+	return index;
 }
 
-std::weak_ptr<ModelData> ModelManager::GetModelData(std::string id) {
-	assert(modelMap_.count(id));
-	return modelMap_.at(id);
+std::weak_ptr<ModelData> ModelManager::GetModelData(uint32_t index) {
+	assert(index < models_.size());
+	return models_[index];
 }
 
-void ModelManager::UnloadModelData(const std::string& id) {
-	modelMap_.erase(id);
+void ModelManager::UnloadModelData(uint32_t index) {
+	if (index < models_.size()) {
+		models_[index].reset();
+	}
 }
 
 Animation* ModelManager::LoadAnimationData(const std::string& directoryPath, const std::string& fileName) {
@@ -110,22 +126,26 @@ MaterialFile ModelManager::LoadMaterialTemplateFile(const std::string& directory
 	return materialData;
 }
 
-ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const std::string& fileName, bool inversion) {
+ModelData ModelManager::LoadModelFile(const std::string& filePath, bool inversion) {
 	ModelData modelData;
 	Assimp::Importer importer;
-	std::string filePath = directoryPath + "/" + fileName;
 	const aiScene* scene = importer.ReadFile(
 		filePath.c_str(),
 		aiProcess_FlipWindingOrder |
 		aiProcess_FlipUVs |
 		aiProcess_JoinIdenticalVertices
 	);
-	assert(scene->HasMeshes());
+	assert(scene && scene->HasMeshes());
+
+	// ファイルパスからディレクトリパスを抽出
+	std::string directoryPath = std::filesystem::path(filePath).parent_path().string();
 
 	for(uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
 		assert(mesh->HasNormals());
 		assert(mesh->HasTextureCoords(0));
+
+		Mesh myMesh;
 
 		for(uint32_t i = 0; i < mesh->mNumVertices; ++i) {
 			aiVector3D& position = mesh->mVertices[i];
@@ -142,7 +162,7 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 				vertex.normal = { -normal.x, normal.y, normal.z };
 			}
 			vertex.texcoord = { texcoord.x, texcoord.y };
-			modelData.meshData.vertices.push_back(vertex);
+			myMesh.meshData.vertices.push_back(vertex);
 		}
 
 		for(uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
@@ -150,10 +170,28 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 			assert(face.mNumIndices == 3);
 
 			for(uint32_t i = 0; i < face.mNumIndices; ++i) {
-				modelData.meshData.indices.push_back(face.mIndices[i]);
+				myMesh.meshData.indices.push_back(face.mIndices[i]);
 			}
 		}
 
+		myMesh.vertexCount = static_cast<uint32_t>(myMesh.meshData.vertices.size());
+		myMesh.indexCount = static_cast<uint32_t>(myMesh.meshData.indices.size());
+
+		// このメッシュに適用されているマテリアルのテクスチャパスを取得
+		if(scene->mNumMaterials > 0 && mesh->mMaterialIndex < scene->mNumMaterials) {
+			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+			if(material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
+				aiString textureFilePath;
+				material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
+				myMesh.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
+			}
+		}
+
+		modelData.meshes.push_back(std::move(myMesh));
+	}
+
+	for(uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
+		aiMesh* mesh = scene->mMeshes[meshIndex];
 		for(uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
 			aiBone* bone = mesh->mBones[boneIndex];
 			std::string jointName = bone->mName.C_Str();
@@ -175,17 +213,6 @@ ModelData ModelManager::LoadModelFile(const std::string& directoryPath, const st
 		}	
 	}
 
-	for(uint32_t materialIndex = 0; materialIndex < scene->mNumMaterials; ++materialIndex) {
-		aiMaterial* material = scene->mMaterials[materialIndex];
-		if(material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
-			aiString textureFilePath;
-			material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
-			modelData.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
-		}
-	}
-
-	modelData.vertexCount = static_cast<uint32_t>(modelData.meshData.vertices.size());
-	modelData.indexCount = static_cast<uint32_t>(modelData.meshData.indices.size());
 	modelData.rootNode = ReadNode(scene->mRootNode);
 
 	return modelData;

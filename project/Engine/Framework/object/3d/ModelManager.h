@@ -19,9 +19,9 @@ public:
 
 	void Initialize(ID3D12Device* device, TextureManager* textureManager);
 
-	ModelData* LoadModelData(const std::string& directoryPath, const std::string& fileName, bool inversion = false);
-	std::weak_ptr<ModelData> GetModelData(std::string id);
-	void UnloadModelData(const std::string& id);
+	uint32_t LoadModelData(const std::string& filePath, bool inversion = false);
+	std::weak_ptr<ModelData> GetModelData(uint32_t index);
+	void UnloadModelData(uint32_t index);
 
 	Animation* LoadAnimationData(const std::string& directoryPath, const std::string& fileName);
 	std::weak_ptr<Animation> GetAnimationData(std::string id);
@@ -39,7 +39,7 @@ private:
 	MaterialFile LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& id);
 
 	// モデル読み込みの関数
-	ModelData LoadModelFile(const std::string& directoryPath, const std::string& fileName, bool inversion);
+	ModelData LoadModelFile(const std::string& filePath, bool inversion);
 
 	// assimpのノードからNode構造体に変換する関数
 	Node ReadNode(aiNode* node);
@@ -51,7 +51,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(size_t sizeInBytes);
 
 private:
-	std::unordered_map<std::string, std::shared_ptr<ModelData>> modelMap_;
+	std::vector<std::shared_ptr<ModelData>> models_;
+	std::unordered_map<std::string, uint32_t> modelPathToIndexMap_;
 	std::unordered_map<std::string, std::shared_ptr<Animation>> animationMap_;
 
 	ID3D12Device* device_ = nullptr;

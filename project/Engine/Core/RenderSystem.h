@@ -2,26 +2,41 @@
 #include <vector>
 #include <d3d12.h>
 #include "RenderCommand.h"
+#include "ConstantBuffer.h"
+#include "struct.h"
 
 class PSOManager;
 class DescriptorHeapManager;
 class ShaderManager;
+class LightManager;
+
+struct CameraForGPU {
+	Vector3 worldPosition;
+	float padding; // 16バイトアライメント用のパディング
+};
 
 class RenderSystem {
 public:
 	RenderSystem() = default;
 	~RenderSystem() = default;
 
+	// リソース初期化用
+	void Initialize(ID3D12Device* device);
+
 	// コマンドの積み込み
 	void PushCommand(const RenderCommand& command);
 
-	// 必要なマネージャーやコマンドリスト、共通シグネチャ、デバイスをすべて引数で貰って駆動する
+	// カメラ位置の設定・更新用
+	void SetCameraPosition(const Vector3& cameraPos);
+
+	// アクティブなライトマネージャーの登録用
+	void SetLightManager(LightManager* lightManager);
+
 	void ExecuteCommands(
 		ID3D12Device* device,
 		ID3D12GraphicsCommandList* cmdList,
 		ID3D12RootSignature* commonRootSignature,
-		D3D12_GPU_VIRTUAL_ADDRESS cameraCBVAddress, // Slot 0 用のカメラアドレス
-		DescriptorHeapManager& heapManager,         // Slot 2 用の巨大ヒープ
+		DescriptorHeapManager& heapManager,
 		PSOManager& psoManager,
 		const ShaderManager& shaderManager,
 		const InputLayoutManager& inputLayoutManager,
@@ -39,4 +54,10 @@ public:
 
 private:
 	std::vector<RenderCommand> commandQueue_;
+
+	// カメラ用の定数バッファ
+	ConstantBuffer<CameraForGPU> cameraBuffer_;
+
+	// アクティブなライトマネージャーへのポインタ
+	LightManager* activeLightManager_ = nullptr;
 };

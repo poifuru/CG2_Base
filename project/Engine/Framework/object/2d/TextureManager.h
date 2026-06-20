@@ -13,26 +13,20 @@ public:		//外部公開メソッド
 	TextureManager() = default;
 	~TextureManager(); // 終了時に残ったテクスチャがあれば解放する
 
-	void Initialize (ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, DescriptorHeapManager& heapManager);
+	void Initialize (ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, DescriptorHeapManager* heapManager);
 
 	//画像をロードする関数
-	uint32_t LoadTexture (
-		const std::string& filePath,
-		const std::string& id,
-		ID3D12Device* device,
-		ID3D12GraphicsCommandList* cmdList,
-		DescriptorHeapManager& heapManager
-	);
+	uint32_t LoadTexture (const std::string& filePath);
 
 	// テクスチャアンロード（使い終わったら参照カウントを減らす）
-	void UnloadTexture(const std::string& id, DescriptorHeapManager& heapManager);
+	void UnloadTexture(const std::string& filePath);
 
 	//中間リソース解放関数
 	void ClearIntermediateResource ();
 
-	// テクスチャIDからバインドレスヒープ内のインデックスを取得する
-	uint32_t GetTextureIndex(const std::string& id) const {
-		auto it = textureMap_.find(id);
+	// テクスチャID（ファイルパス）からバインドレスヒープ内のインデックスを取得する
+	uint32_t GetTextureIndex(const std::string& filePath) const {
+		auto it = textureMap_.find(filePath);
 		if (it != textureMap_.end()) {
 			return it->second.textureIndex;
 		}
@@ -58,10 +52,14 @@ private:	//内部関数
 	);
 
 private:	//メンバ変数
-	// テクスチャID（"Player"など）と実体データのマップ
+	// テクスチャID（ファイルパス）と実体データのマップ
 	std::unordered_map<std::string, TextureData> textureMap_;
 
 	// GPUにデータをコピーする間だけ生きている必要がある一時的なバッファのゴミ箱
 	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> intermediateResources_;
+
+	ID3D12Device* device_ = nullptr;
+	ID3D12GraphicsCommandList* cmdList_ = nullptr;
+	DescriptorHeapManager* heapManager_ = nullptr;
 };
 

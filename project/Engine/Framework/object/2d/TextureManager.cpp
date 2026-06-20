@@ -11,7 +11,11 @@ TextureManager::~TextureManager() {
 	intermediateResources_.clear();
 }
 
-void TextureManager::Initialize (ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, DescriptorHeapManager& heapManager) {
+void TextureManager::Initialize (ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, DescriptorHeapManager* heapManager) {
+	device_ = device;
+	cmdList_ = cmdList;
+	heapManager_ = heapManager;
+
 	// 何も読み込まれなかった時用の真っ白なダミーテクスチャを登録しておく
 	// RGBAの1x1ピクセルの画像をメモリ上で即席で作る
 	DirectX::ScratchImage image;
@@ -24,13 +28,13 @@ void TextureManager::Initialize (ID3D12Device* device, ID3D12GraphicsCommandList
 	TextureData dummyData{};
 	dummyData.refCount = 1;
 	dummyData.metadata = image.GetMetadata();
-	dummyData.textureResource = CreateTextureResource(device, dummyData.metadata);
+	dummyData.textureResource = CreateTextureResource(device_, dummyData.metadata);
 
 	// コピー用のコマンドを積む
-	intermediateResources_.push_back(UploadTextureData(device, cmdList, dummyData.textureResource, image));
+	intermediateResources_.push_back(UploadTextureData(device_, cmdList_, dummyData.textureResource, image));
 
 	// バインドレスヒープからダミー用の枠を1つ確保
-	dummyData.textureIndex = heapManager.AllocateIndex();
+	dummyData.textureIndex = heapManager_->AllocateIndex();
 
 	// SRVの設定をして焼き付ける
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
@@ -39,23 +43,17 @@ void TextureManager::Initialize (ID3D12Device* device, ID3D12GraphicsCommandList
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
 
-	heapManager.CreateSRVforTexture2D(dummyData.textureIndex, dummyData.textureResource.Get(), srvDesc);
+	heapManager_->CreateSRVforTexture2D(dummyData.textureIndex, dummyData.textureResource.Get(), srvDesc);
 
 	// "white1x1" という名前で本棚に保管
 	textureMap_["white1x1"] = dummyData;
 }
 
-uint32_t TextureManager::LoadTexture (
-	const std::string& filePath,
-	const std::string& id,
-	ID3D12Device* device,
-	ID3D12GraphicsCommandList* cmdList,
-	DescriptorHeapManager& heapManager
-) {
-	// すでに同じIDで読み込まれていたら、新しく作らずに参照カウントだけ増やしてインデックスを返す
-	if (textureMap_.count(id)) {
-		textureMap_.at(id).refCount++;
-		return textureMap_.at(id).textureIndex;
+uint32_t TextureManager::LoadTexture (const std::string& filePath) {
+	// すでに同じパスで読み込まれていたら、新しく作らずに参照カウントだけ増やしてインデックスを返す
+	if (textureMap_.count(filePath)) {
+		textureMap_.at(filePath).refCount++;
+		return textureMap_.at(filePath).textureIndex;
 	}
 
 	HRESULT hr = S_OK;
@@ -96,13 +94,13 @@ uint32_t TextureManager::LoadTexture (
 	TextureData newData{};
 	newData.refCount = 1;
 	newData.metadata = mipImage.GetMetadata();
-	newData.textureResource = CreateTextureResource(device, newData.metadata);
+	newData.textureResource = CreateTextureResource(device_, newData.metadata);
 
 	// VRAMに転送するコマンドを記録（中間リソースをゴミ箱に積む）
-	intermediateResources_.push_back(UploadTextureData(device, cmdList, newData.textureResource, mipImage));
+	intermediateResources_.push_back(UploadTextureData(device_, cmdList_, newData.textureResource, mipImage));
 
 	// バインドレスヒープのインデックスを1つ切り出す
-	newData.textureIndex = heapManager.AllocateIndex();
+	newData.textureIndex = heapManager_->AllocateIndex();
 
 	// 案内札（SRV）の記述を組み立てる
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
@@ -112,26 +110,26 @@ uint32_t TextureManager::LoadTexture (
 	srvDesc.Texture2D.MipLevels = static_cast<UINT>(newData.metadata.mipLevels);
 
 	// ヒープマネージャーに、指定されたインデックス位置へSRVを生成してもらう
-	heapManager.CreateSRVforTexture2D(newData.textureIndex, newData.textureResource.Get(), srvDesc);
+	heapManager_->CreateSRVforTexture2D(newData.textureIndex, newData.textureResource.Get(), srvDesc);
 
 	// マップに登録して、割り当てられたインデックス番号を返す
-	textureMap_[id] = newData;
+	textureMap_[filePath] = newData;
 	return newData.textureIndex;
 }
 
-void TextureManager::UnloadTexture(const std::string& id, DescriptorHeapManager& heapManager) {
-	if (!textureMap_.count(id)) return;
+void TextureManager::UnloadTexture(const std::string& filePath) {
+	if (!textureMap_.count(filePath)) return;
 
-	TextureData& data = textureMap_.at(id);
+	TextureData& data = textureMap_.at(filePath);
 	data.refCount--;
 
 	// 誰も使わなくなったら完全にメモリから削除する
 	if (data.refCount <= 0) {
 		// 使い終わったインデックスを巨大ヒープの空きリストに返却する
-		heapManager.FreeIndex(data.textureIndex);
+		heapManager_->FreeIndex(data.textureIndex);
 
 		// キャッシュマップから削除
-		textureMap_.erase(id);
+		textureMap_.erase(filePath);
 	}
 }
 

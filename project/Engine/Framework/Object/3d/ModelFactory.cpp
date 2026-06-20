@@ -5,38 +5,38 @@
 #include "GraphicsDevice.h"
 #include "DescriptorHeapManager.h"
 #include "StructuredBuffer.h"
-
-ModelFactory::ModelFactory(
-	GraphicsDevice* device,
-	DescriptorHeapManager* heapManager,
-	ModelManager* modelManager,
-	TextureManager* textureManager
-) : device_(device), heapManager_(heapManager), modelManager_(modelManager), textureManager_(textureManager) {
-}
+#include "ShaderManager.h"
 
 void ModelFactory::Initialize(
 	GraphicsDevice* device,
 	DescriptorHeapManager* heapManager,
 	ModelManager* modelManager,
-	TextureManager* textureManager
+	TextureManager* textureManager,
+	ShaderManager* shaderManager
 ) {
 	device_ = device;
 	heapManager_ = heapManager;
 	modelManager_ = modelManager;
 	textureManager_ = textureManager;
+	shaderManager_ = shaderManager;
 }
 
-std::unique_ptr<Model> ModelFactory::CreateModel(const std::string& modelName, const std::string& textureName) {
-	// 1. 各マネージャーからアセットパーツとテクスチャインデックスを取得
-	auto modelData = modelManager_->GetModelData(modelName);
+std::unique_ptr<Model> ModelFactory::CreateModel(
+	uint32_t modelIndex,
+	uint32_t textureIndex
+) {
+	// 各マネージャーからアセットパーツを取得
+	auto modelData = modelManager_->GetModelData(modelIndex);
 	auto tempModelData = modelData.lock().get();
 
-	uint32_t textureIndex = textureManager_->GetTextureIndex(textureName);
+	// デフォルトのシェーダーをコンパイル＆キャッシュ登録
+	uint32_t vsID = shaderManager_->CompileAndCacheShader(L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
+	uint32_t psID = shaderManager_->CompileAndCacheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
 
-	// 2. Modelインスタンスを生成（この時点では空）
+	// Modelインスタンスを生成（この時点では空）
 	auto model = std::make_unique<Model>();
 
-	// 3. 親クラス用のバッファを生成・初期化
+	// 親クラス用のバッファを生成・初期化
 	// (ファクトリが持っているデバイスとヒープを使って初期化)
 	auto transformBuffer = std::make_unique<TransformMatrixResource>();
 	transformBuffer->Initialize(device_->GetDevice());
@@ -44,12 +44,13 @@ std::unique_ptr<Model> ModelFactory::CreateModel(const std::string& modelName, c
 	auto materialBuffer = std::make_unique<StructuredBuffer<MaterialData>>();
 	materialBuffer->Initialize(device_->GetDevice(), *heapManager_, 1);
 
-	// 4. 初期化済みのバッファをムーブで流し込む（Modelにはデバイスを持たせない）
+	// 初期化済みのバッファをムーブで流し込む（Modelにはデバイスを持たせない）
 	model->SetCommonBuffers(std::move(transformBuffer), std::move(materialBuffer));
 
-	// 5. アセットの設定
+	// アセットの設定
 	model->Initialize(tempModelData);
 	model->SetTextureIndex(textureIndex);
+	model->SetShaders(vsID, psID);
 
 	return model;
 }

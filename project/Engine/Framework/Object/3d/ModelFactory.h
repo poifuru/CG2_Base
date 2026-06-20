@@ -7,29 +7,25 @@ class GraphicsDevice;
 class DescriptorHeapManager;
 class ModelManager;
 class TextureManager;
+class ShaderManager;
 
 class ModelFactory {
 public:
 	ModelFactory() = default;
-	ModelFactory(
-		GraphicsDevice* device,
-		DescriptorHeapManager* heapManager,
-		ModelManager* modelManager,
-		TextureManager* textureManager
-	);
 	~ModelFactory() = default;
 
 	void Initialize(
 		GraphicsDevice* device,
 		DescriptorHeapManager* heapManager,
 		ModelManager* modelManager,
-		TextureManager* textureManager
+		TextureManager* textureManager,
+		ShaderManager* shaderManager
 	);
 
 	// アセットが紐づいたModelを組み立てて出力する
 	std::unique_ptr<Model> CreateModel(
-		const std::string& modelName,
-		const std::string& textureName
+		uint32_t modelIndex,
+		uint32_t textureIndex = 0
 	);
 
 public:
@@ -44,4 +40,5 @@ private:
 	DescriptorHeapManager* heapManager_ = nullptr;
 	ModelManager* modelManager_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
+	ShaderManager* shaderManager_ = nullptr;
 };

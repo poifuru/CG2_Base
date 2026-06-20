@@ -6,8 +6,8 @@ class InputManager; // 前方宣言
 
 class WindowsAPI {
 public:
-	WindowsAPI() = default;
-	~WindowsAPI() = default;
+	// シングルトンインスタンスの取得
+	static WindowsAPI* GetInstance();
 
 	void Initialize(int32_t width, int32_t height);
 
@@ -21,6 +21,9 @@ public:
 	float GetAspectRatio() const { return static_cast<float>(windowWidth_) / static_cast<float>(windowHeight_); }
 
 private:
+	WindowsAPI() = default;
+	~WindowsAPI() = default;
+
 	// コピー・移動禁止
 	WindowsAPI(const WindowsAPI&) = delete;
 	WindowsAPI& operator=(const WindowsAPI&) = delete;

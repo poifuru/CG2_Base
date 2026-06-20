@@ -6,8 +6,6 @@
 // 前方宣言
 struct ID3D12Device;
 struct ID3D12GraphicsCommandList;
-class WindowsAPI;
-class InputManager;
 class FrameRateController;
 class GraphicsDevice;
 class CommandContext;
@@ -32,24 +30,21 @@ public:
 
 	RenderSystem* GetRenderSystem() override { return renderSystem_.get(); }
 
-	// アセットロード用コマンド制御
-	void ResetCommandList();
-	void ExecuteCommandList();
+	// コマンド制御（オーバーライド）
+	void ResetCommandList() override;
+	void ExecuteCommandList() override;
 
-	// 低レイヤーアクセッサ
-	ID3D12Device* GetDevice();
-	GraphicsDevice* GetGraphicsDevice() { return device_.get(); }
-	DescriptorHeapManager* GetDescriptorHeapManager() { return heapManager_.get(); }
-	ID3D12GraphicsCommandList* GetCommandList();
-	InputManager* GetInputManager() { return input_.get(); }
-	ShaderManager& GetShaderManager();
+	// 低レイヤーアクセッサ（オーバーライド）
+	ID3D12Device* GetDevice() override;
+	GraphicsDevice* GetGraphicsDevice() override { return device_.get(); }
+	DescriptorHeapManager* GetDescriptorHeapManager() override { return heapManager_.get(); }
+	ID3D12GraphicsCommandList* GetCommandList() override;
+	ShaderManager& GetShaderManager() override;
 
 private:
 	LeakChecker leakCheck_{};
 
 	// ---上から順に初期化、下から順に破棄--- //
-	std::unique_ptr<WindowsAPI> winApi_;
-	std::unique_ptr<InputManager> input_;
 	std::unique_ptr<FrameRateController> frameRateController_;
 	std::unique_ptr<GraphicsDevice> device_;
 	std::unique_ptr<CommandContext> cmdContext_;

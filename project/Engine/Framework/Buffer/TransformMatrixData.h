@@ -3,8 +3,8 @@
 
 // 行列データ
 struct TransformMatrixData {
-	Matrix4x4 World;
 	Matrix4x4 WVP;
+	Matrix4x4 World;
 	Matrix4x4 WorldInverseTranspose;	// ライティングの時に正しい法線を計算する
 };
 

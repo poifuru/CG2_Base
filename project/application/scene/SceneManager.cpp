@@ -6,19 +6,18 @@ void SceneManager::Initialize(
 	GraphicsDevice* graphicsDevice,
 	ID3D12GraphicsCommandList* cmdList,
 	DescriptorHeapManager* heapManager,
-	ShaderManager* shaderManager,
-	InputManager* input
+	ShaderManager* shaderManager
 ) {
 	// マネージャー群を初期化
-	textureManager_.Initialize(device, cmdList, *heapManager);
+	textureManager_.Initialize(device, cmdList, heapManager);
 	modelManager_.Initialize(device, &textureManager_);
-	modelFactory_.Initialize(graphicsDevice, heapManager, &modelManager_, &textureManager_);
+	modelFactory_.Initialize(graphicsDevice, heapManager, &modelManager_, &textureManager_, shaderManager);
 
 	// シーン配布用のコンテキストを組み立てる
-	context_.input = input;
 	context_.textureManager = &textureManager_;
 	context_.modelFactory = &modelFactory_;
 	context_.shaderManager = shaderManager;
+	context_.modelManager = &modelManager_;
 	context_.device = device;
 	context_.cmdList = cmdList;
 	context_.heapManager = heapManager;

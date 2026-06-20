@@ -1,7 +1,3 @@
-// ========================================= //
-// アプリケーション層が見ることのできる唯一のヘッダー
-// ========================================= //
-
 #pragma once
 #include <string>
 #include <cstdint>
@@ -9,6 +5,11 @@
 
 class Model;
 class RenderSystem;
+struct ID3D12Device;
+struct ID3D12GraphicsCommandList;
+class GraphicsDevice;
+class DescriptorHeapManager;
+class ShaderManager;
 
 class IEngine {
 public:
@@ -21,4 +22,15 @@ public:
 
 	// レンダーシステムを取得するインターフェース
 	virtual RenderSystem* GetRenderSystem() = 0;
+
+	// 低レイヤーアクセッサ群
+	virtual ID3D12Device* GetDevice() = 0;
+	virtual GraphicsDevice* GetGraphicsDevice() = 0;
+	virtual ID3D12GraphicsCommandList* GetCommandList() = 0;
+	virtual DescriptorHeapManager* GetDescriptorHeapManager() = 0;
+	virtual ShaderManager& GetShaderManager() = 0;
+
+	// コマンドリスト制御
+	virtual void ResetCommandList() = 0;
+	virtual void ExecuteCommandList() = 0;
 };

@@ -1,6 +1,7 @@
 #include "RawInput.h"
 #include <hidusage.h>
 #include "function.h"
+#include "LogManager.h"
 
 void RawInput::Initialize (HWND hwnd) {
     OutputDebugStringA ("RawInput 登録\n");
@@ -23,33 +24,25 @@ void RawInput::Initialize (HWND hwnd) {
 }
 
 void RawInput::Update () {
+    // メッセージプロシージャの WM_INPUT フック (HandleInputMessage) に一本化するため、
+    // ここでの GetRawInputBuffer による一括取得は行いません。
+}
+
+void RawInput::HandleInputMessage (LPARAM lParam) {
     UINT size = 0;
-	// 溜まっているバッファのサイズを取得
-	GetRawInputBuffer(nullptr, &size, sizeof(RAWINPUTHEADER));
-	if(size == 0) return;
+    if (GetRawInputData ((HRAWINPUT)lParam, RID_INPUT, nullptr, &size, sizeof (RAWINPUTHEADER)) == static_cast<UINT>(-1)) {
+        return;
+    }
+    if (size == 0) return;
 
-	// 安全策として少し大きめにバッファを確保
-	UINT alignmentSize = size * 2;
-	if(buffer_.size() < alignmentSize) {
-		buffer_.resize(alignmentSize);
-	}
+    if (buffer_.size () < size) {
+        buffer_.resize (size);
+    }
 
-	// バッファから一括で入力を引き抜く
-	UINT count = GetRawInputBuffer(reinterpret_cast<RAWINPUT*>(buffer_.data()), &alignmentSize, sizeof(RAWINPUTHEADER));
-	if(count == static_cast<UINT>(-1)) return;
-
-	// 取得した配列を順番に解析していく
-	BYTE* pData = buffer_.data();
-	for (UINT i = 0; i < count; ++i) {
-		RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(pData);
-		ParseInputData(raw);
-
-		// データのサイズを8の倍数に切り上げる計算
-		UINT rawSize = raw->header.dwSize;
-		UINT alignedSize = (rawSize + 7) & ~7; 
-
-		pData += alignedSize; 
-	}
+    if (GetRawInputData ((HRAWINPUT)lParam, RID_INPUT, buffer_.data (), &size, sizeof (RAWINPUTHEADER)) != static_cast<UINT>(-1)) {
+        RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(buffer_.data ());
+        ParseInputData (raw);
+    }
 }
 
 bool RawInput::Push (unsigned short key) const {

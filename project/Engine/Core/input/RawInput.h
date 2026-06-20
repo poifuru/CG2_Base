@@ -17,6 +17,7 @@ public:
     void Initialize(HWND hwnd);
 
     void Update();  
+    void HandleInputMessage (LPARAM lParam);
 
     //キーボードの入力関数
     bool Push (unsigned short key) const;

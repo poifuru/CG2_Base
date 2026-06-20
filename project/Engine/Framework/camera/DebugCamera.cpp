@@ -1,141 +1,144 @@
-//#include "DebugCamera.h"
-//#pragma comment(lib, "d3d12.lib")
-//#pragma comment(lib, "dxgi.lib")
-//#pragma	comment(lib, "dxguid.lib")
-//#include <string>
-//#include <imgui.h>
-//#include "WindowsAPI.h"
-//
-//DebugCamera::DebugCamera(InputManager* inputManager) {
-//	camera_.transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -30.0f} };
-//	camera_.world = {};
-//	camera_.view = {};
-//	camera_.proj = {};
-//	near_ = 0.1f;
-//	far_ = 1000.0f;
-//
-//	forward_ = {};
-//	right_ = {};
-//	speed_ = 0.0f;
-//	move_ = {};
-//
-//	sensitivity_ = 0.001f;
-//	pitchOver_ = 1.5708f;
-//
-//	input_ = inputManager;
-//
-//	instanceNum_++;
-//}
-//
-//DebugCamera::~DebugCamera () {
-//
-//}
-//
-//void DebugCamera::Initialize(const EulerTransform& transform) {
-//	camera_.transform = transform;
-//	camera_.world = Math::MakeAffineMatrix (camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);
-//	camera_.view = Math::Inverse (camera_.world);
-//	camera_.proj = Math::MakePerspectiveFOVMatrix(0.45f, (float)WindowsAPI::GetInstance ()->kClientWidth / (float)WindowsAPI::GetInstance ()->kClientHeight, near_, far_);
-//
-//	speed_ = 0.3f;
-//}
-//
-//void DebugCamera::Update() {
-//	//=======更新処理=======//
-//	//カメラの前後左右の移動
-//	forward_ = {
-//	camera_.world.m[2][0], // z軸のx成分
-//	camera_.world.m[2][1], // z軸のy成分
-//	camera_.world.m[2][2]  // z軸のz成分
-//	};
-//	forward_ = Math::Normalize(forward_);
-//
-//	right_ = {
-//	camera_.world.m[0][0], // x軸のx成分
-//	camera_.world.m[0][1], // x軸のy成分
-//	camera_.world.m[0][2]  // x軸のz成分
-//	};
-//	right_ = Math::Normalize(right_);
-//
-//	move_ = { 0.0f, 0.0f, 0.0f };
-//
-//	if (input_->GetRawInput()->Push('W')) {
-//		move_ += forward_ * speed_;
-//	}
-//	if (input_->GetRawInput ()->Push ('S')) {
-//		move_ -= forward_ * speed_;
-//	}
-//	if (input_->GetRawInput ()->Push ('D')) {
-//		move_ += right_ * speed_;
-//	}
-//	if (input_->GetRawInput ()->Push ('A')) {
-//		move_ -= right_ * speed_;
-//	}
-//
-//	camera_.transform.translate += move_;
-//
-//	if (input_->GetRawInput ()->Push (VK_SPACE)) {
-//		camera_.transform.translate.y += speed_;
-//	}
-//	if (input_->GetRawInput ()->Push (VK_SHIFT)) {
-//		camera_.transform.translate.y -= speed_;
-//	}
-//
-//	//マウスで視点移動
-//	//回転処理(左クリックしながらドラッグ)
-//	// カーソル非表示
-//	if (input_->GetRawInput ()->TriggerMouse(MouseButton::MIDDLE)) {
-//		ShowCursor(FALSE);
-//
-//		// クライアント領域の矩形を取得
-//		RECT clientRect;
-//		GetClientRect (WindowsAPI::GetInstance ()->GetHwnd(), &clientRect);
-//
-//		// クライアント領域の座標をスクリーン座標に変換する
-//		// ClipCursorはスクリーン座標を要求するから
-//		POINT pt = { clientRect.left, clientRect.top };
-//		ClientToScreen (WindowsAPI::GetInstance ()->GetHwnd (), &pt);
-//		clientRect.left = pt.x;
-//		clientRect.top = pt.y;
-//
-//		pt.x = clientRect.right;
-//		pt.y = clientRect.bottom;
-//		ClientToScreen (WindowsAPI::GetInstance ()->GetHwnd (), &pt);
-//		clientRect.right = pt.x;
-//		clientRect.bottom = pt.y;
-//
-//		// カーソルをウィンドウのクライアント領域に制限する
-//		ClipCursor (&clientRect);
-//	}
-//	if (input_->GetRawInput ()->ReleaseMouse (MouseButton::MIDDLE)) {
-//		// カーソルの制限を解除（NULLを指定）
-//		ClipCursor (NULL);
-//		ShowCursor (TRUE);
-//	}
-//
-//	if (input_->GetRawInput ()->PushMouse (MouseButton::MIDDLE)) {
-//		camera_.transform.rotate.y += input_->GetRawInput ()->GetMouseDeltaX() * sensitivity_;
-//		camera_.transform.rotate.x += input_->GetRawInput ()->GetMouseDeltaY () * sensitivity_;
-//
-//		if (camera_.transform.rotate.x > pitchOver_) {
-//			camera_.transform.rotate.x = pitchOver_;
-//		}
-//		if (camera_.transform.rotate.x < -pitchOver_) {
-//			camera_.transform.rotate.x = -pitchOver_;
-//		}
-//	}
-//
-//	//変化した情報をworldMatrixにまとめてviewMatrixに入れる
-//	camera_.world = Math::MakeAffineMatrix(camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);
-//	camera_.view = Math::Inverse(camera_.world);
-//	camera_.vp = Math::Multiply (camera_.view, camera_.proj);
-//}
-//
-//void DebugCamera::ImGui () {
-//	std::string ID = std::to_string (instanceNum_);
-//	std::string label = "DebugCamera";
-//
-//	ImGui::DragFloat3 (("scale##" + label + ID).c_str (), &camera_.transform.scale.x, 0.01f);
-//	ImGui::DragFloat3 (("rotate##" + label + ID).c_str (), &camera_.transform.rotate.x, 0.01f);
-//	ImGui::DragFloat3 (("translate##" + label + ID).c_str (), &camera_.transform.translate.x, 0.01f);
-//}
+#include "DebugCamera.h"
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
+#pragma	comment(lib, "dxguid.lib")
+#include <string>
+#include <imgui.h>
+#include "WindowsAPI.h"
+#include "LogManager.h"
+#include <format>
+
+DebugCamera::DebugCamera() {
+	camera_.transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -30.0f} };
+	camera_.world = {};
+	camera_.view = {};
+	camera_.proj = {};
+	near_ = 0.1f;
+	far_ = 1000.0f;
+
+	forward_ = {};
+	right_ = {};
+	speed_ = 0.0f;
+	move_ = {};
+
+	sensitivity_ = 0.001f;
+	pitchOver_ = 1.5708f;
+
+	input_ = InputManager::GetInstance();
+
+	instanceNum_++;
+}
+
+DebugCamera::~DebugCamera () {
+
+}
+
+void DebugCamera::Initialize(const EulerTransform& transform) {
+	camera_.transform = transform;
+	camera_.world = Math::MakeAffineMatrix (camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);
+	camera_.view = Math::Inverse (camera_.world);
+	camera_.proj = Math::MakePerspectiveFOVMatrix(0.45f, WindowsAPI::GetInstance()->GetAspectRatio(), near_, far_);
+
+	speed_ = 0.3f;
+}
+
+void DebugCamera::Update() {
+	//=======更新処理=======//
+	//カメラの前後左右の移動
+	forward_ = {
+	camera_.world.m[2][0], // z軸のx成分
+	camera_.world.m[2][1], // z軸のy成分
+	camera_.world.m[2][2]  // z軸のz成分
+	};
+	forward_ = Math::Normalize(forward_);
+
+	right_ = {
+	camera_.world.m[0][0], // x軸のx成分
+	camera_.world.m[0][1], // x軸のy成分
+	camera_.world.m[0][2]  // x軸のz成分
+	};
+	right_ = Math::Normalize(right_);
+
+	move_ = { 0.0f, 0.0f, 0.0f };
+
+	if (input_->GetRawInput()->Push('W') || (GetAsyncKeyState('W') & 0x8000)) {
+		move_ += forward_ * speed_;
+	}
+	if (input_->GetRawInput ()->Push ('S') || (GetAsyncKeyState('S') & 0x8000)) {
+		move_ -= forward_ * speed_;
+	}
+	if (input_->GetRawInput ()->Push ('D') || (GetAsyncKeyState('D') & 0x8000)) {
+		move_ += right_ * speed_;
+	}
+	if (input_->GetRawInput ()->Push ('A') || (GetAsyncKeyState('A') & 0x8000)) {
+		move_ -= right_ * speed_;
+	}
+
+	camera_.transform.translate += move_;
+
+	if (input_->GetRawInput ()->Push (VK_SPACE) || (GetAsyncKeyState(VK_SPACE) & 0x8000)) {
+		camera_.transform.translate.y += speed_;
+	}
+	if (input_->GetRawInput ()->Push (VK_SHIFT) || (GetAsyncKeyState(VK_SHIFT) & 0x8000)) {
+		camera_.transform.translate.y -= speed_;
+	}
+
+	//マウスで視点移動
+	//回転処理(左クリックしながらドラッグ)
+	// カーソル非表示
+	if (input_->GetRawInput ()->TriggerMouse(MouseButton::MIDDLE)) {
+		ShowCursor(FALSE);
+
+		// クライアント領域の矩形を取得
+		RECT clientRect;
+		GetClientRect (WindowsAPI::GetInstance ()->GetHwnd(), &clientRect);
+
+		// クライアント領域の座標をスクリーン座標に変換する
+		// ClipCursorはスクリーン座標を要求するから
+		POINT pt = { clientRect.left, clientRect.top };
+		ClientToScreen (WindowsAPI::GetInstance ()->GetHwnd(), &pt);
+		clientRect.left = pt.x;
+		clientRect.top = pt.y;
+
+		pt.x = clientRect.right;
+		pt.y = clientRect.bottom;
+		ClientToScreen (WindowsAPI::GetInstance ()->GetHwnd (), &pt);
+		clientRect.right = pt.x;
+		clientRect.bottom = pt.y;
+
+		// カーソルをウィンドウのクライアント領域に制限する
+		ClipCursor (&clientRect);
+	}
+	if (input_->GetRawInput ()->ReleaseMouse (MouseButton::MIDDLE)) {
+		// カーソルの制限を解除（NULLを指定）
+		ClipCursor (NULL);
+		ShowCursor (TRUE);
+	}
+
+	bool middlePressed = input_->GetRawInput ()->PushMouse (MouseButton::MIDDLE) || (GetAsyncKeyState(VK_MBUTTON) & 0x8000);
+	if (middlePressed) {
+		camera_.transform.rotate.y += input_->GetRawInput ()->GetMouseDeltaX() * sensitivity_;
+		camera_.transform.rotate.x += input_->GetRawInput ()->GetMouseDeltaY () * sensitivity_;
+
+		if (camera_.transform.rotate.x > pitchOver_) {
+			camera_.transform.rotate.x = pitchOver_;
+		}
+		if (camera_.transform.rotate.x < -pitchOver_) {
+			camera_.transform.rotate.x = -pitchOver_;
+		}
+	}
+
+	//変化した情報をworldMatrixにまとめてviewMatrixに入れる
+	camera_.world = Math::MakeAffineMatrix(camera_.transform.scale, camera_.transform.rotate, camera_.transform.translate);
+	camera_.view = Math::Inverse(camera_.world);
+	camera_.vp = Math::Multiply (camera_.view, camera_.proj);
+}
+
+void DebugCamera::ImGui () {
+	std::string ID = std::to_string (instanceNum_);
+	std::string label = "DebugCamera";
+
+	ImGui::DragFloat3 (("scale##" + label + ID).c_str (), &camera_.transform.scale.x, 0.01f);
+	ImGui::DragFloat3 (("rotate##" + label + ID).c_str (), &camera_.transform.rotate.x, 0.01f);
+	ImGui::DragFloat3 (("translate##" + label + ID).c_str (), &camera_.transform.translate.x, 0.01f);
+}

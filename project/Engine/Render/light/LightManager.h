@@ -5,7 +5,10 @@
 #include "PointLight.h"
 #include "SpotLight.h"
 #include "RectLight.h"
-#include "DxCommon.h"
+#include "ConstantBuffer.h"
+
+//ライトの最大数
+const uint32_t MaxCount = 20;
 
 //ライトの種類
 enum LightType {
@@ -53,19 +56,31 @@ struct RectLightForGPU {
 	Vector3 position;    // ライトの中心座標
 	float intensity;
 	Vector3 direction;   // ライトの正面方向（法線）
+	float padding1;
 	Vector2 size;        // Width(幅) と Height(高さ)
+	float padding2[2];
 	Vector3 right;       // ライトの右方向ベクトル
 	float padding;
 	Vector3 up;          // ライトの上方向ベクトル
 	float decay;        // 距離による減衰率（PointLightと同様）
 };
 
+// すべてのライトをまとめる構造体
+struct AllLightDataForGPU {
+	LightCount count;
+
+	DirectionalLightForGPU dirLights[MaxCount];
+	PointLightForGPU pointLights[MaxCount];
+	SpotLightForGPU spotLights[MaxCount];
+	RectLightForGPU rectLights[MaxCount];
+};
+
 class LightManager {
 public:
-	LightManager(DxCommon* dxCommon);
-	~LightManager();
+	LightManager() = default;
+	~LightManager() = default;
 
-	void Initialize();
+	void Initialize(ID3D12Device* device);
 	void Update();
 	void ImGui();
 
@@ -106,49 +121,22 @@ public:
 	void SetRectLightUp(uint32_t index, const Vector3& up) { rectLights_[index]->SetRight(up); }
 	void SetRectLightDecay(uint32_t index, const float& decay) { rectLights_[index]->SetDecay(decay); }
 
-	// 描画時にバッファーを渡すための関数
-	ID3D12Resource& GetLightCountBuffer() { return *lightCountBuffer_.Get(); }
-	uint32_t GetDirLightSrvHandle() const { return dirLightSRVIndex_; }
-	uint32_t GetPointLightSrvHandle() const { return pointLightSRVIndex_; }
-	uint32_t GetSpotLightSrvHandle() const { return spotLightSRVIndex_; }
-	uint32_t GetRectLightSrvHandle() const { return rectLightSRVIndex_; }
+	// 描画時にバッファーのアドレスを渡すための関数
+	D3D12_GPU_VIRTUAL_ADDRESS GetLightGPUAddress() const { return lightBuffer_.GetGPUVirtualAddress(); }
 
 private:
 	//ライトの種類ごとにリストを持つ
 	std::vector<std::unique_ptr<DirectionalLight>> dirLights_;
 	std::vector<std::unique_ptr<PointLight>> pointLights_;
 	std::vector<std::unique_ptr<SpotLight>> spotLights_;
-	std::vector < std::unique_ptr<RectLight>> rectLights_;
+	std::vector<std::unique_ptr<RectLight>> rectLights_;
 
-	//ConstantBuffer用のリソース
-	ComPtr<ID3D12Resource> lightCountBuffer_;
-	LightCount* lightCountData_ = nullptr;
-
-	//StructuredBuffer用のリソース
-	ComPtr<ID3D12Resource> dirLightBuffer_;	//DirectionalLight
-	DirectionalLightForGPU* dirLightData_ = nullptr;
-
-	ComPtr<ID3D12Resource> pointLightBuffer_;	//PointLight
-	PointLightForGPU* pointLightData_ = nullptr;
-
-	ComPtr<ID3D12Resource> spotLightBuffer_;	//SpotLight
-	SpotLightForGPU* spotLightData_ = nullptr;
-
-	ComPtr<ID3D12Resource> rectLightBuffer_;	//SpotLight
-	RectLightForGPU* rectLightData_ = nullptr;
-
-	// DescriptorHeap内での位置（SRV用）
-	uint32_t dirLightSRVIndex_;
-	uint32_t pointLightSRVIndex_;
-	uint32_t spotLightSRVIndex_;
-	uint32_t rectLightSRVIndex_;
+	ConstantBuffer<AllLightDataForGPU> lightBuffer_;
+	AllLightDataForGPU lightCPUData_{}; // CPU側の一時保存用
 
 	//ImGui編集用の変数
 	int selectDirLightIndex_ = 0;
 	int selectPointLightIndex_ = 0;
 	int selectSpotLightIndex_ = 0;
 	int selectRectLightIndex_ = 0;
-
-	//ポインタを借りる
-	DxCommon* dxCommon_ = nullptr;
 };

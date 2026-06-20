@@ -1,6 +1,14 @@
 #include "WindowsAPI.h"
 #include <cassert>
 #include <imgui_impl_win32.h>
+#include "InputManager.h"
+#include "LogManager.h"
+#include <format>
+
+WindowsAPI* WindowsAPI::GetInstance() {
+	static WindowsAPI instance;
+	return &instance;
+}
 
 void WindowsAPI::Initialize(int32_t width, int32_t height) {
 	windowWidth_ = width;
@@ -56,6 +64,9 @@ LRESULT CALLBACK WindowsAPI::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPAR
 	}
 	
 	switch (msg) {
+	case WM_INPUT:
+		InputManager::GetInstance()->GetRawInput()->HandleInputMessage(lparam);
+		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;

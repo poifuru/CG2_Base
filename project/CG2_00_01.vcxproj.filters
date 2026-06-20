@@ -104,6 +104,7 @@
     <ClCompile Include="Engine\Core\Engine.cpp" />
     <ClCompile Include="Engine\Core\DescriptorHeapManager.cpp" />
     <ClCompile Include="Engine\Core\RenderSystem.cpp" />
+    <ClCompile Include="Engine\Framework\Buffer\Animation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -212,6 +213,15 @@
     <ClInclude Include="Engine\Core\DirectXResource\StructuredBuffer.h" />
     <ClInclude Include="Engine\Core\DirectXResource\ConstantBuffer.h" />
     <ClInclude Include="Engine\Framework\Object\2d\TextureData.h" />
+    <ClInclude Include="Engine\Framework\Buffer\CameraBufferData.h" />
+    <ClInclude Include="Engine\Framework\Buffer\TransformMatrixData.h" />
+    <ClInclude Include="Engine\Framework\Buffer\SpriteData.h" />
+    <ClInclude Include="Engine\Framework\Buffer\SkinCluster.h" />
+    <ClInclude Include="Engine\Framework\Buffer\Skeleton.h" />
+    <ClInclude Include="Engine\Framework\Buffer\ParticleData.h" />
+    <ClInclude Include="Engine\Framework\Buffer\MeshData.h" />
+    <ClInclude Include="Engine\Framework\Buffer\MaterialData.h" />
+    <ClInclude Include="Engine\Framework\Buffer\Animation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

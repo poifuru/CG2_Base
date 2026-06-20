@@ -1,5 +1,10 @@
 #include "InputManager.h"
 
+InputManager* InputManager::GetInstance() {
+	static InputManager instance;
+	return &instance;
+}
+
 void InputManager::Initialize (HWND hwnd) {
 	rawInput_ = std::make_unique<RawInput> ();
 	rawInput_->Initialize (hwnd);

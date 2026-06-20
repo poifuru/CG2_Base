@@ -2,18 +2,34 @@
 #include "PSOManager.h"
 #include "DescriptorHeapManager.h"
 #include "ShaderManager.h"
+#include "LightManager.h"
 #include <algorithm>
 #include <cassert>
 
+void RenderSystem::Initialize(ID3D12Device* device) {
+	assert(device != nullptr);
+	cameraBuffer_.Initialize(device);
+}
+
 void RenderSystem::PushCommand(const RenderCommand& command) {
 	commandQueue_.push_back(command);
+}
+
+void RenderSystem::SetCameraPosition(const Vector3& cameraPos) {
+	CameraForGPU gpuData{};
+	gpuData.worldPosition = cameraPos;
+	gpuData.padding = 0.0f;
+	cameraBuffer_.Update(gpuData);
+}
+
+void RenderSystem::SetLightManager(LightManager* lightManager) {
+	activeLightManager_ = lightManager;
 }
 
 void RenderSystem::ExecuteCommands(
 	ID3D12Device* device,
 	ID3D12GraphicsCommandList* cmdList,
 	ID3D12RootSignature* commonRootSignature,
-	D3D12_GPU_VIRTUAL_ADDRESS cameraCBVAddress,
 	DescriptorHeapManager& heapManager,
 	PSOManager& psoManager,
 	const ShaderManager& shaderManager,
@@ -30,16 +46,19 @@ void RenderSystem::ExecuteCommands(
 	// 共通ルートシグネチャをセット（フレームで1回固定）
 	cmdList->SetGraphicsRootSignature(commonRootSignature);
 
-	// 巨大ディスクリプタヒープをガツンとステージング（1回固定！）
+	// 巨大ディスクリプタヒープをステージング
 	heapManager.SetGraphicsHeap(cmdList);
 
-	// Slot 2 と Slot 3 に、巨大ヒープの「先頭のGPUハンドル」をセットして配列アクセス可能にする
+	// Slot 2 と Slot 3 に、巨大ヒープの「先頭のGPUハンドル」をセット
 	cmdList->SetGraphicsRootDescriptorTable(2, heapManager.GetGpuHandle(0));
 	cmdList->SetGraphicsRootDescriptorTable(3, heapManager.GetGpuHandle(0));
 
-	// Slot 0 にカメラバッファのアドレスをセット（1回固定！）
-	if (cameraCBVAddress != 0) {
-		cmdList->SetGraphicsRootConstantBufferView(0, cameraCBVAddress);
+	// Slot 4: カメラバッファをバインド
+	cmdList->SetGraphicsRootConstantBufferView(4, cameraBuffer_.GetGPUVirtualAddress());
+
+	// Slot 5: ライトデータをバインド
+	if (activeLightManager_ != nullptr) {
+		cmdList->SetGraphicsRootConstantBufferView(5, activeLightManager_->GetLightGPUAddress());
 	}
 
 	// トポロジーは三角形
@@ -51,7 +70,7 @@ void RenderSystem::ExecuteCommands(
 	// コマンド実行ループ
 	for (const auto& cmd : commandQueue_) {
 
-		// 直前と同じパイプライン（PSO）なら、切り替え（SetPipelineState）を完全にスキップ！
+		// 直前と同じパイプライン（PSO）なら、切り替え（SetPipelineState）をスキップ
 		ID3D12PipelineState* currentPSO = psoManager.GetOrCreatePSO(
 			device, cmd.psoDesc, commonRootSignature, shaderManager, inputLayoutManager, blendModeManager
 		);
@@ -64,8 +83,10 @@ void RenderSystem::ExecuteCommands(
 		cmdList->IASetVertexBuffers(0, 1, &cmd.vbView);
 		cmdList->IASetIndexBuffer(&cmd.ibv);
 
-		// Slot 1 に「マテリアル配列の何番目か」「テクスチャの何番目か」という
-		// 32ビットの整数（数値）を、直接 Push Constants として2個流し込む
+		// Slot 0: オブジェクト個別のトランスフォームバッファをバインド
+		cmdList->SetGraphicsRootConstantBufferView(0, cmd.transformGPUAddress);
+
+		// Slot 1: マテリアルとテクスチャのバインドレスインデックス
 		uint32_t indices[2] = { cmd.materialIndex, cmd.textureIndex };
 		cmdList->SetGraphicsRoot32BitConstants(1, 2, indices, 0);
 
@@ -76,4 +97,5 @@ void RenderSystem::ExecuteCommands(
 
 void RenderSystem::ClearCommands() {
 	commandQueue_.clear();
+	activeLightManager_ = nullptr;
 }

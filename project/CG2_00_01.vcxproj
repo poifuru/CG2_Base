@@ -187,6 +187,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Core\CommandContext.cpp" />
     <ClCompile Include="Engine\Core\FrameRateController.cpp" />
     <ClCompile Include="Engine\Core\GraphicsDevice.cpp" />
+    <ClCompile Include="Engine\Framework\Buffer\Animation.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\CopyImage.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\Fog.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\ColorGrading.cpp" />
@@ -417,6 +418,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Core\GraphicsDevice.h" />
     <ClInclude Include="Engine\Core\IEngine.h" />
     <ClInclude Include="Engine\Core\RenderCommand.h" />
+    <ClInclude Include="Engine\Framework\Buffer\Animation.h" />
+    <ClInclude Include="Engine\Framework\Buffer\CameraBufferData.h" />
+    <ClInclude Include="Engine\Framework\Buffer\MaterialData.h" />
+    <ClInclude Include="Engine\Framework\Buffer\MeshData.h" />
+    <ClInclude Include="Engine\Framework\Buffer\ParticleData.h" />
+    <ClInclude Include="Engine\Framework\Buffer\Skeleton.h" />
+    <ClInclude Include="Engine\Framework\Buffer\SkinCluster.h" />
+    <ClInclude Include="Engine\Framework\Buffer\SpriteData.h" />
+    <ClInclude Include="Engine\Framework\Buffer\TransformMatrixData.h" />
     <ClInclude Include="Engine\Framework\Object\2d\TextureData.h" />
     <ClInclude Include="Engine\Render\PostEffect\CopyImage.h" />
     <ClInclude Include="Engine\Render\PostEffect\Fog.h" />

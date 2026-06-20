@@ -6,10 +6,10 @@ void RootSignatureManager::Initialize (ID3D12Device* device) {
 	assert(device != nullptr);
 	HRESULT hr = S_OK;
 
-	// === バインドレス用共通ルートパラメータの設定（4スロット固定） ===
-	D3D12_ROOT_PARAMETER rootParameters[4] = {};
+	// === 共通ルートパラメータの設定（6スロット） ===
+	D3D12_ROOT_PARAMETER rootParameters[6] = {};
 
-	// Slot0 : フレーム共通定数バッファ (b0, space0) -> Vertex, Pixel両方から見えるようにする
+	// Slot0 : オブジェクト個別トランスフォームバッファ (b0, space0) -> Vertex, Pixel両方から見えるようにする
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 	rootParameters[0].Descriptor.ShaderRegister = 0;
@@ -49,6 +49,18 @@ void RootSignatureManager::Initialize (ID3D12Device* device) {
 	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // テクスチャはPixelShaderで使う
 	rootParameters[3].DescriptorTable.pDescriptorRanges = &range2;
 	rootParameters[3].DescriptorTable.NumDescriptorRanges = 1;
+
+	// Slot4 : フレーム共通カメラ定数バッファ (b2, space0)
+	rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParameters[4].Descriptor.ShaderRegister = 2;
+	rootParameters[4].Descriptor.RegisterSpace = 0;
+
+	// Slot5 : フレーム共通ライト定数バッファ (b3, space0)
+	rootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParameters[5].Descriptor.ShaderRegister = 3;
+	rootParameters[5].Descriptor.RegisterSpace = 0;
 
 	// --- 静的サンプラーの設定（s0, space0） --- //
 	D3D12_STATIC_SAMPLER_DESC staticSampler{};

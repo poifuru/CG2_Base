@@ -2,6 +2,7 @@
 #include "BaseScene.h"
 #include <memory>
 #include "Model.h"
+#include "LightManager.h"
 
 class PlayScene : public BaseScene {
 public:
@@ -13,8 +14,6 @@ public:
 	void Draw(class RenderSystem* renderSystem) override;
 
 private:
-	std::unique_ptr<Model> triangleModel_ = nullptr;
-	uint32_t vsID_ = 0;
-	uint32_t psID_ = 0;
-	uint32_t textureIndex_ = 0;
+	std::unique_ptr<Model> model_ = nullptr;
+	std::unique_ptr<LightManager> lightManager_ = nullptr;
 };

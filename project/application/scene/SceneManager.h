@@ -10,7 +10,6 @@ struct ID3D12GraphicsCommandList;
 class GraphicsDevice;
 class DescriptorHeapManager;
 class ShaderManager;
-class InputManager;
 struct CameraData;
 
 class SceneManager {
@@ -24,8 +23,7 @@ public:
 		GraphicsDevice* graphicsDevice,
 		ID3D12GraphicsCommandList* cmdList,
 		DescriptorHeapManager* heapManager,
-		ShaderManager* shaderManager,
-		InputManager* input
+		ShaderManager* shaderManager
 	);
 
 	void Update(CameraData* cameraData);

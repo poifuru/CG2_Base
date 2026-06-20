@@ -6,8 +6,8 @@
 
 class InputManager {
 public:
-	InputManager() = default;
-	~InputManager() = default;
+	// シングルトンインスタンスの取得
+	static InputManager* GetInstance();
 
 	void Initialize (HWND hwnd);
 
@@ -20,6 +20,9 @@ public:
 	GamePad* GetGamePad () { return gamePad_.get (); }
 
 private:
+	InputManager() = default;
+	~InputManager() = default;
+
 	// コピー・移動禁止
 	InputManager(const InputManager&) = delete;
 	InputManager& operator=(const InputManager&) = delete;

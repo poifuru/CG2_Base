@@ -16,5 +16,8 @@ struct RenderCommand {
 	uint32_t materialIndex = 0;   // 構造化バッファ（マテリアル配列）の何番目か
 	uint32_t textureIndex = 0;    // ディスクリプタヒープの何番目にテクスチャがあるか
 
+	// オブジェクト個別のトランスフォームバッファのGPU仮想アドレス
+	D3D12_GPU_VIRTUAL_ADDRESS transformGPUAddress = 0;
+
 	uint8_t layer = 0;            // 不透明：0、半透明：1 などのソート用
 };
