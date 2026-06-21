@@ -32,8 +32,8 @@ Player::Player(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input,
 	);
 
 	// Bullet用
-	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall/monsterBall.png", "bullet");
-	ModelManager::GetInstance()->LoadModelData("Resources/monsterBall", "monsterBall.obj");
+	TextureManager::GetInstance()->LoadTexture("Resources/bullet/bullet.png", "bullet");
+	ModelManager::GetInstance()->LoadModelData("Resources/bullet", "bullet.obj");
 
 	// Reticle用
 	TextureManager::GetInstance()->LoadTexture("Resources/reticle/reticle.png", "reticle");
@@ -48,8 +48,8 @@ Player::~Player() {
 }
 
 void Player::Initialize() {
-	model_->SetModelData("AnimatedCube.gltf");
-	model_->SetTexture("Cube");
+	model_->SetModelData("player.obj");
+	model_->SetTexture("Dummy");
 	//model_->SetAnimation("AnimatedCube.gltf");
 	model_->Initialize();
 

@@ -9,10 +9,12 @@ SmallFish::~SmallFish() {
 }
 
 void SmallFish::Initialize() {
-	model_->SetModelData("teapot.obj");
-	model_->SetTexture("teapot");
+	model_->SetModelData("smallFish.obj");
+	model_->SetTexture("Dummy");
 	BaseEnemy::Initialize();
 	aabbSize_ = { 1.0f, 1.0f, 1.0f };
+
+	model_->SetColor({ 0.0f, 0.0f, 0.0f, 0.0f });
 }
 
 void SmallFish::Update() {

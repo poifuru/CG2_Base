@@ -11,8 +11,8 @@ void EnemyManager::Initialize(DxCommon* dxCommon, LightManager* light, CameraOrg
 	camera_ = camera;
 
 	// 敵のモデルやテクスチャのロード
-	TextureManager::GetInstance()->LoadTexture("Resources/teapot/teapot.png", "teapot");
-	ModelManager::GetInstance()->LoadModelData("Resources/teapot", "teapot.obj");
+	//TextureManager::GetInstance()->LoadTexture("Resources/enemy/smallFish/teapot.png", "teapot");
+	ModelManager::GetInstance()->LoadModelData("Resources/enemy/smallFish", "smallFish.obj");
 
 
 	// プールを全てSmallFishで初期化（非アクティブ状態）

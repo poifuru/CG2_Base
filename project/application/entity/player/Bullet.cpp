@@ -16,7 +16,7 @@ Bullet::~Bullet() {
 }
 
 void Bullet::Initialize() {
-	model_->SetModelData("monsterBall.obj");
+	model_->SetModelData("bullet.obj");
 	model_->SetTexture("bullet");
 	model_->Initialize();
 
