@@ -29,7 +29,7 @@ public:
 	bool ProcessMessage() override;
 	void BeginFrame() override;
 	void EndFrame() override;
-	void PreImGui();
+	void PreImGui() override;
 
 	RenderSystem* GetRenderSystem() override { return renderSystem_.get(); }
 

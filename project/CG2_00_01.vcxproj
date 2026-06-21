@@ -182,11 +182,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\entity\player\Bullet.cpp" />
     <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
     <ClCompile Include="Application\Collider\CollisionManager.cpp" />
-    <ClCompile Include="Engine\Core\DescriptorHeapManager.cpp" />
     <ClCompile Include="Engine\Core\Engine.cpp" />
-    <ClCompile Include="Engine\Core\CommandContext.cpp" />
-    <ClCompile Include="Engine\Core\FrameRateController.cpp" />
-    <ClCompile Include="Engine\Core\GraphicsDevice.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\CommandContext.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\DescriptorHeapManager.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\FrameRateController.cpp" />
@@ -244,7 +240,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ClCompile>
     <ClCompile Include="Engine\Framework\Object\3d\ModelManager.cpp" />
     <ClCompile Include="Engine\MagosuyaEngine.cpp" />
-    <ClCompile Include="Engine\Core\WindowsAPI.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\TextureManager.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\SpriteRenderer.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\ModelRenderer.cpp" />
@@ -270,7 +265,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Framework\Particle\Particle.cpp" />
     <ClCompile Include="Engine\Framework\Particle\ParticleRenderer.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\Outline.cpp" />
-    <ClCompile Include="Engine\Core\SwapChain.cpp" />
     <ClCompile Include="Engine\Core\RenderSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -414,15 +408,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\entity\player\Bullet.h" />
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="Application\Collider\CollisionManager.h" />
-    <ClInclude Include="Engine\Core\DescriptorHeapManager.h" />
     <ClInclude Include="Engine\Core\DirectXResource\ConstantBuffer.h" />
     <ClInclude Include="Engine\Core\DirectXResource\IndexBuffer.h" />
     <ClInclude Include="Engine\Core\DirectXResource\StructuredBuffer.h" />
     <ClInclude Include="Engine\Core\DirectXResource\VertexBuffer.h" />
     <ClInclude Include="Engine\Core\Engine.h" />
-    <ClInclude Include="Engine\Core\CommandContext.h" />
-    <ClInclude Include="Engine\Core\FrameRateController.h" />
-    <ClInclude Include="Engine\Core\GraphicsDevice.h" />
     <ClInclude Include="Engine\Core\IEngine.h" />
     <ClInclude Include="Engine\Core\LowLevel\CommandContext.h" />
     <ClInclude Include="Engine\Core\LowLevel\DescriptorHeapManager.h" />
@@ -500,7 +490,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ClInclude>
     <ClInclude Include="Engine\Framework\Object\3d\ModelManager.h" />
     <ClInclude Include="Engine\MagosuyaEngine.h" />
-    <ClInclude Include="Engine\Core\WindowsAPI.h" />
     <ClInclude Include="Engine\Framework\Object\2d\TextureManager.h" />
     <ClInclude Include="Engine\Framework\Object\2d\SpriteRenderer.h" />
     <ClInclude Include="Engine\Framework\Object\3d\ModelRenderer.h" />
@@ -528,7 +517,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Framework\Particle\Particle.h" />
     <ClInclude Include="Engine\Framework\Particle\ParticleRenderer.h" />
     <ClInclude Include="Engine\Render\PostEffect\Outline.h" />
-    <ClInclude Include="Engine\Core\SwapChain.h" />
     <ClInclude Include="Engine\Core\RenderSystem.h" />
   </ItemGroup>
   <ItemGroup>

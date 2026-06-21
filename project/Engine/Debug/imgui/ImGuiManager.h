@@ -10,6 +10,7 @@ public:
 	~ImGuiManager();
 
 	void Initialize(IEngine* engine);
+	void Finalize();
 	void Draw();
 	void BeginFrame();
 

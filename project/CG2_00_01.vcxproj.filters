@@ -49,7 +49,6 @@
     <ClCompile Include="Engine\Core\Input\RawInput.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\ModelManager.cpp" />
     <ClCompile Include="Engine\MagosuyaEngine.cpp" />
-    <ClCompile Include="Engine\Core\WindowsAPI.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\TextureManager.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\SpriteRenderer.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\ModelRenderer.cpp" />
@@ -98,12 +97,7 @@
     <ClCompile Include="Engine\Framework\Particle\ParticleRenderer.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\Outline.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\CopyImage.cpp" />
-    <ClCompile Include="Engine\Core\GraphicsDevice.cpp" />
-    <ClCompile Include="Engine\Core\CommandContext.cpp" />
-    <ClCompile Include="Engine\Core\SwapChain.cpp" />
-    <ClCompile Include="Engine\Core\FrameRateController.cpp" />
     <ClCompile Include="Engine\Core\Engine.cpp" />
-    <ClCompile Include="Engine\Core\DescriptorHeapManager.cpp" />
     <ClCompile Include="Engine\Core\RenderSystem.cpp" />
     <ClCompile Include="Engine\Framework\Buffer\Animation.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\CommandContext.cpp" />
@@ -156,7 +150,6 @@
     <ClInclude Include="Engine\Core\Input\RawInput.h" />
     <ClInclude Include="Engine\Framework\Object\3d\ModelManager.h" />
     <ClInclude Include="Engine\MagosuyaEngine.h" />
-    <ClInclude Include="Engine\Core\WindowsAPI.h" />
     <ClInclude Include="Engine\Framework\Object\2d\TextureManager.h" />
     <ClInclude Include="Engine\Framework\Object\2d\SpriteRenderer.h" />
     <ClInclude Include="Engine\Framework\Object\3d\ModelRenderer.h" />
@@ -207,13 +200,8 @@
     <ClInclude Include="Engine\Framework\Particle\ParticleRenderer.h" />
     <ClInclude Include="Engine\Render\PostEffect\Outline.h" />
     <ClInclude Include="Engine\Render\PostEffect\CopyImage.h" />
-    <ClInclude Include="Engine\Core\GraphicsDevice.h" />
-    <ClInclude Include="Engine\Core\CommandContext.h" />
-    <ClInclude Include="Engine\Core\SwapChain.h" />
-    <ClInclude Include="Engine\Core\FrameRateController.h" />
     <ClInclude Include="Engine\Core\IEngine.h" />
     <ClInclude Include="Engine\Core\Engine.h" />
-    <ClInclude Include="Engine\Core\DescriptorHeapManager.h" />
     <ClInclude Include="Engine\Core\RenderSystem.h" />
     <ClInclude Include="Engine\Core\RenderCommand.h" />
     <ClInclude Include="Engine\Core\DirectXResource\VertexBuffer.h" />

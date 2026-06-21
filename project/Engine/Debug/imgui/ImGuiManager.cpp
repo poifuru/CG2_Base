@@ -7,11 +7,18 @@
 #include "EditorManager.h"
 
 ImGuiManager::~ImGuiManager() {
+	Finalize();
+}
+
+void ImGuiManager::Finalize() {
 #ifdef USEIMGUI
-	ImGui_ImplDX12_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
+	if (ImGui::GetCurrentContext()) {
+		ImGui_ImplDX12_Shutdown();
+		ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
+	}
 #endif
+	engine_ = nullptr;
 }
 
 void ImGuiManager::Initialize(IEngine* engine) {

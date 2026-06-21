@@ -37,6 +37,7 @@ Game::Game() {
 }
 
 Game::~Game() {
+	ImGuiManager::GetInstance()->Finalize();
 }
 
 void Game::Run() {

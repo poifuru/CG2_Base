@@ -2,6 +2,9 @@
 #include "imgui.h"
 #include "MathFunction.h"
 
+// フロート方の最大値を定義
+static inline const float kMax_Float = 99999.9f;
+
 RectLight::RectLight() {
 	color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
 	intensity_ = 1.0f;
@@ -41,9 +44,9 @@ void RectLight::ImGui(int index) {
 	if(ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
 		ImGui::ColorEdit4("Color", &color_.x);
 		ImGui::DragFloat3("Position", &position_.x, 0.01f);
-		ImGui::DragFloat("Intensity", &intensity_, 0.01f, 0.0f, IMGUI_MAX);
+		ImGui::DragFloat("Intensity", &intensity_, 0.01f, 0.0f, kMax_Float);
 		ImGui::DragFloat3("Direction", &direction_.x, 0.01f, -1.0f, 1.0f);
-		ImGui::DragFloat2("Size", &size_.x, 0.01f, 0.0f, IMGUI_MAX);
+		ImGui::DragFloat2("Size", &size_.x, 0.01f, 0.0f, kMax_Float);
 		ImGui::DragFloat3("RightVector", &right_.x, 0.01f, -1.0f, 1.0f);
 		ImGui::DragFloat3("UpVector", &up_.x, 0.01f, -1.0f, 1.0f);
 	}
