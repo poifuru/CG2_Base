@@ -59,7 +59,7 @@ uint32_t ModelManager::LoadModelData(const std::string& filePath, bool inversion
 		if (!mesh.textureFilePath.empty()) {
 			mesh.textureIndex = textureManager_->LoadTexture(mesh.textureFilePath);
 		} else {
-			mesh.textureIndex = 0; // デフォルトはwhite1x1 (0番)
+			mesh.textureIndex = textureManager_->LoadTexture("white1x1");
 		}
 	}
 
@@ -133,7 +133,9 @@ ModelData ModelManager::LoadModelFile(const std::string& filePath, bool inversio
 		filePath.c_str(),
 		aiProcess_FlipWindingOrder |
 		aiProcess_FlipUVs |
-		aiProcess_JoinIdenticalVertices
+		aiProcess_JoinIdenticalVertices |
+		aiProcess_Triangulate |
+		aiProcess_GenSmoothNormals
 	);
 	assert(scene && scene->HasMeshes());
 
@@ -142,15 +144,13 @@ ModelData ModelManager::LoadModelFile(const std::string& filePath, bool inversio
 
 	for(uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
-		assert(mesh->HasNormals());
-		assert(mesh->HasTextureCoords(0));
 
 		Mesh myMesh;
 
 		for(uint32_t i = 0; i < mesh->mNumVertices; ++i) {
 			aiVector3D& position = mesh->mVertices[i];
-			aiVector3D& normal = mesh->mNormals[i];
-			aiVector3D& texcoord = mesh->mTextureCoords[0][i];
+			aiVector3D normal = mesh->HasNormals() ? mesh->mNormals[i] : aiVector3D(0.0f, 1.0f, 0.0f);
+			aiVector3D texcoord = mesh->HasTextureCoords(0) ? mesh->mTextureCoords[0][i] : aiVector3D(0.0f, 0.0f, 0.0f);
 
 			VertexData vertex = {};
 			if(inversion) {
@@ -167,7 +167,9 @@ ModelData ModelManager::LoadModelFile(const std::string& filePath, bool inversio
 
 		for(uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
 			aiFace& face = mesh->mFaces[faceIndex];
-			assert(face.mNumIndices == 3);
+			if (face.mNumIndices != 3) {
+				continue;
+			}
 
 			for(uint32_t i = 0; i < face.mNumIndices; ++i) {
 				myMesh.meshData.indices.push_back(face.mIndices[i]);
@@ -176,6 +178,10 @@ ModelData ModelManager::LoadModelFile(const std::string& filePath, bool inversio
 
 		myMesh.vertexCount = static_cast<uint32_t>(myMesh.meshData.vertices.size());
 		myMesh.indexCount = static_cast<uint32_t>(myMesh.meshData.indices.size());
+
+		if (myMesh.vertexCount == 0 || myMesh.indexCount == 0) {
+			continue;
+		}
 
 		// このメッシュに適用されているマテリアルのテクスチャパスを取得
 		if(scene->mNumMaterials > 0 && mesh->mMaterialIndex < scene->mNumMaterials) {
