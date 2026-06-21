@@ -90,6 +90,13 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	particle_->Initialize();
 	particle_->SetTexHandle(TextureManager::GetInstance()->GetTextureHandle("circle"));
 	particle_->SetMarineSnow(true);
+
+	// 気泡用パーティクルの初期化
+	bubbleParticle_ = std::make_unique<Particle>(dxCommon_);
+	bubbleParticle_->Initialize();
+	bubbleParticle_->SetTexHandle(TextureManager::GetInstance()->GetTextureHandle("circle"));
+	bubbleParticle_->SetMarineSnow(false);
+	bubbleParticle_->SetUseBillBoard(true);
 }
 
 void PlayScene::Update () {
@@ -144,6 +151,10 @@ void PlayScene::Update () {
 			if (Math::IsCollision(bullet->GetAABB(), enemy->GetAABB())) {
 				bullet->SetIsActive(false);  // 弾を消す
 				enemy->SetIsActive(false);   // 敵を消す
+				// 敵が消えた場所に気泡エフェクトを発生
+				if (bubbleParticle_) {
+					bubbleParticle_->EmitBubbles(enemy->GetTransform().translate, 15);
+				}
 				break;
 			}
 		}
@@ -160,6 +171,11 @@ void PlayScene::Update () {
 	if (particle_) {
 		particle_->Update(&camera_->GetCameraData().world, &camera_->GetVPMatrix());
 		particle_->ImGui();
+	}
+
+	// 気泡パーティクルの更新
+	if (bubbleParticle_) {
+		bubbleParticle_->Update(&camera_->GetCameraData().world, &camera_->GetVPMatrix());
 	}
 
 	PostEffectManager::GetInstance()->ImGui();
@@ -191,6 +207,11 @@ void PlayScene::DrawUI() {
 	// ポストエフェクト適用後にマリンスノーを描画 (フォグに飲まれないようにするため)
 	if (particle_) {
 		particle_->Draw();
+	}
+
+	// 気泡を描画
+	if (bubbleParticle_) {
+		bubbleParticle_->Draw();
 	}
 
 	if (player_) {

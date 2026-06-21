@@ -18,6 +18,8 @@ struct ParticleData {
 	Vector4 color;
 	float lifeTime;
 	float currentTime;
+	bool spawnChildrenOnDeath = false; // 死亡時に子パーティクルを発生させるか
+	bool isWave = false;               // 水の波動（波紋）か
 };
 
 class DxCommon;
@@ -39,12 +41,19 @@ public:
 	void SetMarineSnow(bool active) { isMarineSnow_ = active; }
 	bool IsMarineSnow() const { return isMarineSnow_; }
 
+	// ビルボードを使用するか
+	void SetUseBillBoard(bool use) { useBillBoard = use; }
+
+	// 気泡パーティクルを発生させる
+	void EmitBubbles(const Vector3& position, uint32_t count);
+
 private:	//内部関数
 	ParticleData MakeNewParticle (std::mt19937 randomEngine, const Emitter& emitter_);
 	ParticleData MakeNewMarineSnow (std::mt19937 randomEngine, const Vector3& cameraPos);
 	std::list<ParticleData> Emit (const Emitter& emitter, std::mt19937& randomEngine);
 	void EmitterUpdate ();
 	void EmitterUpdateMarineSnow (const Vector3& cameraPos);
+	void SpawnChildren (const Vector3& position, const Vector4& color);
 
 private:
 	//PSOの設定

@@ -110,6 +110,9 @@ void Particle::Update (Matrix4x4* cameraMatrix, Matrix4x4* vp) {
 	for (particleIterator_ = particles_.begin (); particleIterator_ != particles_.end ();) {
 		// 生存可能時間を過ぎていたら更新処理をしない (マリンスノー以外)
 		if (!isMarineSnow_ && particleIterator_->lifeTime <= particleIterator_->currentTime) {
+			if (particleIterator_->spawnChildrenOnDeath) {
+				SpawnChildren(particleIterator_->transform.translate, particleIterator_->color);
+			}
 			particleIterator_ = particles_.erase (particleIterator_);	//生存時間をすぎたパーティクルはリストから削除
 			continue;
 		}
@@ -139,8 +142,17 @@ void Particle::Update (Matrix4x4* cameraMatrix, Matrix4x4* vp) {
 				else if (diffZ > marineSnowRange_.z) particleIterator_->transform.translate.z -= marineSnowRange_.z * 2.0f;
 			}
 			else {
-				// 通常の速度反映
-				particleIterator_->transform.translate += particleIterator_->velocity * kDeltaTime;
+				// 波動フラグが立っている場合、急激に巨大化させる。そうでなければ通常の速度反映
+				if (particleIterator_->isWave) {
+					float scaleSpeed = 12.0f; // 毎秒の拡大率
+					particleIterator_->transform.scale.x += scaleSpeed * kDeltaTime;
+					particleIterator_->transform.scale.y += scaleSpeed * kDeltaTime;
+					particleIterator_->transform.scale.z += scaleSpeed * kDeltaTime;
+				}
+				else {
+					// 通常の速度反映
+					particleIterator_->transform.translate += particleIterator_->velocity * kDeltaTime;
+				}
 			}
 
 			instancingData_[dstIndex].World = Math::MakeAffineMatrix (
@@ -158,7 +170,11 @@ void Particle::Update (Matrix4x4* cameraMatrix, Matrix4x4* vp) {
 				billBoardMatrix_.m[3][2] = 0.0f;
 				billBoardMatrix_.m[3][3] = 1.0f;
 
-				instancingData_[dstIndex].World = Math::Multiply (instancingData_[dstIndex].World, billBoardMatrix_);
+				Matrix4x4 scaleMatrix = Math::MakeScaleMatrix(particleIterator_->transform.scale);
+				Matrix4x4 translateMatrix = Math::MakeTranslateMatrix(particleIterator_->transform.translate);
+				
+				// S * Billboard * T の順で計算して、正しい位置にビルボードを配置する
+				instancingData_[dstIndex].World = Math::Multiply(Math::Multiply(scaleMatrix, billBoardMatrix_), translateMatrix);
 				instancingData_[dstIndex].WVP = Math::Multiply (instancingData_[dstIndex].World, *vp);
 			}
 			else {
@@ -351,5 +367,80 @@ void Particle::EmitterUpdateMarineSnow (const Vector3& cameraPos) {
 	// 最大数に達するまでマリンスノーを生成して追加
 	while (particles_.size() < kMaxParticleNum_) {
 		particles_.push_back (MakeNewMarineSnow (randomEngine_, cameraPos));
+	}
+}
+
+void Particle::EmitBubbles(const Vector3& position, uint32_t count) {
+	// 乱数エンジン
+	std::mt19937 randomEngine(rd());
+
+	std::uniform_real_distribution<float> randSpeedX(-1.5f, 1.5f);
+	std::uniform_real_distribution<float> randSpeedY(1.0f, 3.5f); // 上昇する浮力
+	std::uniform_real_distribution<float> randSpeedZ(-1.5f, 1.5f);
+	std::uniform_real_distribution<float> scaleRand(0.05f, 0.25f); // 気泡の大きさ
+	std::uniform_real_distribution<float> lifeRand(0.8f, 1.8f); // 寿命
+	std::uniform_real_distribution<float> colorRand(0.8f, 1.0f); // 青白さ
+
+	// 気泡パーティクルの生成
+	for (uint32_t i = 0; i < count; ++i) {
+		ParticleData data;
+		float size = scaleRand(randomEngine);
+		data.transform.scale = { size, size, size };
+		data.transform.rotate = { 0.0f, 0.0f, 0.0f };
+		data.transform.translate = position;
+
+		// 初速：少し横に散らばりつつ、上方向に進む
+		data.velocity = { randSpeedX(randomEngine), randSpeedY(randomEngine), randSpeedZ(randomEngine) };
+
+		// 気泡っぽい色（薄水色〜白、半透明）
+		float r = colorRand(randomEngine);
+		data.color = { r * 0.8f, r * 0.9f, 1.0f, 0.6f };
+
+		data.lifeTime = lifeRand(randomEngine);
+		data.currentTime = 0.0f;
+		data.spawnChildrenOnDeath = true; // 寿命時に子パーティクルを発生させる
+		data.isWave = false;
+
+		particles_.push_back(data);
+	}
+
+	// 水の波動（波紋）を同時に1個発生させる
+	{
+		ParticleData wave;
+		wave.transform.scale = { 0.5f, 0.5f, 0.5f };
+		wave.transform.rotate = { 0.0f, 0.0f, 0.0f };
+		wave.transform.translate = position;
+		wave.velocity = { 0.0f, 0.0f, 0.0f }; // 移動しない
+		wave.color = { 0.6f, 0.9f, 1.0f, 0.7f }; // 青白い半透明の波紋
+		wave.lifeTime = 0.4f; // 0.4秒で消える
+		wave.currentTime = 0.0f;
+		wave.spawnChildrenOnDeath = false;
+		wave.isWave = true; // 波動フラグをON
+
+		particles_.push_back(wave);
+	}
+}
+
+void Particle::SpawnChildren(const Vector3& position, const Vector4& color) {
+	std::mt19937 randomEngine(rd());
+	std::uniform_real_distribution<float> randSpeed(-2.5f, 2.5f);
+	std::uniform_real_distribution<float> scaleRand(0.02f, 0.07f); // かなり小さい泡
+	std::uniform_real_distribution<float> lifeRand(0.2f, 0.5f); // すぐ消える
+
+	for (int i = 0; i < 4; ++i) {
+		ParticleData child;
+		float size = scaleRand(randomEngine);
+		child.transform.scale = { size, size, size };
+		child.transform.rotate = { 0.0f, 0.0f, 0.0f };
+		child.transform.translate = position;
+		child.velocity = { randSpeed(randomEngine), randSpeed(randomEngine), randSpeed(randomEngine) };
+		child.color = color;
+		child.color.w *= 0.8f; // 親より少し薄くする
+		child.lifeTime = lifeRand(randomEngine);
+		child.currentTime = 0.0f;
+		child.spawnChildrenOnDeath = false; // 子はさらに子を産まない
+		child.isWave = false;
+
+		particles_.push_back(child);
 	}
 }

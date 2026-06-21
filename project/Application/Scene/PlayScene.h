@@ -37,5 +37,8 @@ private:	//メンバ変数
 	// パーティクルシステム (マリンスノー用)
 	std::unique_ptr<Particle> particle_ = nullptr;
 
+	// パーティクルシステム (気泡エフェクト用)
+	std::unique_ptr<Particle> bubbleParticle_ = nullptr;
+
 	DxCommon* dxCommon_ = nullptr;
 };
