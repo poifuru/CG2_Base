@@ -32,8 +32,8 @@
     <ClCompile Include="Engine\Core\General\ChangeString.cpp" />
     <ClCompile Include="Engine\Render\PSO\InputLayoutManager.cpp" />
     <ClCompile Include="Engine\Framework\Camera\FollowCamera.cpp" />
-    <ClCompile Include="Engine\Debug\ImGui\ImGuiManager.cpp" />
-    <ClCompile Include="Engine\Debug\ImGui\EditorManager.cpp" />
+    <ClCompile Include="Engine\Editor\ImGui\ImGuiManager.cpp" />
+    <ClCompile Include="Engine\Editor\ImGui\EditorManager.cpp" />
     <ClCompile Include="Engine\Core\LeakChecker.cpp" />
     <ClCompile Include="Engine\Core\DxCommon.cpp" />
     <ClCompile Include="Engine\Framework\Camera\DebugCamera.cpp" />
@@ -104,6 +104,16 @@
     <ClCompile Include="Engine\Core\LowLevel\SwapChain.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\WindowsAPI.cpp" />
     <ClCompile Include="Engine\Framework\Buffer\Material.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\GameObject.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\MeshRendererComponent.cpp" />
+    <ClCompile Include="externals\imgui\ImGuizmo.cpp" />
+    <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="externals\imgui\imgui_tables.cpp" />
+    <ClCompile Include="externals\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="externals\imgui\imgui_impl_dx12.cpp" />
+    <ClCompile Include="externals\imgui\imgui_draw.cpp" />
+    <ClCompile Include="externals\imgui\imgui_demo.cpp" />
+    <ClCompile Include="externals\imgui\imgui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -131,8 +141,8 @@
     <ClInclude Include="Engine\Core\General\ChangeString.h" />
     <ClInclude Include="Engine\Render\PSO\InputLayoutManager.h" />
     <ClInclude Include="Engine\Framework\Camera\FollowCamera.h" />
-    <ClInclude Include="Engine\Debug\ImGui\ImGuiManager.h" />
-    <ClInclude Include="Engine\Debug\ImGui\EditorManager.h" />
+    <ClInclude Include="Engine\Editor\ImGui\ImGuiManager.h" />
+    <ClInclude Include="Engine\Editor\ImGui\EditorManager.h" />
     <ClInclude Include="Engine\Core\LeakChecker.h" />
     <ClInclude Include="Engine\Core\DxCommon.h" />
     <ClInclude Include="Engine\Framework\Camera\DebugCamera.h" />
@@ -220,6 +230,10 @@
     <ClInclude Include="Engine\Core\LowLevel\SwapChain.h" />
     <ClInclude Include="Engine\Core\LowLevel\WindowsAPI.h" />
     <ClInclude Include="Engine\Framework\Buffer\Material.h" />
+    <ClInclude Include="Engine\Framework\GameObject\Component.h" />
+    <ClInclude Include="Engine\Framework\GameObject\GameObject.h" />
+    <ClInclude Include="Engine\Framework\GameObject\MeshRendererComponent.h" />
+    <ClInclude Include="externals\imgui\ImGuizmo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

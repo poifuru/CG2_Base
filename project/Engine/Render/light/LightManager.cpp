@@ -83,7 +83,6 @@ void LightManager::Update() {
 
 void LightManager::ImGui() {
 #ifdef USEIMGUI
-	ImGui::Begin("Light Manager");
 	if(ImGui::BeginTabBar("LightTabs")) {
 		if(ImGui::BeginTabItem("Directional")) {
 			if(ImGui::Button("Add DirectionalLight")) {
@@ -207,7 +206,6 @@ void LightManager::ImGui() {
 		}
 		ImGui::EndTabBar();
 	}
-	ImGui::End();
 #endif
 }
 

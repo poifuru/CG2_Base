@@ -17,11 +17,12 @@ public:
 
 	virtual void Update(CameraData* cameraData);
 
-	virtual void Draw(class RenderSystem* renderSystem) = 0; // 引数に RenderSystem を渡す
+	virtual void Draw(class RenderSystem* renderSystem) = 0;
 
 	virtual void ImGui(const std::string& label);
 
 	// === 共通のアクセッサ ===
+	void SetParentTransform(const EulerTransform* parentTransform) { parentTransform_ = parentTransform; }
 	void SetScale(const Vector3& scale) { transform_.scale = scale; }
 	void SetRotate(const Vector3& rotate) { transform_.rotate = rotate; }
 	void SetTranslate(const Vector3& translate) { transform_.translate = translate; }
@@ -46,6 +47,7 @@ protected:
 
 	// CPUデータ
 	EulerTransform transform_{};
+	const EulerTransform* parentTransform_ = nullptr;
 	TransformMatrixData transformMatrixData_{};
 
 	std::unique_ptr<TransformMatrixResource> transformBuffer_ = nullptr;

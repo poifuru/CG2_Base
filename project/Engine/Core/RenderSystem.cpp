@@ -36,8 +36,6 @@ void RenderSystem::ExecuteCommands(
 	const InputLayoutManager& inputLayoutManager,
 	const BlendModeManager& blendModeManager
 ) {
-	if (commandQueue_.empty()) return;
-
 	// レイヤー順（不透明・半透明）にソート
 	std::sort(commandQueue_.begin(), commandQueue_.end(), [](const RenderCommand& a, const RenderCommand& b) {
 		return a.layer < b.layer;
@@ -52,6 +50,8 @@ void RenderSystem::ExecuteCommands(
 	// Slot 2 と Slot 3 に、巨大ヒープの「先頭のGPUハンドル」をセット
 	cmdList->SetGraphicsRootDescriptorTable(2, heapManager.GetGpuHandle(0));
 	cmdList->SetGraphicsRootDescriptorTable(3, heapManager.GetGpuHandle(0));
+
+	if (commandQueue_.empty()) return;
 
 	// Slot 4: カメラバッファをバインド
 	cmdList->SetGraphicsRootConstantBufferView(4, cameraBuffer_.GetGPUVirtualAddress());

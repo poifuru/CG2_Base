@@ -33,12 +33,6 @@ void BaseObject3d::ImGui(const std::string& label) {
 	MaterialData materialData = material_->GetMaterialData();
 	EulerTransform uvTransform = material_->GetUvTransform();
 
-	if(ImGui::TreeNode("Transform")) {
-		ImGui::DragFloat3(("Scale" + label).c_str(), &transform_.scale.x, 0.01f);
-		ImGui::DragFloat3(("Rotate" + label).c_str(), &transform_.rotate.x, 0.01f);
-		ImGui::DragFloat3(("Transform" + label).c_str(), &transform_.translate.x, 0.01f);
-		ImGui::TreePop();
-	}
 	if(ImGui::TreeNode("Material")) {
 		// 編集されたらセッター経由でマテリアルに反映して isDirty_ を立てる
 		if (ImGui::ColorEdit4(("color" + label).c_str(), &materialData.color.x)) {
@@ -73,5 +67,9 @@ void BaseObject3d::ImGui(const std::string& label) {
 }
 
 Matrix4x4 BaseObject3d::CalculateWorldMatrix() {
+	if (parentTransform_) {
+		return Math::MakeAffineMatrix(parentTransform_->scale, parentTransform_->rotate, parentTransform_->translate);
+	}
+
 	return Math::MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 }

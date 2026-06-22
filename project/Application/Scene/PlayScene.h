@@ -1,8 +1,10 @@
 #pragma once
 #include "BaseScene.h"
+#include <vector>
 #include <memory>
 #include "Model.h"
 #include "LightManager.h"
+#include "GameObject.h"
 
 class PlayScene : public BaseScene {
 public:
@@ -14,6 +16,11 @@ public:
 	void Draw(class RenderSystem* renderSystem) override;
 
 private:
-	std::unique_ptr<Model> model_ = nullptr;
+	// 全てのGameObject
+	std::vector<std::unique_ptr<GameObject>> gameObjects_;
+
+	// 選択中のGameObject
+	GameObject* selectedObject_ = nullptr;
+
 	std::unique_ptr<LightManager> lightManager_ = nullptr;
 };
