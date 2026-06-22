@@ -15,6 +15,10 @@ public:
 	void Update() override;
 	void Draw(RenderSystem* renderSystem) override;
 	void ImGui() override;
+
+	void Serialize(json& j) const override;
+	void Deserialize(const json& j) override;
+
 	const char* GetName() const override { return "Mesh Renderer"; }
 
 	// モデルを変更する関数

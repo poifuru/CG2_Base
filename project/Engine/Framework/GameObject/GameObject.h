@@ -3,6 +3,8 @@
 #include <memory>
 #include <string>
 #include "struct.h"
+#include <json.hpp>
+using json = nlohmann::json;
 
 class Component;
 struct SceneContext;
@@ -16,6 +18,10 @@ public:
 	void Update();
 	void Draw(class RenderSystem* renderSystem);
 	void ImGui();
+
+	// シリアライズ用
+	json Serialize() const;
+	void Deserialize(const json& j);
 
 	// アクセッサ
 	const std::string& GetName() const { return name_; }

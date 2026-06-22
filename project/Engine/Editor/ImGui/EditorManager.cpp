@@ -47,7 +47,6 @@ void EditorManager::DrawGameWindow(IEngine* engine) {
 }
 
 void EditorManager::DrawInspectorWindow() {
-	ImGui::Begin("Inspector");
-	ImGui::Text("Selected Object: None");
+	ImGui::Begin("インスペクター");
 	ImGui::End();
 }

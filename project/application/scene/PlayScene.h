@@ -16,8 +16,14 @@ public:
 	void Draw(class RenderSystem* renderSystem) override;
 
 private:
+	// アセットをスキャンしてリストを更新する関数
+	void RefreshAssetList();
+
+private:
 	// 全てのGameObject
 	std::vector<std::unique_ptr<GameObject>> gameObjects_;
+	// アセットフォルダ内のモデルファイルのパス一覧
+	std::vector<std::string> modelFiles_;
 
 	// 選択中のGameObject
 	GameObject* selectedObject_ = nullptr;

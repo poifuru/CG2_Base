@@ -41,6 +41,16 @@ void MeshRendererComponent::ImGui() {
 	}
 }
 
+void MeshRendererComponent::Serialize(json& j) const {
+	j["type"] = "MeshRendererComponent";
+	j["modelPath"] = modelPath_;
+}
+void MeshRendererComponent::Deserialize(const json& j) {
+	if (j.contains("modelPath")) {
+		SetModel(j["modelPath"]);
+	}
+}
+
 void MeshRendererComponent::SetModel(const std::string& modelPath) {
 	GameObject* owner = GetGameObject();
 	if (!owner) return;

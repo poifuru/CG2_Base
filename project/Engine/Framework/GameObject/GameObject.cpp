@@ -84,3 +84,55 @@ void GameObject::ImGui() {
 		ImGui::EndPopup();
 	}
 }
+
+json GameObject::Serialize() const {
+	json j;
+	j["name"] = name_;
+
+	// Transform情報の書き出し（ラジアンのまま直で保存！）
+	j["transform"]["position"] = { transform_.translate.x, transform_.translate.y, transform_.translate.z };
+	j["transform"]["rotation"] = { transform_.rotate.x, transform_.rotate.y, transform_.rotate.z };
+	j["transform"]["scale"]    = { transform_.scale.x, transform_.scale.y, transform_.scale.z };
+
+	// 各コンポーネントのSerializeを呼ぶ
+	j["components"] = json::array();
+	for (const auto& comp : components_) {
+		json compJ;
+		comp->Serialize(compJ);
+		j["components"].push_back(compJ);
+	}
+
+	return j;
+}
+
+void GameObject::Deserialize(const json& j) {
+	name_ = j["name"];
+
+	// Transformの復元（ラジアンのまま直で復元！）
+	if (j.contains("transform")) {
+		auto pos = j["transform"]["position"];
+		transform_.translate = { pos[0], pos[1], pos[2] };
+
+		auto rot = j["transform"]["rotation"];
+		transform_.rotate = { rot[0], rot[1], rot[2] };
+
+		auto scale = j["transform"]["scale"];
+		transform_.scale = { scale[0], scale[1], scale[2] };
+	}
+
+	// コンポーネントリストの復元
+	if (j.contains("components")) {
+		for (const auto& compJ : j["components"]) {
+			std::string type = compJ["type"];
+
+			if (type == "MeshRendererComponent") {
+				// 二重追加を防ぐチェックをしてから追加
+				auto* comp = GetComponent<MeshRendererComponent>();
+				if (!comp) {
+					comp = AddComponent<MeshRendererComponent>();
+				}
+				comp->Deserialize(compJ);
+			}
+		}
+	}
+}

@@ -1,14 +1,17 @@
 #include "PlayScene.h"
+#include <filesystem>
+#include <format>
 #include "RenderSystem.h"
 #include "TextureManager.h"
 #include "ModelFactory.h"
 #include "ModelManager.h"
 #include "CameraOrganizer.h"
 #include "ShaderManager.h"
-#include <format>
 #include "MeshRendererComponent.h"
 #include "imgui.h"
 #include "imGuizmo.h"
+#include "CommandManager.h"
+#include "TransformCommand.h"
 
 void PlayScene::Initialize() {
 	if (!context_) return;
@@ -22,6 +25,9 @@ void PlayScene::Initialize() {
 	lightManager_->SetDirectionalLightDir(0, { 0.5f, -1.0f, 0.5f }); // 斜め下
 	lightManager_->SetDirectionalLightColor(0, { 1.0f, 1.0f, 1.0f, 1.0f }); // 白色
 	lightManager_->SetDirectionalLightIntensity(0, 1.0f); // 輝度 1.0
+
+	// 起動時にアセットリストを1回スキャン
+	RefreshAssetList();
 }
 
 void PlayScene::Update(CameraData* cameraData) {
@@ -38,11 +44,69 @@ void PlayScene::Update(CameraData* cameraData) {
 	}
 
 #ifdef USEIMGUI
+	// Ctrl + Z で Undo (元に戻す)
+	if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z)) {
+		CommandManager::GetInstance()->Undo();
+	}
+
+	// Ctrl + Y で Redo (やり直す)
+	if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y)) {
+		CommandManager::GetInstance()->Redo();
+	}
+
 	// ヒエラルキー
 	ImGui::Begin("Hierarchy");
 
+	// シーン保存ボタン
+	if (ImGui::Button("Save Scene")) {
+		json sceneJ;
+		sceneJ["name"] = "scene";
+		sceneJ["objects"] = json::array();
+
+		for (auto& obj : gameObjects_) {
+			sceneJ["objects"].push_back(obj->Serialize());
+		}
+
+		// ファイルに書き出す
+		std::ofstream file("scene.json");
+		if (file.is_open()) {
+			file << sceneJ.dump(4); // インデント4マスで保存
+			file.close();
+		}
+	}
+
+	ImGui::SameLine();
+
+	// シーン読込ボタン
+	if (ImGui::Button("Load Scene")) {
+		// 現在のオブジェクトを全削除してリセット
+		gameObjects_.clear();
+		selectedObject_ = nullptr;
+
+		// ファイルから読み込む
+		std::ifstream file("scene.json");
+		if (file.is_open()) {
+			json sceneJ;
+			file >> sceneJ;
+			file.close();
+
+			if (sceneJ.contains("objects")) {
+				for (const auto& objJ : sceneJ["objects"]) {
+					// GameObjectを生成
+					auto newObj = std::make_unique<GameObject>(context_, objJ["name"]);
+					newObj->Deserialize(objJ);
+
+					// 各コンポーネントのInitializeを呼んで3Dモデルなどのロードを走らせる
+					newObj->Initialize(); 
+
+					gameObjects_.push_back(std::move(newObj));
+				}
+			}
+		}
+	}
+
 	// オブジェクトの新規作成ボタン
-	if (ImGui::Button("Create Empty GameObject")) {
+	if (ImGui::Button("空オブジェクト作成")) {
 
 		// 新しいオブジェクトを作成してリストに追加
 		std::string newName = std::format("GameObject_{}", gameObjects_.size());
@@ -67,17 +131,18 @@ void PlayScene::Update(CameraData* cameraData) {
 	ImGui::End();
 
 	// インスペクター
-	ImGui::Begin("Inspector");
+	ImGui::Begin("インスペクター");
 	if (selectedObject_ != nullptr) {
 		// 選択されているオブジェクトの情報を表示
 		selectedObject_->ImGui();
-	} else {
-		ImGui::Text("Select an object in Hierarchy to inspect.");
+	} 
+	else {
+		ImGui::Text("オブジェクトが選択されていません");
 	}
 	ImGui::End();
 
 	// ライト用
-	ImGui::Begin("Light Edit");
+	ImGui::Begin("ライト編集");
 	lightManager_->ImGui();
 	ImGui::End();
 
@@ -150,6 +215,14 @@ void PlayScene::Update(CameraData* cameraData) {
 		// このウィンドウのDrawListをImGuizmoに渡して描画する
 		ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
 
+		// ドラッグ開始時の状態を記録するための変数
+		static EulerTransform transformBeforeDrag;
+		static bool wasUsingGizmo = false;
+		// ドラッグを開始した瞬間、現在の状態をキャッシュしておく
+		if (ImGuizmo::IsOver() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+			transformBeforeDrag = transform; // 現在の値を保存
+		}
+
 		// ギズモの描画とドラッグ操作（補正したプロジェクション行列を渡す）
 		ImGuizmo::Manipulate(
 			&camData.view.m[0][0],
@@ -163,6 +236,7 @@ void PlayScene::Update(CameraData* cameraData) {
 
 		// 操作中なら値をオブジェクトに反映する
 		if (ImGuizmo::IsUsing()) {
+			wasUsingGizmo = true;
 			float matrixTranslation[3], matrixRotation[3], matrixScale[3];
 
 			// 転置なしの worldMatrix をデコンポーズ
@@ -176,7 +250,42 @@ void PlayScene::Update(CameraData* cameraData) {
 			};
 			transform.scale = { matrixScale[0], matrixScale[1], matrixScale[2] };
 		}
+		// ドラッグが終了した瞬間（マウスを離した時）、コマンド履歴に登録
+		else if (wasUsingGizmo) {
+			wasUsingGizmo = false;
+
+			// ドラッグ前とドラッグ後の差分コマンドを作成してマネージャーに積む
+			auto command = std::make_unique<TransformCommand>(selectedObject_, transformBeforeDrag, transform);
+			CommandManager::GetInstance()->AddAndExecute(std::move(command));
+		}
 	}
+
+	// アセットブラウザ
+	ImGui::Begin("アセットブラウザ");
+	// 手動更新用のリフレッシュボタン
+	if (ImGui::Button("更新")) {
+		RefreshAssetList();
+	}
+	ImGui::Separator();
+	ImGui::Spacing();
+	// 見つかったモデルファイルをリスト表示
+	for (const auto& filePath : modelFiles_) {
+		// 表示用に「フォルダパス」を除外して「ファイル名」だけを抽出する（例: player.obj）
+		std::string fileName = std::filesystem::path(filePath).filename().string();
+
+		// リストの項目を表示
+		if (ImGui::Selectable(fileName.c_str())) {
+			// 項目がクリックされたとき、もしGameObjectが選択されていて、
+			// かつ MeshRendererComponent を持っていればそのモデルを適用する！
+			if (selectedObject_ != nullptr) {
+				auto* meshRenderer = selectedObject_->GetComponent<MeshRendererComponent>();
+				if (meshRenderer != nullptr) {
+					meshRenderer->SetModel(filePath);
+				}
+			}
+		}
+	}
+	ImGui::End();
 #endif
 }
 
@@ -188,5 +297,25 @@ void PlayScene::Draw(RenderSystem* renderSystem) {
 
 	for (auto& obj : gameObjects_) {
 		obj->Draw(renderSystem);
+	}
+}
+
+void PlayScene::RefreshAssetList() {
+	modelFiles_.clear();
+	std::string path = "Resources";
+
+	// std::filesystem を使ってフォルダ内を再帰的に探索するよ
+	if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
+			if (entry.is_regular_file()) {
+				auto ext = entry.path().extension().string();
+
+				// 3Dモデルファイル（.obj や .gltf）だけをフィルタリング
+				if (ext == ".obj" || ext == ".gltf") {
+					// Windowsのバックスラッシュ "\" を "/" に統一して追加する
+					modelFiles_.push_back(entry.path().generic_string());
+				}
+			}
+		}
 	}
 }
