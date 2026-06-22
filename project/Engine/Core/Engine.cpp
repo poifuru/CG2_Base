@@ -82,6 +82,7 @@ void Engine::BeginFrame() {
 	InputManager::GetInstance()->Update();
 	cmdContext_->Reset();
 
+#ifdef USEIMGUI
 	// RenderTextureをレンダーターゲットに設定
 	ID3D12GraphicsCommandList* cmdList = cmdContext_->GetCommandList();
 	cmdContext_->TransitionBarrier(renderTexture_->GetResource(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -94,6 +95,11 @@ void Engine::BeginFrame() {
 	cmdContext_->ClearDepthBuffer(dsvHandle);
 
 	cmdContext_->SetRenderTargets(rtvHandle, &dsvHandle);
+#else
+	// 直接SwapChainのバックバッファに描画する
+	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
+	swapChain_->BeginRender(cmdContext_.get(), clearColor);
+#endif
 }
 
 void Engine::EndFrame() {
@@ -141,12 +147,14 @@ void Engine::PreImGui() {
 	);
 	renderSystem_->ClearCommands();
 
+#ifdef USEIMGUI
 	// RenderTextureへの描画が終わったのでSRVに遷移
 	cmdContext_->TransitionBarrier(renderTexture_->GetResource(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 	// SwapChainの準備 (ImGuiの描画先)
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
 	swapChain_->BeginRender(cmdContext_.get(), clearColor);
+#endif
 }
 
 void Engine::ResetCommandList() {

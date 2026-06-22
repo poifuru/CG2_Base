@@ -14,12 +14,22 @@ void Model::Initialize(ModelData* modelData) {
 void Model::Draw(RenderSystem* renderSystem) {
 	if(!modelData_ || !renderSystem) return;
 
+	// マテリアルから各種IDを取得する
+	uint32_t vsID = 0;
+	uint32_t psID = 0;
+	uint32_t textureIndex = 0;
+	if (material_) {
+		vsID = material_->GetVsID();
+		psID = material_->GetPsID();
+		textureIndex = material_->GetTextureIndex();
+	}
+
 	for (const auto& mesh : modelData_->meshes) {
 		// RenderCommandの組み立てと積み込み
 		RenderCommand cmd{};
 
-		cmd.psoDesc.VS_ID = vsID_;
-		cmd.psoDesc.PS_ID = psID_;
+		cmd.psoDesc.VS_ID = vsID;
+		cmd.psoDesc.PS_ID = psID;
 		cmd.psoDesc.InputLayoutID = InputLayoutType::Standard3D;
 		cmd.psoDesc.BlendMode = BlendModeType::Opaque;
 		cmd.psoDesc.CullMode = D3D12_CULL_MODE_NONE; // 両面表示
@@ -31,7 +41,7 @@ void Model::Draw(RenderSystem* renderSystem) {
 
 		// バインドレスマテリアルのインデックスとテクスチャインデックスを設定
 		cmd.materialIndex = GetMaterialDescriptorIndex();
-		cmd.textureIndex = (textureIndex_ != 0) ? textureIndex_ : mesh.textureIndex;
+		cmd.textureIndex = (textureIndex != 0) ? textureIndex : mesh.textureIndex;
 		
 		// トランスフォームバッファのGPUアドレスを設定
 		cmd.transformGPUAddress = GetTransformGPUAddress();

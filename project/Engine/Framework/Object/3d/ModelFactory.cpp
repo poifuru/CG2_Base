@@ -22,6 +22,8 @@ void ModelFactory::Initialize(
 }
 
 std::unique_ptr<Model> ModelFactory::CreateModel(
+	uint32_t vsID,
+	uint32_t psID,
 	uint32_t modelIndex,
 	uint32_t textureIndex
 ) {
@@ -29,28 +31,25 @@ std::unique_ptr<Model> ModelFactory::CreateModel(
 	auto modelData = modelManager_->GetModelData(modelIndex);
 	auto tempModelData = modelData.lock().get();
 
-	// デフォルトのシェーダーをコンパイル＆キャッシュ登録
-	uint32_t vsID = shaderManager_->CompileAndCacheShader(L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
-	uint32_t psID = shaderManager_->CompileAndCacheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
-
 	// Modelインスタンスを生成（この時点では空）
 	auto model = std::make_unique<Model>();
 
 	// 親クラス用のバッファを生成・初期化
-	// (ファクトリが持っているデバイスとヒープを使って初期化)
+	// Transformバッファをモデルへ設定
 	auto transformBuffer = std::make_unique<TransformMatrixResource>();
 	transformBuffer->Initialize(device_->GetDevice());
+	model->SetTransformBuffer(std::move(transformBuffer));
 
-	auto materialBuffer = std::make_unique<StructuredBuffer<MaterialData>>();
-	materialBuffer->Initialize(device_->GetDevice(), *heapManager_, 1);
-
-	// 初期化済みのバッファをムーブで流し込む（Modelにはデバイスを持たせない）
-	model->SetCommonBuffers(std::move(transformBuffer), std::move(materialBuffer));
+	// 新しいマテリアルを作成して初期化
+	auto material = std::make_shared<Material>();
+	material->Initialize(device_, heapManager_);
+	material->SetTextureIndex(textureIndex);
+	material->SetShader(vsID, psID);
+	// モデルにマテリアルをセット
+	model->SetMaterial(material);
 
 	// アセットの設定
 	model->Initialize(tempModelData);
-	model->SetTextureIndex(textureIndex);
-	model->SetShaders(vsID, psID);
 
 	return model;
 }

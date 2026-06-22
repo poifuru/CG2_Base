@@ -351,3 +351,4 @@ pdb
 /logs
 /project/externals/imgui/lib/Debug/imgui.idb
 /project/kopipe
+*.log

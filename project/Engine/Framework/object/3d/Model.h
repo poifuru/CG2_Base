@@ -20,17 +20,16 @@ public:
 
 	// シェーダーIDやテクスチャインデックスの設定
 	void SetShaders(uint32_t vsID, uint32_t psID) {
-		vsID_ = vsID;
-		psID_ = psID;
+		if (material_) {
+			material_->SetShader(vsID, psID);
+		}
 	}
 	void SetTextureIndex(uint32_t textureIndex) {
-		textureIndex_ = textureIndex;
+		if (material_) {
+			material_->SetTextureIndex(textureIndex);
+		}
 	}
 
 private:
 	ModelData* modelData_ = nullptr;
-
-	uint32_t vsID_ = 0;
-	uint32_t psID_ = 0;
-	uint32_t textureIndex_ = 0;
 };

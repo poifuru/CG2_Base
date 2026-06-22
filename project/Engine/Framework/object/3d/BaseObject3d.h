@@ -4,7 +4,7 @@
 #include <memory>
 #include "struct.h"
 #include "TransformMatrixData.h"
-#include "MaterialData.h"
+#include "Material.h"
 #include "CameraComponent.h"
 #include "StructuredBuffer.h" // 構造化バッファをインクルード
 
@@ -25,23 +25,18 @@ public:
 	void SetScale(const Vector3& scale) { transform_.scale = scale; }
 	void SetRotate(const Vector3& rotate) { transform_.rotate = rotate; }
 	void SetTranslate(const Vector3& translate) { transform_.translate = translate; }
-	void SetColor(const Vector4& color) { materialData_.color = color; }
-	void SetRoughness(float r) { materialData_.roughness = r; }
-	void SetMetallic(float m) { materialData_.metallic = m; }
-	void SetLightingModel(BOOL flag) { materialData_.enableLighting = flag; }
+
+	// マテリアルをセットする
+	void SetMaterial(const std::shared_ptr<Material>& material) { material_ = material; }
+	std::shared_ptr<Material> GetMaterial() const { return material_; }
 
 	// 外部（ファクトリ）から初期化済みの共通バッファを受け取る
-	void SetCommonBuffers(
-		std::unique_ptr<TransformMatrixResource>&& transformBuffer,
-		std::unique_ptr<StructuredBuffer<MaterialData>>&& materialBuffer // StructuredBufferへ変更
-	) {
+	void SetTransformBuffer(std::unique_ptr<TransformMatrixResource>&& transformBuffer) {
 		transformBuffer_ = std::move(transformBuffer);
-		materialBuffer_ = std::move(materialBuffer);
 	}
 
 	D3D12_GPU_VIRTUAL_ADDRESS GetTransformGPUAddress() const { return transformBuffer_ ? transformBuffer_->GetGPUVirtualAddress() : 0; }
-	uint32_t GetMaterialDescriptorIndex() const { return materialBuffer_ ? materialBuffer_->GetDescriptorIndex() : 0; } // バインドレス用インデックスゲッター
-	D3D12_GPU_DESCRIPTOR_HANDLE GetTextureHandle() const { return textureHandle_; }
+	uint32_t GetMaterialDescriptorIndex() const { return material_ ? material_->GetDescriptorIndex() : 0; } // バインドレス用インデックスゲッター
 
 protected:
 	virtual Matrix4x4 CalculateWorldMatrix();
@@ -51,13 +46,10 @@ protected:
 
 	// CPUデータ
 	EulerTransform transform_{};
-	EulerTransform uvTransform_{};
-	MaterialData materialData_{};
 	TransformMatrixData transformMatrixData_{};
 
 	std::unique_ptr<TransformMatrixResource> transformBuffer_ = nullptr;
-	std::unique_ptr<StructuredBuffer<MaterialData>> materialBuffer_ = nullptr; // StructuredBufferへ変更
-	D3D12_GPU_DESCRIPTOR_HANDLE textureHandle_{};
+	std::shared_ptr<Material> material_ = nullptr;
 
 	uint8_t layer_ = 1;
 };

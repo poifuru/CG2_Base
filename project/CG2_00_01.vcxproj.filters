@@ -42,7 +42,6 @@
     <ClCompile Include="Engine\Core\Input\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Core\General\MathFunction.cpp" />
-    <ClCompile Include="Engine\Framework\Object\3d\SphereMesh.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\Sprite.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\Model.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\ModelFactory.cpp" />
@@ -51,7 +50,6 @@
     <ClCompile Include="Engine\MagosuyaEngine.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\TextureManager.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\SpriteRenderer.cpp" />
-    <ClCompile Include="Engine\Framework\Object\3d\ModelRenderer.cpp" />
     <ClCompile Include="application\scene\SceneManager.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
     <ClCompile Include="application\scene\PlayScene.cpp" />
@@ -66,7 +64,6 @@
     <ClCompile Include="application\mapchip\mapChipRenderer.cpp" />
     <ClCompile Include="Engine\Render\PSO\ShaderManager.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\BaseObject3d.cpp" />
-    <ClCompile Include="Engine\Framework\Object\3d\BaseRenderer.cpp" />
     <ClCompile Include="Engine\Render\Light\LightManager.cpp" />
     <ClCompile Include="Engine\Render\Light\BaseLight.cpp" />
     <ClCompile Include="Engine\Render\Light\DirectionalLight.cpp" />
@@ -106,6 +103,7 @@
     <ClCompile Include="Engine\Core\LowLevel\GraphicsDevice.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\SwapChain.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\WindowsAPI.cpp" />
+    <ClCompile Include="Engine\Framework\Buffer\Material.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -141,7 +139,6 @@
     <ClInclude Include="Engine\Core\Input\GamePad.h" />
     <ClInclude Include="Engine\Core\General\function.h" />
     <ClInclude Include="Engine\Core\General\MathFunction.h" />
-    <ClInclude Include="Engine\Framework\Object\3d\SphereMesh.h" />
     <ClInclude Include="Engine\Framework\Object\2d\Sprite.h" />
     <ClInclude Include="Engine\Core\General\struct.h" />
     <ClInclude Include="Engine\Framework\Object\3d\Model.h" />
@@ -152,7 +149,6 @@
     <ClInclude Include="Engine\MagosuyaEngine.h" />
     <ClInclude Include="Engine\Framework\Object\2d\TextureManager.h" />
     <ClInclude Include="Engine\Framework\Object\2d\SpriteRenderer.h" />
-    <ClInclude Include="Engine\Framework\Object\3d\ModelRenderer.h" />
     <ClInclude Include="application\scene\SceneManager.h" />
     <ClInclude Include="application\scene\TitleScene.h" />
     <ClInclude Include="application\scene\PlayScene.h" />
@@ -166,7 +162,6 @@
     <ClInclude Include="application\entity\boss\Boss.h" />
     <ClInclude Include="Engine\Render\PSO\ShaderManager.h" />
     <ClInclude Include="Engine\Framework\Object\3d\BaseObject3d.h" />
-    <ClInclude Include="Engine\Framework\Object\3d\BaseRenderer.h" />
     <ClInclude Include="Engine\Render\Light\LightManager.h" />
     <ClInclude Include="Engine\Render\Light\BaseLight.h" />
     <ClInclude Include="Engine\Render\Light\DirectionalLight.h" />
@@ -224,6 +219,7 @@
     <ClInclude Include="Engine\Core\LowLevel\GraphicsDevice.h" />
     <ClInclude Include="Engine\Core\LowLevel\SwapChain.h" />
     <ClInclude Include="Engine\Core\LowLevel\WindowsAPI.h" />
+    <ClInclude Include="Engine\Framework\Buffer\Material.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

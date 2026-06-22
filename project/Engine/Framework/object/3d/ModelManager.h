@@ -8,6 +8,7 @@
 #include "struct.h"
 #include "MeshData.h"
 #include "Animation.h"
+#include "MaterialData.h"
 
 class TextureManager;
 struct ID3D12Device;
@@ -36,7 +37,7 @@ public:
 
 private:
 	// マテリアルファイルの読み込み関数
-	MaterialFile LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& id);
+	MaterialTex LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& id);
 
 	// モデル読み込みの関数
 	ModelData LoadModelFile(const std::string& filePath, bool inversion);

@@ -198,7 +198,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Render\Light\LightManager.cpp" />
     <ClCompile Include="application\entity\boss\Boss.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Engine\Framework\Object\3d\BaseRenderer.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\BaseObject3d.cpp" />
     <ClCompile Include="Engine\Core\General\Easing.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\BasePostEffect.cpp" />
@@ -226,11 +225,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Core\Input\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Core\General\MathFunction.cpp" />
-    <ClCompile Include="Engine\Framework\Object\3d\SphereMesh.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">false</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Engine\Framework\Object\2d\Sprite.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\Model.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\ModelFactory.cpp" />
@@ -242,7 +236,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\MagosuyaEngine.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\TextureManager.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\SpriteRenderer.cpp" />
-    <ClCompile Include="Engine\Framework\Object\3d\ModelRenderer.cpp" />
     <ClCompile Include="application\scene\SceneManager.cpp" />
     <ClCompile Include="application\scene\TitleScene.cpp" />
     <ClCompile Include="application\scene\PlayScene.cpp" />
@@ -266,6 +259,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Framework\Particle\ParticleRenderer.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\Outline.cpp" />
     <ClCompile Include="Engine\Core\RenderSystem.cpp" />
+    <ClCompile Include="Engine\Framework\Buffer\Material.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\BoxFilter.PS.hlsl">
@@ -440,7 +434,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Render\Light\LightManager.h" />
     <ClInclude Include="application\scene\SceneType.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="Engine\Framework\Object\3d\BaseRenderer.h" />
     <ClInclude Include="Engine\Framework\Object\3d\BaseObject3d.h" />
     <ClInclude Include="Engine\Core\General\Easing.h" />
     <ClInclude Include="Engine\Render\PostEffect\BasePostEffect.h" />
@@ -478,7 +471,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Core\Input\GamePad.h" />
     <ClInclude Include="Engine\Core\General\function.h" />
     <ClInclude Include="Engine\Core\General\MathFunction.h" />
-    <ClInclude Include="Engine\Framework\Object\3d\SphereMesh.h" />
     <ClInclude Include="Engine\Framework\Object\2d\Sprite.h" />
     <ClInclude Include="Engine\Core\General\struct.h" />
     <ClInclude Include="Engine\Framework\Object\3d\Model.h" />
@@ -492,7 +484,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\MagosuyaEngine.h" />
     <ClInclude Include="Engine\Framework\Object\2d\TextureManager.h" />
     <ClInclude Include="Engine\Framework\Object\2d\SpriteRenderer.h" />
-    <ClInclude Include="Engine\Framework\Object\3d\ModelRenderer.h" />
     <ClInclude Include="application\scene\SceneManager.h" />
     <ClInclude Include="application\scene\TitleScene.h" />
     <ClInclude Include="application\scene\PlayScene.h" />
@@ -518,6 +509,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Framework\Particle\ParticleRenderer.h" />
     <ClInclude Include="Engine\Render\PostEffect\Outline.h" />
     <ClInclude Include="Engine\Core\RenderSystem.h" />
+    <ClInclude Include="Engine\Framework\Buffer\Material.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Fullscreen.hlsli" />

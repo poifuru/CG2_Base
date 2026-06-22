@@ -219,25 +219,6 @@ enum LightReflectionModel {
 	HalfLambert,
 };
 
-// マテリアルの構造体
-struct Material {
-	Vector4 color;
-	LightReflectionModel enableLighting;
-	float padding[3];
-	Matrix4x4 uvTransform;
-	float roughness; // 粗さ
-	float metallic; // 金属度
-	float environmentCoefficient;	// 環境係数
-};
-
-// TransformationMatrix構造体
-struct TransformationMatrix {
-	Matrix4x4 WVP;
-	Matrix4x4 World;
-	// ライティングの時に正しい法線を計算する
-	Matrix4x4 WorldInverseTranspose;
-};
-
 // テクスチャデータ構造体
 //struct TextureData {
 //	// テクスチャリソースハンドル
@@ -257,13 +238,8 @@ struct SpriteData {
 	Vector2 size;			//幅と高さ
 	EulerTransform transform;	//SRT
 	EulerTransform uvTransform;	//uvのSRT
-	Material* material;		//紐づけるマテリアルポインタ
+	//Material* material;		//紐づけるマテリアルポインタ
 	Matrix4x4 wvpMatrix;	//wvp行列ポインタ
-};
-
-// MaterialData構造体
-struct MaterialFile {
-	std::string textureFilePath;
 };
 
 // エミッター構造体

@@ -104,8 +104,8 @@ void ModelManager::UnloadAnimationData(const std::string& id) {
 	animationMap_.erase(id);
 }
 
-MaterialFile ModelManager::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& id) {
-	MaterialFile materialData;
+MaterialTex ModelManager::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& id) {
+	MaterialTex materialData;
 	std::string line;
 
 	std::ifstream file(directoryPath + "/" + id);
@@ -119,7 +119,7 @@ MaterialFile ModelManager::LoadMaterialTemplateFile(const std::string& directory
 		if(identifier == "map_Kd") {
 			std::string textureFilename;
 			s >> textureFilename;
-			materialData.textureFilePath = directoryPath + "/" + textureFilename;
+			materialData.filePath = directoryPath + "/" + textureFilename;
 		}
 	}
 

@@ -6,16 +6,9 @@
 void EditorManager::UpdateAndDraw(IEngine* engine) {
 #ifdef USEIMGUI
 	// 各ウィンドウを順番に描画していく
-	DrawViewportWindow();
 	DrawGameWindow(engine);
 	DrawInspectorWindow();
 #endif
-}
-
-void EditorManager::DrawViewportWindow() {
-	ImGui::Begin("Viewport");
-	ImGui::Text("ここにエディタ用のカメラ操作画面とかを作る予定");
-	ImGui::End();
 }
 
 void EditorManager::DrawGameWindow(IEngine* engine) {

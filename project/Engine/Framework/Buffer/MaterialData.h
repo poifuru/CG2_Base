@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "ConstantBuffer.h"
+#include "struct.h"
 
 // マテリアルデータ
 struct MaterialData {
