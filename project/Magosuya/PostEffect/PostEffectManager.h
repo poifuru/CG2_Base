@@ -14,6 +14,7 @@ enum class PostEffectType {
 	ColorGrading,
 	Fog,
 	Vignette,
+	RadialBlur,
 
 	Count	// エフェクトの総数
 };

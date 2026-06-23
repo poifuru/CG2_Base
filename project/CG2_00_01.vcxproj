@@ -190,6 +190,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="magosuya\light\LightManager.cpp" />
     <ClCompile Include="application\entity\boss\Boss.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\RadialBlur.cpp" />
     <ClCompile Include="magosuya\object\3d\BaseRenderer.cpp" />
     <ClCompile Include="magosuya\object\3d\BaseObject3d.cpp" />
     <ClCompile Include="magosuya\general\Easing.cpp" />
@@ -397,6 +398,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="magosuya\light\LightManager.h" />
     <ClInclude Include="application\scene\SceneType.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Magosuya\PostEffect\RadialBlur.h" />
     <ClInclude Include="magosuya\object\3d\BaseRenderer.h" />
     <ClInclude Include="magosuya\object\3d\BaseObject3d.h" />
     <ClInclude Include="magosuya\general\Easing.h" />
