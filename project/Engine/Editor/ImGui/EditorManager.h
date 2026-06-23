@@ -23,7 +23,6 @@ private:
 
 	// 各ウィンドウの描画関数を小分けにする
 	void DrawGameWindow(IEngine* engine);
-	void DrawInspectorWindow();
 
 private:
 	bool isGameWindowHovered_ = false;

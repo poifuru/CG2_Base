@@ -116,6 +116,7 @@
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="Engine\Editor\Command\CommandManager.cpp" />
     <ClCompile Include="Engine\Framework\GameObject\TransformCommand.cpp" />
+    <ClCompile Include="Engine\Editor\LevelEditor\LevelEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -239,6 +240,7 @@
     <ClInclude Include="Engine\Editor\Command\ICommand.h" />
     <ClInclude Include="Engine\Editor\Command\CommandManager.h" />
     <ClInclude Include="Engine\Framework\GameObject\TransformCommand.h" />
+    <ClInclude Include="Engine\Editor\LevelEditor\LevelEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

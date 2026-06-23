@@ -45,8 +45,3 @@ void EditorManager::DrawGameWindow(IEngine* engine) {
 
 	ImGui::End();
 }
-
-void EditorManager::DrawInspectorWindow() {
-	ImGui::Begin("インスペクター");
-	ImGui::End();
-}
