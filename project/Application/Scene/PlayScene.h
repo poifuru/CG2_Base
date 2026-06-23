@@ -5,6 +5,7 @@
 #include "Model.h"
 #include "LightManager.h"
 #include "GameObject.h"
+#include <filesystem>
 
 class PlayScene : public BaseScene {
 public:
@@ -16,14 +17,15 @@ public:
 	void Draw(class RenderSystem* renderSystem) override;
 
 private:
-	// アセットをスキャンしてリストを更新する関数
-	void RefreshAssetList();
+	// ディレクトリツリーを再帰的に描画するヘルパー関数
+	void DrawDirectoryTree(const std::filesystem::path& path);
 
 private:
 	// 全てのGameObject
 	std::vector<std::unique_ptr<GameObject>> gameObjects_;
-	// アセットフォルダ内のモデルファイルのパス一覧
-	std::vector<std::string> modelFiles_;
+
+	// アセットブラウザのカレントディレクトリ
+	std::filesystem::path currentDirectory_ = "Resources";
 
 	// 選択中のGameObject
 	GameObject* selectedObject_ = nullptr;

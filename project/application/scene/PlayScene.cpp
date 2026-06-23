@@ -25,9 +25,6 @@ void PlayScene::Initialize() {
 	lightManager_->SetDirectionalLightDir(0, { 0.5f, -1.0f, 0.5f }); // 斜め下
 	lightManager_->SetDirectionalLightColor(0, { 1.0f, 1.0f, 1.0f, 1.0f }); // 白色
 	lightManager_->SetDirectionalLightIntensity(0, 1.0f); // 輝度 1.0
-
-	// 起動時にアセットリストを1回スキャン
-	RefreshAssetList();
 }
 
 void PlayScene::Update(CameraData* cameraData) {
@@ -262,29 +259,111 @@ void PlayScene::Update(CameraData* cameraData) {
 
 	// アセットブラウザ
 	ImGui::Begin("アセットブラウザ");
-	// 手動更新用のリフレッシュボタン
-	if (ImGui::Button("更新")) {
-		RefreshAssetList();
-	}
-	ImGui::Separator();
-	ImGui::Spacing();
-	// 見つかったモデルファイルをリスト表示
-	for (const auto& filePath : modelFiles_) {
-		// 表示用に「フォルダパス」を除外して「ファイル名」だけを抽出する（例: player.obj）
-		std::string fileName = std::filesystem::path(filePath).filename().string();
 
-		// リストの項目を表示
-		if (ImGui::Selectable(fileName.c_str())) {
-			// 項目がクリックされたとき、もしGameObjectが選択されていて、
-			// かつ MeshRendererComponent を持っていればそのモデルを適用する！
-			if (selectedObject_ != nullptr) {
-				auto* meshRenderer = selectedObject_->GetComponent<MeshRendererComponent>();
-				if (meshRenderer != nullptr) {
-					meshRenderer->SetModel(filePath);
+	// 上部バー：親フォルダへ戻るボタンとカレントパス表示
+	if (currentDirectory_ != "Resources" && currentDirectory_.has_parent_path()) {
+		if (ImGui::Button("Back (↑)")) {
+			currentDirectory_ = currentDirectory_.parent_path();
+		}
+		ImGui::SameLine();
+	}
+	ImGui::Text("Path: %s", currentDirectory_.generic_string().c_str());
+	ImGui::Separator();
+
+	// 左右分割 (左: フォルダツリー, 右: ファイル一覧グリッド)
+	ImGui::Columns(2, "AssetBrowserSplit", true);
+	static bool setColumnWidth = true;
+	if (setColumnWidth) {
+		ImGui::SetColumnWidth(0, 180.0f);
+		setColumnWidth = false;
+	}
+
+	// ---- 左ペイン (フォルダツリー) ----
+	ImGui::BeginChild("FolderTreeChild", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+	
+	// ルートのResourcesフォルダを表示
+	ImGuiTreeNodeFlags rootFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
+	if (currentDirectory_ == "Resources") {
+		rootFlags |= ImGuiTreeNodeFlags_Selected;
+	}
+	bool rootOpen = ImGui::TreeNodeEx("Resources", rootFlags);
+	if (ImGui::IsItemClicked()) {
+		currentDirectory_ = "Resources";
+	}
+	if (rootOpen) {
+		DrawDirectoryTree("Resources");
+		ImGui::TreePop();
+	}
+	ImGui::EndChild();
+
+	ImGui::NextColumn();
+
+	// ---- 右ペイン (ファイル一覧グリッド) ----
+	ImGui::BeginChild("FileGridChild");
+
+	float thumbnailSize = 90.0f;
+	float padding = 16.0f;
+	float cellSize = thumbnailSize + padding;
+	float panelWidth = ImGui::GetContentRegionAvail().x;
+	int columnCount = (int)(panelWidth / cellSize);
+	if (columnCount < 1) columnCount = 1;
+
+	ImGui::Columns(columnCount, nullptr, false);
+
+	if (std::filesystem::exists(currentDirectory_) && std::filesystem::is_directory(currentDirectory_)) {
+		int id = 0;
+		for (const auto& entry : std::filesystem::directory_iterator(currentDirectory_)) {
+			ImGui::PushID(id++);
+
+			std::string filename = entry.path().filename().string();
+			bool isDir = entry.is_directory();
+			std::string label = isDir ? "[Folder]\n" + filename : "[File]\n" + filename;
+
+			if (isDir) {
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.25f, 0.1f, 0.8f)); // フォルダは黄色っぽく
+			} else {
+				// 拡張子で色分け (モデルは青、画像は緑、その他はグレー)
+				auto ext = entry.path().extension().string();
+				if (ext == ".obj" || ext == ".gltf") {
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.2f, 0.4f, 0.8f));
+				} else if (ext == ".png" || ext == ".jpg") {
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.3f, 0.1f, 0.8f));
+				} else {
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.2f, 0.2f, 0.8f));
 				}
 			}
+
+			if (ImGui::Button(label.c_str(), ImVec2(thumbnailSize, thumbnailSize))) {
+				if (isDir) {
+					currentDirectory_ = entry.path();
+				} else {
+					auto ext = entry.path().extension().string();
+					if ((ext == ".obj" || ext == ".gltf") && selectedObject_ != nullptr) {
+						auto* meshRenderer = selectedObject_->GetComponent<MeshRendererComponent>();
+						if (meshRenderer != nullptr) {
+							meshRenderer->SetModel(entry.path().generic_string());
+						}
+					}
+				}
+			}
+
+			ImGui::PopStyleColor();
+
+			if (ImGui::IsItemHovered()) {
+				ImGui::BeginTooltip();
+				ImGui::TextUnformatted(filename.c_str());
+				ImGui::EndTooltip();
+			}
+
+			ImGui::NextColumn();
+			ImGui::PopID();
 		}
 	}
+	
+	ImGui::Columns(1); // カラム数をリセット
+	ImGui::EndChild();
+
+	ImGui::Columns(1); // 全体のカラム数をリセット
 	ImGui::End();
 #endif
 }
@@ -300,21 +379,40 @@ void PlayScene::Draw(RenderSystem* renderSystem) {
 	}
 }
 
-void PlayScene::RefreshAssetList() {
-	modelFiles_.clear();
-	std::string path = "Resources";
+void PlayScene::DrawDirectoryTree(const std::filesystem::path& path) {
+	if (!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) return;
 
-	// std::filesystem を使ってフォルダ内を再帰的に探索するよ
-	if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
-		for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
-			if (entry.is_regular_file()) {
-				auto ext = entry.path().extension().string();
+	for (const auto& entry : std::filesystem::directory_iterator(path)) {
+		if (entry.is_directory()) {
+			std::string folderName = entry.path().filename().string();
 
-				// 3Dモデルファイル（.obj や .gltf）だけをフィルタリング
-				if (ext == ".obj" || ext == ".gltf") {
-					// Windowsのバックスラッシュ "\" を "/" に統一して追加する
-					modelFiles_.push_back(entry.path().generic_string());
+			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+			if (currentDirectory_ == entry.path()) {
+				flags |= ImGuiTreeNodeFlags_Selected;
+			}
+
+			// サブフォルダがあるか判定
+			bool hasSubDir = false;
+			for (const auto& subEntry : std::filesystem::directory_iterator(entry.path())) {
+				if (subEntry.is_directory()) {
+					hasSubDir = true;
+					break;
 				}
+			}
+
+			if (!hasSubDir) {
+				flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+			}
+
+			bool isOpen = ImGui::TreeNodeEx(folderName.c_str(), flags);
+
+			if (ImGui::IsItemClicked()) {
+				currentDirectory_ = entry.path();
+			}
+
+			if (isOpen && hasSubDir) {
+				DrawDirectoryTree(entry.path());
+				ImGui::TreePop();
 			}
 		}
 	}
