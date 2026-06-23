@@ -9,6 +9,7 @@
 #include <json.hpp>
 #include "MathFunction.h"
 #include "CameraComponent.h"
+#include "EditorManager.h"
 
 void LevelEditor::Initialize(SceneContext* context) {
 	context_ = context;
@@ -113,6 +114,11 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 
 		// 入力判定用の代替ウィンドウとして "Game" ウィンドウをセットする
 		ImGuizmo::SetAlternativeWindow(ImGui::GetCurrentWindow());
+
+		// ギズモの上にマウスがあるか、ドラッグ操作中のときにフラグを立てて、
+		// 次のフレームのGameウィンドウドラッグ移動を防止する
+		bool isGizmoActive = ImGuizmo::IsOver() || ImGuizmo::IsUsing();
+		EditorManager::GetInstance()->SetGizmoActive(isGizmoActive);
 
 		static EulerTransform transformBeforeDrag;
 		static bool wasUsingGizmo = false;

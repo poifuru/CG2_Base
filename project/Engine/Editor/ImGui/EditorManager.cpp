@@ -11,8 +11,14 @@ void EditorManager::UpdateAndDraw(IEngine* engine) {
 }
 
 void EditorManager::DrawGameWindow(IEngine* engine) {
+	// ギズモ操作中はウィンドウが動かないようにする
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
+	if (isGizmoActive_) {
+		windowFlags |= ImGuiWindowFlags_NoMove;
+	}
+
 	// ゲーム画面をImGuiウィンドウとして描画する
-	ImGui::Begin("Game");
+	ImGui::Begin("Game", nullptr, windowFlags);
 
 	// 純粋にウィンドウ上にマウスがあるか
 	bool isHovered = ImGui::IsWindowHovered();

@@ -16,6 +16,10 @@ public:
 	bool IsGameWindowHovered() const { return isGameWindowHovered_; }
 	bool IsGameWindowFocused() const { return isGameWindowFocused_; }
 
+	// ギズモがアクティブかどうかを設定・取得する
+	void SetGizmoActive(bool active) { isGizmoActive_ = active; }
+	bool IsGizmoActive() const { return isGizmoActive_; }
+
 private:
 	EditorManager() = default;
 	EditorManager(const EditorManager&) = delete;
@@ -28,4 +32,5 @@ private:
 	bool isGameWindowHovered_ = false;
 	bool isGameWindowFocused_ = false;
 	bool isGameWindowDragging_ = false;
+	bool isGizmoActive_ = false;
 };
