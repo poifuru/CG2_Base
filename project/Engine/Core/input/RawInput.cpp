@@ -23,11 +23,6 @@ void RawInput::Initialize (HWND hwnd) {
 	assert(result && "RawInputの登録に失敗しました");
 }
 
-void RawInput::Update () {
-    // メッセージプロシージャの WM_INPUT フック (HandleInputMessage) に一本化するため、
-    // ここでの GetRawInputBuffer による一括取得は行いません。
-}
-
 void RawInput::HandleInputMessage (LPARAM lParam) {
     UINT size = 0;
     if (GetRawInputData ((HRAWINPUT)lParam, RID_INPUT, nullptr, &size, sizeof (RAWINPUTHEADER)) == static_cast<UINT>(-1)) {

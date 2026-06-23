@@ -15,7 +15,7 @@ public:
 		Release();
 		assert(device != nullptr);
 
-		// 定数バッファは256バイトの倍数でアロケーションする必要がある
+		// 定数バッファは256バイトの倍数でアロケーションする
 		sizeInBytes_ = (sizeof(T) + 255) & ~255;
 
 		D3D12_HEAP_PROPERTIES uploadHeapProperties = {};

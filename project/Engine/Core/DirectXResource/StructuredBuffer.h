@@ -62,7 +62,7 @@ public:
 		srvDesc.Buffer.NumElements = static_cast<UINT>(elementCount_);
 		srvDesc.Buffer.StructureByteStride = static_cast<UINT>(sizeof(T));
 
-		// DescriptorHeapManagerで、このインデックス位置へSRVを焼き付けてもらう
+		// DescriptorHeapManagerで、このインデックス位置へSRVを焼き付ける
 		heapManager_->CreateSRVforTexture2D(descriptorIndex_, buffer_.Get(), srvDesc);
 	}
 
@@ -89,7 +89,7 @@ public:
 		heapManager_ = nullptr;
 	}
 
-	// レンダラーやゲーム側が「本棚へのアクセス番号」として使うゲッター
+	// アクセッサ
 	uint32_t GetDescriptorIndex() const { return descriptorIndex_; }
 	ID3D12Resource* GetResource() const { return buffer_.Get(); }
 	size_t GetElementCount() const { return elementCount_; }

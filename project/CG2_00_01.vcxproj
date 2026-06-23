@@ -234,6 +234,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Core\Input\InputManager.cpp" />
     <ClCompile Include="Engine\Framework\GameObject\GameObject.cpp" />
     <ClCompile Include="Engine\Editor\LevelEditor\LevelEditor.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\LightComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Core\General\MathFunction.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\Sprite.cpp" />
@@ -244,7 +245,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Engine\Framework\Object\3d\ModelManager.cpp" />
-    <ClCompile Include="Engine\MagosuyaEngine.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\TextureManager.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\SpriteRenderer.cpp" />
     <ClCompile Include="application\scene\SceneManager.cpp" />
@@ -498,7 +498,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Engine\Framework\Object\3d\ModelManager.h" />
-    <ClInclude Include="Engine\MagosuyaEngine.h" />
     <ClInclude Include="Engine\Framework\Object\2d\TextureManager.h" />
     <ClInclude Include="Engine\Framework\Object\2d\SpriteRenderer.h" />
     <ClInclude Include="application\scene\SceneManager.h" />
@@ -531,6 +530,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Framework\GameObject\MeshRendererComponent.h" />
     <ClInclude Include="Engine\Editor\Command\TransformCommand.h" />
     <ClInclude Include="Engine\Editor\LevelEditor\LevelEditor.h" />
+    <ClInclude Include="Engine\Framework\GameObject\LightComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Fullscreen.hlsli" />

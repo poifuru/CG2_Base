@@ -47,7 +47,6 @@
     <ClCompile Include="Engine\Framework\Object\3d\ModelFactory.cpp" />
     <ClCompile Include="Engine\Core\Input\RawInput.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\ModelManager.cpp" />
-    <ClCompile Include="Engine\MagosuyaEngine.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\TextureManager.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\SpriteRenderer.cpp" />
     <ClCompile Include="application\scene\SceneManager.cpp" />
@@ -117,6 +116,7 @@
     <ClCompile Include="Engine\Editor\Command\CommandManager.cpp" />
     <ClCompile Include="Engine\Editor\Command\TransformCommand.cpp" />
     <ClCompile Include="Engine\Editor\LevelEditor\LevelEditor.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\LightComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -159,7 +159,6 @@
     <ClInclude Include="Engine\Core\Input\InputManager.h" />
     <ClInclude Include="Engine\Core\Input\RawInput.h" />
     <ClInclude Include="Engine\Framework\Object\3d\ModelManager.h" />
-    <ClInclude Include="Engine\MagosuyaEngine.h" />
     <ClInclude Include="Engine\Framework\Object\2d\TextureManager.h" />
     <ClInclude Include="Engine\Framework\Object\2d\SpriteRenderer.h" />
     <ClInclude Include="application\scene\SceneManager.h" />
@@ -241,6 +240,7 @@
     <ClInclude Include="Engine\Editor\Command\CommandManager.h" />
     <ClInclude Include="Engine\Editor\Command\TransformCommand.h" />
     <ClInclude Include="Engine\Editor\LevelEditor\LevelEditor.h" />
+    <ClInclude Include="Engine\Framework\GameObject\LightComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

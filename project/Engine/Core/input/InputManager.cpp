@@ -14,7 +14,6 @@ void InputManager::Initialize (HWND hwnd) {
 }
 
 void InputManager::Update () {
-	rawInput_->Update ();
 	gamePad_->Update ();
 }
 
