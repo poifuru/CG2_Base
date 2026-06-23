@@ -32,8 +32,8 @@ Player::Player(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input,
 	);
 
 	// Bullet用
-	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall/monsterBall.png", "bullet");
-	ModelManager::GetInstance()->LoadModelData("Resources/monsterBall", "monsterBall.obj");
+	TextureManager::GetInstance()->LoadTexture("Resources/bullet/bullet.png", "bullet");
+	ModelManager::GetInstance()->LoadModelData("Resources/bullet", "bullet.obj");
 
 	// Reticle用
 	TextureManager::GetInstance()->LoadTexture("Resources/reticle/reticle.png", "reticle");
@@ -48,8 +48,8 @@ Player::~Player() {
 }
 
 void Player::Initialize() {
-	model_->SetModelData("AnimatedCube.gltf");
-	model_->SetTexture("Cube");
+	model_->SetModelData("player.obj");
+	model_->SetTexture("Dummy");
 	//model_->SetAnimation("AnimatedCube.gltf");
 	model_->Initialize();
 
@@ -59,6 +59,9 @@ void Player::Initialize() {
 	cooltime_ = 0.0f;
 	localTranslate_ = { 0.0f, 0.0f, 0.0f };
 	lockedEnemy_ = nullptr;
+
+	// TPS水中化: 初期位置を水中（Y=-10.0f）に設定
+	transform_.translate = { 0.0f, -10.0f, 0.0f };
 
 	reticle_->Initialize();
 }
@@ -144,19 +147,8 @@ void Player::Update() {
 	// モデルにデータを渡す
 	model_->SetPosition(transform_.translate);
 
-	// レールがある場合、レールの進行方向を向くように回転を設定する
-	if (railPath_) {
-		Matrix4x4 rot = railPath_->GetRotationMatrix();
-		Vector3 direction = { rot.m[2][0], rot.m[2][1], rot.m[2][2] }; // Z軸の方向
-		
-		Vector3 rotate = { 0.0f, 0.0f, 0.0f };
-		if (Math::Length(direction) > 0.001f) {
-			rotate.y = std::atan2(direction.x, direction.z);
-			float xzLength = std::sqrt(direction.x * direction.x + direction.z * direction.z);
-			rotate.x = std::atan2(-direction.y, xzLength);
-		}
-		model_->SetRotate(rotate);
-	}
+	// プレイヤーモデルの向きを設定
+	model_->SetRotate(transform_.rotate);
 
 	model_->Update(&camera_->GetCameraData());
 }
@@ -181,32 +173,53 @@ void Player::DrawUI() {
 void Player::Input() {
 	// *** 移動入力 *** //
 	// 加速度をリセット
-	acceleration_.x = 0.0f;
-	acceleration_.y = 0.0f;
+	acceleration_ = { 0.0f, 0.0f, 0.0f };
 
 	// フレーム内の入力を方向として蓄積
-	Vector2 moveDir = { 0.0f, 0.0f };
+	Vector3 moveDir = { 0.0f, 0.0f, 0.0f };
 
-	if(input_->GetRawInput()->Push('W')) { moveDir.y += 1.0f; }
-	if(input_->GetRawInput()->Push('S')) { moveDir.y -= 1.0f; }
-	if(input_->GetRawInput()->Push('A')) { moveDir.x -= 1.0f; }
-	if(input_->GetRawInput()->Push('D')) { moveDir.x += 1.0f; }
+	if (camera_) {
+		// カメラのワールド行列から方向ベクトルを取得
+		Matrix4x4 camWorld = camera_->GetCameraData().world;
+		Vector3 camForward = { camWorld.m[2][0], camWorld.m[2][1], camWorld.m[2][2] };
+		Vector3 camRight = { camWorld.m[0][0], camWorld.m[0][1], camWorld.m[0][2] };
+
+		// 前後左右の移動はすべて水平方向（XZ平面）に制限する
+		camForward.y = 0.0f;
+		camRight.y = 0.0f;
+
+		if (Math::Length(camForward) > 0.001f) camForward = Math::Normalize(camForward);
+		if (Math::Length(camRight) > 0.001f) camRight = Math::Normalize(camRight);
+
+		if (input_->GetRawInput()->Push('W')) { moveDir = Math::Add(moveDir, camForward); }
+		if (input_->GetRawInput()->Push('S')) { moveDir = Math::Subtract(moveDir, camForward); }
+		if (input_->GetRawInput()->Push('A')) { moveDir = Math::Subtract(moveDir, camRight); }
+		if (input_->GetRawInput()->Push('D')) { moveDir = Math::Add(moveDir, camRight); }
+
+		// Spaceで上昇、Left Shiftで下降
+		if (input_->GetRawInput()->Push(VK_SPACE)) { moveDir.y += 1.0f; }
+		if (input_->GetRawInput()->Push(VK_SHIFT)) { moveDir.y -= 1.0f; }
+	}
 
 	// 入力があった場合に処理する
-	if(moveDir.x != 0.0f || moveDir.y != 0.0f) {
-		// ベクトルの長さを計算
-		float length = std::sqrt(moveDir.x * moveDir.x + moveDir.y * moveDir.y);
+	if (Math::Length(moveDir) > 0.0f) {
+		moveDir = Math::Normalize(moveDir);
 
-		// 正規化
-		moveDir.x /= length;
-		moveDir.y /= length;
+		// 移動方向（XZ）に向き（ヨー回転）を設定する
+		transform_.rotate.y = std::atan2(moveDir.x, moveDir.z);
+
+		// 上下の傾き（ピッチ回転）も移動方向に合わせる
+		float xzLength = std::sqrt(moveDir.x * moveDir.x + moveDir.z * moveDir.z);
+		transform_.rotate.x = std::atan2(-moveDir.y, xzLength);
 
 		// 実際に速度、デルタタイムを掛ける
 		acceleration_.x = moveDir.x * speed_ * kDeltaTime;
 		acceleration_.y = moveDir.y * speed_ * kDeltaTime;
+		acceleration_.z = moveDir.z * speed_ * kDeltaTime;
 
 		velocity_.x += acceleration_.x;
 		velocity_.y += acceleration_.y;
+		velocity_.z += acceleration_.z;
 	}
 	// ****** //
 
@@ -214,9 +227,10 @@ void Player::Input() {
 	const float kCooltime = 0.25f;	// 連射間隔の制限
 	const uint32_t kMaxBulletCount = 5;	// 同時に存在できる弾の最大数
 
-	if(input_->GetRawInput()->Trigger(VK_SPACE) &&
+	// マウス左クリック（ボタン0）で射撃
+	if(input_->GetRawInput()->TriggerMouse(0) &&
 	   bullets_.size() < kMaxBulletCount &&
-	   cooltime_ <= 0.0f) {	// スペースキーを押した瞬間
+	   cooltime_ <= 0.0f) {	// マウス左クリックした瞬間
 		// 新しい弾を生成&初期化
 		std::unique_ptr<Bullet> newBullet = std::make_unique<Bullet>(dxCommon_, camera_, input_, light_);
 		newBullet->Initialize();
@@ -279,11 +293,13 @@ Player::Move() {
 	// 速度に減衰率をかけ続ける
 	velocity_.x *= kAttenuationRate;
 	velocity_.y *= kAttenuationRate;
+	velocity_.z *= kAttenuationRate;
 
 	// 速度が上限、下限に触れていないかチェック
 	const float maxSpeed = 5.0f;
 	velocity_.x = std::clamp(velocity_.x, -maxSpeed, maxSpeed);
 	velocity_.y = std::clamp(velocity_.y, -maxSpeed, maxSpeed);
+	velocity_.z = std::clamp(velocity_.z, -maxSpeed, maxSpeed);
 
 	// 減衰して速度が一定以下になったら0とみなす
 	// 速度の最低値
@@ -295,78 +311,20 @@ Player::Move() {
 	if(std::abs(velocity_.y) < minSpeed) {
 		velocity_.y = 0.0f;
 	}
-
-	// ローカル座標の更新
-	localTranslate_.x += velocity_.x;
-	localTranslate_.y += velocity_.y;
-
-	// カメラの画角内に移動を制限
-	if (camera_) {
-		// 1. クランプ前の予測ワールド位置を計算する
-		Vector3 worldPos = transform_.translate;
-		if (railPath_) {
-			Vector3 railPos = railPath_->GetPosition();
-			Matrix4x4 railRot = railPath_->GetRotationMatrix();
-			Vector3 rotatedLocal = Math::Transform(localTranslate_, railRot);
-			worldPos = Math::Add(railPos, rotatedLocal);
-		}
-
-		// 2. ビュー空間に変換する
-		Matrix4x4 viewMat = camera_->GetCameraData().view;
-		Vector3 viewPos = Math::Transform(worldPos, viewMat);
-
-		// 3. ビュー空間のZ軸（カメラからの距離）を基準に、制限限界値を計算
-		float distanceToCamera = viewPos.z;
-		if (distanceToCamera <= 0.0f) {
-			distanceToCamera = 50.0f;
-		}
-
-		float fovY = 0.45f;
-		float aspect = 1280.0f / 720.0f;
-
-		float halfHeight = std::tan(fovY * 0.5f) * distanceToCamera;
-		float halfWidth = halfHeight * aspect;
-
-		float marginX = 2.0f;
-		float marginY = 2.0f;
-
-		float limitX = (std::max)(0.0f, halfWidth - marginX);
-		float limitY = (std::max)(0.0f, halfHeight - marginY);
-
-		// 4. ビュー空間上でクランプ
-		viewPos.x = std::clamp(viewPos.x, -limitX, limitX);
-		viewPos.y = std::clamp(viewPos.y, -limitY, limitY);
-
-		// 5. ワールド座標に戻す
-		Matrix4x4 cameraWorld = camera_->GetCameraData().world;
-		worldPos = Math::Transform(viewPos, cameraWorld);
-
-		// 6. レールのローカル座標 (localTranslate_) に逆変換する
-		if (railPath_) {
-			Vector3 railPos = railPath_->GetPosition();
-			Matrix4x4 railRot = railPath_->GetRotationMatrix();
-			Matrix4x4 invRailRot = Math::Inverse(railRot);
-
-			Vector3 diff = Math::Subtract(worldPos, railPos);
-			localTranslate_ = Math::Transform(diff, invRailRot);
-			localTranslate_.z = 0.0f; // レール前進方向へのズレは無効化
-		} else {
-			transform_.translate = worldPos;
-		}
+	if(std::abs(velocity_.z) < minSpeed) {
+		velocity_.z = 0.0f;
 	}
 
-	if (railPath_) {
-		Vector3 railPos = railPath_->GetPosition();
-		Matrix4x4 railRot = railPath_->GetRotationMatrix();
+	// シンプルに移動量をワールド座標に加算する
+	transform_.translate.x += velocity_.x;
+	transform_.translate.y += velocity_.y;
+	transform_.translate.z += velocity_.z;
 
-		// ローカルのズレをレールの向きで回転させ、レールの位置と足し合わせる
-		Vector3 rotatedLocal = Math::Transform(localTranslate_, railRot);
-		transform_.translate = Math::Add(railPos, rotatedLocal);
-	} else {
-		// レールが無いときのフォールバック（デバッグ用）
-		transform_.translate.x += velocity_.x;
-		transform_.translate.y += velocity_.y;
-		transform_.translate.z += velocity_.z * kDeltaTime;
+	// 水面制限 (Y=-1.0f 以下に制限)
+	const float kWaterSurfaceY = -1.0f;
+	if (transform_.translate.y > kWaterSurfaceY) {
+		transform_.translate.y = kWaterSurfaceY;
+		velocity_.y = 0.0f;
 	}
 }
 

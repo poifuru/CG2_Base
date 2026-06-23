@@ -9,8 +9,9 @@ SmallFish::~SmallFish() {
 }
 
 void SmallFish::Initialize() {
-	model_->SetModelData("teapot.obj");
+	model_->SetModelData("smallFish.obj");
 	model_->SetTexture("teapot");
+	model_->SetScale({ 2.0f, 2.0f, 2.0f });
 	BaseEnemy::Initialize();
 	aabbSize_ = { 1.0f, 1.0f, 1.0f };
 }

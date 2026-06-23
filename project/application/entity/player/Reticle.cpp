@@ -20,7 +20,7 @@ void Reticle::Initialize() {
 	model_->SetDepthEnable(false);
 	model_->IsLighting(LightReflectionModel::None);
 	model_->SetAlpha(0.5f);
-	model_->SetScale({ 1.5f, 1.5f, 1.0f });
+	model_->SetScale({ 0.7f, 0.7f, 0.7f });
 	model_->SetColor({ 0.0f, 0.0f, 0.0f, 0.5f }); // 初期色を黒にする
 
 	positionOfset_ = { 0.0f, 0.0f, 20.0f };
@@ -30,89 +30,18 @@ void Reticle::Initialize() {
 }
 
 void Reticle::Update() {
-	Input();
+	// 矢印キーでの手動移動は行わない
+	// Input();
 
 	if (camera_) {
-		// 1. クランプ前の予測ワールド座標を計算する
-		Vector3 worldPos = transform_.translate;
-		if (railPath_) {
-			Vector3 railPos = railPath_->GetPosition();
-			Matrix4x4 railRot = railPath_->GetRotationMatrix();
-			Vector3 fullLocal = {
-				playerLocalPos_.x + localTranslate_.x,
-				playerLocalPos_.y + localTranslate_.y,
-				positionOfset_.z
-			};
-			Vector3 rotatedLocal = Math::Transform(fullLocal, railRot);
-			worldPos = Math::Add(railPos, rotatedLocal);
-		}
+		// カメラの正面30.0fの位置にレティクルを配置
+		Matrix4x4 camWorld = camera_->GetCameraData().world;
+		Vector3 camForward = { camWorld.m[2][0], camWorld.m[2][1], camWorld.m[2][2] };
+		Vector3 cameraPos = camera_->GetCameraData().transform.translate;
 
-		// 2. カメラのビュー空間に変換する
-		Matrix4x4 viewMat = camera_->GetCameraData().view;
-		Vector3 viewPos = Math::Transform(worldPos, viewMat);
+		transform_.translate = Math::Add(cameraPos, Math::Multiply(30.0f, camForward));
 
-		// 3. ビュー空間のZ軸（カメラからの距離）を基準に、制限限界値を計算
-		float distanceToCamera = viewPos.z;
-		if (distanceToCamera <= 0.0f) {
-			distanceToCamera = 50.0f;
-		}
-
-		float fovY = 0.45f;
-		float aspect = 1280.0f / 720.0f;
-
-		float halfHeight = std::tan(fovY * 0.5f) * distanceToCamera;
-		float halfWidth = halfHeight * aspect;
-
-		float marginX = 1.0f;
-		float marginY = 1.0f;
-
-		float limitX = (std::max)(0.0f, halfWidth - marginX);
-		float limitY = (std::max)(0.0f, halfHeight - marginY);
-
-		// 4. ビュー空間上でクランプ
-		viewPos.x = std::clamp(viewPos.x, -limitX, limitX);
-		viewPos.y = std::clamp(viewPos.y, -limitY, limitY);
-
-		// 5. ワールド座標に戻す
-		Matrix4x4 cameraWorld = camera_->GetCameraData().world;
-		worldPos = Math::Transform(viewPos, cameraWorld);
-
-		// 6. レールのローカル座標 (localTranslate_) に逆変換して戻す
-		if (railPath_) {
-			Vector3 railPos = railPath_->GetPosition();
-			Matrix4x4 railRot = railPath_->GetRotationMatrix();
-			Matrix4x4 invRailRot = Math::Inverse(railRot);
-
-			Vector3 diff = Math::Subtract(worldPos, railPos);
-			Vector3 localResult = Math::Transform(diff, invRailRot);
-			localTranslate_.x = localResult.x - playerLocalPos_.x;
-			localTranslate_.y = localResult.y - playerLocalPos_.y;
-		} else {
-			localTranslate_.x = viewPos.x - playerLocalPos_.x;
-			localTranslate_.y = viewPos.y - playerLocalPos_.y;
-		}
-	}
-
-	if (railPath_) {
-		Vector3 railPos = railPath_->GetPosition();
-		Matrix4x4 railRot = railPath_->GetRotationMatrix();
-
-		Vector3 fullLocal = {
-			playerLocalPos_.x + localTranslate_.x,
-			playerLocalPos_.y + localTranslate_.y,
-			positionOfset_.z
-		};
-
-		Vector3 rotatedLocal = Math::Transform(fullLocal, railRot);
-		transform_.translate = Math::Add(railPos, rotatedLocal);
-	} else {
-		transform_.translate.x += localTranslate_.x;
-		transform_.translate.y += localTranslate_.y;
-		transform_.translate.z = playerPos_.z + positionOfset_.z;
-	}
-
-	// レティクルモデルの回転をカメラの回転と同期（ビルボード化）
-	if (camera_) {
+		// レティクルモデルの回転をカメラの回転と同期（ビルボード化）
 		model_->SetRotate(camera_->GetCameraData().transform.rotate);
 	}
 

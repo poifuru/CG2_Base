@@ -16,11 +16,11 @@ Bullet::~Bullet() {
 }
 
 void Bullet::Initialize() {
-	model_->SetModelData("monsterBall.obj");
+	model_->SetModelData("bullet.obj");
 	model_->SetTexture("bullet");
 	model_->Initialize();
 
-	aabbSize_ = { 1.0f, 1.0f, 1.0f };
+	aabbSize_ = { 0.5f, 0.5f, 1.0f };
 
 	speed_ = 30.0f;
 	isActive_ = true;

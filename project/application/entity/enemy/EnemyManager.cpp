@@ -14,6 +14,9 @@ void EnemyManager::Initialize(DxCommon* dxCommon, LightManager* light, CameraOrg
 	TextureManager::GetInstance()->LoadTexture("Resources/teapot/teapot.png", "teapot");
 	ModelManager::GetInstance()->LoadModelData("Resources/teapot", "teapot.obj");
 
+	// 魚モデルのロード
+	ModelManager::GetInstance()->LoadModelData("Resources/enemy/smallFish", "smallFish.obj");
+
 
 	// プールを全てSmallFishで初期化（非アクティブ状態）
 	for (auto& enemy : enemies_) {
@@ -23,58 +26,38 @@ void EnemyManager::Initialize(DxCommon* dxCommon, LightManager* light, CameraOrg
 	}
 
 	// --- スポーンタイムライン（仮置き） ---
+	// TPS水中化: Y座標を水中（-8.0f 〜 -12.0f）に変更
 	spawnTimeline_ = {
-		{ 10.0f, kSmallFish, { -5.0f, 0.0f, 30.0f } },
-		{ 10.0f, kSmallFish, {  0.0f, 0.0f, 30.0f } },
-		{ 10.0f, kSmallFish, {  5.0f, 0.0f, 30.0f } },
-		{ 30.0f, kSmallFish, { -3.0f, 0.0f, 35.0f } },
-		{ 30.0f, kSmallFish, {  3.0f, 0.0f, 35.0f } },
-		{ 50.0f, kSmallFish, {  0.0f, 0.0f, 40.0f } },
+		{ 10.0f, kSmallFish, { -5.0f, -10.0f, 30.0f } },
+		{ 10.0f, kSmallFish, {  0.0f,  -8.0f, 30.0f } },
+		{ 10.0f, kSmallFish, {  5.0f, -12.0f, 30.0f } },
+		{ 30.0f, kSmallFish, { -3.0f, -10.0f, 35.0f } },
+		{ 30.0f, kSmallFish, {  3.0f,  -9.0f, 35.0f } },
+		{ 50.0f, kSmallFish, {  0.0f, -11.0f, 40.0f } },
 	};
 	currentSpawnIndex_ = 0;
+
+	// TPS化: 最初からすべての敵をスポーンさせておく
+	for (const auto& cmd : spawnTimeline_) {
+		SpawnEnemy(cmd.enemyType, cmd.startPos, nullptr);
+	}
 }
 
 void EnemyManager::Update(const Vector3& playerPos, const RailPath* railPath) {
-	// 出現予定リストを見てプレイヤーが一定距離進んでいたらスポーン
-	while (currentSpawnIndex_ < spawnTimeline_.size()) {
-		const auto& cmd = spawnTimeline_[currentSpawnIndex_];
-		if (playerPos.z >= cmd.triggerZ) {
-			SpawnEnemy(cmd.enemyType, cmd.startPos, railPath);
-			currentSpawnIndex_++;
-		}
-		else {
-			break; // まだ出撃タイミングじゃないならループを抜ける
-		}
-	}
+	// 出現予定リストからの自動スポーンは行わない（Initializeで一括生成するため）
+
 	// 2. 生きている敵の更新
 	if (camera_) {
 		Matrix4x4 camWorld = camera_->GetCameraData().world;
 		Vector3 cameraForward = { camWorld.m[2][0], camWorld.m[2][1], camWorld.m[2][2] };
 		Vector3 cameraPos = camera_->GetCameraData().transform.translate;
 
-		// プレイヤーのカメラ前方向への距離（深度）
-		float playerDist = Math::Dot(Math::Subtract(playerPos, cameraPos), cameraForward);
-
 		for (auto& enemy : enemies_) {
 			if (enemy && enemy->IsActive()) {
-				Vector3 enemyPos = enemy->GetTransform().translate;
-				float enemyDist = Math::Dot(Math::Subtract(enemyPos, cameraPos), cameraForward);
-
-				// プレイヤーより手前（カメラ側）に回り込んだ場合のスケールダウン
-				float scaleFactor = 1.0f;
-				if (enemyDist < playerDist) {
-					float diff = playerDist - enemyDist;
-					scaleFactor = 1.0f - std::clamp(diff / 10.0f, 0.0f, 1.0f);
-				}
-				enemy->SetScale({ scaleFactor, scaleFactor, scaleFactor });
-				enemy->SetAlpha(1.0f); // 念のためアルファは不透明にしておく
-
-				// カメラの目の前（5.0f以下）まで通り過ぎたら非アクティブ化して消去
-				if (enemyDist < 5.0f) {
-					enemy->SetIsActive(false);
-				} else {
-					enemy->Update();
-				}
+				// TPS化: カメラの手前や背後に回り込んでも消さず、通常通り更新する
+				enemy->SetScale({ 1.0f, 1.0f, 1.0f });
+				enemy->SetAlpha(1.0f);
+				enemy->Update();
 			}
 		}
 	} else {

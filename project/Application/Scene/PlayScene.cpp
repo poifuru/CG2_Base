@@ -7,6 +7,7 @@
 #include "SceneManager.h"
 #include "SceneType.h"
 #include "PostEffectManager.h"
+#include <algorithm>
 
 PlayScene::PlayScene () {
 	ModelManager::GetInstance()->LoadModelData("Resources/plane", "plane.obj");
@@ -39,23 +40,13 @@ void PlayScene::Initialize (CameraOrganizer* camera, InputManager* inputManager,
 	lightManager_->SetDirectionalLightDir(3, { 0.0f, -1.0f, 0.0f });
 	lightManager_->SetDirectionalLightDir(4, { -1.0f, 0.0f, 0.0f });
 
-	// レールパスの初期化 (テスト用のS字/カーブルート)
-	railPath_ = std::make_unique<RailPath>();
-	std::vector<Vector3> controlPoints = {
-		{ 0.0f, 0.0f, -20.0f },  // 補助点 (曲線の入り口用)
-		{ 0.0f, -10.0f, 0.0f },    // 始点
-		{ 0.0f, -20.0f, 100.0f },
-		{ 50.0f, -40.0f, 200.0f }, // 右へゆるやかにカーブする
-		{ 100.0f, -20.0f, 300.0f },
-		{ 100.0f, -10.0f, 500.0f }, // 終点
-		{ 100.0f, 0.0f, 520.0f }  // 補助点 (曲線の出口用)
-	};
-	railPath_->Initialize(controlPoints, 0.0005f); // 進む速さ (フレームごとの進行率)
+	// TPS化: レールパスの初期化は行わない
+	railPath_ = nullptr;
 
 	//オブジェクトたちの初期化
 	player_ = std::make_unique<Player>(dxCommon_, camera_, input_, lightManager_.get());
 	player_->Initialize();
-	player_->SetRail(railPath_.get()); // プレイヤーにレールを設定
+	player_->SetRail(nullptr); // プレイヤーへのレール設定を解除
 
 	enemyManager_ = std::make_unique<EnemyManager>();
 	enemyManager_->Initialize(dxCommon, lightManager_.get(), camera);
@@ -100,31 +91,35 @@ void PlayScene::Update () {
 	lightManager_->Update();
 	lightManager_->ImGui();
 
-	// レールの更新
-	if (railPath_) {
-		railPath_->Update();
-	}
+	// TPSカメラの更新 (アクティブカメラが "main2" の場合のみ)
+	if (camera_->GetActiveCameraName() == "main2") {
+		// カメラの回転角度（Yaw/Pitch）を管理
+		static Vector3 cameraRotate = { Math::Deg2Rad(10.0f), 0.0f, 0.0f };
 
-	// カメラをレールに追従させる (アクティブカメラが "main2" の場合のみ)
-	if (railPath_ && camera_->GetActiveCameraName() == "main2") {
-		Vector3 railPos = railPath_->GetPosition();
-		Matrix4x4 railRot = railPath_->GetRotationMatrix();
+		// マウスの右クリックドラッグ（PushMouse(1)）でカメラを回転させる
+		if (input_->GetRawInput()->PushMouse(1)) {
+			cameraRotate.y += (float)input_->GetRawInput()->GetMouseDeltaX() * 0.002f;
+			cameraRotate.x += (float)input_->GetRawInput()->GetMouseDeltaY() * 0.002f;
 
-		// カメラのレールに対するオフセット (少し後ろ・少し上)
-		Vector3 cameraOffset = { 0.0f, 0.0f, -50.0f };
-		Vector3 rotatedOffset = Math::Transform(cameraOffset, railRot);
-		Vector3 cameraPos = Math::Add(railPos, rotatedOffset);
+			// 縦の回転（Pitch）を -60度〜60度にクランプ
+			cameraRotate.x = std::clamp(cameraRotate.x, Math::Deg2Rad(-60.0f), Math::Deg2Rad(60.0f));
+		}
+
+		// プレイヤーの位置を取得
+		Vector3 playerPos = player_->GetTransform().translate;
+
+		// 注視点はプレイヤーの少し上 (Y+2.0f)
+		Vector3 lookAtTarget = Math::Add(playerPos, { 0.0f, 2.0f, 0.0f });
+
+		// カメラの回転行列を作成
+		Matrix4x4 camRotMat = Math::MakeAffineMatrix({ 1.0f, 1.0f, 1.0f }, cameraRotate, { 0.0f, 0.0f, 0.0f });
+
+		// カメラの位置を注視点から後ろへ25mオフセット
+		Vector3 cameraOffset = { 0.0f, 0.0f, -25.0f };
+		Vector3 rotatedOffset = Math::Transform(cameraOffset, camRotMat);
+		Vector3 cameraPos = Math::Add(lookAtTarget, rotatedOffset);
 
 		camera_->SetPosition(cameraPos);
-
-		// レールの進行方向（前方向）を向くように回転を設定する
-		Vector3 direction = { railRot.m[2][0], railRot.m[2][1], railRot.m[2][2] };
-		Vector3 cameraRotate = { 0.0f, 0.0f, 0.0f };
-		if (Math::Length(direction) > 0.001f) {
-			cameraRotate.y = std::atan2(direction.x, direction.z);
-			float xzLength = std::sqrt(direction.x * direction.x + direction.z * direction.z);
-			cameraRotate.x = std::atan2(-direction.y, xzLength);
-		}
 		camera_->SetRotate(cameraRotate);
 	}
 
