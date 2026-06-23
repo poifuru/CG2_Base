@@ -5,6 +5,7 @@
 #include "Fog.h"
 #include "Vignette.h"
 #include "RadialBlur.h"
+#include "Dissolve.h"
 #include "CopyImage.h"
 #include "RenderTexture.h"
 #include "SRVManager.h"
@@ -30,6 +31,7 @@ void PostEffectManager::Initialize(DxCommon* dxCommon, uint32_t windowWidth, uin
 	effects_[static_cast<size_t>(PostEffectType::Fog)] = std::make_unique<Fog>();
 	effects_[static_cast<size_t>(PostEffectType::Vignette)] = std::make_unique<Vignette>();
 	effects_[static_cast<size_t>(PostEffectType::RadialBlur)] = std::make_unique<RadialBlur>();
+	effects_[static_cast<size_t>(PostEffectType::Dissolve)] = std::make_unique<Dissolve>();
 
 	for (size_t i = 0; i < static_cast<size_t>(PostEffectType::Count); ++i) {
 		if (effects_[i] != nullptr) {
@@ -166,6 +168,7 @@ void PostEffectManager::ImGui() {
 		case PostEffectType::Fog:		   effectName = "Fog";			 break;
 		case PostEffectType::Vignette:     effectName = "Vignette";      break;
 		case PostEffectType::RadialBlur:   effectName = "Radial Blur";   break;
+		case PostEffectType::Dissolve:     effectName = "Dissolve";      break;
 		}
 
 		// 現在のフラグ状態を取得
@@ -193,6 +196,7 @@ void PostEffectManager::ImGui() {
 			case PostEffectType::Fog:		   headerName = "Fog Settings";			  break;
 			case PostEffectType::Vignette:     headerName = "Vignette Settings";      break;
 			case PostEffectType::RadialBlur:   headerName = "Radial Blur Settings";   break;
+			case PostEffectType::Dissolve:     headerName = "Dissolve Settings";      break;
 			}
 
 			if (ImGui::CollapsingHeader(headerName, ImGuiTreeNodeFlags_DefaultOpen)) {

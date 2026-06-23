@@ -71,6 +71,7 @@
     <ClCompile Include="magosuya\light\SpotLight.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Magosuya\PostEffect\RadialBlur.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\Dissolve.cpp" />
     <ClCompile Include="application\entity\boss\Boss.cpp" />
     <ClCompile Include="magosuya\light\RectLight.cpp" />
     <ClCompile Include="magosuya\audio\AudioManager.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="magosuya\light\SpotLight.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Magosuya\PostEffect\RadialBlur.h" />
+    <ClInclude Include="Magosuya\PostEffect\Dissolve.h" />
     <ClInclude Include="application\scene\SceneType.h" />
     <ClInclude Include="magosuya\light\RectLight.h" />
     <ClInclude Include="magosuya\audio\AudioManager.h" />

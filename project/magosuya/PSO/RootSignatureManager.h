@@ -18,6 +18,7 @@ enum class RootSigType : uint32_t {
 	LineMesh,
 	CubeMesh,			//メッシュ描画用
 	PostProcess,		// ポストエフェクト用（SRV中心）(未実装)
+	PostProcessTwoTextures, // 2つの独立したテクスチャを受け取るポストエフェクト用
 	UI,					// UI描画用（2D行列とテクスチャ）(未実装)
 	Skybox,				// Skybox用
 	Count,
@@ -91,6 +92,10 @@ private:	// メンバ変数
 	D3D12_DESCRIPTOR_RANGE postProcessDescriptorRanges[1] = {};
 	D3D12_ROOT_PARAMETER postProcessRootParameters[2] = {};
 	D3D12_STATIC_SAMPLER_DESC postProcessStaticSamplers[1] = {};
+	//PostProcessTwoTextures
+	D3D12_DESCRIPTOR_RANGE postProcessTwoTexturesDescriptorRanges[2] = {};
+	D3D12_ROOT_PARAMETER postProcessTwoTexturesRootParameters[3] = {};
+	D3D12_STATIC_SAMPLER_DESC postProcessTwoTexturesStaticSamplers[1] = {};
 	//***ルートシグネチャの種類を増やしたいときに適宜追加***//
 
 	//RootSigTypeとIDのマップ(逆引き兼キャッシュチェック用)

@@ -493,7 +493,7 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 #pragma region PostProcess
 	// Texture用のディスクリプタレンジ(t0)
 	postProcessDescriptorRanges[0].BaseShaderRegister = 0;	// 0から始まる
-	postProcessDescriptorRanges[0].NumDescriptors = 4;		// 数は4つ
+	postProcessDescriptorRanges[0].NumDescriptors = 4;		// 数は4つ（Fog等との互換性のために復元）
 	postProcessDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	// SRVを使う
 	postProcessDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
@@ -502,7 +502,7 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	postProcessRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	postProcessRootParameters[0].Descriptor.ShaderRegister = 0; // register(b0)に対応
 
-	// Texture用のディスクリプタテーブル(t0, t1)
+	// Texture用のディスクリプタテーブル(t0)
 	postProcessRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	postProcessRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	postProcessRootParameters[1].DescriptorTable.pDescriptorRanges = &postProcessDescriptorRanges[0];
@@ -517,6 +517,47 @@ void RootSignatureManager::Initialize (DxCommon* dxCommon) {
 	postProcessStaticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;
 	postProcessStaticSamplers[0].ShaderRegister = 0;	// レジスタ番号0を使う
 	postProcessStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
+#pragma endregion
+
+#pragma region PostProcessTwoTextures
+	// Texture用のディスクリプタレンジ(t0)
+	postProcessTwoTexturesDescriptorRanges[0].BaseShaderRegister = 0;	// 0から始まる
+	postProcessTwoTexturesDescriptorRanges[0].NumDescriptors = 1;		// 数は1つ
+	postProcessTwoTexturesDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	// SRVを使う
+	postProcessTwoTexturesDescriptorRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	// Texture用のディスクリプタレンジ(t1)
+	postProcessTwoTexturesDescriptorRanges[1].BaseShaderRegister = 1;	// 1から始まる
+	postProcessTwoTexturesDescriptorRanges[1].NumDescriptors = 1;		// 数は1つ
+	postProcessTwoTexturesDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;	// SRVを使う
+	postProcessTwoTexturesDescriptorRanges[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	// 定数バッファ用(b0)
+	postProcessTwoTexturesRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを直に使う
+	postProcessTwoTexturesRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+	postProcessTwoTexturesRootParameters[0].Descriptor.ShaderRegister = 0; // register(b0)に対応
+
+	// Texture用のディスクリプタテーブル(t0)
+	postProcessTwoTexturesRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	postProcessTwoTexturesRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	postProcessTwoTexturesRootParameters[1].DescriptorTable.pDescriptorRanges = &postProcessTwoTexturesDescriptorRanges[0];
+	postProcessTwoTexturesRootParameters[1].DescriptorTable.NumDescriptorRanges = 1;
+
+	// Texture用のディスクリプタテーブル(t1)
+	postProcessTwoTexturesRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	postProcessTwoTexturesRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	postProcessTwoTexturesRootParameters[2].DescriptorTable.pDescriptorRanges = &postProcessTwoTexturesDescriptorRanges[1];
+	postProcessTwoTexturesRootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
+
+	// Sampler (s0)
+	postProcessTwoTexturesStaticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;	// バイリニアフィルタ
+	postProcessTwoTexturesStaticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	postProcessTwoTexturesStaticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	postProcessTwoTexturesStaticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	postProcessTwoTexturesStaticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;	// 比較しない
+	postProcessTwoTexturesStaticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;
+	postProcessTwoTexturesStaticSamplers[0].ShaderRegister = 0;	// レジスタ番号0を使う
+	postProcessTwoTexturesStaticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;		// PixelShaderで使う
 #pragma endregion
 }
 
@@ -690,6 +731,14 @@ D3D12_ROOT_SIGNATURE_DESC RootSignatureManager::CreateRootSigDesc (RootSigType t
 		desc.pStaticSamplers = postProcessStaticSamplers;
 		desc.NumStaticSamplers = _countof (postProcessStaticSamplers);
 		// フルスクリーントライアングルでは頂点バッファを使わないためInputLayoutを許可しない（しても害はないが、今回は不要）
+		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
+		break;
+
+	case RootSigType::PostProcessTwoTextures:
+		desc.pParameters = postProcessTwoTexturesRootParameters;
+		desc.NumParameters = _countof (postProcessTwoTexturesRootParameters);
+		desc.pStaticSamplers = postProcessTwoTexturesStaticSamplers;
+		desc.NumStaticSamplers = _countof (postProcessTwoTexturesStaticSamplers);
 		desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
 		break;
 

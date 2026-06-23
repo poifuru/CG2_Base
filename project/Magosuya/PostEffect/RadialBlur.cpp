@@ -4,7 +4,7 @@
 void RadialBlur::Initialize(DxCommon* dxCommon) {
 	BasePostEffect::Initialize(dxCommon);
 	psoDesc_.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(
-		L"Resources/shader/RadialBlur.hlsl", L"ps_6_0"
+		L"Resources/shader/RadialBlur.PS.hlsl", L"ps_6_0"
 	);
 
 	// リソースの初期化
