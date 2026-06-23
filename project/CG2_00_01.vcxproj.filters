@@ -115,7 +115,7 @@
     <ClCompile Include="externals\imgui\imgui_demo.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
     <ClCompile Include="Engine\Editor\Command\CommandManager.cpp" />
-    <ClCompile Include="Engine\Framework\GameObject\TransformCommand.cpp" />
+    <ClCompile Include="Engine\Editor\Command\TransformCommand.cpp" />
     <ClCompile Include="Engine\Editor\LevelEditor\LevelEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -239,7 +239,7 @@
     <ClInclude Include="externals\imgui\ImGuizmo.h" />
     <ClInclude Include="Engine\Editor\Command\ICommand.h" />
     <ClInclude Include="Engine\Editor\Command\CommandManager.h" />
-    <ClInclude Include="Engine\Framework\GameObject\TransformCommand.h" />
+    <ClInclude Include="Engine\Editor\Command\TransformCommand.h" />
     <ClInclude Include="Engine\Editor\LevelEditor\LevelEditor.h" />
   </ItemGroup>
   <ItemGroup>

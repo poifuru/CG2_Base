@@ -272,7 +272,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Core\RenderSystem.cpp" />
     <ClCompile Include="Engine\Framework\Buffer\Material.cpp" />
     <ClCompile Include="Engine\Framework\GameObject\MeshRendererComponent.cpp" />
-    <ClCompile Include="Engine\Framework\GameObject\TransformCommand.cpp" />
+    <ClCompile Include="Engine\Editor\Command\TransformCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\BoxFilter.PS.hlsl">
@@ -529,7 +529,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Framework\Buffer\Material.h" />
     <ClInclude Include="Engine\Framework\GameObject\GameObject.h" />
     <ClInclude Include="Engine\Framework\GameObject\MeshRendererComponent.h" />
-    <ClInclude Include="Engine\Framework\GameObject\TransformCommand.h" />
+    <ClInclude Include="Engine\Editor\Command\TransformCommand.h" />
     <ClInclude Include="Engine\Editor\LevelEditor\LevelEditor.h" />
   </ItemGroup>
   <ItemGroup>

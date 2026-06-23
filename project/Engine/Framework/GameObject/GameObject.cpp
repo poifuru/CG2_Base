@@ -38,6 +38,11 @@ void GameObject::ImGui() {
 	strcpy_s(nameBuf, name_.c_str());
 	if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf))) {
 		name_ = nameBuf;
+		std::string newName = nameBuf;
+		// 空文字やスペース/タブだけの名前は反映させない（元の名前を維持する）
+		if (!newName.empty() && newName.find_first_not_of(" \t\r\n") != std::string::npos) {
+			name_ = newName;
+		}
 	}
 
 	ImGui::Separator();
