@@ -7,7 +7,6 @@ void EditorManager::UpdateAndDraw(IEngine* engine) {
 #ifdef USEIMGUI
 	// 各ウィンドウを順番に描画していく
 	DrawGameWindow(engine);
-	DrawInspectorWindow();
 #endif
 }
 

@@ -99,7 +99,7 @@ void ImGuiManager::RenderDockingSpace() {
 	ImGuiID dockspace_id = ImGui::GetID("MyEngineDockSpace");
 	ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
 
-	ImGui::Begin("Viewport");
+	ImGui::Begin("プレビュー");
 	ImGui::End();
 
 	EditorManager::GetInstance()->UpdateAndDraw(engine_);

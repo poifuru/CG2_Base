@@ -1,6 +1,7 @@
 #include "LevelEditor.h"
 #include <fstream>
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "imGuizmo.h"
 #include "CommandManager.h"
 #include "TransformCommand.h"
@@ -15,6 +16,12 @@ void LevelEditor::Initialize(SceneContext* context) {
 
 void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, GameObject*& selectedObject, CameraData* cameraData) {
 	if (!context_) return;
+
+	// デバッグ表示用の静的変数
+	static ImVec2 viewportPos = ImVec2(0.0f, 0.0f);
+	static ImVec2 viewportSize = ImVec2(0.0f, 0.0f);
+	static ImVec2 debugGizmoPos = ImVec2(0.0f, 0.0f);
+	static float debugDistance = 0.0f;
 	// Ctrl + Z で Undo (元に戻す)
 	if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z)) {
 		CommandManager::GetInstance()->Undo();
@@ -64,9 +71,15 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 	}
 	ImGui::End();
 	// ---- インスペクター ----
-	ImGui::Begin("インスペクタ");
+	ImGui::Begin("Inspector");
 	if (selectedObject != nullptr) {
 		selectedObject->ImGui();
+		ImGui::Separator();
+		ImGui::Text("Debug Viewport Pos: (%.1f, %.1f)", viewportPos.x, viewportPos.y);
+		ImGui::Text("Debug Viewport Size: (%.1f, %.1f)", viewportSize.x, viewportSize.y);
+		ImGui::Text("Mouse Pos: (%.1f, %.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
+		ImGui::Text("Gizmo Screen Pos: (%.1f, %.1f)", debugGizmoPos.x, debugGizmoPos.y);
+		ImGui::Text("Distance: %.1f px", debugDistance);
 	} else {
 		ImGui::Text("オブジェクトが選択されていません");
 	}
@@ -79,43 +92,45 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 		Matrix4x4 worldMatrix = Math::MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 		ImGuizmo::SetOrthographic(false);
 		ImGuizmo::BeginFrame();
+		ImGuizmo::AllowAxisFlip(false);
 		static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
 		static ImGuizmo::MODE currentGizmoMode(ImGuizmo::LOCAL);
 		if (ImGui::IsKeyPressed(ImGuiKey_T)) currentGizmoOperation = ImGuizmo::TRANSLATE;
 		if (ImGui::IsKeyPressed(ImGuiKey_R)) currentGizmoOperation = ImGuizmo::ROTATE;
 		if (ImGui::IsKeyPressed(ImGuiKey_S)) currentGizmoOperation = ImGuizmo::SCALE;
 		ImGuiIO& io = ImGui::GetIO();
-		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-		// 座標変換の右手系補正
+
+		// 1. "Game" ウィンドウをアペンドオープンし、位置とサイズを取得する
+		ImGui::Begin("Game");
+		viewportPos = ImGui::GetWindowPos();
+		viewportSize = ImGui::GetWindowSize();
+
+		// タイトルバー（タブ）の高さ分、位置とサイズを補正する
+		float titleBarHeight = ImGui::GetFrameHeight();
+		viewportPos.y += titleBarHeight;
+		viewportSize.y -= titleBarHeight;
+
+		// 2. ギズモの描画範囲を "Game" ウィンドウの座標に合わせる
+		ImGuizmo::SetRect(viewportPos.x, viewportPos.y, viewportSize.x, viewportSize.y);
+
+		// 座標変換 of 右手系補正
 		Matrix4x4 projGizmo = camData.proj;
-		projGizmo.m[2][2] = -projGizmo.m[2][2];
-		projGizmo.m[3][2] = -projGizmo.m[3][2];
-		bool isHoverGizmo = false;
-		if (ImGuizmo::IsOver()) {
-			isHoverGizmo = true;
-		} else {
-			Vector3 ndcPos = Math::ChangeTransform(transform.translate, camData.vp);
-			float screenX = (ndcPos.x + 1.0f) * 0.5f * io.DisplaySize.x;
-			float screenY = (1.0f - ndcPos.y) * 0.5f * io.DisplaySize.y;
-			float dx = io.MousePos.x - screenX;
-			float dy = io.MousePos.y - screenY;
-			float distSq = dx * dx + dy * dy;
-			if (distSq < 150.0f * 150.0f) {
-				isHoverGizmo = true;
-			}
-		}
-		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-		if (!isHoverGizmo) {
-			windowFlags |= ImGuiWindowFlags_NoInputs;
-		}
-		ImGui::Begin("GizmoWindow", nullptr, windowFlags);
-		ImGuizmo::SetDrawlist(ImGui::GetWindowDrawList());
+		projGizmo.m[2][2] = projGizmo.m[2][2] * 2.0f - projGizmo.m[2][3];
+		projGizmo.m[3][2] = projGizmo.m[3][2] * 2.0f;
+
+		// 入力判定用の代替ウィンドウとして "Game" ウィンドウをセットする
+		ImGuizmo::SetAlternativeWindow(ImGui::GetCurrentWindow());
+
 		static EulerTransform transformBeforeDrag;
 		static bool wasUsingGizmo = false;
 
 		if (ImGuizmo::IsOver() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
 			transformBeforeDrag = transform;
 		}
+
+		// 3. 描画は最前面に
+		ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
+
 		ImGuizmo::Manipulate(
 			&camData.view.m[0][0],
 			&projGizmo.m[0][0],
@@ -123,6 +138,7 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 			currentGizmoMode,
 			&worldMatrix.m[0][0]
 		);
+
 		ImGui::End();
 		if (ImGuizmo::IsUsing()) {
 			wasUsingGizmo = true;
