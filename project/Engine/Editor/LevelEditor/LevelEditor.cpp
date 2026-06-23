@@ -17,11 +17,6 @@ void LevelEditor::Initialize(SceneContext* context) {
 void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, GameObject*& selectedObject, CameraData* cameraData) {
 	if (!context_) return;
 
-	// デバッグ表示用の静的変数
-	static ImVec2 viewportPos = ImVec2(0.0f, 0.0f);
-	static ImVec2 viewportSize = ImVec2(0.0f, 0.0f);
-	static ImVec2 debugGizmoPos = ImVec2(0.0f, 0.0f);
-	static float debugDistance = 0.0f;
 	// Ctrl + Z で Undo (元に戻す)
 	if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z)) {
 		CommandManager::GetInstance()->Undo();
@@ -74,12 +69,7 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 	ImGui::Begin("Inspector");
 	if (selectedObject != nullptr) {
 		selectedObject->ImGui();
-		ImGui::Separator();
-		ImGui::Text("Debug Viewport Pos: (%.1f, %.1f)", viewportPos.x, viewportPos.y);
-		ImGui::Text("Debug Viewport Size: (%.1f, %.1f)", viewportSize.x, viewportSize.y);
-		ImGui::Text("Mouse Pos: (%.1f, %.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
-		ImGui::Text("Gizmo Screen Pos: (%.1f, %.1f)", debugGizmoPos.x, debugGizmoPos.y);
-		ImGui::Text("Distance: %.1f px", debugDistance);
+
 	} else {
 		ImGui::Text("オブジェクトが選択されていません");
 	}
@@ -99,6 +89,9 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 		if (ImGui::IsKeyPressed(ImGuiKey_R)) currentGizmoOperation = ImGuizmo::ROTATE;
 		if (ImGui::IsKeyPressed(ImGuiKey_S)) currentGizmoOperation = ImGuizmo::SCALE;
 		ImGuiIO& io = ImGui::GetIO();
+
+		ImVec2 viewportPos = ImVec2(0.0f, 0.0f);
+		ImVec2 viewportSize = ImVec2(0.0f, 0.0f);
 
 		// 1. "Game" ウィンドウをアペンドオープンし、位置とサイズを取得する
 		ImGui::Begin("Game");
