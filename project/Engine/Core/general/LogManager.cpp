@@ -1,3 +1,4 @@
+#include "PCH.h"
 #include <Windows.h>
 #include "LogManager.h"
 #include <chrono>

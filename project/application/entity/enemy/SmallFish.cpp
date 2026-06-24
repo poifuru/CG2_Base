@@ -1,3 +1,4 @@
+#include "PCH.h"
 //#include "SmallFish.h"
 //
 //SmallFish::SmallFish(DxCommon* dxCommon, LightManager* light, CameraOrganizer* camera)

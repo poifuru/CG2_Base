@@ -1,13 +1,14 @@
 #pragma once
-#include <vector>
-#include <d3d12.h>
-#include "RenderCommand.h"
-#include "ConstantBuffer.h"
 #include "struct.h"
+#include "ConstantBuffer.h"
+#include "RenderCommand.h"
 
+// 前方宣言
 class PSOManager;
 class DescriptorHeapManager;
 class ShaderManager;
+class InputLayoutManager;
+class BlendModeManager;
 class LightManager;
 
 struct CameraForGPU {

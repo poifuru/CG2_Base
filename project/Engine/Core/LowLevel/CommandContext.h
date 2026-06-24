@@ -3,9 +3,6 @@
 // =============================== //
 
 #pragma once
-#include <d3d12.h>
-#include <wrl.h>
-#include <cstdint>
 
 class CommandContext {
 public:

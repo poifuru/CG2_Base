@@ -1,10 +1,5 @@
+#include "PCH.h"
 #include "AudioManager.h"
-#pragma comment(lib, "xaudio2.lib")
-#pragma comment(lib, "mfplat.lib")
-#pragma comment(lib, "Mfreadwrite.lib")
-#pragma comment(lib, "mfuuid.lib")
-#include <fstream>	
-#include <cassert>
 #include "ChangeString.h"
 
 AudioManager::~AudioManager() {
@@ -81,12 +76,12 @@ void AudioManager::Load(const std::string& filename, const std::string& name) {
 	std::wstring filePathW = String::ConvertString(filename);
 
 	//SourceReader作成
-	ComPtr<IMFSourceReader> pReader;
+	Microsoft::WRL::ComPtr<IMFSourceReader> pReader;
 	hr = MFCreateSourceReaderFromURL(filePathW.c_str(), nullptr, &pReader);
 	assert(SUCCEEDED(hr));
 
 	//PCM形式にフォーマットを指定する
-	ComPtr<IMFMediaType> pPCMType;
+	Microsoft::WRL::ComPtr<IMFMediaType> pPCMType;
 	MFCreateMediaType(&pPCMType);
 	pPCMType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
 	pPCMType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
@@ -94,7 +89,7 @@ void AudioManager::Load(const std::string& filename, const std::string& name) {
 	assert(SUCCEEDED(hr));
 
 	//実際にセットされたメディアタイプを取得する
-	ComPtr<IMFMediaType> pOutType;
+	Microsoft::WRL::ComPtr<IMFMediaType> pOutType;
 	pReader->GetCurrentMediaType((DWORD)MF_SOURCE_READER_FIRST_AUDIO_STREAM, &pOutType);
 
 	//Waveフォーマットを取得する
@@ -110,7 +105,7 @@ void AudioManager::Load(const std::string& filename, const std::string& name) {
 
 	//PCMデータのバッファを構築
 	while (true) {
-		ComPtr<IMFSample> pSample;
+		Microsoft::WRL::ComPtr<IMFSample> pSample;
 		DWORD streamIndex = 0, flags = 0;
 		LONGLONG llTimeStamp = 0;
 		//サンプルを読み込む
@@ -122,7 +117,7 @@ void AudioManager::Load(const std::string& filename, const std::string& name) {
 		if (flags & MF_SOURCE_READERF_ENDOFSTREAM) break;
 
 		if (pSample) {
-			ComPtr<IMFMediaBuffer> pBuffer;
+			Microsoft::WRL::ComPtr<IMFMediaBuffer> pBuffer;
 			//サンプルに含まれているサウンドデータのバッファを一繋ぎにして取得
 			pSample->ConvertToContiguousBuffer(&pBuffer);
 

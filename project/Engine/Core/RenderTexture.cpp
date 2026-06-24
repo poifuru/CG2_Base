@@ -1,3 +1,4 @@
+#include "PCH.h"
 #include "RenderTexture.h"
 #include "DescriptorHeapManager.h"
 #include "WindowsAPI.h"

@@ -1,3 +1,4 @@
+#include "PCH.h"
 #include "BlendModeManager.h"
 #include <cassert>
 

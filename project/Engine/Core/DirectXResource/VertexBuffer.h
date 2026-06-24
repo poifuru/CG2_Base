@@ -1,9 +1,4 @@
 #pragma once
-#include <d3d12.h>
-#include <wrl.h>
-#include <vector>
-#include <algorithm>
-#include <cassert>
 
 // 頂点バッファ専用のテンプレートクラス
 template <typename T>

@@ -1,12 +1,9 @@
+#include "PCH.h"
 #include "DebugCamera.h"
-#pragma comment(lib, "d3d12.lib")
-#pragma comment(lib, "dxgi.lib")
-#pragma	comment(lib, "dxguid.lib")
-#include <string>
-#include <imgui.h>
 #include "WindowsAPI.h"
 #include "LogManager.h"
-#include <format>
+#include "InputManager.h"
+#include "RawInput.h"
 
 DebugCamera::DebugCamera() {
 	camera_.transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -30.0f} };

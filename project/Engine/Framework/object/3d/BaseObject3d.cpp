@@ -1,3 +1,4 @@
+#include "PCH.h"
 #include "BaseObject3d.h"
 #include "MathFunction.h"
 #include "imgui.h"

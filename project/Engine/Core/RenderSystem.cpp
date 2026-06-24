@@ -1,10 +1,9 @@
+#include "PCH.h"
 #include "RenderSystem.h"
 #include "PSOManager.h"
 #include "DescriptorHeapManager.h"
 #include "ShaderManager.h"
 #include "LightManager.h"
-#include <algorithm>
-#include <cassert>
 
 void RenderSystem::Initialize(ID3D12Device* device) {
 	assert(device != nullptr);

@@ -1,3 +1,4 @@
+#include "PCH.h"
 #include "PointLight.h"
 #include "imgui.h"
 

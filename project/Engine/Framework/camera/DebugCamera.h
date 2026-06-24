@@ -1,14 +1,10 @@
 #pragma once
-#include <Windows.h>
-#include <Wrl.h>
-using namespace Microsoft::WRL;
-#include <d3d12.h>
-#include <d3d12sdklayers.h>
-#include <dxgi1_6.h>
 #include "CameraComponent.h"
 #include "struct.h"
 #include "MathFunction.h"
-#include "InputManager.h"
+
+// 前方宣言
+class InputManager;
 
 class DebugCamera : public CameraComponent{
 public:	//メンバ関数

@@ -3,6 +3,46 @@
 #include "LightManager.h"
 #include "struct.h"
 
+//　--- 構造体の定義 --- //
+// DirectionalLight
+struct Directional {
+	Vector4	color;		// 色
+	float	intensity;	// 強度
+	Vector3 direction;	// 向き
+};
+
+// PointLight
+struct Point {
+	Vector4 color;		// 色
+	float	intensity;	// 強度
+	Vector3 position_;	// 位置
+	float	radius_;	//ライトが届く最大距離
+	float	decay_;		//減衰率
+};
+
+// SpotLight
+struct Spot {
+	Vector4 color;		// 色
+	float	intensity;	// 強度
+	Vector3 position_;	// 位置
+	Vector3 direction_;	// 向き
+	float	distance_;	// ライトが届く最大距離
+	float	decay_;		// 減衰率
+	float	cosAngle_;	// スポットライトの余弦
+};
+
+// RectLight
+struct Rect {
+	Vector4 color;		// 色
+	float	intensity;	// 強度
+	Vector3 position_;	// 位置
+	Vector3 direction_;	// 向き
+	Vector2 size_;		// 大きさ
+	Vector3 right_;		// 右ベクトル
+	Vector3 up_;		// 上ベクトル
+	float	decay_;		// 減衰率
+};
+
 class LightComponent : public Component {
 public:
 	LightComponent() = default;
@@ -19,28 +59,23 @@ public:
 
 	// ゲッター・セッター（LightManagerがデータを集約するときに使う）
 	LightType GetLightType() const { return type_; }
-	Vector4 GetColor() const { return color_; }
-	float GetIntensity() const { return intensity_; }
 
-	// Point/Spot用パラメータ
-	float GetRadius() const { return radius_; }
-	float GetDecay() const { return decay_; }
-	float GetDistance() const { return distance_; }
-	float GetCosAngle() const { return cosAngle_; }
-	Vector2 GetSize() const { return size_; }
-	Vector3 GetRight() const { return right_; }
-	Vector3 GetUp() const { return up_; }
+	// Colorを返す
+	const Vector4* GetColor() const;
+
+	// Directional構造体を返す
+	const Directional* GetDirectionalParam() const;
+
+	// Point構造体を返す
+	const Point* GetPointParam() const;
+
+	// Spot構造体を返す
+	const Spot* GetSpotParam() const;
+
+	// Rect構造体を返す
+	const Rect* GetRectParam() const;
 
 private:
 	LightType type_ = DIRECTIONALLIGHT;
-	Vector4 color_ = { 1.0f, 1.0f, 1.0f, 1.0f };
-	float intensity_ = 1.0f;
-	// 各ライト用のパラメータ
-	float radius_ = 10.0f; // PointLight用
-	float decay_ = 1.0f;   // Point/Spot用
-	float distance_ = 10.0f; // Spot用
-	float cosAngle_ = 0.5f; // Spot用
-	Vector2 size_ = { 1.0f, 1.0f };	// Rect用
-	Vector3 right_{};	// Rect用
-	Vector3 up_{};		// Rect用
+	std::variant<Directional, Point, Spot, Rect> param_;
 };

@@ -1,18 +1,6 @@
 #pragma once
-#include <Windows.h>
-#include <Wrl.h>
-using namespace Microsoft::WRL;
-#include <d3d12.h>
-#include <dxgi1_6.h>
-#include <dxcapi.h>
-#include <dxgidebug.h>
-#include <array>
-#include <string>
-#include <chrono>
-#include <DirectXTex.h>
 #include "WindowsAPI.h"
 #include "LeakChecker.h"
-#include <memory>
 
 class SRVManager;
 class RenderTexture;

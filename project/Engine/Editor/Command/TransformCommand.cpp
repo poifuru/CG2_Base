@@ -1,3 +1,4 @@
+#include "PCH.h"
 #include "TransformCommand.h"
 
 TransformCommand::TransformCommand(GameObject* target, const EulerTransform& before, const EulerTransform& after) 

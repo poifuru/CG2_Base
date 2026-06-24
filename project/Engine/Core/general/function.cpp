@@ -1,11 +1,5 @@
+#include "PCH.h"
 #include "function.h"
-#pragma comment(lib, "Shlwapi.lib")
-#pragma comment(lib, "Dbghelp.lib")
-#include <format>
-#include <sstream>
-#include <iostream>
-#include <chrono>
-#include <filesystem>
 #include "LogManager.h"
 #include "String.h"
 
@@ -33,7 +27,7 @@ LONG WINAPI ExportDump(EXCEPTION_POINTERS* exception) {
 }
 
 //DepthStencilTexture作成関数
-ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height) {
+Microsoft::WRL::ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height) {
 	//生成するResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Width = width;		//Textureの幅
@@ -55,7 +49,7 @@ ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(ID3D12Device* device, i
 	depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;	//フォーマット。Resourceと合わせる
 
 	//Resourceの生成
-	ComPtr<ID3D12Resource> resource = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
 	HRESULT hr = device->CreateCommittedResource(
 		&heapProperties,	//Heapの設定
 		D3D12_HEAP_FLAG_NONE,	//Heapの特殊な設定。特になし

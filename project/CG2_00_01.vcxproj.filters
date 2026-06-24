@@ -59,8 +59,6 @@
     <ClCompile Include="Engine\Core\General\Easing.cpp" />
     <ClCompile Include="Engine\Core\SRV\SRVManager.cpp" />
     <ClCompile Include="application\entity\Entity.cpp" />
-    <ClCompile Include="application\mapchip\mapchip.cpp" />
-    <ClCompile Include="application\mapchip\mapChipRenderer.cpp" />
     <ClCompile Include="Engine\Render\PSO\ShaderManager.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\BaseObject3d.cpp" />
     <ClCompile Include="Engine\Render\Light\LightManager.cpp" />
@@ -83,7 +81,6 @@
     <ClCompile Include="application\entity\enemy\SmallFish.cpp" />
     <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
     <ClCompile Include="Application\Collider\CollisionManager.cpp" />
-    <ClCompile Include="Application\RailPath.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\PostEffectManager.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\BasePostEffect.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\ColorGrading.cpp" />
@@ -117,6 +114,7 @@
     <ClCompile Include="Engine\Editor\Command\TransformCommand.cpp" />
     <ClCompile Include="Engine\Editor\LevelEditor\LevelEditor.cpp" />
     <ClCompile Include="Engine\Framework\GameObject\LightComponent.cpp" />
+    <ClCompile Include="Engine\PCH\PCH.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -168,8 +166,6 @@
     <ClInclude Include="Engine\Core\General\Easing.h" />
     <ClInclude Include="Engine\Core\SRV\SRVManager.h" />
     <ClInclude Include="application\entity\Entity.h" />
-    <ClInclude Include="application\mapchip\mapchip.h" />
-    <ClInclude Include="application\mapchip\mapChipRenderer.h" />
     <ClInclude Include="application\entity\player\Player.h" />
     <ClInclude Include="application\entity\boss\Boss.h" />
     <ClInclude Include="Engine\Render\PSO\ShaderManager.h" />
@@ -184,7 +180,6 @@
     <ClInclude Include="Engine\Render\Light\RectLight.h" />
     <ClInclude Include="Engine\Audio\AudioManager.h" />
     <ClInclude Include="Engine\Audio\VoiceCallback.h" />
-    <ClInclude Include="application\mapchip\MapchipStruct.h" />
     <ClInclude Include="application\scene\DebugScene.h" />
     <ClInclude Include="application\entity\enemy\BaseEnemy.h" />
     <ClInclude Include="application\scene\TestScene.h" />
@@ -197,7 +192,6 @@
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="Application\Collider\Collision.h" />
     <ClInclude Include="Application\Collider\CollisionManager.h" />
-    <ClInclude Include="Application\RailPath.h" />
     <ClInclude Include="Engine\Render\PostEffect\PostEffectManager.h" />
     <ClInclude Include="Engine\Render\PostEffect\BasePostEffect.h" />
     <ClInclude Include="Engine\Render\PostEffect\ColorGrading.h" />
@@ -241,6 +235,7 @@
     <ClInclude Include="Engine\Editor\Command\TransformCommand.h" />
     <ClInclude Include="Engine\Editor\LevelEditor\LevelEditor.h" />
     <ClInclude Include="Engine\Framework\GameObject\LightComponent.h" />
+    <ClInclude Include="Engine\PCH\PCH.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

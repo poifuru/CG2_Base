@@ -1,6 +1,4 @@
 #pragma once
-#include <cstdint>
-#include <d3d12.h>
 #include "PSOManager.h"
 
 // 最初のゴール：マテリアル付き三角形のための最小限の構造体

@@ -1,3 +1,4 @@
+#include "PCH.h"
 #include "RootSignatureManager.h"
 #include <cassert>
 #include <dxcapi.h>

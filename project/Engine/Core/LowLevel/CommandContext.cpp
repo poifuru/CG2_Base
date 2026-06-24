@@ -1,5 +1,5 @@
+#include "PCH.h"
 #include "CommandContext.h"
-#include <cassert>
 
 CommandContext::CommandContext() = default;
 

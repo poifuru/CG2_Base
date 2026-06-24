@@ -1,3 +1,4 @@
+#include "PCH.h"
 #include <cassert>
 #include "Animation.h"
 #include "MathFunction.h"

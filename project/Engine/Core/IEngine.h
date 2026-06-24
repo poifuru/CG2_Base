@@ -1,7 +1,4 @@
 #pragma once
-#include <string>
-#include <cstdint>
-#include <memory>
 
 class Model;
 class RenderSystem;

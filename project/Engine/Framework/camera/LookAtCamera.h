@@ -1,6 +1,8 @@
 #pragma once
 #include "CameraComponent.h"
-#include "InputManager.h"
+
+// 前方宣言
+class InputManager;
 
 class LookAtCamera : public CameraComponent {
 public:	//メンバ関数

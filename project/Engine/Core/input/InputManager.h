@@ -1,8 +1,8 @@
 #pragma once
-#include <Windows.h>
-#include <memory>
-#include "RawInput.h"
-#include "GamePad.h"
+
+// 前方宣言
+class RawInput;
+class GamePad;
 
 class InputManager {
 public:

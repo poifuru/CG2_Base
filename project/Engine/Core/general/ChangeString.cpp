@@ -1,3 +1,4 @@
+#include "PCH.h"
 #include "ChangeString.h"
 
 namespace String {

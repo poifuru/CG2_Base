@@ -1,6 +1,5 @@
+#include "PCH.h"
 #include "GamePad.h"
-#pragma comment(lib, "Xinput.lib")
-#include <imgui.h>
 
 void GamePad::Initialize () {
 	state_ = {};

@@ -1,3 +1,4 @@
+#include "PCH.h"
 #include "LightManager.h"
 #include <algorithm>
 #include <cassert>

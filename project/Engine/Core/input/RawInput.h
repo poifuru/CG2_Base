@@ -1,6 +1,4 @@
-#pragma once 
-#include <Windows.h>
-#include <vector>  
+#pragma once
 
 // マウスボタンのインデックスを分かりやすくするために定義しとく
 enum MouseButton {

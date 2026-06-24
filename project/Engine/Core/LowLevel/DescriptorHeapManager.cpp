@@ -1,5 +1,5 @@
+#include "PCH.h"
 #include "DescriptorHeapManager.h"
-#include <cassert>
 
 DescriptorHeapManager::DescriptorHeapManager() = default;
 

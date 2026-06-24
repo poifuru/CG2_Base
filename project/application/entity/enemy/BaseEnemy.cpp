@@ -1,3 +1,4 @@
+#include "PCH.h"
 //#include "BaseEnemy.h"
 //
 //BaseEnemy::BaseEnemy(DxCommon* dxCommon, LightManager* light, CameraOrganizer* camera) {

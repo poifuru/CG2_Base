@@ -1,5 +1,7 @@
+#include "PCH.h"
 #include "Model.h"
 #include "RenderSystem.h"
+#include "RenderCommand.h"
 
 Model::Model() : BaseObject3d() {
 }

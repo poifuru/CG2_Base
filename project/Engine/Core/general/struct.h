@@ -1,17 +1,4 @@
 #pragma once
-#include <Windows.h>
-#include <wrl.h>
-using namespace Microsoft::WRL;
-#include <d3d12.h>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <Mmreg.h>
-#include <map>
-#include <optional>
-#include <span>
-#include <array>
-#include "DirectXTex.h"
 
 //*** シェーダーに送るための構造体を作るときは16バイト境界を意識してパディングを入れてね ***//
 

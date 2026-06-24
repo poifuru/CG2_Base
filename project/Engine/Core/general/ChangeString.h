@@ -1,6 +1,4 @@
 #pragma once
-#include <Windows.h>
-#include <string>
 
 namespace String {
 	//DirectX12が返してくる文字列を必要に応じて型変換してあげる

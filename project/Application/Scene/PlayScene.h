@@ -1,11 +1,8 @@
 #pragma once
 #include "BaseScene.h"
-#include <vector>
-#include <memory>
 #include "Model.h"
 #include "LightManager.h"
 #include "GameObject.h"
-#include <filesystem>
 
 class LevelEditor;
 

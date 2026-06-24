@@ -1,3 +1,4 @@
+#include "PCH.h"
 #include "MathFunction.h"
 //#include <Novice.h>
 #include <cmath>
@@ -755,8 +756,8 @@ namespace Math {
 
 				if (t1 > t2) std::swap (t1, t2);
 
-				tmin = max (tmin, t1);
-				tmax = min (tmax, t2);
+				tmin = std::max(tmin, t1);
+				tmax = std::min(tmax, t2);
 
 				if (tmin > tmax) {
 					return false;

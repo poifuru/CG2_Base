@@ -1,7 +1,9 @@
+#include "PCH.h"
 #include "LookAtCamera.h"
 #include "MathFunction.h"
-#include <imgui.h>
-#include "WindowsAPI.h" // WindowsAPI.h を追加（WindowsAPI::GetInstance()を使用しているため）
+#include "WindowsAPI.h"
+#include "InputManager.h"
+#include "RawInput.h"
 
 LookAtCamera::LookAtCamera () {
 	input_ = InputManager::GetInstance();
@@ -82,4 +84,4 @@ void LookAtCamera::ImGui () {
 	ImGui::DragFloat3 (("scale##" + label + ID).c_str (), &camera_.transform.scale.x, 0.01f);
 	ImGui::DragFloat3 (("rotate##" + label + ID).c_str (), &camera_.transform.rotate.x, 0.01f);
 	ImGui::DragFloat3 (("translate##" + label + ID).c_str (), &camera_.transform.translate.x, 0.01f);
-}
+}

@@ -1,7 +1,5 @@
 #pragma once
-#include <string>
 #include <fstream>
-#include <filesystem>
 
 // ログ出力を一括で管理するクラス
 class LogManager {

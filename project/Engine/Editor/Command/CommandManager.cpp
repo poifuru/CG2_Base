@@ -1,3 +1,4 @@
+#include "PCH.h"
 #include "CommandManager.h"
 
 void CommandManager::AddAndExecute(std::unique_ptr<ICommand> command) {

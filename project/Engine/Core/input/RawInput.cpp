@@ -1,7 +1,5 @@
+#include "PCH.h"
 #include "RawInput.h"
-#include <hidusage.h>
-#include "function.h"
-#include "LogManager.h"
 
 void RawInput::Initialize (HWND hwnd) {
     OutputDebugStringA ("RawInput 登録\n");

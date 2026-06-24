@@ -1,6 +1,5 @@
+#include "PCH.h"
 #include "Easing.h"
-#include <algorithm>
-#include <numbers>
 
 namespace Easing {
     float easeInSine (float t) {

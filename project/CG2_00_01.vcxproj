@@ -88,7 +88,9 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(SolutionDir)externals;$(SolutionDir)externals\assimp\include;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\nlohmann;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\DirectXResource;$(SolutionDir)Engine\Core\General;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\LowLevel;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Editor\Command;$(SolutionDir)Engine\Editor\ImGui;$(SolutionDir)Engine\Editor\LevelEditor;$(SolutionDir)Engine\Framework\Buffer;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\GameObject;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy;$(SolutionDir)application\scene</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)externals;$(SolutionDir)externals\assimp\include;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\nlohmann;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\DirectXResource;$(SolutionDir)Engine\Core\General;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\LowLevel;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Editor\Command;$(SolutionDir)Engine\Editor\ImGui;$(SolutionDir)Engine\Editor\LevelEditor;$(SolutionDir)Engine\Framework\Buffer;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\GameObject;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\PCH;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy;$(SolutionDir)application\scene</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -117,7 +119,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)externals;$(SolutionDir)externals\assimp\include;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\nlohmann;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\DirectXResource;$(SolutionDir)Engine\Core\General;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\LowLevel;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Editor\Command;$(SolutionDir)Engine\Editor\ImGui;$(SolutionDir)Engine\Editor\LevelEditor;$(SolutionDir)Engine\Framework\Buffer;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\GameObject;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy;$(SolutionDir)application\scene</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)externals;$(SolutionDir)externals\assimp\include;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\nlohmann;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\DirectXResource;$(SolutionDir)Engine\Core\General;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\LowLevel;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Editor\Command;$(SolutionDir)Engine\Editor\ImGui;$(SolutionDir)Engine\Editor\LevelEditor;$(SolutionDir)Engine\Framework\Buffer;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\GameObject;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\PCH;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy;$(SolutionDir)application\scene</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,7 +155,9 @@ echo "MaoSuya Engine Builded"</Command>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)externals;$(SolutionDir)externals\assimp\include;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\nlohmann;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\DirectXResource;$(SolutionDir)Engine\Core\General;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\LowLevel;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Editor\Command;$(SolutionDir)Engine\Editor\ImGui;$(SolutionDir)Engine\Editor\LevelEditor;$(SolutionDir)Engine\Framework\Buffer;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\GameObject;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy;$(SolutionDir)application\scene</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)externals;$(SolutionDir)externals\assimp\include;$(SolutionDir)externals\DirectXTex;$(SolutionDir)externals\imgui;$(SolutionDir)externals\nlohmann;$(SolutionDir)Engine\Audio;$(SolutionDir)Engine\Core;$(SolutionDir)Engine\Core\DirectXResource;$(SolutionDir)Engine\Core\General;$(SolutionDir)Engine\Core\Input;$(SolutionDir)Engine\Core\LowLevel;$(SolutionDir)Engine\Core\SRV;$(SolutionDir)Engine\Editor\Command;$(SolutionDir)Engine\Editor\ImGui;$(SolutionDir)Engine\Editor\LevelEditor;$(SolutionDir)Engine\Framework\Buffer;$(SolutionDir)Engine\Framework\Camera;$(SolutionDir)Engine\Framework\GameObject;$(SolutionDir)Engine\Framework\Object\2d;$(SolutionDir)Engine\Framework\Object\3d;$(SolutionDir)Engine\Framework\Particle;$(SolutionDir)Engine\PCH;$(SolutionDir)Engine\Render\Light;$(SolutionDir)Engine\Render\PostEffect;$(SolutionDir)Engine\Render\Primitive;$(SolutionDir)Engine\Render\Primitive\cube;$(SolutionDir)Engine\Render\Primitive\line;$(SolutionDir)Engine\Render\PSO;$(SolutionDir)application\Boss;$(SolutionDir)application\Boss\Attack\CenterStomp;$(SolutionDir)application\Boss\Attack\FullScreenAttack;$(SolutionDir)application\Boss\Attack\Breath;$(SolutionDir)application\Collider;$(SolutionDir)application\Player;$(SolutionDir)application\Player\PlayerState;$(SolutionDir)application\Enemy;$(SolutionDir)application\Enemy\EnemyState;$(SolutionDir)application\mapchip;$(SolutionDir)application\entity;$(SolutionDir)application\entity\boss;$(SolutionDir)application\entity\player;$(SolutionDir)application\entity\enemy;$(SolutionDir)application\scene</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -191,6 +197,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Core\LowLevel\SwapChain.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\WindowsAPI.cpp" />
     <ClCompile Include="Engine\Framework\Buffer\Animation.cpp" />
+    <ClCompile Include="Engine\PCH\PCH.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Engine\Render\PostEffect\CopyImage.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\Fog.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\ColorGrading.cpp" />
@@ -254,8 +265,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Render\PSO\PSOManager.cpp" />
     <ClCompile Include="Engine\Render\Primitive\Mesh.cpp" />
     <ClCompile Include="Engine\Core\SRV\SRVManager.cpp" />
-    <ClCompile Include="application\mapchip\mapchip.cpp" />
-    <ClCompile Include="application\mapchip\mapChipRenderer.cpp" />
     <ClCompile Include="Engine\Render\Light\PointLight.cpp" />
     <ClCompile Include="Engine\Render\Light\SpotLight.cpp" />
     <ClCompile Include="Engine\Render\Light\RectLight.cpp" />
@@ -264,7 +273,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Core\RenderTexture.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\PostEffectManager.cpp" />
     <ClCompile Include="application\entity\player\Reticle.cpp" />
-    <ClCompile Include="Application\RailPath.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\Vignette.cpp" />
     <ClCompile Include="Engine\Framework\Particle\Particle.cpp" />
     <ClCompile Include="Engine\Framework\Particle\ParticleRenderer.cpp" />
@@ -405,7 +413,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClInclude Include="Application\Collider\Collision.h" />
     <ClInclude Include="application\entity\enemy\SmallFish.h" />
-    <ClInclude Include="application\mapchip\MapchipStruct.h" />
     <ClInclude Include="application\scene\BaseScene.h" />
     <ClInclude Include="application\scene\ClearScene.h" />
     <ClInclude Include="application\entity\Entity.h" />
@@ -441,6 +448,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Framework\Buffer\TransformMatrixData.h" />
     <ClInclude Include="Engine\Framework\GameObject\Component.h" />
     <ClInclude Include="Engine\Framework\Object\2d\TextureData.h" />
+    <ClInclude Include="Engine\PCH\PCH.h" />
     <ClInclude Include="Engine\Render\PostEffect\CopyImage.h" />
     <ClInclude Include="Engine\Render\PostEffect\Fog.h" />
     <ClInclude Include="Engine\Render\PostEffect\ColorGrading.h" />
@@ -507,8 +515,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Render\PSO\PSOManager.h" />
     <ClInclude Include="Engine\Render\Primitive\Mesh.h" />
     <ClInclude Include="Engine\Core\SRV\SRVManager.h" />
-    <ClInclude Include="application\mapchip\mapchip.h" />
-    <ClInclude Include="application\mapchip\mapChipRenderer.h" />
     <ClInclude Include="application\entity\player\Player.h" />
     <ClInclude Include="Engine\Render\Light\PointLight.h" />
     <ClInclude Include="Engine\Render\Light\SpotLight.h" />
@@ -519,7 +525,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Core\RenderTexture.h" />
     <ClInclude Include="Engine\Render\PostEffect\PostEffectManager.h" />
     <ClInclude Include="application\entity\player\Reticle.h" />
-    <ClInclude Include="Application\RailPath.h" />
     <ClInclude Include="Engine\Render\PostEffect\Vignette.h" />
     <ClInclude Include="Engine\Framework\Particle\Particle.h" />
     <ClInclude Include="Engine\Framework\Particle\ParticleRenderer.h" />

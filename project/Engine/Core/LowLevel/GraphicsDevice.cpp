@@ -1,9 +1,5 @@
+#include "PCH.h"
 #include "GraphicsDevice.h"
-#include <cassert>
-
-#pragma comment(lib, "d3d12.lib")
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "dxcompiler.lib")
 
 GraphicsDevice::GraphicsDevice() = default;
 

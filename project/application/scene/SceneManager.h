@@ -1,6 +1,5 @@
 #pragma once
 #include "BaseScene.h"
-#include <memory>
 #include "ModelManager.h"
 #include "TextureManager.h"
 #include "ModelFactory.h"

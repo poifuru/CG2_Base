@@ -1,15 +1,4 @@
 #pragma once
-#include <Windows.h>
-#include <Wrl.h>
-using namespace Microsoft::WRL;
-#include <memory>
-#include <string>
-#include <map>
-#include <vector>
-#include <mfapi.h>
-#include <mfidl.h>
-#include <mfreadwrite.h>
-#include <xaudio2.h>
 #include "VoiceCallback.h"
 
 //チャンクヘッダ
@@ -95,7 +84,7 @@ private:
 	AudioManager& operator=(AudioManager&&) = delete;
 
 private:
-	ComPtr<IXAudio2> xAudio2_;
+	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
 	IXAudio2MasteringVoice* masterVoice_ = nullptr;
 
 	std::map<std::string, AudioData> audioResources_; // 読み込み済みデータ

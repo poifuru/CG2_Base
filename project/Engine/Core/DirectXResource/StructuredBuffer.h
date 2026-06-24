@@ -1,9 +1,4 @@
 #pragma once
-#include <d3d12.h>
-#include <wrl.h>
-#include <vector>
-#include <algorithm>
-#include <cassert>
 #include "DescriptorHeapManager.h"
 
 // 構造化バッファのクラステンプレート
@@ -113,6 +108,7 @@ public:
 			other.buffer_ = nullptr;
 			other.mappedData_ = nullptr;
 			other.elementCount_ = 0;
+			other.descriptorIndex_ = 0;
 			other.heapManager_ = nullptr;
 		}
 		return *this;

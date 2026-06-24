@@ -1,3 +1,4 @@
+#include "PCH.h"
 #include "FixedPointCamera.h"
 #include <imgui.h>
 #include "MathFunction.h"

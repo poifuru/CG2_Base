@@ -1,7 +1,7 @@
+#include "PCH.h"
 #include "SwapChain.h"
 #include "CommandContext.h"
 #include "function.h"
-#include <cassert>
 
 SwapChain::SwapChain() = default;
 

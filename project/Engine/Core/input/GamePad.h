@@ -1,7 +1,4 @@
 #pragma once
-#include <Windows.h>
-#include <Xinput.h>
-#include <vector>
 #include "struct.h"
 
 enum Button {

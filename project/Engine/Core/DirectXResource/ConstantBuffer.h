@@ -1,7 +1,4 @@
 #pragma once
-#include <d3d12.h>
-#include <wrl.h>
-#include <cassert>
 
 // 定数バッファのテンプレートクラス
 template <typename T>
