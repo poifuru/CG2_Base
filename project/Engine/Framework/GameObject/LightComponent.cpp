@@ -30,9 +30,25 @@ void LightComponent::Deserialize(const json& j) {
 
 }
 
-const Vector4 LightComponent::GetColor() const {
-	if(auto* p = std::get_if<Directional>(&param_)) return p->color;
-}
+//const Vector4& LightComponent::GetColor() const {
+//	if(auto* p = std::get_if<Directional>(&param_)) return p->color;
+//	if(auto* p = std::get_if<Point>(&param_)) return p->color;
+//	if(auto* p = std::get_if<Spot>(&param_)) return p->color;
+//	if(auto* p = std::get_if<Rect>(&param_)) return p->color;
+//
+//	// どれでもない場合のデフォルト値
+//	return { 1.0f, 1.0f, 1.0f, 1.0f };
+//}
+//
+//const float& LightComponent::GetIntensity() const {
+//	if(auto* p = std::get_if<Directional>(&param_)) return p->intensity;
+//	if(auto* p = std::get_if<Point>(&param_)) return p->intensity;
+//	if(auto* p = std::get_if<Spot>(&param_)) return p->intensity;
+//	if(auto* p = std::get_if<Rect>(&param_)) return p->intensity;
+//
+//	// どれでもない場合のデフォルト値
+//	return 0.0f;
+//}
 
 const Directional* LightComponent::GetDirectionalParam() const {
 	return std::get_if<Directional>(&param_);

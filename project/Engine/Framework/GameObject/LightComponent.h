@@ -61,8 +61,18 @@ public:
 	LightType GetLightType() const { return type_; }
 
 	// Colorを返す
-	const Vector4* GetColor() const;
+	//const Vector4& GetColor() const;
 
+	// Intensityを返す
+	//const float& GetIntensity() const;
+
+	// Positionを返す
+	const Vector3& GetPosition() const;
+
+	// Directionを返す
+	const Vector3& GetDirection() const;
+
+	// --- 構造体を丸ごと返す --- //
 	// Directional構造体を返す
 	const Directional* GetDirectionalParam() const;
 
