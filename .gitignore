@@ -352,3 +352,12 @@ pdb
 /project/externals/imgui/lib/Debug/imgui.idb
 /project/kopipe
 *.log
+/project/externals/imgui/obj/Debug/imgui.tlog/imgui.lastbuildstate
+/project/externals/imgui/obj/Debug/imgui.log
+/project/externals/imgui/obj/Debug/imgui.obj
+/project/externals/imgui/obj/Debug/imgui_demo.obj
+/project/externals/imgui/obj/Debug/imgui_draw.obj
+/project/externals/imgui/obj/Debug/imgui_impl_dx12.obj
+/project/externals/imgui/obj/Debug/imgui_impl_win32.obj
+/project/externals/imgui/obj/Debug/imgui_tables.obj
+/project/externals/imgui/obj/Debug/imgui_widgets.obj
