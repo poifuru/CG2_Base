@@ -1,9 +1,5 @@
 #pragma once
-#include <vector>
-#include <memory>
-#include <string>
 #include "struct.h"
-#include <json.hpp>
 using json = nlohmann::json;
 
 class Component;

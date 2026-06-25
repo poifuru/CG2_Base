@@ -3,7 +3,7 @@
 #include "Component.h"
 #include "imgui.h"
 #include "BaseScene.h"
-#include "MeshRendererComponent.h"
+#include "ComponentType.h"
 
 GameObject::GameObject(SceneContext* context, const std::string& name)
 	: context_(context), name_(name) {
@@ -86,6 +86,18 @@ void GameObject::ImGui() {
 			// すでに追加されている場合はグレーアウト表示
 			ImGui::TextDisabled("Mesh Renderer (Already Added)");
 		}
+
+		// Light の追加メニュー
+		if(GetComponent<LightComponent>() == nullptr) {
+			if(ImGui::MenuItem("Light")) {
+				auto* newComp = AddComponent<LightComponent>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Light (Already Added)");
+		}
+
 		// コンポーネントが増えたらここに
 		ImGui::EndPopup();
 	}
@@ -136,6 +148,13 @@ void GameObject::Deserialize(const json& j) {
 				auto* comp = GetComponent<MeshRendererComponent>();
 				if (!comp) {
 					comp = AddComponent<MeshRendererComponent>();
+				}
+				comp->Deserialize(compJ);
+			}
+			else if (type == "LightComponent") {
+				auto* comp = GetComponent<LightComponent>();
+				if (!comp) {
+					comp = AddComponent<LightComponent>();
 				}
 				comp->Deserialize(compJ);
 			}

@@ -1,8 +1,4 @@
 #pragma once
-#include <vector>
-#include <memory>
-#include <filesystem>
-#include <string>
 #include "GameObject.h"
 #include "struct.h"
 

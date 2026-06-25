@@ -1,14 +1,15 @@
 #pragma once
-#include <vector>
-#include <memory>
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "SpotLight.h"
 #include "RectLight.h"
 #include "ConstantBuffer.h"
 
+// 前方宣言
+class LightComponent;
+
 //ライトの最大数
-const uint32_t MaxCount = 20;
+const uint32_t MaxCount = 50;
 
 //ライトの種類
 enum LightType {
@@ -82,47 +83,30 @@ public:
 
 	void Initialize(ID3D12Device* device);
 	void Update();
-	void ImGui();
 
-	// シーンからライトを追加する関数
-	void AddLight(LightType type);
-	//ライトを消す関数
-	void DeleteLight(LightType type, uint32_t index);
+	// フレームの最初にライト数をゼロにリセットする
+	void ClearLights();
 
-	//---ライトの設定---//
-	//***DirectionalLight***//
-	void SetDirectionalLightColor(uint32_t index, const Vector4& color) { dirLights_[index]->SetColor(color); }
-	void SetDirectionalLightIntensity(uint32_t index, const float& intensity) { dirLights_[index]->SetIntensity(intensity); }
-	void SetDirectionalLightDir(uint32_t index, const Vector3& dir) { dirLights_[index]->SetDirection(dir); }
-
-	//***PointLight***//
-	void SetPointLightColor(uint32_t index, const Vector4& color) { pointLights_[index]->SetColor(color); }
-	void SetPointLightIntensity(uint32_t index, const float& intensity) { pointLights_[index]->SetIntensity(intensity); }
-	void SetPointLightPosition(uint32_t index, const Vector3& position) { pointLights_[index]->SetPosition(position); }
-	void SetPointLightRadius(uint32_t index, const float& radius) { pointLights_[index]->SetRadius(radius); }
-	void SetPointLightDecay(uint32_t index, const float& decay) { pointLights_[index]->SetDecay(decay); }
-
-	//***spotLight***//
-	void SetSpotLightColor(uint32_t index, const Vector4& color) { spotLights_[index]->SetColor(color); }
-	void SetSpotLightIntensity(uint32_t index, const float& intensity) { spotLights_[index]->SetIntensity(intensity); }
-	void SetSpotLightPosition(uint32_t index, const Vector3& position) { spotLights_[index]->SetPosition(position); }
-	void SetSpotLightDir(uint32_t index, const Vector3& dir) { spotLights_[index]->SetDirection(dir); }
-	void SetSpotLightDistance(uint32_t index, const float& distance) { spotLights_[index]->SetDistance(distance); }
-	void SetSpotLightDecay(uint32_t index, const float& decay) { spotLights_[index]->SetDecay(decay); }
-	void SetSpotLightCosAngle(uint32_t index, const float& cosAngle) { spotLights_[index]->SetCosAngle(cosAngle); }
-
-	//***RectLight***//
-	void SetRectLightColor(uint32_t index, const Vector4& color) { rectLights_[index]->SetColor(color); }
-	void SetRectLightIntensity(uint32_t index, const float& intensity) { rectLights_[index]->SetIntensity(intensity); }
-	void SetRectLightPosition(uint32_t index, const Vector3& position) { rectLights_[index]->SetPosition(position); }
-	void SetRectLightDir(uint32_t index, const Vector3& dir) { rectLights_[index]->SetDirection(dir); }
-	void SetRectLightSize(uint32_t index, const Vector2& size) { rectLights_[index]->SetSize(size); }
-	void SetRectLightRight(uint32_t index, const Vector3& right) { rectLights_[index]->SetRight(right); }
-	void SetRectLightUp(uint32_t index, const Vector3& up) { rectLights_[index]->SetRight(up); }
-	void SetRectLightDecay(uint32_t index, const float& decay) { rectLights_[index]->SetDecay(decay); }
+	// ライトを登録する
+	void Register(const LightComponent* light);
 
 	// 描画時にバッファーのアドレスを渡すための関数
 	D3D12_GPU_VIRTUAL_ADDRESS GetLightGPUAddress() const { return lightBuffer_.GetGPUVirtualAddress(); }
+
+private:
+	// ライト登録の補助関数
+	void RegisterDirectionalLight(const Vector4& color, const Vector3& direction, float intensity);
+	void RegisterPointLight(
+		const Vector4& color, const Vector3& position, float intensity, float radius, float decay
+	);
+	void RegisterSpotLight(
+		const Vector4& color, const Vector3& position, float intensity, 
+		const Vector3& direction, float distance, float decay, float cosAngle
+	);
+	void RegisterRectLight(
+		const Vector4& color, const Vector3& position, float intensity, const Vector3& direction, 
+		const Vector2& size, const Vector3& right, const Vector3& up, float decay
+	);
 
 private:
 	//ライトの種類ごとにリストを持つ

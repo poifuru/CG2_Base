@@ -15,32 +15,32 @@ struct Directional {
 struct Point {
 	Vector4 color;		// 色
 	float	intensity;	// 強度
-	Vector3 position_;	// 位置
-	float	radius_;	//ライトが届く最大距離
-	float	decay_;		//減衰率
+	Vector3 position;	// 位置
+	float	radius;	//ライトが届く最大距離
+	float	decay;		//減衰率
 };
 
 // SpotLight
 struct Spot {
 	Vector4 color;		// 色
 	float	intensity;	// 強度
-	Vector3 position_;	// 位置
-	Vector3 direction_;	// 向き
-	float	distance_;	// ライトが届く最大距離
-	float	decay_;		// 減衰率
-	float	cosAngle_;	// スポットライトの余弦
+	Vector3 position;	// 位置
+	Vector3 direction;	// 向き
+	float	distance;	// ライトが届く最大距離
+	float	decay;		// 減衰率
+	float	cosAngle;	// スポットライトの余弦
 };
 
 // RectLight
 struct Rect {
 	Vector4 color;		// 色
 	float	intensity;	// 強度
-	Vector3 position_;	// 位置
-	Vector3 direction_;	// 向き
-	Vector2 size_;		// 大きさ
-	Vector3 right_;		// 右ベクトル
-	Vector3 up_;		// 上ベクトル
-	float	decay_;		// 減衰率
+	Vector3 position;	// 位置
+	Vector3 direction;	// 向き
+	Vector2 size;		// 大きさ
+	Vector3 right;		// 右ベクトル
+	Vector3 up;		// 上ベクトル
+	float	decay;		// 減衰率
 };
 
 class LightComponent : public Component {
@@ -57,20 +57,54 @@ public:
 
 	const char* GetName() const override { return "Light"; }
 
-	// ゲッター・セッター（LightManagerがデータを集約するときに使う）
+#pragma region アクセッサ (LightManagerがデータを集約するときに使う)
+	// LightTypeを返す
 	LightType GetLightType() const { return type_; }
 
 	// Colorを返す
-	//const Vector4& GetColor() const;
+	Vector4 GetColor() const;
+	// Colorをセット
+	void SetColor(const Vector4& color);
 
 	// Intensityを返す
-	//const float& GetIntensity() const;
+	float GetIntensity() const;
+	// Intensityをセット
+	void SetIntensity(const float& intensity);
 
 	// Positionを返す
-	const Vector3& GetPosition() const;
+	Vector3 GetPosition() const;
+	// Positionをセット
+	void SetPosition(const Vector3& position);
 
 	// Directionを返す
-	const Vector3& GetDirection() const;
+	Vector3 GetDirection() const;
+	// Directionをセット
+	void SetDirection(const Vector3& direction);
+
+	// Radiusを返す
+	float GetRadius() const;
+	// Radiusをセット
+	void SetRadius(const float& radius);
+
+	// Decayを返す
+	float GetDecay() const;
+	// Decayをセット
+	void SetDecay(const float& decay);
+
+	// Distanceを返す
+	float GetDistance() const;
+	// Distanceをセット
+	void SetDistance(const float& distance);
+
+	// CosAngleを返す
+	float GetCosAngle() const;
+	// CosAngleをセット
+	void SetCosAngle(const float& cosAngle);
+
+	// Sizeを返す
+	Vector2 GetSize() const;
+	// Sizeをセット
+	void SetSize(const Vector2& size);
 
 	// --- 構造体を丸ごと返す --- //
 	// Directional構造体を返す
@@ -84,6 +118,7 @@ public:
 
 	// Rect構造体を返す
 	const Rect* GetRectParam() const;
+#pragma endregion
 
 private:
 	LightType type_ = DIRECTIONALLIGHT;

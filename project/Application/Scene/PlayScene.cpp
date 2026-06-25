@@ -3,6 +3,7 @@
 #include "RenderSystem.h"
 #include "CameraOrganizer.h"
 #include "LevelEditor.h"
+#include "ComponentType.h"
 
 PlayScene::PlayScene() = default;
 PlayScene::~PlayScene() = default;
@@ -13,12 +14,6 @@ void PlayScene::Initialize() {
 	// ライトマネージャーの初期化
 	lightManager_ = std::make_unique<LightManager>();
 	lightManager_->Initialize(context_->device);
-
-	// 初期ライトとして DirectionalLight を 1 つ追加して設定
-	lightManager_->AddLight(LightType::DIRECTIONALLIGHT);
-	lightManager_->SetDirectionalLightDir(0, { 0.5f, -1.0f, 0.5f }); // 斜め下
-	lightManager_->SetDirectionalLightColor(0, { 1.0f, 1.0f, 1.0f, 1.0f }); // 白色
-	lightManager_->SetDirectionalLightIntensity(0, 1.0f); // 輝度 1.0
 
 #ifdef USEIMGUI
 	levelEditor_ = std::make_unique<LevelEditor>();
@@ -32,6 +27,15 @@ void PlayScene::Update(CameraData* cameraData) {
 
 	// ライトの更新
 	if (lightManager_) {
+		lightManager_->ClearLights();
+
+		// 全オブジェクトからLightComponentを探して登録
+		for(auto& obj : gameObjects_) {
+			if(auto* light = obj->GetComponent<LightComponent>()) {
+				lightManager_->Register(light);
+			}
+		}
+
 		lightManager_->Update();
 	}
 

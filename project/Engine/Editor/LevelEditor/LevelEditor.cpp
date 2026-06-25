@@ -1,13 +1,8 @@
 #include "PCH.h"
 #include "LevelEditor.h"
-#include <fstream>
-#include "imgui.h"
-#include "imgui_internal.h"
-#include "imGuizmo.h"
 #include "CommandManager.h"
 #include "TransformCommand.h"
 #include "MeshRendererComponent.h"
-#include <json.hpp>
 #include "MathFunction.h"
 #include "CameraComponent.h"
 #include "EditorManager.h"
@@ -95,10 +90,37 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 		ImVec2 viewportPos = ImVec2(0.0f, 0.0f);
 		ImVec2 viewportSize = ImVec2(0.0f, 0.0f);
 
-		// 1. "Game" ウィンドウをアペンドオープンし、位置とサイズを取得する
+		// "Game" ウィンドウをアペンドオープンし、位置とサイズを取得する
 		ImGui::Begin("Game");
 		viewportPos = ImGui::GetWindowPos();
 		viewportSize = ImGui::GetWindowSize();
+
+		// --- ギズモ操作ツールバーの描画 ---
+		 		ImGui::Text("Gizmo Operation:");
+		 		ImGui::SameLine();
+		 		if (ImGui::RadioButton("Translate", currentGizmoOperation == ImGuizmo::TRANSLATE)) {
+			 			currentGizmoOperation = ImGuizmo::TRANSLATE;
+			 		}
+		 		ImGui::SameLine();
+		 		if (ImGui::RadioButton("Rotate", currentGizmoOperation == ImGuizmo::ROTATE)) {
+			 			currentGizmoOperation = ImGuizmo::ROTATE;
+			 		}
+		 		ImGui::SameLine();
+		 		if (ImGui::RadioButton("Scale", currentGizmoOperation == ImGuizmo::SCALE)) {
+			 			currentGizmoOperation = ImGuizmo::SCALE;
+			 		}
+		 
+			 		ImGui::SameLine();
+		 		ImGui::Text(" | Space:");
+		 		ImGui::SameLine();
+		 		if (ImGui::RadioButton("Local", currentGizmoMode == ImGuizmo::LOCAL)) {
+			 			currentGizmoMode = ImGuizmo::LOCAL;
+			 		}
+		 		ImGui::SameLine();
+		 		if (ImGui::RadioButton("World", currentGizmoMode == ImGuizmo::WORLD)) {
+			 			currentGizmoMode = ImGuizmo::WORLD; // ← ここでWORLDをデフォルトや選択肢にするよ！
+			 		}
+		 		ImGui::Separator();
 
 		// タイトルバー（タブ）の高さ分、位置とサイズを補正する
 		float titleBarHeight = ImGui::GetFrameHeight();
