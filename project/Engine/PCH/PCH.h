@@ -46,6 +46,8 @@
 #include <array>
 #include <cassert>
 #include <chrono>           // 高精度タイマー用
+#include <cmath>
+#define _USE_MATH_DEFINES
 #include <cstdint>
 #include <filesystem>
 #include <format>
@@ -80,3 +82,5 @@
 #include <json.hpp>
 
 // 自作ヘッダー
+#include "MathTypes.h"
+#include "Transform.h"

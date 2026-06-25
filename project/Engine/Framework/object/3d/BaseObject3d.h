@@ -5,7 +5,7 @@
 #include "struct.h"
 #include "TransformMatrixData.h"
 #include "Material.h"
-#include "CameraComponent.h"
+#include "BaseCamera.h"
 #include "StructuredBuffer.h" // 構造化バッファをインクルード
 
 class BaseObject3d {

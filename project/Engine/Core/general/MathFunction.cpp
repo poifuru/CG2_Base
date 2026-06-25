@@ -1,10 +1,6 @@
 #include "PCH.h"
 #include "MathFunction.h"
-//#include <Novice.h>
-#include <cmath>
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <algorithm>
+#include "Geometry.h"
 
 namespace Math {
 	Vector3 Add (const Vector3& v1, const Vector3& v2) {
@@ -72,6 +68,24 @@ namespace Math {
 		result.w = mat.m[3][0] * vec.x + mat.m[3][1] * vec.y + mat.m[3][2] * vec.z + mat.m[3][3] * vec.w;
 
 		return result;
+	}
+
+	bool isClose(const Vector2& a, const Vector2 b, float epsilon) {
+		return (std::abs(a.x - b.x) < epsilon) &&
+			(std::abs(a.y - b.y) < epsilon);
+	}
+
+	bool isClose(const Vector3& a, const Vector3 b, float epsilon) {
+		return (std::abs(a.x - b.x) < epsilon) &&
+			(std::abs(a.y - b.y) < epsilon) &&
+			(std::abs(a.z - b.z) < epsilon);
+	}
+
+	bool isClose(const Vector4& a, const Vector4 b, float epsilon) {
+		return (std::abs(a.x - b.x) < epsilon) &&
+			(std::abs(a.y - b.y) < epsilon) &&
+			(std::abs(a.z - b.z) < epsilon) &&
+			(std::abs(a.w - b.w) < epsilon);
 	}
 
 	Matrix4x4 Add (const Matrix4x4& m1, const Matrix4x4& m2) {
@@ -1054,21 +1068,7 @@ namespace Math {
 		return q0 * scale0 + targetQ1 * scale1;
 	}
 
-	template<typename T>
-	T Lerp(const T& start, const T& end, float t) {
-		T result;
-		// tが0の時にstart、1の時にendになる
-		result = start + (end - start) * t;
-		return result;
-	}
-
 	Quaternion Lerp(const Quaternion& start, const Quaternion& end, float t) {
 		return Slerp(start, end, t);
 	}
 }
-
-//演算子オーバーロード
-Vector3 operator/(const Vector3& v, float s) { return Math::Multiply (1.0f / s, v); }
-Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Add (m1, m2); }
-Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Subtract (m1, m2); }
-Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) { return Math::Multiply (m1, m2); }

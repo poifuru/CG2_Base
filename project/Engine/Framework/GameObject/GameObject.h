@@ -1,5 +1,4 @@
 #pragma once
-#include "struct.h"
 using json = nlohmann::json;
 
 class Component;

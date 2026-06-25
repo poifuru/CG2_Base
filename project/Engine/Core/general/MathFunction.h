@@ -1,5 +1,5 @@
 #pragma once
-#include "struct.h"
+#include "Geometry.h"
 
 namespace Math {
 	static const int kColumnWidth = 60;
@@ -28,6 +28,13 @@ namespace Math {
 
 	//Matrix4x4 * Vector3の乗算
 	Vector4 Multiply (const Matrix4x4& mat, const Vector4& vec);
+
+	// float型のまるめ誤差に対応した、等しいかを判定する関数
+	bool isClose(const Vector2& a, const Vector2 b, float epsilon = 1e-5f);
+
+	bool isClose(const Vector3& a, const Vector3 b, float epsilon = 1e-5f);
+
+	bool isClose(const Vector4& a, const Vector4 b, float epsilon = 1e-5f);
 
 	//4x4行列関数
 	//加法
@@ -214,15 +221,14 @@ namespace Math {
 	Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
 
 	//Lerp関数(template対応)
-	template <typename T>
-	T Lerp(const T& start, const T& end, float t);
+	template<typename T>
+	T Lerp(const T& start, const T& end, float t) {
+		T result;
+		// tが0の時にstart、1の時にendになる
+		result = start + (end - start) * t;
+		return result;
+	}
 
 	//Quaternionようにオーバーロード
 	Quaternion Lerp(const Quaternion& start, const Quaternion& end, float t);
 }
-
-//演算子オーバーロード
-Vector3 operator/(const Vector3& v, float s);
-Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2);
-Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2);
-Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2);

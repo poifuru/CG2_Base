@@ -4,19 +4,16 @@
     <ClCompile Include="application\scene\ClearScene.cpp" />
     <ClCompile Include="application\scene\GameoverScene.cpp" />
     <ClCompile Include="Engine\Framework\Camera\CameraOrganizer.cpp" />
-    <ClCompile Include="Engine\Framework\Camera\FixedPointCamera.cpp" />
     <ClCompile Include="Engine\Render\Primitive\cube\CubeRenderer.cpp" />
     <ClCompile Include="Engine\Render\Primitive\line\LineRenderer.cpp" />
     <ClCompile Include="Engine\Render\PSO\BlendModeManager.cpp" />
     <ClCompile Include="Engine\Core\General\LogManager.cpp" />
     <ClCompile Include="Engine\Core\General\ChangeString.cpp" />
     <ClCompile Include="Engine\Render\PSO\InputLayoutManager.cpp" />
-    <ClCompile Include="Engine\Framework\Camera\FollowCamera.cpp" />
     <ClCompile Include="Engine\Editor\ImGui\ImGuiManager.cpp" />
     <ClCompile Include="Engine\Editor\ImGui\EditorManager.cpp" />
     <ClCompile Include="Engine\Core\LeakChecker.cpp" />
     <ClCompile Include="Engine\Core\DxCommon.cpp" />
-    <ClCompile Include="Engine\Framework\Camera\DebugCamera.cpp" />
     <ClCompile Include="Engine\Core\General\function.cpp" />
     <ClCompile Include="Engine\Core\Input\GamePad.cpp" />
     <ClCompile Include="Engine\Core\Input\InputManager.cpp" />
@@ -35,7 +32,6 @@
     <ClCompile Include="Engine\Render\PSO\RootSignatureManager.cpp" />
     <ClCompile Include="Engine\Render\PSO\PSOManager.cpp" />
     <ClCompile Include="Engine\Render\Primitive\Mesh.cpp" />
-    <ClCompile Include="Engine\Framework\Camera\LookAtCamera.cpp" />
     <ClCompile Include="Engine\Core\General\Easing.cpp" />
     <ClCompile Include="Engine\Core\SRV\SRVManager.cpp" />
     <ClCompile Include="application\entity\Entity.cpp" />
@@ -81,7 +77,7 @@
     <ClCompile Include="Engine\Core\LowLevel\WindowsAPI.cpp" />
     <ClCompile Include="Engine\Framework\Buffer\Material.cpp" />
     <ClCompile Include="Engine\Framework\GameObject\GameObject.cpp" />
-    <ClCompile Include="Engine\Framework\GameObject\MeshRendererComponent.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\MeshRendererComponent\MeshRendererComponent.cpp" />
     <ClCompile Include="externals\imgui\ImGuizmo.cpp" />
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="externals\imgui\imgui_tables.cpp" />
@@ -93,15 +89,18 @@
     <ClCompile Include="Engine\Editor\Command\CommandManager.cpp" />
     <ClCompile Include="Engine\Editor\Command\TransformCommand.cpp" />
     <ClCompile Include="Engine\Editor\LevelEditor\LevelEditor.cpp" />
-    <ClCompile Include="Engine\Framework\GameObject\LightComponent.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\LightComponent\LightComponent.cpp" />
     <ClCompile Include="Engine\PCH\PCH.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\CameraComponent\VirtualCameraComponent.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\CameraComponent\MainCameraComponent.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\CameraComponent\VirtualFollowCamera.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\CameraComponent\VirtualDebugCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
     <ClInclude Include="application\scene\ClearScene.h" />
     <ClInclude Include="Engine\Framework\Camera\CameraOrganizer.h" />
-    <ClInclude Include="Engine\Framework\Camera\FixedPointCamera.h" />
-    <ClInclude Include="Engine\Framework\Camera\CameraComponent.h" />
+    <ClInclude Include="Engine\Framework\Camera\BaseCamera.h" />
     <ClInclude Include="Engine\Render\Primitive\cube\CubeRenderer.h" />
     <ClInclude Include="Engine\Render\Primitive\cube\CubeRenderData.h" />
     <ClInclude Include="Engine\Render\Primitive\line\LineRenderData.h" />
@@ -121,12 +120,10 @@
     <ClInclude Include="Engine\Core\General\LogManager.h" />
     <ClInclude Include="Engine\Core\General\ChangeString.h" />
     <ClInclude Include="Engine\Render\PSO\InputLayoutManager.h" />
-    <ClInclude Include="Engine\Framework\Camera\FollowCamera.h" />
     <ClInclude Include="Engine\Editor\ImGui\ImGuiManager.h" />
     <ClInclude Include="Engine\Editor\ImGui\EditorManager.h" />
     <ClInclude Include="Engine\Core\LeakChecker.h" />
     <ClInclude Include="Engine\Core\DxCommon.h" />
-    <ClInclude Include="Engine\Framework\Camera\DebugCamera.h" />
     <ClInclude Include="Engine\Core\Input\GamePad.h" />
     <ClInclude Include="Engine\Core\General\function.h" />
     <ClInclude Include="Engine\Core\General\MathFunction.h" />
@@ -142,7 +139,6 @@
     <ClInclude Include="application\scene\SceneManager.h" />
     <ClInclude Include="application\scene\TitleScene.h" />
     <ClInclude Include="application\scene\PlayScene.h" />
-    <ClInclude Include="Engine\Framework\Camera\LookAtCamera.h" />
     <ClInclude Include="Engine\Core\General\Easing.h" />
     <ClInclude Include="Engine\Core\SRV\SRVManager.h" />
     <ClInclude Include="application\entity\Entity.h" />
@@ -206,17 +202,25 @@
     <ClInclude Include="Engine\Core\LowLevel\SwapChain.h" />
     <ClInclude Include="Engine\Core\LowLevel\WindowsAPI.h" />
     <ClInclude Include="Engine\Framework\Buffer\Material.h" />
-    <ClInclude Include="Engine\Framework\GameObject\Component.h" />
+    <ClInclude Include="Engine\Framework\GameObject\Component\Component.h" />
     <ClInclude Include="Engine\Framework\GameObject\GameObject.h" />
-    <ClInclude Include="Engine\Framework\GameObject\MeshRendererComponent.h" />
+    <ClInclude Include="Engine\Framework\GameObject\MeshRendererComponent\MeshRendererComponent.h" />
     <ClInclude Include="externals\imgui\ImGuizmo.h" />
     <ClInclude Include="Engine\Editor\Command\ICommand.h" />
     <ClInclude Include="Engine\Editor\Command\CommandManager.h" />
     <ClInclude Include="Engine\Editor\Command\TransformCommand.h" />
     <ClInclude Include="Engine\Editor\LevelEditor\LevelEditor.h" />
-    <ClInclude Include="Engine\Framework\GameObject\LightComponent.h" />
+    <ClInclude Include="Engine\Framework\GameObject\LightComponent\LightComponent.h" />
     <ClInclude Include="Engine\PCH\PCH.h" />
-    <ClInclude Include="Engine\Framework\GameObject\ComponentType.h" />
+    <ClInclude Include="Engine\Framework\GameObject\Component\ComponentType.h" />
+    <ClInclude Include="Engine\Framework\GameObject\CameraComponent\VirtualCameraComponent.h" />
+    <ClInclude Include="Engine\Common\Structure\MathTypes.h" />
+    <ClInclude Include="Engine\Common\Structure\Transform.h" />
+    <ClInclude Include="Engine\Common\Structure\Geometry.h" />
+    <ClInclude Include="Engine\Common\Structure\PhysicsTypes.h" />
+    <ClInclude Include="Engine\Framework\GameObject\CameraComponent\MainCameraComponent.h" />
+    <ClInclude Include="Engine\Framework\GameObject\CameraComponent\VirtualFollowCamera.h" />
+    <ClInclude Include="Engine\Framework\GameObject\CameraComponent\VirtualDebugCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

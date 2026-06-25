@@ -1,17 +1,18 @@
 #pragma once
 #include "struct.h"
+#include "MainCameraComponent.h"
 
-struct CameraData {
-	EulerTransform transform;
-	Matrix4x4 world;
-	Matrix4x4 view;
-	Matrix4x4 proj;
-	Matrix4x4 vp;
-};
+//struct CameraData {
+//	EulerTransform transform;
+//	Matrix4x4 world;
+//	Matrix4x4 view;
+//	Matrix4x4 proj;
+//	Matrix4x4 vp;
+//};
 
-class CameraComponent {
+class BaseCamera {
 public:
-	virtual ~CameraComponent () = default;
+	virtual ~BaseCamera () = default;
 
 	virtual void Initialize (const EulerTransform& transform) = 0;
 	virtual void Update () = 0;

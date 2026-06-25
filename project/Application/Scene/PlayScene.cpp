@@ -15,6 +15,13 @@ void PlayScene::Initialize() {
 	lightManager_ = std::make_unique<LightManager>();
 	lightManager_->Initialize(context_->device);
 
+	// シーン初期化時にターゲットを紐づけ
+	for (auto& obj : gameObjects_) {
+		if (auto* followCam = obj->GetComponent<VirtualFollowCamera>()) {
+			followCam->ResolveTarget(gameObjects_);
+		}
+	}
+
 #ifdef USEIMGUI
 	levelEditor_ = std::make_unique<LevelEditor>();
 	levelEditor_->Initialize(context_);
@@ -22,12 +29,13 @@ void PlayScene::Initialize() {
 }
 
 void PlayScene::Update(CameraData* cameraData) {
-	// カメラの更新
-	CameraOrganizer::GetInstance()->Update();
-
+	// 全オブジェクトの更新
 	for (auto& obj : gameObjects_) {
 		obj->Update();
 	}
+
+	// カメラの更新
+	CameraOrganizer::GetInstance()->Update();
 
 	// ライトの更新
 	if (lightManager_) {

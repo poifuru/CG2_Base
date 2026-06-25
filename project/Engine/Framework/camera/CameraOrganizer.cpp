@@ -1,196 +1,124 @@
 #include "PCH.h"
 #include "CameraOrganizer.h"
-#include <imgui.h>
+#include "MainCameraComponent.h"
+#include "VirtualCameraComponent.h"
+#include "GameObject.h"
+#include "MathFunction.h"
+#include "Easing.h"
 
-CameraOrganizer::~CameraOrganizer () {
-	for (auto const& [key, val] : cameras_) {
-		delete val;
-	}
-	cameras_.clear ();
+CameraOrganizer::~CameraOrganizer() {
 }
 
-void CameraOrganizer::Initialize () {
-	vpMatrix_ = Math::MakeIdentity4x4 ();
+void CameraOrganizer::Initialize() {
+	mainCamera_ = nullptr;
+	virtualCameras_.clear();
 
-	//テスト用 DebugCameraを生成＆登録
-	AddCamera ("Debug", CameraType::DebugCamera);
+	currentVirtualCamera_ = nullptr;
+	preVirtualCamera_ = nullptr;
 
-	//初期状態ではデバッグカメラをセット
-	SetActiveCamera ("Debug");
-	//positionとrotateをセット
-	SetPosition ({ 0.0f, 5.0f, -20.0f });
-	SetRotate ({ 0.3f, 0.0f, 0.0f });
+	isBlending_ = false;
+	blendTimer_ = 0.0f;
 }
 
-void CameraOrganizer::AddCamera (const std::string& name, CameraType type) {
-	//同じ名前のカメラがあったら
-	if (cameras_.count (name)) {
-		//早期リターン
-		return;
+void CameraOrganizer::Update() {
+	VirtualCameraComponent* targetCam = FindActiveVirtualCamera();
+	if(!targetCam || !mainCamera_) return;	// ターゲットカメラ・メインカメラがnullなら早期リターン
+
+	// アクティブな仮想カメラが切り替わった場合、ブレンドを開始する
+	if(targetCam != currentVirtualCamera_) {
+		if(currentVirtualCamera_) {
+			preVirtualCamera_ = currentVirtualCamera_;
+			isBlending_ = true;
+			blendTimer_ = 0.0f;
+		}
+		currentVirtualCamera_ = targetCam;
 	}
 
-	//原点にカメラを生成
-	EulerTransform transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+	Vector3 finalPos = {};
+	Vector3 finalRot = {};
+	currentFov_ = currentVirtualCamera_->GetFov();
 
-	CameraComponent* camera = nullptr;
+	if (isBlending_ && preVirtualCamera_) {
+		// 一旦ローカル変数に退避させておく
+		VirtualCameraComponent* preCam = preVirtualCamera_;
 
-	switch (type) {
-	case::CameraType::FixedPointCamera: {
-		FixedPointCamera* fixedCam = new FixedPointCamera ();
-		camera = fixedCam;
-		break;
+		blendTimer_ += 1.0f / 60.0f; // デルタタイム（仮で1/60固定）
+		float t = blendTimer_ / blendDuration_;
+		if (t >= 1.0f) {
+			t = 1.0f;
+			isBlending_ = false;
+			preVirtualCamera_ = nullptr;
+		}
+
+		// イージング（SmoothStep）をかけて滑らかに補間する
+		float easeT = Easing::easeInExpo(t);
+
+		// 座標と回転、FOVを線形補間する
+		finalPos = Math::Lerp(preCam->GetPosition(), currentVirtualCamera_->GetPosition(), easeT);
+		finalRot = Math::Lerp(preCam->GetRotate(), currentVirtualCamera_->GetRotate(), easeT);
+		currentFov_ = Math::Lerp(preCam->GetFov(), currentVirtualCamera_->GetFov(), easeT);
+	} else {
+		finalPos = currentVirtualCamera_->GetPosition();
+		finalRot = currentVirtualCamera_->GetRotate();
 	}
+	// 計算した最終的なカメラ姿勢を実体カメラオブジェクトに適用する
+	auto& mainTrans = mainCamera_->GetGameObject()->GetTransform();
+	mainTrans.translate = finalPos;
+	mainTrans.rotate = finalRot;
 
-	case::CameraType::FollowCamera: {
-		FollowCamera* followCam = new FollowCamera ();
-		camera = followCam;
-		break;
-	}
-
-	case::CameraType::LookAtCamera: {
-		LookAtCamera* lookAtCam = new LookAtCamera ();
-		camera = lookAtCam;
-		break;
-	}
-
-	case::CameraType::DebugCamera: {
-		DebugCamera* debugCam = new DebugCamera ();
-		camera = debugCam;
-		break;
-	}
-	}
-
-	//追加するカメラの初期化がうまくいかなかったら
-	if (camera == nullptr) {
-		//リターン
-		return;
-	}
-
-	camera->Initialize (transform);
-	cameras_[name] = camera;
+	mainCamera_->UpdateMatrix();
 }
 
-void CameraOrganizer::SetActiveCamera (const std::string& cameraName) {
-	auto it = cameras_.find (cameraName);
-	if (it != cameras_.end ()) {
-		if (activeCamera_ && activeCamera_ != it->second) {
-			if (dynamic_cast<DebugCamera*>(activeCamera_) == nullptr) {
-				//アクティブなカメラをコンテナから逆引き
-				for (auto const& [key, val] : cameras_) {
-					//ポインタが一致しているか
-					if (val == activeCamera_) {
-						//一致する名前を保存
-						lastActiveCamera_ = key;
-						break;
-					}
-				}
-			}
+void CameraOrganizer::RegisterVirtualCamera(VirtualCameraComponent* virtualCamera) {
+	if(std::find(virtualCameras_.begin(), virtualCameras_.end(), virtualCamera) == virtualCameras_.end()) {
+		virtualCameras_.push_back(virtualCamera);
+	}
+}
+
+void CameraOrganizer::UnregisterVirtualCamera(VirtualCameraComponent* virtualCamera) {
+	auto it = std::find(virtualCameras_.begin(), virtualCameras_.end(), virtualCamera);
+	if(it != virtualCameras_.end()) {
+		virtualCameras_.erase(it);
+	}
+	if(currentVirtualCamera_ == virtualCamera) currentVirtualCamera_ = nullptr;
+	if(preVirtualCamera_ == virtualCamera) preVirtualCamera_ = nullptr;
+}
+
+CameraData& CameraOrganizer::GetCameraData() {
+	// メインカメラの実体から最終行列を取得する
+	if (mainCamera_) {
+		// メインカメラがまだ登録されていない場合は、ダミーデータを返す
+		return mainCamera_->GetCameraData();
+	}
+	
+	// メインカメラがいない場合の静的なダミーデータ
+	static CameraData defaultCameraData;
+	static bool isInitialized = false;
+	if (!isInitialized) {
+		defaultCameraData = {};
+		defaultCameraData.transform.scale = { 1.0f, 1.0f, 1.0f };
+		defaultCameraData.transform.rotate = { 0.0f, 0.0f, 0.0f };
+		defaultCameraData.transform.translate = { 0.0f, 0.0f, -10.0f };
+		defaultCameraData.world = Math::MakeIdentity4x4();
+		defaultCameraData.view = Math::MakeIdentity4x4();
+		defaultCameraData.proj = Math::MakeIdentity4x4();
+		defaultCameraData.vp = Math::MakeIdentity4x4();
+		isInitialized = true;
+	}
+	return defaultCameraData;
+}
+
+VirtualCameraComponent* CameraOrganizer::FindActiveVirtualCamera() {
+	// 仮想カメラのコンテナが空なら早期リターン
+	if(virtualCameras_.empty()) return nullptr;
+
+	// 優先度(Priority)が一番高いものを探す
+	VirtualCameraComponent* activeCam = virtualCameras_[0];
+	for(auto* cam : virtualCameras_) {
+		if(cam->GetPriority() > activeCam->GetPriority()) {
+			activeCam = cam;
 		}
 	}
-	activeCamera_ = it->second;
-	activeCameraName_ = cameraName;
 
-	// 切り替わった瞬間に最新の行列を1回更新しておく（同期ズレ防止）
-	if (activeCamera_) {
-		activeCamera_->Update();
-		vpMatrix_ = activeCamera_->GetVPMat();
-	}
-}
-
-void CameraOrganizer::Update () {
-	activeCamera_->Update ();
-	vpMatrix_ = activeCamera_->GetVPMat ();
-}
-
-void CameraOrganizer::ImGui () {
-#ifdef USEIMGUI
-	ImGui::Begin ("CameraOrganizer");
-	ImGui::Separator ();
-	// 現在アクティブなカメラの名前を取得
-	const char* current_item = activeCameraName_.c_str ();
-
-	// 登録済みのカメラ名を格納するvector
-	std::vector<const char*> cameraNames;
-	for (const auto& pair : cameras_) {
-		// std::stringのポインタを保持
-		cameraNames.push_back (pair.first.c_str ());
-	}
-
-	// ImGui::Comboを使ってリストからカメラを選択
-	if (ImGui::BeginCombo ("##CameraList", current_item)) { // "##CameraList"はラベルを非表示にするテクニック
-		for (const char* name : cameraNames) {
-			// 現在選択されているアイテムかチェック
-			bool is_selected = (current_item == name);
-
-			// Selectableアイテムの描画
-			if (ImGui::Selectable (name, is_selected)) {
-				// 選択されたらアクティブカメラを切り替える
-				SetActiveCamera (name);
-			}
-
-			// オートスクロールするために選択されているアイテムにフォーカス
-			if (is_selected) {
-				ImGui::SetItemDefaultFocus ();
-			}
-		}
-		ImGui::EndCombo ();
-	}
-
-	// 現在アクティブなカメラ名を表示（オプション）
-	ImGui::Text (("アクティブなカメラ : " + activeCameraName_).c_str ());
-
-	activeCamera_->ImGui ();
-	ImGui::End ();
-#endif
-}
-
-void CameraOrganizer::SetFollowTarget (const std::string& cameraName, const EulerTransform& target) {
-	auto it = cameras_.find (cameraName);
-	if (it == cameras_.end ()) {
-		return;
-	}
-
-	CameraComponent* camera = it->second;
-
-	// 2. FollowCamera型にダウンキャストする
-	FollowCamera* followCamera = dynamic_cast<FollowCamera*>(camera);
-
-	if (followCamera) {
-		// 3. ダウンキャストに成功したら、SetTarget() を呼び出す！
-		followCamera->SetTarget (&target);
-	}
-}
-
-void CameraOrganizer::SetLookAtPosition (const std::string& cameraName, const Vector3& pos) {
-	auto it = cameras_.find (cameraName);
-	if (it == cameras_.end ()) {
-		return;
-	}
-
-	CameraComponent* camera = it->second;
-
-	// 2. FollowCamera型にダウンキャストする
-	LookAtCamera* lookAtCamera = dynamic_cast<LookAtCamera*>(camera);
-
-	if (lookAtCamera) {
-		// 3. ダウンキャストに成功したら、SetTarget() を呼び出す！
-		lookAtCamera->SetPosition (pos);
-	}
-}
-
-void CameraOrganizer::SetLookAtTarget (const std::string& cameraName, const Vector3& targetPos) {
-	auto it = cameras_.find (cameraName);
-	if (it == cameras_.end ()) {
-		return;
-	}
-
-	CameraComponent* camera = it->second;
-
-	// 2. FollowCamera型にダウンキャストする
-	LookAtCamera* lookAtCamera = dynamic_cast<LookAtCamera*>(camera);
-
-	if (lookAtCamera) {
-		// 3. ダウンキャストに成功したら、SetTarget() を呼び出す！
-		lookAtCamera->SetTarget (targetPos);
-	}
+	return activeCam;
 }

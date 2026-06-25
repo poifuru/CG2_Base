@@ -4,7 +4,7 @@
 #include "TransformCommand.h"
 #include "MeshRendererComponent.h"
 #include "MathFunction.h"
-#include "CameraComponent.h"
+#include "BaseCamera.h"
 #include "EditorManager.h"
 
 void LevelEditor::Initialize(SceneContext* context) {

@@ -1,20 +1,9 @@
 #pragma once
-#include <vector>
-#include <unordered_map>
-#include <string>
-#include "CameraComponent.h"
-#include "DebugCamera.h"
-#include "FixedPointCamera.h"
-#include "FollowCamera.h"
-#include "LookAtCamera.h"
-#include "MathFunction.h"
 
-enum class CameraType {
-	FixedPointCamera,
-	FollowCamera,
-	LookAtCamera,
-	DebugCamera,
-};
+// 前方宣言
+struct CameraData;
+class MainCameraComponent;
+class VirtualCameraComponent;
 
 class CameraOrganizer {
 public:
@@ -28,47 +17,21 @@ public:
 	//初期化関数
 	void Initialize ();
 
-	//カメラを登録する関数
-	void AddCamera (const std::string& name, CameraType type);
-
-	//アクティブなカメラを切り替える
-	void SetActiveCamera (const std::string& cameraName);
-
 	//アクティブカメラの更新処理
 	void Update ();
 
-	//ImGui
-	void ImGui ();
+	// メインカメラの登録
+	void RegisterMainCamera(MainCameraComponent* mainCamera) { mainCamera_ = mainCamera; }
 
-	//追従カメラの設定をいじるためにコンテナからカメラを取得
-	void SetFollowTarget (const std::string& cameraName, const EulerTransform& target);
+	// 仮想カメラの登録
+	void RegisterVirtualCamera(VirtualCameraComponent* virtualCamera);
 
-	//LookAtカメラの設定をいじるためにコンテナからカメラを取得
-	void SetLookAtPosition (const std::string& cameraName, const Vector3& pos);
-	void SetLookAtTarget (const std::string& cameraName, const Vector3& targetPos);
+	// 仮想カメラの登録解除
+	void UnregisterVirtualCamera(VirtualCameraComponent* virtualCamera);
 
-	//CameraData取得用
-	CameraData& GetCameraData() { return activeCamera_->GetCameraData(); }
-
-	// 現在アクティブなカメラの名前を取得
-	const std::string& GetActiveCameraName() const { return activeCameraName_; }
-
-	//描画用のvp行列取得関数
-	Matrix4x4& GetVPMatrix () { return vpMatrix_; }
-
-	//位置と回転をいじれるように
-	Vector3 GetPosition (const std::string& ID) { return cameras_.at (ID)->GetTranslate (); }
-	Vector3 GetRotate (const std::string& ID) { return cameras_.at (ID)->GetRotate (); }
-	void SetPosition (const Vector3& position) { activeCamera_->SetTranslate (position); }
-	void SetRotate (const Vector3& rotate) { activeCamera_->SetRotate (rotate); }
-
-	const float& GetNear() { return activeCamera_->GetNear(); }
-	const float& GetFar() { return activeCamera_->GetFar(); }
-
-	// カメラが水中にあるかを高さで判定(仮)
-	bool InWater() { 
-		return (activeCamera_->GetTranslate().y < 0.0f);
-	}
+	// 外部から描画情報をもらうためのインターフェース
+	CameraData& GetCameraData();
+	float GetActiveFov() const { return currentFov_; }
 
 private:
 	//コンストラクタを禁止
@@ -80,18 +43,19 @@ private:
 	CameraOrganizer& operator=(CameraOrganizer&&) = delete;
 
 private:
-	//カメラを収納するコンテナ
-	std::unordered_map<std::string, CameraComponent*> cameras_;
+	// 最優先の仮想カメラを決定する
+	VirtualCameraComponent* FindActiveVirtualCamera();
 
-	//アクティブ状態のカメラ
-	CameraComponent* activeCamera_ = nullptr;
+private:
+	MainCameraComponent* mainCamera_ = nullptr;			// メインカメラ
+	std::vector<VirtualCameraComponent*> virtualCameras_;	// 仮想カメラのコンテナ
 
-	//vp行列
-	Matrix4x4 vpMatrix_ = {};
+	VirtualCameraComponent* currentVirtualCamera_ = nullptr;	// 現在の仮想カメラ
+	VirtualCameraComponent* preVirtualCamera_ = nullptr;	// ひとつ前の仮想カメラ
 
-	//最後にアクティブだったカメラの名前
-	std::string lastActiveCamera_;
-
-	//現在アクティブなカメラの名前
-	std::string activeCameraName_;
+	// ブレンド（補間）用の変数
+	float blendTimer_ = 0.0f;
+	float blendDuration_ = 1.0f; // 切り替えに1秒かける
+	bool isBlending_ = false;
+	float currentFov_ = 0.45f;
 };

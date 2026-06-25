@@ -13,7 +13,7 @@
                         ],
                         "enableLighting": 1,
                         "environmentCoefficient": 0.30000001192092896,
-                        "metallic": 0.7009999752044678,
+                        "metallic": 0.0,
                         "roughness": 0.5,
                         "textureIndex": 0,
                         "uvTransform": {
@@ -38,16 +38,16 @@
                     "type": "MeshRendererComponent"
                 }
             ],
-            "name": "player",
+            "name": "Player",
             "transform": {
                 "position": [
                     0.0,
-                    0.0,
+                    8.218123435974121,
                     0.0
                 ],
                 "rotation": [
                     0.0,
-                    0.0,
+                    -0.0,
                     0.0
                 ],
                 "scale": [
@@ -74,8 +74,8 @@
             "name": "Sun",
             "transform": {
                 "position": [
-                    -5.2492547035217285,
-                    5.961413860321045,
+                    -10.171079635620117,
+                    6.593788146972656,
                     0.0
                 ],
                 "rotation": [
@@ -87,6 +87,96 @@
                     1.0,
                     1.0,
                     1.0
+                ]
+            }
+        },
+        {
+            "components": [
+                {
+                    "far": 1000.0,
+                    "near": 0.009999999776482582,
+                    "type": "MainCameraComponent"
+                }
+            ],
+            "name": "MainCamera",
+            "transform": {
+                "position": [
+                    -11.71041488647461,
+                    8.527972221374512,
+                    -29.711416244506836
+                ],
+                "rotation": [
+                    -0.009999975562095642,
+                    0.4030005633831024,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "components": [
+                {
+                    "fov": 0.44999998807907104,
+                    "priority": 10,
+                    "sensitivity": 0.0010000000474974513,
+                    "speed": 0.30000001192092896,
+                    "type": "VirtualDebugCamera"
+                }
+            ],
+            "name": "DebugCamera",
+            "transform": {
+                "position": [
+                    -11.71041488647461,
+                    8.527972221374512,
+                    -29.711416244506836
+                ],
+                "rotation": [
+                    -0.009999975562095642,
+                    0.4030005633831024,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "components": [
+                {
+                    "delay": 0.0,
+                    "fov": 0.44999998807907104,
+                    "offset": [
+                        0.0,
+                        5.0,
+                        -10.0
+                    ],
+                    "priority": 0,
+                    "targetName": "Player",
+                    "type": "VirtualFollowCamera"
+                }
+            ],
+            "name": "FollowCamera",
+            "transform": {
+                "position": [
+                    -20.910297393798828,
+                    7.919447898864746,
+                    -0.09088094532489777
+                ],
+                "rotation": [
+                    -7.072442531352863e-05,
+                    1.5608628988265991,
+                    -6.405568274203688e-05
+                ],
+                "scale": [
+                    0.9999949932098389,
+                    0.999997615814209,
+                    0.9999949932098389
                 ]
             }
         }

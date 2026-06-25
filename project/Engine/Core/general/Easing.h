@@ -1,4 +1,5 @@
 #pragma once
+
 namespace Easing{
 	float easeInSine (float t);
 	float easeInQuad (float t);

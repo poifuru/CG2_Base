@@ -1,6 +1,6 @@
 #pragma once
 #include <variant>
-#include "struct.h"
+#include "Geometry.h"
 
 // コライダーの形状
 enum class CollisionType {

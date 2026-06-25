@@ -15,6 +15,7 @@
 #include "RenderSystem.h"
 #include "RenderTexture.h"
 #include "CameraOrganizer.h"
+#include "MainCameraComponent.h"
 #include "LogManager.h"
 
 Engine::Engine() = default;

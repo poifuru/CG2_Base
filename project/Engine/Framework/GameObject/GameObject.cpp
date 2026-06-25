@@ -97,6 +97,36 @@ void GameObject::ImGui() {
 		else {
 			ImGui::TextDisabled("Light (Already Added)");
 		}
+		// 実体カメラ
+		if(GetComponent<MainCameraComponent>() == nullptr) {
+			if(ImGui::MenuItem("Main Camera")) {
+				auto* newComp = AddComponent<MainCameraComponent>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Main Camera (Already Added)");
+		}
+		// 仮想デバッグカメラ
+		if(GetComponent<VirtualDebugCamera>() == nullptr) {
+			if(ImGui::MenuItem("Virtual Debug Camera")) {
+				auto* newComp = AddComponent<VirtualDebugCamera>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Debug Camera (Already Added)");
+		}
+		// 仮想追従カメラ
+		if(GetComponent<VirtualFollowCamera>() == nullptr) {
+			if(ImGui::MenuItem("Virtual Follow Camera")) {
+				auto* newComp = AddComponent<VirtualFollowCamera>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Follow Camera (Already Added)");
+		}
 
 		// コンポーネントが増えたらここに
 		ImGui::EndPopup();
@@ -139,23 +169,34 @@ void GameObject::Deserialize(const json& j) {
 	}
 
 	// コンポーネントリストの復元
-	if (j.contains("components")) {
-		for (const auto& compJ : j["components"]) {
+	if(j.contains("components")) {
+		for(const auto& compJ : j["components"]) {
 			std::string type = compJ["type"];
 
-			if (type == "MeshRendererComponent") {
+			if(type == "MeshRendererComponent") {
 				// 二重追加を防ぐチェックをしてから追加
 				auto* comp = GetComponent<MeshRendererComponent>();
-				if (!comp) {
-					comp = AddComponent<MeshRendererComponent>();
-				}
+				if(!comp) comp = AddComponent<MeshRendererComponent>();
 				comp->Deserialize(compJ);
 			}
-			else if (type == "LightComponent") {
+			else if(type == "LightComponent") {
 				auto* comp = GetComponent<LightComponent>();
-				if (!comp) {
-					comp = AddComponent<LightComponent>();
-				}
+				if(!comp) comp = AddComponent<LightComponent>();
+					comp->Deserialize(compJ);
+			}
+			else if(type == "MainCameraComponent") {
+				auto* comp = GetComponent<MainCameraComponent>();
+				if(!comp) comp = AddComponent<MainCameraComponent>();
+				comp->Deserialize(compJ);
+			}
+			else if(type == "VirtualFollowCamera") {
+				auto* comp = GetComponent<VirtualFollowCamera>();
+				if(!comp) comp = AddComponent<VirtualFollowCamera>();
+				comp->Deserialize(compJ);
+			}
+			else if (type == "VirtualDebugCamera") {
+				auto* comp = GetComponent<VirtualDebugCamera>();
+				if (!comp) comp = AddComponent<VirtualDebugCamera>();
 				comp->Deserialize(compJ);
 			}
 		}
