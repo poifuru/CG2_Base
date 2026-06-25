@@ -89,7 +89,7 @@ void Engine::BeginFrame() {
 	cmdContext_->TransitionBarrier(renderTexture_->GetResource(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = renderTexture_->GetDescriptorHandle();
-	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
+	float clearColor[] = { 0.14f, 0.14f, 0.14f, 1.0f };
 	cmdContext_->ClearRenderTarget(rtvHandle, clearColor);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = swapChain_->GetDsvHandle();
@@ -98,7 +98,7 @@ void Engine::BeginFrame() {
 	cmdContext_->SetRenderTargets(rtvHandle, &dsvHandle);
 #else
 	// 直接SwapChainのバックバッファに描画する
-	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
+	float clearColor[] = { 0.14f, 0.14f, 0.14f, 1.0f };
 	swapChain_->BeginRender(cmdContext_.get(), clearColor);
 #endif
 }

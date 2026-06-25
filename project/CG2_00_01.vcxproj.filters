@@ -1,26 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="Resources\shader\Line.PS.hlsl" />
-    <FxCompile Include="Resources\shader\Line.VS.hlsl" />
-    <FxCompile Include="Resources\shader\Object3d.PS.hlsl" />
-    <FxCompile Include="Resources\shader\Object3d.VS.hlsl" />
-    <FxCompile Include="Resources\shader\Particle.PS.hlsl" />
-    <FxCompile Include="Resources\shader\Particle.VS.hlsl" />
-    <FxCompile Include="Resources\shader\Skybox.VS.hlsl" />
-    <FxCompile Include="Resources\shader\Skybox.PS.hlsl" />
-    <FxCompile Include="Resources\shader\Fullscreen.VS.hlsl" />
-    <FxCompile Include="Resources\shader\CopyImage.PS.hlsl" />
-    <FxCompile Include="Resources\shader\ColorGrading.PS.hlsl" />
-    <FxCompile Include="Resources\shader\Vignette.PS.hlsl" />
-    <FxCompile Include="Resources\shader\BoxFilter.PS.hlsl" />
-    <FxCompile Include="Resources\shader\GaussianFilter.PS.hlsl" />
-    <FxCompile Include="Resources\shader\Fog.PS.hlsl" />
-    <FxCompile Include="Resources\shader\Outline.PS.hlsl" />
-    <FxCompile Include="Resources\shader\Triangle.VS.hlsl" />
-    <FxCompile Include="Resources\shader\Triangle.PS.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="application\scene\ClearScene.cpp" />
     <ClCompile Include="application\scene\GameoverScene.cpp" />
     <ClCompile Include="Engine\Framework\Camera\CameraOrganizer.cpp" />
@@ -236,6 +216,7 @@
     <ClInclude Include="Engine\Editor\LevelEditor\LevelEditor.h" />
     <ClInclude Include="Engine\Framework\GameObject\LightComponent.h" />
     <ClInclude Include="Engine\PCH\PCH.h" />
+    <ClInclude Include="Engine\Framework\GameObject\ComponentType.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

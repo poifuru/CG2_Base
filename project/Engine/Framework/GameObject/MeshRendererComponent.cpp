@@ -9,6 +9,9 @@
 #include "imgui.h"
 
 void MeshRendererComponent::Initialize() {
+	if (isInitialized_) return;
+	isInitialized_ = true;
+
 	// 初期モデルのロード
 	SetModel(modelPath_);
 }
@@ -45,10 +48,62 @@ void MeshRendererComponent::ImGui() {
 void MeshRendererComponent::Serialize(json& j) const {
 	j["type"] = "MeshRendererComponent";
 	j["modelPath"] = modelPath_;
+
+	if (model_) {
+		if (auto material = model_->GetMaterial()) {
+			const auto& matData = material->GetMaterialData();
+			j["material"]["color"] = { matData.color.x, matData.color.y, matData.color.z, matData.color.w };
+			j["material"]["roughness"] = matData.roughness;
+			j["material"]["metallic"] = matData.metallic;
+			j["material"]["environmentCoefficient"] = matData.environmentCoefficient;
+			j["material"]["enableLighting"] = matData.enableLighting;
+
+			const auto& uv = material->GetUvTransform();
+			j["material"]["uvTransform"]["scale"] = { uv.scale.x, uv.scale.y, uv.scale.z };
+			j["material"]["uvTransform"]["rotation"] = { uv.rotate.x, uv.rotate.y, uv.rotate.z };
+			j["material"]["uvTransform"]["translation"] = { uv.translate.x, uv.translate.y, uv.translate.z };
+
+			j["material"]["textureIndex"] = material->GetTextureIndex();
+		}
+	}
 }
 void MeshRendererComponent::Deserialize(const json& j) {
+	isInitialized_ = true;
 	if (j.contains("modelPath")) {
 		SetModel(j["modelPath"]);
+	}
+
+	if (model_ && j.contains("material")) {
+		if (auto material = model_->GetMaterial()) {
+			const auto& matJ = j["material"];
+			if (matJ.contains("color")) {
+				material->SetColor({ matJ["color"][0], matJ["color"][1], matJ["color"][2], matJ["color"][3] });
+			}
+			if (matJ.contains("roughness")) {
+				material->SetRoughness(matJ["roughness"]);
+			}
+			if (matJ.contains("metallic")) {
+				material->SetMetallic(matJ["metallic"]);
+			}
+			if (matJ.contains("environmentCoefficient")) {
+				material->SetEnvironmentCoefficient(matJ["environmentCoefficient"]);
+			}
+			if (matJ.contains("enableLighting")) {
+				material->SetEnableLighting(matJ["enableLighting"]);
+			}
+			if (matJ.contains("uvTransform")) {
+				const auto& uvJ = matJ["uvTransform"];
+				EulerTransform uv;
+				uv.scale = { uvJ["scale"][0], uvJ["scale"][1], uvJ["scale"][2] };
+				uv.rotate = { uvJ["rotation"][0], uvJ["rotation"][1], uvJ["rotation"][2] };
+				uv.translate = { uvJ["translation"][0], uvJ["translation"][1], uvJ["translation"][2] };
+				material->SetUvTransform(uv);
+			}
+			if (matJ.contains("textureIndex")) {
+				material->SetTextureIndex(matJ["textureIndex"]);
+			}
+			material->Update();
+		}
 	}
 }
 

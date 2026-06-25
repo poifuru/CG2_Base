@@ -54,7 +54,7 @@ void LightManager::RegisterDirectionalLight(const Vector4& color, const Vector3&
 	lightCPUData_.dirLights[index].color = color;
 	lightCPUData_.dirLights[index].direction = direction;
 	lightCPUData_.dirLights[index].intensity = intensity;
-	lightCPUData_.count.dirLight  ;
+	lightCPUData_.count.dirLight++;
 }
 
 void LightManager::RegisterPointLight(const Vector4& color, const Vector3& position, float intensity, 
@@ -67,7 +67,7 @@ void LightManager::RegisterPointLight(const Vector4& color, const Vector3& posit
 	lightCPUData_.pointLights[index].intensity = intensity;
 	lightCPUData_.pointLights[index].radius = radius;
 	lightCPUData_.pointLights[index].decay = decay;
-	lightCPUData_.count.pointLight  ;
+	lightCPUData_.count.pointLight++;
 }
 
 void LightManager::RegisterSpotLight(const Vector4& color, const Vector3& position, float intensity, 
@@ -82,7 +82,7 @@ void LightManager::RegisterSpotLight(const Vector4& color, const Vector3& positi
 	lightCPUData_.spotLights[index].distance = distance;
 	lightCPUData_.spotLights[index].decay = decay;
 	lightCPUData_.spotLights[index].cosAngle = cosAngle;
-	lightCPUData_.count.spotLight  ;
+	lightCPUData_.count.spotLight++;
 }
 
 void LightManager::RegisterRectLight(const Vector4& color, const Vector3& position, float intensity, 
@@ -99,5 +99,5 @@ void LightManager::RegisterRectLight(const Vector4& color, const Vector3& positi
 	lightCPUData_.rectLights[index].right = right;
 	lightCPUData_.rectLights[index].up = up;
 	lightCPUData_.rectLights[index].decay = decay;
-	lightCPUData_.count.rectLight  ;
+	lightCPUData_.count.rectLight++;
 }

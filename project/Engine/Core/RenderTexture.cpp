@@ -6,7 +6,7 @@
 
 void RenderTexture::Initialize(ID3D12Device* device, DescriptorHeapManager* heapManager) {
 	// オフスクリーンレンダリング用のクリアカラー
-	const Vector4 kRenderTargetClearValue{ 0.1f, 0.25f, 0.5f, 1.0f }; // SwapChainのClear色と合わせる
+	const Vector4 kRenderTargetClearValue{ 0.14f, 0.14f, 0.14f, 1.0f }; // SwapChainのClear色と合わせる
 
 	// リソース作成
 	CreateRenderTextureResource(

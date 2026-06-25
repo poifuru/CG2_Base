@@ -2,7 +2,7 @@
 #include "PointLight.h"
 #include "imgui.h"
 
-// フロート方の最大値を定義
+// フロート型の最大値を定義
 static inline const float kMax_Float = 99999.9f;
 
 PointLight::PointLight() {

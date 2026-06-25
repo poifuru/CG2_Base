@@ -4,6 +4,9 @@
 #include "MathFunction.h"
 
 void LightComponent::Initialize() {
+	if (isInitialized_) return;
+	isInitialized_ = true;
+
 	// デフォルトのDirectionalLightで初期化しておく
 	type_ = DIRECTIONALLIGHT;
 
@@ -126,6 +129,7 @@ void LightComponent::Serialize(json& j) const {
 }
 
 void LightComponent::Deserialize(const json& j) {
+	isInitialized_ = true;
 	type_ = static_cast<LightType>(j["lightType"]);
 	Vector4 color = { j["color"][0], j["color"][1], j["color"][2], j["color"][3] };
 	float intensity = j["intensity"];

@@ -30,4 +30,5 @@ private:
 	uint32_t vsID_ = 0;
 	uint32_t psID_ = 0;
 	uint32_t modelIndex_ = 0;
+	bool isInitialized_ = false;
 };

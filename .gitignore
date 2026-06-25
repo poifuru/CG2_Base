@@ -321,43 +321,58 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# logディレクトリ内の全ファイルを無視する
-project/logs/
+# ==========================================
+# Project Specific Ignores (Cleaned Up)
+# ==========================================
 
-# Dumpsディレクトリも無視
-project/Dumps/
-
-#  imgui.iniも無視
-project/.ini/
-
-# CG2ファイル無視
-CG2/
-
+# Build Output Directories
+[Dd]ebug/
+[Rr]elease/
+[Dd]evelopment/
+[xX]64/
 x64/
+project/x64/
+project/Debug/
+project/Release/
+project/Development/
 
+# Visual Studio Intermediate & Build Files
+*.obj
+*.ilk
+*.pch
+*.pdb
+*.tlog
+*.idb
+*.ipch
+*.sdf
+*.opensdf
+*.suo
+*.user
+*.db
+*.VC.db
+*.log
 desktop.ini
 
-project/$
-ini
-pdb
+# Project Log and Dump folders
+project/logs/
+project/Dumps/
+project/kopipe/
+/logs/
+
+# ImGui & Config files
+project/imgui.ini
 /project/imgui.ini
-/project/externals/imgui/lib/Debug/
-/project/externals/DirectXTex/lib/Debug/
-/project/externals/imgui/lib/Development/
-/project/externals/DirectXTex/lib/Development/
-/project/externals/imgui/lib/Release/
-/project/externals/DirectXTex/lib/Release/
+*.ini
+**/imgui.ini
+**/.ini/
+project/.ini/
+project/$
+
+# Externals Build outputs (Ignore obj/lib/bin but keep sources)
+**/externals/*/obj/
+**/externals/*/lib/
+**/externals/*/bin/
+/project/externals/imgui/obj/
+/project/externals/imgui/lib/
+/project/externals/DirectXTex/lib/
 /project/externals/DirectXTex/Shaders/Compiled/
-/logs
-/project/externals/imgui/lib/Debug/imgui.idb
-/project/kopipe
-*.log
-/project/externals/imgui/obj/Debug/imgui.tlog/imgui.lastbuildstate
-/project/externals/imgui/obj/Debug/imgui.log
-/project/externals/imgui/obj/Debug/imgui.obj
-/project/externals/imgui/obj/Debug/imgui_demo.obj
-/project/externals/imgui/obj/Debug/imgui_draw.obj
-/project/externals/imgui/obj/Debug/imgui_impl_dx12.obj
-/project/externals/imgui/obj/Debug/imgui_impl_win32.obj
-/project/externals/imgui/obj/Debug/imgui_tables.obj
-/project/externals/imgui/obj/Debug/imgui_widgets.obj

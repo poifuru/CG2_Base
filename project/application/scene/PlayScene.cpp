@@ -25,6 +25,10 @@ void PlayScene::Update(CameraData* cameraData) {
 	// カメラの更新
 	CameraOrganizer::GetInstance()->Update();
 
+	for (auto& obj : gameObjects_) {
+		obj->Update();
+	}
+
 	// ライトの更新
 	if (lightManager_) {
 		lightManager_->ClearLights();
@@ -37,10 +41,6 @@ void PlayScene::Update(CameraData* cameraData) {
 		}
 
 		lightManager_->Update();
-	}
-
-	for (auto& obj : gameObjects_) {
-		obj->Update();
 	}
 
 #ifdef USEIMGUI

@@ -123,4 +123,5 @@ public:
 private:
 	LightType type_ = DIRECTIONALLIGHT;
 	std::variant<Directional, Point, Spot, Rect> param_;
+	bool isInitialized_ = false;
 };

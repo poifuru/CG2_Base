@@ -12,41 +12,41 @@ void LevelEditor::Initialize(SceneContext* context) {
 }
 
 void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, GameObject*& selectedObject, CameraData* cameraData) {
-	if (!context_) return;
+	if(!context_) return;
 
 	// Ctrl + Z で Undo (元に戻す)
-	if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z)) {
+	if(ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Z)) {
 		CommandManager::GetInstance()->Undo();
 	}
 	// Ctrl + Y で Redo (やり直す)
-	if (ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y)) {
+	if(ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_Y)) {
 		CommandManager::GetInstance()->Redo();
 	}
 	// ---- ヒエラルキー ----
 	ImGui::Begin("ヒエラルキー");
 	// シーン保存ボタン
-	if (ImGui::Button("シーンを保存")) {
+	if(ImGui::Button("シーンを保存")) {
 		SaveScene(gameObjects);
 	}
 	ImGui::SameLine();
 	// シーン読込ボタン
-	if (ImGui::Button("シーン読み込み")) {
+	if(ImGui::Button("シーン読み込み")) {
 		LoadScene(gameObjects, selectedObject);
 	}
 	ImGui::Separator();
 	// 新規GameObject作成ボタン
-	if (ImGui::Button("新規 GameObject 作成")) {
+	if(ImGui::Button("新規 GameObject 作成")) {
 		gameObjects.push_back(std::make_unique<GameObject>(context_, "New GameObject"));
 	}
 	ImGui::Spacing();
 	// オブジェクト一覧を表示
-	for (auto it = gameObjects.begin(); it != gameObjects.end(); ) {
+	for(auto it = gameObjects.begin(); it != gameObjects.end(); ) {
 		GameObject* obj = it->get();
 		bool isSelected = (selectedObject == obj);
 		ImGui::PushID(obj);
 		// 削除ボタン
-		if (ImGui::Button("X")) {
-			if (selectedObject == obj) {
+		if(ImGui::Button("X")) {
+			if(selectedObject == obj) {
 				selectedObject = nullptr;
 			}
 			it = gameObjects.erase(it);
@@ -55,7 +55,7 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 		}
 		ImGui::SameLine();
 		// 選択用のSelectable項目
-		if (ImGui::Selectable(obj->GetName().c_str(), isSelected)) {
+		if(ImGui::Selectable(obj->GetName().c_str(), isSelected)) {
 			selectedObject = obj;
 		}
 		ImGui::PopID();
@@ -64,15 +64,15 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 	ImGui::End();
 	// ---- インスペクター ----
 	ImGui::Begin("Inspector");
-	if (selectedObject != nullptr) {
+	if(selectedObject != nullptr) {
 		selectedObject->ImGui();
-
-	} else {
+	}
+	else {
 		ImGui::Text("オブジェクトが選択されていません");
 	}
 	ImGui::End();
 	// ---- 3Dギズモの描画 ----
-	if (selectedObject != nullptr) {
+	if(selectedObject != nullptr) {
 		auto& camData = *cameraData;
 		auto& transform = selectedObject->GetTransform();
 		// ワールド行列を作成
@@ -82,9 +82,6 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 		ImGuizmo::AllowAxisFlip(false);
 		static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
 		static ImGuizmo::MODE currentGizmoMode(ImGuizmo::LOCAL);
-		if (ImGui::IsKeyPressed(ImGuiKey_T)) currentGizmoOperation = ImGuizmo::TRANSLATE;
-		if (ImGui::IsKeyPressed(ImGuiKey_R)) currentGizmoOperation = ImGuizmo::ROTATE;
-		if (ImGui::IsKeyPressed(ImGuiKey_S)) currentGizmoOperation = ImGuizmo::SCALE;
 		ImGuiIO& io = ImGui::GetIO();
 
 		ImVec2 viewportPos = ImVec2(0.0f, 0.0f);
@@ -95,32 +92,30 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 		viewportPos = ImGui::GetWindowPos();
 		viewportSize = ImGui::GetWindowSize();
 
-		// --- ギズモ操作ツールバーの描画 ---
-		 		ImGui::Text("Gizmo Operation:");
-		 		ImGui::SameLine();
-		 		if (ImGui::RadioButton("Translate", currentGizmoOperation == ImGuizmo::TRANSLATE)) {
-			 			currentGizmoOperation = ImGuizmo::TRANSLATE;
-			 		}
-		 		ImGui::SameLine();
-		 		if (ImGui::RadioButton("Rotate", currentGizmoOperation == ImGuizmo::ROTATE)) {
-			 			currentGizmoOperation = ImGuizmo::ROTATE;
-			 		}
-		 		ImGui::SameLine();
-		 		if (ImGui::RadioButton("Scale", currentGizmoOperation == ImGuizmo::SCALE)) {
-			 			currentGizmoOperation = ImGuizmo::SCALE;
-			 		}
-		 
-			 		ImGui::SameLine();
-		 		ImGui::Text(" | Space:");
-		 		ImGui::SameLine();
-		 		if (ImGui::RadioButton("Local", currentGizmoMode == ImGuizmo::LOCAL)) {
-			 			currentGizmoMode = ImGuizmo::LOCAL;
-			 		}
-		 		ImGui::SameLine();
-		 		if (ImGui::RadioButton("World", currentGizmoMode == ImGuizmo::WORLD)) {
-			 			currentGizmoMode = ImGuizmo::WORLD; // ← ここでWORLDをデフォルトや選択肢にするよ！
-			 		}
-		 		ImGui::Separator();
+		// ギズモ操作用の設定用ウィンドウ
+		ImGui::Begin("Gizmo");
+		ImGui::Text("Gizmo Operation");
+		if(ImGui::RadioButton("S", currentGizmoOperation == ImGuizmo::SCALE)) {
+			currentGizmoOperation = ImGuizmo::SCALE;
+		}
+		ImGui::SameLine();
+		if(ImGui::RadioButton("R", currentGizmoOperation == ImGuizmo::ROTATE)) {
+			currentGizmoOperation = ImGuizmo::ROTATE;
+		}
+		ImGui::SameLine();
+		if(ImGui::RadioButton("T", currentGizmoOperation == ImGuizmo::TRANSLATE)) {
+			currentGizmoOperation = ImGuizmo::TRANSLATE;
+		}
+
+		ImGui::Text("Gizmo Space");
+		if(ImGui::RadioButton("Local", currentGizmoMode == ImGuizmo::LOCAL)) {
+			currentGizmoMode = ImGuizmo::LOCAL;
+		}
+		ImGui::SameLine();
+		if(ImGui::RadioButton("World", currentGizmoMode == ImGuizmo::WORLD)) {
+			currentGizmoMode = ImGuizmo::WORLD;
+		}
+		ImGui::End();
 
 		// タイトルバー（タブ）の高さ分、位置とサイズを補正する
 		float titleBarHeight = ImGui::GetFrameHeight();
@@ -146,7 +141,7 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 		static EulerTransform transformBeforeDrag;
 		static bool wasUsingGizmo = false;
 
-		if (ImGuizmo::IsOver() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+		if(ImGuizmo::IsOver() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
 			transformBeforeDrag = transform;
 		}
 
@@ -162,7 +157,7 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 		);
 
 		ImGui::End();
-		if (ImGuizmo::IsUsing()) {
+		if(ImGuizmo::IsUsing()) {
 			wasUsingGizmo = true;
 			float matrixTranslation[3], matrixRotation[3], matrixScale[3];
 			ImGuizmo::DecomposeMatrixToComponents(&worldMatrix.m[0][0], matrixTranslation, matrixRotation, matrixScale);
@@ -175,7 +170,7 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 			};
 			transform.scale = { matrixScale[0], matrixScale[1], matrixScale[2] };
 		}
-		else if (wasUsingGizmo) {
+		else if(wasUsingGizmo) {
 			wasUsingGizmo = false;
 			auto command = std::make_unique<TransformCommand>(selectedObject, transformBeforeDrag, transform);
 			CommandManager::GetInstance()->AddAndExecute(std::move(command));
@@ -183,8 +178,8 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 	}
 	// ---- アセットブラウザ ----
 	ImGui::Begin("アセットブラウザ");
-	if (currentDirectory_ != "Resources" && currentDirectory_.has_parent_path()) {
-		if (ImGui::Button("Back (↑)")) {
+	if(currentDirectory_ != "Resources" && currentDirectory_.has_parent_path()) {
+		if(ImGui::Button("Back (↑)")) {
 			currentDirectory_ = currentDirectory_.parent_path();
 		}
 		ImGui::SameLine();
@@ -193,21 +188,21 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 	ImGui::Separator();
 	ImGui::Columns(2, "AssetBrowserSplit", true);
 	static bool setColumnWidth = true;
-	if (setColumnWidth) {
+	if(setColumnWidth) {
 		ImGui::SetColumnWidth(0, 180.0f);
 		setColumnWidth = false;
 	}
 	// 左ペイン (フォルダツリー)
 	ImGui::BeginChild("FolderTreeChild", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 	ImGuiTreeNodeFlags rootFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
-	if (currentDirectory_ == "Resources") {
+	if(currentDirectory_ == "Resources") {
 		rootFlags |= ImGuiTreeNodeFlags_Selected;
 	}
 	bool rootOpen = ImGui::TreeNodeEx("Resources", rootFlags);
-	if (ImGui::IsItemClicked()) {
+	if(ImGui::IsItemClicked()) {
 		currentDirectory_ = "Resources";
 	}
-	if (rootOpen) {
+	if(rootOpen) {
 		DrawDirectoryTree("Resources");
 		ImGui::TreePop();
 	}
@@ -220,42 +215,46 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 	float cellSize = thumbnailSize + padding;
 	float panelWidth = ImGui::GetContentRegionAvail().x;
 	int columnCount = (int)(panelWidth / cellSize);
-	if (columnCount < 1) columnCount = 1;
+	if(columnCount < 1) columnCount = 1;
 	ImGui::Columns(columnCount, nullptr, false);
-	if (std::filesystem::exists(currentDirectory_) && std::filesystem::is_directory(currentDirectory_)) {
+	if(std::filesystem::exists(currentDirectory_) && std::filesystem::is_directory(currentDirectory_)) {
 		int id = 0;
-		for (const auto& entry : std::filesystem::directory_iterator(currentDirectory_)) {
+		for(const auto& entry : std::filesystem::directory_iterator(currentDirectory_)) {
 			ImGui::PushID(id++);
 			std::string filename = entry.path().filename().string();
 			bool isDir = entry.is_directory();
 			std::string label = isDir ? "[Folder]\n" + filename : "[File]\n" + filename;
-			if (isDir) {
+			if(isDir) {
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.25f, 0.1f, 0.8f));
-			} else {
+			}
+			else {
 				auto ext = entry.path().extension().string();
-				if (ext == ".obj" || ext == ".gltf") {
+				if(ext == ".obj" || ext == ".gltf") {
 					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.2f, 0.4f, 0.8f));
-				} else if (ext == ".png" || ext == ".jpg") {
+				}
+				else if(ext == ".png" || ext == ".jpg") {
 					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.3f, 0.1f, 0.8f));
-				} else {
+				}
+				else {
 					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.2f, 0.2f, 0.8f));
 				}
 			}
-			if (ImGui::Button(label.c_str(), ImVec2(thumbnailSize, thumbnailSize))) {
-				if (isDir) {
+			if(ImGui::Button(label.c_str(), ImVec2(thumbnailSize, thumbnailSize))) {
+				if(isDir) {
 					currentDirectory_ = entry.path();
-				} else {
+				}
+				else {
 					auto ext = entry.path().extension().string();
-					if ((ext == ".obj" || ext == ".gltf") && selectedObject != nullptr) {
+					if((ext == ".obj" || ext == ".gltf") && selectedObject != nullptr) {
 						auto* meshRenderer = selectedObject->GetComponent<MeshRendererComponent>();
-						if (meshRenderer != nullptr) {
+						if(meshRenderer != nullptr) {
 							meshRenderer->SetModel(entry.path().generic_string());
 						}
 					}
 				}
 			}
 			ImGui::PopStyleColor();
-			if (ImGui::IsItemHovered()) {
+			if(ImGui::IsItemHovered()) {
 				ImGui::BeginTooltip();
 				ImGui::TextUnformatted(filename.c_str());
 				ImGui::EndTooltip();
@@ -272,29 +271,29 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 }
 
 void LevelEditor::DrawDirectoryTree(const std::filesystem::path& path) {
-	if (!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) return;
-	for (const auto& entry : std::filesystem::directory_iterator(path)) {
-		if (entry.is_directory()) {
+	if(!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) return;
+	for(const auto& entry : std::filesystem::directory_iterator(path)) {
+		if(entry.is_directory()) {
 			std::string folderName = entry.path().filename().string();
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
-			if (currentDirectory_ == entry.path()) {
+			if(currentDirectory_ == entry.path()) {
 				flags |= ImGuiTreeNodeFlags_Selected;
 			}
 			bool hasSubDir = false;
-			for (const auto& subEntry : std::filesystem::directory_iterator(entry.path())) {
-				if (subEntry.is_directory()) {
+			for(const auto& subEntry : std::filesystem::directory_iterator(entry.path())) {
+				if(subEntry.is_directory()) {
 					hasSubDir = true;
 					break;
 				}
 			}
-			if (!hasSubDir) {
+			if(!hasSubDir) {
 				flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 			}
 			bool isOpen = ImGui::TreeNodeEx(folderName.c_str(), flags);
-			if (ImGui::IsItemClicked()) {
+			if(ImGui::IsItemClicked()) {
 				currentDirectory_ = entry.path();
 			}
-			if (isOpen && hasSubDir) {
+			if(isOpen && hasSubDir) {
 				DrawDirectoryTree(entry.path());
 				ImGui::TreePop();
 			}
@@ -306,11 +305,11 @@ void LevelEditor::SaveScene(const std::vector<std::unique_ptr<GameObject>>& game
 	json sceneJ;
 	sceneJ["name"] = "scene";
 	sceneJ["objects"] = json::array();
-	for (const auto& obj : gameObjects) {
+	for(const auto& obj : gameObjects) {
 		sceneJ["objects"].push_back(obj->Serialize());
 	}
 	std::ofstream file("scene.json");
-	if (file.is_open()) {
+	if(file.is_open()) {
 		file << sceneJ.dump(4);
 		file.close();
 	}
@@ -320,12 +319,12 @@ void LevelEditor::LoadScene(std::vector<std::unique_ptr<GameObject>>& gameObject
 	gameObjects.clear();
 	selectedObject = nullptr;
 	std::ifstream file("scene.json");
-	if (file.is_open()) {
+	if(file.is_open()) {
 		json sceneJ;
 		file >> sceneJ;
 		file.close();
-		if (sceneJ.contains("objects")) {
-			for (const auto& objJ : sceneJ["objects"]) {
+		if(sceneJ.contains("objects")) {
+			for(const auto& objJ : sceneJ["objects"]) {
 				auto newObj = std::make_unique<GameObject>(context_, objJ["name"]);
 				newObj->Deserialize(objJ);
 				newObj->Initialize();

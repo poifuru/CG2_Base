@@ -80,10 +80,10 @@ ConstantBuffer<Camera> gCamera : register(b2, space0);
 struct AllLightData
 {
     LightCount count;
-    DirectionalLight dirLights[20];
-    PointLight pointLights[20];
-    SpotLight spotLights[20];
-    RectLight rectLights[20];
+    DirectionalLight dirLights[50];
+    PointLight pointLights[50];
+    SpotLight spotLights[50];
+    RectLight rectLights[50];
 };
 ConstantBuffer<AllLightData> gLightData : register(b3, space0);
 
