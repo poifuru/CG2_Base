@@ -55,7 +55,7 @@ private:
 
 	// ブレンド（補間）用の変数
 	float blendTimer_ = 0.0f;
-	float blendDuration_ = 1.0f; // 切り替えに1秒かける
+	float blendDuration_ = 1.5f; // 切り替えかける時間
 	bool isBlending_ = false;
 	float currentFov_ = 0.45f;
 };

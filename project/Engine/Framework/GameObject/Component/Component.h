@@ -25,7 +25,9 @@ public:
 	// 所属するGameObjectへのアクセス
 	void SetGameObject(GameObject* gameObject) { gameObject_ = gameObject; }
 	GameObject* GetGameObject() const { return gameObject_; }
+	void SetIsDebugMode(bool flag) { isDebugMode_ = flag; }
 
 protected:
 	GameObject* gameObject_ = nullptr; // 親オブジェクトへのポインタ
+	bool isDebugMode_ = true;
 };

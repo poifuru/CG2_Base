@@ -127,6 +127,16 @@ void GameObject::ImGui() {
 		else {
 			ImGui::TextDisabled("Follow Camera (Already Added)");
 		}
+		// プレイヤーコンポーネント
+		if(GetComponent<PlayerComponent>() == nullptr) {
+			if(ImGui::MenuItem("Player Component")) {
+				auto* newComp = AddComponent<PlayerComponent>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Player Component (Already Added)");
+		}
 
 		// コンポーネントが増えたらここに
 		ImGui::EndPopup();
@@ -199,6 +209,17 @@ void GameObject::Deserialize(const json& j) {
 				if (!comp) comp = AddComponent<VirtualDebugCamera>();
 				comp->Deserialize(compJ);
 			}
+			else if(type == "PlayerComponent") {
+				auto* comp = GetComponent<PlayerComponent>();
+				if(!comp) comp = AddComponent<PlayerComponent>();
+				comp->Deserialize(compJ);
+			}
 		}
+	}
+}
+
+void GameObject::SetIsDebugMode(bool flag) {
+	for (auto& comp : components_) {
+		comp->SetIsDebugMode(flag);
 	}
 }

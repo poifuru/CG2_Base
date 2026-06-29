@@ -8,7 +8,7 @@ void VirtualFollowCamera::Update() {
 	// ターゲットが未設定で、ターゲット名がある場合はシーンから探す
 	if (!target_ && !targetName_.empty() && gameObject_) {
 		// ※シーン全体のオブジェクトリストから名前で検索する
-		// 例: target_ = gameObject_->GetContext()->scene->FindObject(targetName_);
+		// target_ = gameObject_->GetContext()->scene->FindObject(targetName_);
 	}
 
 	if (target_ && gameObject_) {
@@ -17,9 +17,23 @@ void VirtualFollowCamera::Update() {
 
 		// 自身の座標を滑らかに補間して追従させる
 		auto& myTransform = gameObject_->GetTransform();
+
 		myTransform.translate = Math::Lerp(myTransform.translate, targetPos, 1.0f - delay_);
-		// 常にターゲットの方を向く（簡略化したLookAt回転）
-		// 実際には Quaternion や Math::MakeLookAtMatrix を使って回転を計算してセットします
+		// 常にターゲットの方を向く（LookAt回転）の計算
+		Vector3 targetCenter = target_->GetTransform().translate; // ターゲットの位置（注視点）
+		Vector3 direction = Math::Subtract(targetCenter, myTransform.translate); // カメラから見たターゲットへの方向
+		
+		if(Math::Length(direction) > 0.001f) {
+			// ヨー回転（Y軸まわり）の計算
+			myTransform.rotate.y = std::atan2(direction.x, direction.z);
+
+			// ピッチ回転（X軸まわり）の計算
+			float xzLength = std::sqrt(direction.x * direction.x + direction.z * direction.z);
+			myTransform.rotate.x = std::atan2(-direction.y, xzLength);
+
+			// ロール回転（Z軸まわり）は0にリセット
+			myTransform.rotate.z = 0.0f;
+		}
 	}
 }
 

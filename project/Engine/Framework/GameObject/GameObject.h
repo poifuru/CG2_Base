@@ -27,6 +27,9 @@ public:
 
 	SceneContext* GetContext() const { return context_; }
 
+	// 全てのコンポーネントにデバッグモードを伝える
+	void SetIsDebugMode(bool flag);
+
 	// --- コンポーネント操作のテンプレート関数 --- //
 	// コンポーネントの追加
 	template <typename T, typename... Args>

@@ -1,6 +1,9 @@
 #pragma once
 #include "Component.h"
 
+// 前方宣言
+class MainCameraComponent;
+
 class PlayerComponent : public Component {
 public:
 	PlayerComponent() = default;
@@ -11,8 +14,16 @@ public:
 	void Update() override;
 	void ImGui() override;
 
+	// セーブ・ロード用の関数
+	void Serialize(json& j) const override;
+	void Deserialize(const json& j) override;
+
 	//ゲッター
 	const char* GetName() const override { return "PlayerComponent"; }
+
+	// 外部から紐づけるためのセッター
+	void SetReticleObject(GameObject* reticle) { reticleObject_ = reticle; }
+
 	
 private:	// プライベート関数
 	void Move();  // 移動処理
@@ -23,7 +34,8 @@ private:
 	float speed_ = 1.5f;
 	Vector3 velocity_{};
 	Vector3 acceleration_{};
-	Vector3 localTranslate_{}; // レール上でのローカル位置
 	float cooltime_ = 0.0f;
-	const RailPath* railPath_ = nullptr;
+
+	// 外部参照用ポインタ
+	GameObject* reticleObject_ = nullptr;
 };

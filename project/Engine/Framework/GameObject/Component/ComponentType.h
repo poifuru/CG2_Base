@@ -4,3 +4,4 @@
 #include "MainCameraComponent.h"
 #include "VirtualFollowCamera.h"
 #include "VirtualDebugCamera.h"
+#include "PlayerComponent.h"

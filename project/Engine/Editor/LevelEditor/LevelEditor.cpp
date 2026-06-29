@@ -6,6 +6,7 @@
 #include "MathFunction.h"
 #include "BaseCamera.h"
 #include "EditorManager.h"
+#include "VirtualFollowCamera.h"
 
 void LevelEditor::Initialize(SceneContext* context) {
 	context_ = context;
@@ -329,6 +330,12 @@ void LevelEditor::LoadScene(std::vector<std::unique_ptr<GameObject>>& gameObject
 				newObj->Deserialize(objJ);
 				newObj->Initialize();
 				gameObjects.push_back(std::move(newObj));
+			}
+
+			for (auto& obj : gameObjects) {
+				if (auto* followCam = obj->GetComponent<VirtualFollowCamera>()) {
+					followCam->ResolveTarget(gameObjects);
+				}
 			}
 		}
 	}

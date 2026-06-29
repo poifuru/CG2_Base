@@ -27,5 +27,6 @@ private:
 #ifdef USEIMGUI
 	// エディタインスタンス
 	std::unique_ptr<LevelEditor> levelEditor_ = nullptr;
+	bool isDebugMode_ = true;
 #endif
 };

@@ -4,6 +4,8 @@
 #include "CameraOrganizer.h"
 #include "LevelEditor.h"
 #include "ComponentType.h"
+#include "InputManager.h"
+#include "RawInput.h"
 
 PlayScene::PlayScene() = default;
 PlayScene::~PlayScene() = default;
@@ -11,24 +13,40 @@ PlayScene::~PlayScene() = default;
 void PlayScene::Initialize() {
 	if (!context_) return;
 
-	// ライトマネージャーの初期化
-	lightManager_ = std::make_unique<LightManager>();
-	lightManager_->Initialize(context_->device);
-
-	// シーン初期化時にターゲットを紐づけ
-	for (auto& obj : gameObjects_) {
-		if (auto* followCam = obj->GetComponent<VirtualFollowCamera>()) {
-			followCam->ResolveTarget(gameObjects_);
-		}
-	}
-
 #ifdef USEIMGUI
 	levelEditor_ = std::make_unique<LevelEditor>();
 	levelEditor_->Initialize(context_);
 #endif
+
+	// ライトマネージャーの初期化
+	lightManager_ = std::make_unique<LightManager>();
+	lightManager_->Initialize(context_->device);
 }
 
 void PlayScene::Update(CameraData* cameraData) {
+	InputManager* input = InputManager::GetInstance();
+
+	// Tabキーでプレイモード/デバッグモードを切り替える
+	if (input->GetRawInput()->Trigger(VK_TAB)) {
+		isDebugMode_ = !isDebugMode_;
+		// シーン内のカメラを探して優先度（Priority）を切り替える
+		for (auto& obj : gameObjects_) {
+			// デバッグカメラの優先度設定
+			if (auto* debugCam = obj->GetComponent<VirtualDebugCamera>()) {
+				debugCam->SetPriority(isDebugMode_ ? 20 : 10);
+			}
+			// 追従カメラの優先度設定
+			if (auto* followCam = obj->GetComponent<VirtualFollowCamera>()) {
+				followCam->SetPriority(isDebugMode_ ? 10 : 20);
+			}
+		}
+	}
+
+	// 毎フレーム、全てのコンポーネントにデバッグ状態を通知する
+	for (auto& obj : gameObjects_) {
+		obj->SetIsDebugMode(isDebugMode_);
+	}
+
 	// 全オブジェクトの更新
 	for (auto& obj : gameObjects_) {
 		obj->Update();

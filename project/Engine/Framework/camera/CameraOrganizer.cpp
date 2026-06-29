@@ -51,7 +51,7 @@ void CameraOrganizer::Update() {
 		}
 
 		// イージング（SmoothStep）をかけて滑らかに補間する
-		float easeT = Easing::easeInExpo(t);
+		float easeT = Easing::easeInOutQuint(t);
 
 		// 座標と回転、FOVを線形補間する
 		finalPos = Math::Lerp(preCam->GetPosition(), currentVirtualCamera_->GetPosition(), easeT);
