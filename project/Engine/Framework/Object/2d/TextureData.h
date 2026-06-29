@@ -1,8 +1,4 @@
 #pragma once
-#include <d3d12.h>
-#include <wrl.h>
-#include <DirectXTex.h>
-#include <cstdint>
 
 struct TextureData {
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource;

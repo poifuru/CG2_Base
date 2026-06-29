@@ -4,6 +4,7 @@
 #include "BaseScene.h"       // SceneContextを使うため
 #include "ModelFactory.h"
 #include "ModelManager.h"
+#include "TextureManager.h"
 #include "ShaderManager.h"
 #include "CameraOrganizer.h" // カメラ情報を取得するため
 #include "imgui.h"
@@ -127,5 +128,20 @@ void MeshRendererComponent::SetModel(const std::string& modelPath) {
 
 	if (model_ && gameObject_) {
 		model_->SetParentTransform(&gameObject_->GetTransform());
+	}
+}
+
+void MeshRendererComponent::SetTexture(const std::string& textureName) {
+	GameObject* owner = GetGameObject();
+	if (!owner) return;
+	SceneContext* context = owner->GetContext();
+	if (!context) return;
+
+	if (model_) {
+		// TextureManagerから登録されているテクスチャのインデックス（ハンドル）を取得する
+		uint32_t textureIndex = context->textureManager->GetTextureIndex(textureName);
+
+		// モデル（マテリアル）にインデックスを設定する
+		model_->SetTextureIndex(textureIndex);
 	}
 }

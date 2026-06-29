@@ -21,8 +21,9 @@ public:
 
 	const char* GetName() const override { return "Mesh Renderer"; }
 
-	// モデルを変更する関数
+	// モデル・テクスチャを変更する関数
 	void SetModel(const std::string& modelPath);
+	void SetTexture(const std::string& textureName);
 
 private:
 	std::unique_ptr<Model> model_ = nullptr;

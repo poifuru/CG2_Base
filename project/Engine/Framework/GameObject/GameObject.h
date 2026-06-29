@@ -30,6 +30,9 @@ public:
 	// 全てのコンポーネントにデバッグモードを伝える
 	void SetIsDebugMode(bool flag);
 
+	bool IsDead() { return isDead_; }
+	void Destroy() { isDead_ = true; } // 死ぬときに呼ぶ
+
 	// --- コンポーネント操作のテンプレート関数 --- //
 	// コンポーネントの追加
 	template <typename T, typename... Args>
@@ -69,5 +72,7 @@ private:
 	std::string name_;
 	EulerTransform transform_;
 	std::vector<std::unique_ptr<Component>> components_;
+	bool isDead_ = false;
+
 	SceneContext* context_ = nullptr;
 };

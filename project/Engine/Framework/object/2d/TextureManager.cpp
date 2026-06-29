@@ -1,8 +1,5 @@
 #include "PCH.h"
 #include "TextureManager.h"
-#include <cassert>
-#include <sstream>
-#include <d3dx12.h>
 #include "DescriptorHeapManager.h"
 #include "ChangeString.h"
 

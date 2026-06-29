@@ -1,9 +1,4 @@
 #pragma once
-#include <string>
-#include <unordered_map>
-#include <vector>
-#include <d3d12.h>
-#include <wrl.h>
 #include "TextureData.h"
 
 class DescriptorHeapManager;

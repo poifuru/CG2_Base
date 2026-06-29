@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 
 class TextureManager;
 class ModelFactory;
@@ -9,6 +8,7 @@ struct CameraData;
 struct ID3D12Device;
 struct ID3D12GraphicsCommandList;
 class DescriptorHeapManager;
+class GameObject;
 
 // シーンで必要になる高レベルマネージャーや低レイヤー参照のポインタを束ねた薄い構造体
 struct SceneContext {
@@ -19,6 +19,9 @@ struct SceneContext {
 	ID3D12Device* device = nullptr;
 	ID3D12GraphicsCommandList* cmdList = nullptr;
 	DescriptorHeapManager* heapManager = nullptr;
+
+	// 動的追加のためにオブジェクトリストのポインタを載せる
+	std::vector<std::unique_ptr<GameObject>>* gameObjects = nullptr;
 };
 
 class BaseScene {

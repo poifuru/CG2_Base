@@ -7,6 +7,9 @@
 #include "MathFunction.h"
 #include "CameraOrganizer.h"
 #include "BaseCamera.h" // CameraDataの定義があるヘッダー
+#include "MeshRendererComponent.h"
+#include "BulletComponent.h"
+#include "BaseScene.h"
 
 // キー入力が無いときに速度を減衰させる定数
 static const float kAttenuationRate = 0.95f;
@@ -110,31 +113,40 @@ void PlayerComponent::Move() {
 
 void PlayerComponent::Shoot() {
 	InputManager* input = InputManager::GetInstance();
-	// マウス左クリックで射撃
-	if(input->GetRawInput()->TriggerMouse(0) && cooltime_ <= 0.0f) {
+	if (input->GetRawInput()->TriggerMouse(0) && cooltime_ <= 0.0f) {
+		auto* context = gameObject_->GetContext();
+		if (!context || !context->gameObjects) return;
 
-		// 弾をGameObjectシステムで動的生成する想定の処理
-		/*
-		auto bulletObj = std::make_unique<GameObject>(gameObject_->GetContext(), "PlayerBullet");
+		// 弾用の GameObject を生成
+		auto bulletObj = std::make_unique<GameObject>(context, "PlayerBullet");
+
+		// MeshRendererComponent を追加してモデルを設定（これで描画される！）
+		auto* meshRenderer = bulletObj->AddComponent<MeshRendererComponent>();
+		meshRenderer->SetModel("bullet.obj");
+		meshRenderer->SetTexture("bullet");
+
+		// 弾の挙動コンポーネントを追加
 		auto* bulletComp = bulletObj->AddComponent<BulletComponent>();
+
+		// 開始位置を設定（プレイヤーの位置）
 		bulletObj->GetTransform().translate = gameObject_->GetTransform().translate;
+
+		// 方向の計算
 		Vector3 targetPos = { 0.0f, 0.0f, 100.0f };
 		if (reticleObject_) {
-		targetPos = reticleObject_->GetTransform().translate;
+			targetPos = reticleObject_->GetTransform().translate;
 		}
 		Vector3 direction = Math::Subtract(targetPos, bulletObj->GetTransform().translate);
-		if (Math::Length(direction) > 0.0f) {
-		direction = Math::Normalize(direction);
+		if (Math::Length(direction) > 0.001f) {
+			direction = Math::Normalize(direction);
 		} else {
-		direction = { 0.0f, 0.0f, 1.0f };
+			direction = { 0.0f, 0.0f, 1.0f };
 		}
 		bulletComp->SetDirection(direction);
-		if (lockedEnemy_) {
-		bulletComp->SetTarget(lockedEnemy_);
-		}
-		// ※現在のシーンに弾オブジェクトを追加する処理を呼ぶ
-		currentScene->AddGameObject(std::move(bulletObj));
-		*/
+
+		// 初期化して、シーンのオブジェクトリストに追加！
+		bulletObj->Initialize();
+		context->gameObjects->push_back(std::move(bulletObj));
 		cooltime_ = 0.25f;
 	}
 }

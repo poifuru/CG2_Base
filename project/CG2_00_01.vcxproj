@@ -185,7 +185,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\entity\Entity.cpp" />
     <ClCompile Include="application\scene\DebugScene.cpp" />
     <ClCompile Include="application\entity\enemy\BaseEnemy.cpp" />
-    <ClCompile Include="application\entity\player\Bullet.cpp" />
+    <ClCompile Include="application\entity\player\BulletComponent.cpp" />
     <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
     <ClCompile Include="Application\Collider\CollisionManager.cpp" />
     <ClCompile Include="Engine\Framework\GameObject\CameraComponent\VirtualCameraComponent.cpp" />
@@ -323,7 +323,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\entity\boss\Boss.h" />
     <ClInclude Include="application\scene\DebugScene.h" />
     <ClInclude Include="application\entity\enemy\BaseEnemy.h" />
-    <ClInclude Include="application\entity\player\Bullet.h" />
+    <ClInclude Include="application\entity\player\BulletComponent.h" />
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="Application\Collider\CollisionManager.h" />
     <ClInclude Include="Engine\Common\Structure\Geometry.h" />

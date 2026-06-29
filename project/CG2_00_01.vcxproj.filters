@@ -52,7 +52,7 @@
     <ClCompile Include="application\scene\TestScene.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\Skybox.cpp" />
     <ClCompile Include="Engine\Core\RenderTexture.cpp" />
-    <ClCompile Include="application\entity\player\Bullet.cpp" />
+    <ClCompile Include="application\entity\player\BulletComponent.cpp" />
     <ClCompile Include="application\entity\player\Reticle.cpp" />
     <ClCompile Include="application\entity\enemy\SmallFish.cpp" />
     <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
@@ -162,7 +162,7 @@
     <ClInclude Include="Engine\Framework\Object\3d\Skybox.h" />
     <ClInclude Include="Engine\Core\RenderTexture.h" />
     <ClInclude Include="Engine\Core\General\DeltaTime.h" />
-    <ClInclude Include="application\entity\player\Bullet.h" />
+    <ClInclude Include="application\entity\player\BulletComponent.h" />
     <ClInclude Include="application\entity\player\Reticle.h" />
     <ClInclude Include="application\entity\enemy\SmallFish.h" />
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />

@@ -16,6 +16,9 @@ public:
 	void Draw(class RenderSystem* renderSystem) override;
 
 private:
+	void CleanupObject();
+
+private:
 	// 全てのGameObject
 	std::vector<std::unique_ptr<GameObject>> gameObjects_;
 

@@ -18,6 +18,9 @@ void PlayScene::Initialize() {
 	levelEditor_->Initialize(context_);
 #endif
 
+	// コンテキストにリストのポインタをセットする
+	context_->gameObjects = &gameObjects_;
+
 	// ライトマネージャーの初期化
 	lightManager_ = std::make_unique<LightManager>();
 	lightManager_->Initialize(context_->device);
@@ -41,6 +44,9 @@ void PlayScene::Update(CameraData* cameraData) {
 			}
 		}
 	}
+
+	// 死亡フラグが立っているオブジェクトを削除
+	CleanupObject();
 
 	// 毎フレーム、全てのコンポーネントにデバッグ状態を通知する
 	for (auto& obj : gameObjects_) {
@@ -83,5 +89,16 @@ void PlayScene::Draw(RenderSystem* renderSystem) {
 
 	for (auto& obj : gameObjects_) {
 		obj->Draw(renderSystem);
+	}
+}
+
+void PlayScene::CleanupObject() {
+	// デスフラグ（isDead_）が立っているオブジェクトをリストから削除する
+	for (auto it = gameObjects_.begin(); it != gameObjects_.end();) {
+		if ((*it)->IsDead()) {
+			it = gameObjects_.erase(it); // メモリ解放＆削除
+		} else {
+			++it;
+		}
 	}
 }
