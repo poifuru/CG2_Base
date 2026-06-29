@@ -1,166 +1,33 @@
 #include "PCH.h"
-//#include "Player.h"
-//#include <algorithm>
-//#include <numbers>
-//#include <imgui.h>
-//#include "InputManager.h"
-//#include "TextureManager.h"
-//#include "ModelManager.h"
-//#include "PlayScene.h"
-//#include "MathFunction.h"
-//#include "DeltaTime.h"
-//#include "../Enemy/EnemyManager.h"
-//#include "../Enemy/BaseEnemy.h"
-//
-//// キー入力が無いときに速度を減衰させる定数
-//static const float kAttenuationRate = 0.95f;
-//
-//Player::Player(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input, LightManager* light) {
-//	transform_ = {};
-//
-//	dxCommon_ = dxCommon;
-//	camera_ = camera;
-//	input_ = input;
-//	light_ = light;
-//
-//	TextureManager::GetInstance()->LoadTexture("Resources/player/player.png", "player");
-//	ModelManager::GetInstance()->LoadModelData("Resources/player", "player.obj");
-//
-//	ModelManager::GetInstance()->LoadModelData("Resources/AnimatedCube", "AnimatedCube.gltf");
-//	ModelManager::GetInstance()->LoadAnimationData("Resources/AnimatedCube", "AnimatedCube.gltf");
-//	TextureManager::GetInstance()->TextureManager::LoadTexture(
-//		"Resources/AnimatedCube/AnimatedCube_BaseColor.png", "Cube"
-//	);
-//
-//	// Bullet用
-//	TextureManager::GetInstance()->LoadTexture("Resources/monsterBall/monsterBall.png", "bullet");
-//	ModelManager::GetInstance()->LoadModelData("Resources/monsterBall", "monsterBall.obj");
-//
-//	// Reticle用
-//	TextureManager::GetInstance()->LoadTexture("Resources/reticle/reticle.png", "reticle");
-//	ModelManager::GetInstance()->LoadModelData("Resources/reticle", "reticle.obj");
-//
-//	model_ = std::make_unique<Model>(dxCommon, light);
-//	reticle_ = std::make_unique<Reticle>(dxCommon, camera, input, light);
-//}
-//
-//Player::~Player() {
-//
-//}
-//
-//void Player::Initialize() {
-//	model_->SetModelData("AnimatedCube.gltf");
-//	model_->SetTexture("Cube");
-//	//model_->SetAnimation("AnimatedCube.gltf");
-//	model_->Initialize();
-//
-//	// 固有の数値
-//	speed_ = 1.5f;
-//	velocity_ = { 0.0f, 0.0f, 0.0f };
-//	cooltime_ = 0.0f;
-//	localTranslate_ = { 0.0f, 0.0f, 0.0f };
-//	lockedEnemy_ = nullptr;
-//
-//	reticle_->Initialize();
-//}
-//
-//void Player::Update() {
-//	if(camera_->GetActiveCameraName() != "main2") {
-//		model_->SetAlpha(0.0f);
-//		return;
-//	}
-//	else {
-//		model_->SetAlpha(1.0f);
-//	}
-//
-//	//プレイヤーの挙動をここに
-//	Input();
-//	CooltimeUpdate();
-//	Move();
-//	BulletsUpdate();
-//
-//	// 先にレティクルのパラメータを設定し、Updateをかけて最新のワールド座標を計算する
-//	reticle_->SetPlayerPos(transform_.translate);
-//	reticle_->SetPlayerLocalPos(localTranslate_);
-//	reticle_->SetRail(railPath_);
-//	reticle_->Update();
-//
-//	// --- ロックオン対象の検索 (スクリーン座標2D判定方式) ---
-//	lockedEnemy_ = nullptr;
-//	if (enemyManager_ && camera_) {
-//		Matrix4x4 vpMat = camera_->GetVPMatrix();
-//		Vector3 reticlePos = reticle_->GetPosition();
-//		
-//		// レティクルをスクリーン座標に変換 (1280x720)
-//		Vector3 reticleNdc = Math::ChangeTransform(reticlePos, vpMat);
-//		Vector2 reticleScreen = {
-//			(reticleNdc.x + 1.0f) * 0.5f * 1280.0f,
-//			(1.0f - reticleNdc.y) * 0.5f * 720.0f
-//		};
-//		
-//		float minDistance = 999999.0f; // 最もレティクルに近い（スクリーン上で重なっている）敵を優先
-//		
-//		for (auto& enemy : enemyManager_->GetEnemies()) {
-//			if (!enemy || !enemy->IsActive()) continue;
-//			
-//			Vector3 enemyPos = enemy->GetTransform().translate;
-//			
-//			// --- プレイヤーより手前（カメラ側）に回り込んだ敵は除外する ---
-//			Vector3 cameraPos = camera_->GetCameraData().transform.translate;
-//			Matrix4x4 camWorld = camera_->GetCameraData().world;
-//			Vector3 cameraForward = { camWorld.m[2][0], camWorld.m[2][1], camWorld.m[2][2] };
-//			Vector3 toEnemy = Math::Subtract(enemyPos, cameraPos);
-//			
-//			float playerDist = Math::Dot(Math::Subtract(transform_.translate, cameraPos), cameraForward);
-//			float enemyDist = Math::Dot(toEnemy, cameraForward);
-//			if (enemyDist < playerDist) continue;
-//			
-//			// スクリーン座標に変換
-//			Vector3 enemyNdc = Math::ChangeTransform(enemyPos, vpMat);
-//			Vector2 enemyScreen = {
-//				(enemyNdc.x + 1.0f) * 0.5f * 1280.0f,
-//				(1.0f - enemyNdc.y) * 0.5f * 720.0f
-//			};
-//			
-//			float dx = enemyScreen.x - reticleScreen.x;
-//			float dy = enemyScreen.y - reticleScreen.y;
-//			float dist = std::sqrt(dx * dx + dy * dy);
-//			
-//			if (dist < lockRadius_) {
-//				if (dist < minDistance) {
-//					minDistance = dist;
-//					lockedEnemy_ = enemy.get();
-//				}
-//			}
-//		}
-//	}
-//
-//	// レティクルへの状態伝達
-//	if (lockedEnemy_) {
-//		reticle_->SetLockOn(true);
-//	} else {
-//		reticle_->SetLockOn(false);
-//	}
-//
-//	// モデルにデータを渡す
-//	model_->SetPosition(transform_.translate);
-//
-//	// レールがある場合、レールの進行方向を向くように回転を設定する
-//	if (railPath_) {
-//		Matrix4x4 rot = railPath_->GetRotationMatrix();
-//		Vector3 direction = { rot.m[2][0], rot.m[2][1], rot.m[2][2] }; // Z軸の方向
-//		
-//		Vector3 rotate = { 0.0f, 0.0f, 0.0f };
-//		if (Math::Length(direction) > 0.001f) {
-//			rotate.y = std::atan2(direction.x, direction.z);
-//			float xzLength = std::sqrt(direction.x * direction.x + direction.z * direction.z);
-//			rotate.x = std::atan2(-direction.y, xzLength);
-//		}
-//		model_->SetRotate(rotate);
-//	}
-//
-//	model_->Update(&camera_->GetCameraData());
-//}
+#include "PlayerComponent.h"
+#include "GameObject.h"
+#include "InputManager.h"
+#include "DeltaTime.h"
+#include "MathFunction.h"
+
+// キー入力が無いときに速度を減衰させる定数
+static const float kAttenuationRate = 0.95f;
+
+void PlayerComponent::Initialize() {
+	speed_ = 1.5f;
+	velocity_ = { 0.0f, 0.0f, 0.0f };
+	cooltime_ = 0.0f;
+	localTranslate_ = { 0.0f, 0.0f, 0.0f };
+
+	// 親の GameObject から現在の位置をローカル座標の初期値にする
+	localTranslate_ = gameObject_->GetTransform().translate;
+}
+
+void PlayerComponent::Update() {
+	// クールタイム更新
+	if (cooltime_ > 0.0f) {
+		cooltime_ -= kDeltaTime;
+	}
+	// 移動処理
+	Move();
+	// 射撃処理
+	Shoot();
+}
 //
 //void Player::Draw() {
 //	if(camera_->GetActiveCameraName() != "main2") {

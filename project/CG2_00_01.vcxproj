@@ -179,7 +179,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application\entity\enemy\SmallFish.cpp" />
-    <ClCompile Include="application\entity\player\Player.cpp" />
+    <ClCompile Include="application\entity\player\PlayerComponent.cpp" />
     <ClCompile Include="application\scene\ClearScene.cpp" />
     <ClCompile Include="application\scene\GameoverScene.cpp" />
     <ClCompile Include="application\entity\Entity.cpp" />
@@ -422,7 +422,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Render\PSO\PSOManager.h" />
     <ClInclude Include="Engine\Render\Primitive\Mesh.h" />
     <ClInclude Include="Engine\Core\SRV\SRVManager.h" />
-    <ClInclude Include="application\entity\player\Player.h" />
+    <ClInclude Include="application\entity\player\PlayerComponent.h" />
     <ClInclude Include="Engine\Render\Light\PointLight.h" />
     <ClInclude Include="Engine\Render\Light\SpotLight.h" />
     <ClInclude Include="Engine\Render\Light\RectLight.h" />
