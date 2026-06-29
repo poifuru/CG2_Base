@@ -1,58 +1,29 @@
 #pragma once
-#include <list>
-#include "Entity.h"
-#include "CameraOrganizer.h"
-#include "Bullet.h"
-#include "Reticle.h"
-#include "../../RailPath.h"
+#include "Component.h"
 
-class EnemyManager;
-class BaseEnemy;
-
-class Player : public Entity {
+class PlayerComponent : public Component {
 public:
-	Player(DxCommon* dxCommon, CameraOrganizer* camera, InputManager* input, LightManager* light);
-	~Player();
+	PlayerComponent() = default;
+	~PlayerComponent() override = default;
 
+	// Componentのライフサイクル関数
 	void Initialize() override;
 	void Update() override;
-	void Draw() override;
-	void DrawUI();
-	void ImGui();
+	void ImGui() override;
 
 	//ゲッター
-	EulerTransform GetTransform() const { return transform_; }
-	void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
-	AABB GetAABB() { return aabb_; }
-	std::list<std::unique_ptr<Bullet>>& GetBullets() { return bullets_; }
-	void SetRail(const RailPath* rail) { railPath_ = rail; }
-	void SetEnemyManager(EnemyManager* enemyManager) { enemyManager_ = enemyManager; }
+	const char* GetName() const override { return "PlayerComponent"; }
 	
 private:	// プライベート関数
-	void Input();
-	void CooltimeUpdate();
-	void Move();
-	void BulletsUpdate();
-	void BulletsDraw();
+	void Move();  // 移動処理
+	void Shoot(); // 弾の発射処理
 
 private:
-	//プレイヤーのパラメータ
-	float speed_ = 0.0f;
-
-	// Bullet(listで管理)
-	std::list<std::unique_ptr<Bullet>> bullets_;
+	// プレイヤーのパラメータ
+	float speed_ = 1.5f;
+	Vector3 velocity_{};
+	Vector3 acceleration_{};
+	Vector3 localTranslate_{}; // レール上でのローカル位置
 	float cooltime_ = 0.0f;
-
-	// Reticle
-	std::unique_ptr<Reticle> reticle_ = nullptr;
-
-	DxCommon* dxCommon_ = nullptr;
-	InputManager* input_ = nullptr;
-	LightManager* light_ = nullptr;
 	const RailPath* railPath_ = nullptr;
-	EnemyManager* enemyManager_ = nullptr;
-	BaseEnemy* lockedEnemy_ = nullptr;
-	Vector3 localTranslate_ = { 0.0f, 0.0f, 0.0f };
-
-	float lockRadius_ = 40.0f; // スクリーン上のロックオン許容ピクセル半径
 };

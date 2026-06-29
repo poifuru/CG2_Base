@@ -376,3 +376,4 @@ project/$
 /project/externals/imgui/lib/
 /project/externals/DirectXTex/lib/
 /project/externals/DirectXTex/Shaders/Compiled/
+*.txt
