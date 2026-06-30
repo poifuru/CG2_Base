@@ -31,6 +31,10 @@ public:
 	void SetMaterial(const std::shared_ptr<Material>& material) { material_ = material; }
 	std::shared_ptr<Material> GetMaterial() const { return material_; }
 
+	// デプスの有効・無効を設定するセッター
+	void SetDepthEnable(bool flag) { isDepthEnable_ = flag; }
+	bool GetDepthEnable() const { return isDepthEnable_; }
+
 	// 外部（ファクトリ）から初期化済みの共通バッファを受け取る
 	void SetTransformBuffer(std::unique_ptr<TransformMatrixResource>&& transformBuffer) {
 		transformBuffer_ = std::move(transformBuffer);
@@ -54,4 +58,6 @@ protected:
 	std::shared_ptr<Material> material_ = nullptr;
 
 	uint8_t layer_ = 1;
+
+	bool isDepthEnable_ = true; // デフォルトはデプス有効
 };

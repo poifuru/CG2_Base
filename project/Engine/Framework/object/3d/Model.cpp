@@ -35,6 +35,7 @@ void Model::Draw(RenderSystem* renderSystem) {
 		cmd.psoDesc.InputLayoutID = InputLayoutType::Standard3D;
 		cmd.psoDesc.BlendMode = BlendModeType::Opaque;
 		cmd.psoDesc.CullMode = D3D12_CULL_MODE_NONE; // 両面表示
+		cmd.psoDesc.DepthEnable = isDepthEnable_;
 
 		// メッシュ情報の設定
 		cmd.vbView = mesh.vbView;

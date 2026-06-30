@@ -3,34 +3,46 @@
 #include "GameObject.h"
 #include "MathFunction.h"
 #include "BaseScene.h" // SceneContextやGameObject検索用
+#include "InputManager.h"
+#include "RawInput.h"
 
 void VirtualFollowCamera::Update() {
-	// ターゲットが未設定で、ターゲット名がある場合はシーンから探す
-	if (!target_ && !targetName_.empty() && gameObject_) {
-		// ※シーン全体のオブジェクトリストから名前で検索する
-		// target_ = gameObject_->GetContext()->scene->FindObject(targetName_);
-	}
+	if(target_ && gameObject_) {
+		InputManager* input = InputManager::GetInstance();
 
-	if (target_ && gameObject_) {
-		// ターゲット位置 + オフセット = 目標座標
-		Vector3 targetPos = Math::Add(target_->GetTransform().translate, offset_);
+		// 右クリックしながらマウスドラッグでカメラの角度を更新する
+		if(input->GetRawInput()->PushMouse(1)) {
+			float sensitivity = 0.005f; // マウス感度
+			angleY_ += input->GetRawInput()->GetMouseDeltaX() * sensitivity;
+			angleX_ += input->GetRawInput()->GetMouseDeltaY() * sensitivity;
+
+			// 上下（Pitch）の回転角度を制限する（床抜けや頭頂部フリップを防ぐ。約-80度〜80度）
+			const float maxPitch = 80.0f * (3.14159265f / 180.0f);
+			angleX_ = std::clamp(angleX_, -maxPitch, maxPitch);
+		}
+		// 回転行列を作成して、オフセットを回転させる
+		Matrix4x4 rotX = Math::MakeRotateXMatrix(angleX_);
+		Matrix4x4 rotY = Math::MakeRotateYMatrix(angleY_);
+		Matrix4x4 rotMatrix = Math::Multiply(rotX, rotY);
+
+		// 回転させたオフセットをプレイヤーの座標に足して「目標位置」を計算する
+		Vector3 rotatedOffset = Math::Transform(offset_, rotMatrix);
+		Vector3 targetPos = Math::Add(target_->GetTransform().translate, rotatedOffset);
 
 		// 自身の座標を滑らかに補間して追従させる
 		auto& myTransform = gameObject_->GetTransform();
-
 		myTransform.translate = Math::Lerp(myTransform.translate, targetPos, 1.0f - delay_);
+
 		// 常にターゲットの方を向く（LookAt回転）の計算
-		Vector3 targetCenter = target_->GetTransform().translate; // ターゲットの位置（注視点）
+		Vector3 targetCenter = Math::Add(target_->GetTransform().translate, { 0.0f, 2.5f, 0.0f }); // ターゲットの位置（注視点）
 		Vector3 direction = Math::Subtract(targetCenter, myTransform.translate); // カメラから見たターゲットへの方向
-		
+
 		if(Math::Length(direction) > 0.001f) {
 			// ヨー回転（Y軸まわり）の計算
 			myTransform.rotate.y = std::atan2(direction.x, direction.z);
-
 			// ピッチ回転（X軸まわり）の計算
 			float xzLength = std::sqrt(direction.x * direction.x + direction.z * direction.z);
 			myTransform.rotate.x = std::atan2(-direction.y, xzLength);
-
 			// ロール回転（Z軸まわり）は0にリセット
 			myTransform.rotate.z = 0.0f;
 		}
@@ -57,6 +69,8 @@ void VirtualFollowCamera::Serialize(json& j) const {
 	j["targetName"] = targetName_;
 	j["offset"] = { offset_.x, offset_.y, offset_.z };
 	j["delay"] = delay_;
+	j["angleX"] = angleX_;
+	j["angleY"] = angleY_;
 }
 
 void VirtualFollowCamera::Deserialize(const json& j) {
@@ -66,6 +80,8 @@ void VirtualFollowCamera::Deserialize(const json& j) {
 		offset_ = { j["offset"][0], j["offset"][1], j["offset"][2] };
 	}
 	if (j.contains("delay")) delay_ = j["delay"];
+	if (j.contains("angleX")) angleX_ = j["angleX"];
+	if (j.contains("angleY")) angleY_ = j["angleY"];
 }
 
 void VirtualFollowCamera::ResolveTarget(const std::vector<std::unique_ptr<GameObject>>& gameObjects) {

@@ -1,0 +1,20 @@
+#pragma once
+#include "Component.h"
+
+class ReticleComponent : public Component {
+public:
+	ReticleComponent() = default;
+	~ReticleComponent() override = default;
+
+	void Initialize() override;
+	void Update() override;
+	void ImGui() override;
+
+	void Serialize(json& j) const override;
+	void Deserialize(const json& j) override;
+
+	const char* GetName() const override { return "ReticleComponent"; }
+private:
+	float offsetZ_ = 100.0f; // カメラの正面方向への配置距離（m）
+	bool isInitialized_ = false; // ★【追加】初期化済みフラグ
+};

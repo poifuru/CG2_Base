@@ -4,6 +4,15 @@
 
 class CollisionManager {
 public:
+	// シングルトンインスタンスの取得
+	static CollisionManager* GetInstance() {
+		static CollisionManager instance;
+		return &instance;
+	}
+
+	CollisionManager() = default;
+	~CollisionManager() = default;
+
 	// オブジェクトの登録
 	void RegisterObject(CollisionObject* obj);
 

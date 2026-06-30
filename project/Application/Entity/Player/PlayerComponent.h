@@ -21,8 +21,8 @@ public:
 	//ゲッター
 	const char* GetName() const override { return "PlayerComponent"; }
 
-	// 外部から紐づけるためのセッター
-	void SetReticleObject(GameObject* reticle) { reticleObject_ = reticle; }
+	// レティクル自動バインド用
+	void ResolveReticle(const std::vector<std::unique_ptr<GameObject>>& gameObjects);
 
 	
 private:	// プライベート関数

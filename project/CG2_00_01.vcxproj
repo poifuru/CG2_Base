@@ -188,6 +188,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\entity\player\BulletComponent.cpp" />
     <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
     <ClCompile Include="Application\Collider\CollisionManager.cpp" />
+    <ClCompile Include="Application\Collider\ColliderComponent.cpp" />
+    <ClCompile Include="Application\Entity\Enemy\BirdEnemyComponent.cpp" />
     <ClCompile Include="Engine\Framework\GameObject\CameraComponent\VirtualCameraComponent.cpp" />
     <ClCompile Include="Engine\Editor\Command\CommandManager.cpp" />
     <ClCompile Include="Engine\Core\Engine.cpp" />
@@ -251,6 +253,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Engine\Framework\GameObject\CameraComponent\VirtualFollowCamera.cpp" />
+    <ClCompile Include="Application\Entity\Enemy\FishEnemyComponent.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\BaseObject3d.cpp" />
     <ClCompile Include="Engine\Core\General\Easing.cpp" />
@@ -302,7 +305,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Framework\Object\3d\Skybox.cpp" />
     <ClCompile Include="Engine\Core\RenderTexture.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\PostEffectManager.cpp" />
-    <ClCompile Include="application\entity\player\Reticle.cpp" />
+    <ClCompile Include="application\entity\player\ReticleComponent.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\Vignette.cpp" />
     <ClCompile Include="Engine\Framework\Particle\Particle.cpp" />
     <ClCompile Include="Engine\Framework\Particle\ParticleRenderer.cpp" />
@@ -326,6 +329,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\entity\player\BulletComponent.h" />
     <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="Application\Collider\CollisionManager.h" />
+    <ClInclude Include="Application\Collider\ColliderComponent.h" />
+    <ClInclude Include="Application\Entity\Enemy\BirdEnemyComponent.h" />
     <ClInclude Include="Engine\Common\Structure\Geometry.h" />
     <ClInclude Include="Engine\Common\Structure\MathTypes.h" />
     <ClInclude Include="Engine\Common\Structure\PhysicsTypes.h" />
@@ -369,6 +374,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\scene\SceneType.h" />
     <ClInclude Include="externals\imgui\ImGuizmo.h" />
     <ClInclude Include="Engine\Framework\GameObject\CameraComponent\VirtualFollowCamera.h" />
+    <ClInclude Include="Application\Entity\Enemy\FishEnemyComponent.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Engine\Framework\Object\3d\BaseObject3d.h" />
     <ClInclude Include="Engine\Core\General\Easing.h" />
@@ -431,7 +437,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Framework\Object\3d\Skybox.h" />
     <ClInclude Include="Engine\Core\RenderTexture.h" />
     <ClInclude Include="Engine\Render\PostEffect\PostEffectManager.h" />
-    <ClInclude Include="application\entity\player\Reticle.h" />
+    <ClInclude Include="application\entity\player\ReticleComponent.h" />
     <ClInclude Include="Engine\Render\PostEffect\Vignette.h" />
     <ClInclude Include="Engine\Framework\Particle\Particle.h" />
     <ClInclude Include="Engine\Framework\Particle\ParticleRenderer.h" />

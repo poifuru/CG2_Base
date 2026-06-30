@@ -22,4 +22,8 @@ private:
 
 	Vector3 offset_ = { 0.0f, 5.0f, -10.0f }; // ターゲットからの距離
 	float delay_ = 0.1f;                      // 追従の遅延 (0 = 遅延なし, 1 = 動かない)
+
+	// カメラの回転角
+	float angleX_ = 0.2f; // 上下回転（Pitch: 最初は少し見下ろす角度にする）
+	float angleY_ = 0.0f; // 左右回転（Yaw）
 };

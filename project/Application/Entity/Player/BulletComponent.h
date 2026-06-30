@@ -14,6 +14,6 @@ public:
 
 private:
 	Vector3 direction_{};
-	float speed_ = 30.0f;
+	float speed_ = 80.0f;
 	float activeTimer_ = 3.0f;
 };

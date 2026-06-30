@@ -128,6 +128,9 @@ MaterialTex ModelManager::LoadMaterialTemplateFile(const std::string& directoryP
 }
 
 ModelData ModelManager::LoadModelFile(const std::string& filePath, bool inversion) {
+	// ★【調査用に追加】今どのファイルをロードしようとしているか出力する！
+	OutputDebugStringA(("Loading Model: " + filePath + "\n").c_str());
+
 	ModelData modelData;
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(

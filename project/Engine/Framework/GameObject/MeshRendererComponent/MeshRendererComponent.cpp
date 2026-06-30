@@ -15,9 +15,13 @@ void MeshRendererComponent::Initialize() {
 
 	// 初期モデルのロード
 	SetModel(modelPath_);
+	SetTexture(texPath_);
 }
 void MeshRendererComponent::Update() {
 	if(!model_ || !gameObject_) return;
+
+	// モデルにデプス設定を適用
+	model_->SetDepthEnable(isDepthEnable_);
 
 	// カメラのデータを取得してモデルをアップデート
 	CameraData& cameraData = CameraOrganizer::GetInstance()->GetCameraData();
@@ -40,6 +44,22 @@ void MeshRendererComponent::ImGui() {
 	}
 	ImGui::Spacing();
 
+	// テクスチャパスの表示と変更
+	char texBuf[256];
+	strcpy_s(texBuf, texPath_.c_str());
+	if (ImGui::InputText("Texture Path", texBuf, sizeof(texBuf), ImGuiInputTextFlags_EnterReturnsTrue)) {
+		SetTexture(texBuf);
+	}
+	ImGui::Spacing();
+
+	// デプスの有効・無効のチェックボックス
+	if (ImGui::Checkbox("Depth Enable", &isDepthEnable_)) {
+		if (model_) {
+			model_->SetDepthEnable(isDepthEnable_);
+		}
+	}
+	ImGui::Spacing();
+
 	// 既存のModelクラスが持っているImGuiの調整機能もそのまま呼べる
 	if(model_) {
 		model_->ImGui("Model Material");
@@ -49,6 +69,8 @@ void MeshRendererComponent::ImGui() {
 void MeshRendererComponent::Serialize(json& j) const {
 	j["type"] = "MeshRendererComponent";
 	j["modelPath"] = modelPath_;
+	j["texPath"] = texPath_;
+	j["isDepthEnable"] = isDepthEnable_;
 
 	if (model_) {
 		if (auto material = model_->GetMaterial()) {
@@ -63,8 +85,6 @@ void MeshRendererComponent::Serialize(json& j) const {
 			j["material"]["uvTransform"]["scale"] = { uv.scale.x, uv.scale.y, uv.scale.z };
 			j["material"]["uvTransform"]["rotation"] = { uv.rotate.x, uv.rotate.y, uv.rotate.z };
 			j["material"]["uvTransform"]["translation"] = { uv.translate.x, uv.translate.y, uv.translate.z };
-
-			j["material"]["textureIndex"] = material->GetTextureIndex();
 		}
 	}
 }
@@ -72,6 +92,12 @@ void MeshRendererComponent::Deserialize(const json& j) {
 	isInitialized_ = true;
 	if (j.contains("modelPath")) {
 		SetModel(j["modelPath"]);
+	}
+	if (j.contains("texPath")) {
+		SetTexture(j["texPath"]);
+	}
+	if (j.contains("isDepthEnable")) {
+		isDepthEnable_ = j["isDepthEnable"];
 	}
 
 	if (model_ && j.contains("material")) {
@@ -99,9 +125,6 @@ void MeshRendererComponent::Deserialize(const json& j) {
 				uv.rotate = { uvJ["rotation"][0], uvJ["rotation"][1], uvJ["rotation"][2] };
 				uv.translate = { uvJ["translation"][0], uvJ["translation"][1], uvJ["translation"][2] };
 				material->SetUvTransform(uv);
-			}
-			if (matJ.contains("textureIndex")) {
-				material->SetTextureIndex(matJ["textureIndex"]);
 			}
 			material->Update();
 		}
@@ -137,11 +160,13 @@ void MeshRendererComponent::SetTexture(const std::string& textureName) {
 	SceneContext* context = owner->GetContext();
 	if (!context) return;
 
+	texPath_ = textureName;
+
 	if (model_) {
 		// TextureManagerから登録されているテクスチャのインデックス（ハンドル）を取得する
-		uint32_t textureIndex = context->textureManager->GetTextureIndex(textureName);
+		texIndex_ = context->textureManager->LoadTexture(texPath_);
 
 		// モデル（マテリアル）にインデックスを設定する
-		model_->SetTextureIndex(textureIndex);
+		model_->SetTextureIndex(texIndex_);
 	}
 }

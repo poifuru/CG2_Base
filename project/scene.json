@@ -4,6 +4,7 @@
         {
             "components": [
                 {
+                    "isDepthEnable": true,
                     "material": {
                         "color": [
                             1.0,
@@ -15,7 +16,6 @@
                         "environmentCoefficient": 0.30000001192092896,
                         "metallic": 0.0,
                         "roughness": 0.5,
-                        "textureIndex": 0,
                         "uvTransform": {
                             "rotation": [
                                 0.0,
@@ -35,6 +35,7 @@
                         }
                     },
                     "modelPath": "Resources/player/player.obj",
+                    "texPath": "white1x1",
                     "type": "MeshRendererComponent"
                 },
                 {
@@ -45,13 +46,13 @@
             "name": "Player",
             "transform": {
                 "position": [
-                    -10.902117729187012,
-                    -16.299278259277344,
-                    15.540060997009277
+                    -20.328018188476563,
+                    0.30000001192092896,
+                    28.33796501159668
                 ],
                 "rotation": [
                     -0.0,
-                    -1.5707963705062866,
+                    -2.408768892288208,
                     0.0
                 ],
                 "scale": [
@@ -105,13 +106,13 @@
             "name": "MainCamera",
             "transform": {
                 "position": [
-                    -10.902117729187012,
-                    -14.299278259277344,
-                    5.540060997009277
+                    -38.48231506347656,
+                    9.982364654541016,
+                    70.29562377929688
                 ],
                 "rotation": [
-                    0.19739556312561035,
-                    0.0,
+                    0.0989992618560791,
+                    15.221040725708008,
                     0.0
                 ],
                 "scale": [
@@ -125,7 +126,7 @@
             "components": [
                 {
                     "fov": 0.44999998807907104,
-                    "priority": 10,
+                    "priority": 20,
                     "sensitivity": 0.0010000000474974513,
                     "speed": 0.30000001192092896,
                     "type": "VirtualDebugCamera"
@@ -134,13 +135,13 @@
             "name": "DebugCamera",
             "transform": {
                 "position": [
-                    -17.032318115234375,
-                    16.323524475097656,
-                    -13.02038860321045
+                    -38.48231506347656,
+                    9.982364654541016,
+                    70.29562377929688
                 ],
                 "rotation": [
-                    0.03500029817223549,
-                    0.4730009436607361,
+                    0.0989992618560791,
+                    15.221040725708008,
                     0.0
                 ],
                 "scale": [
@@ -153,14 +154,16 @@
         {
             "components": [
                 {
-                    "delay": 0.0,
+                    "angleX": 0.28626230359077454,
+                    "angleY": 22.64508056640625,
+                    "delay": 0.5,
                     "fov": 0.44999998807907104,
                     "offset": [
                         0.0,
-                        2.0,
-                        -10.0
+                        4.900000095367432,
+                        -30.0
                     ],
-                    "priority": 20,
+                    "priority": 10,
                     "targetName": "Player",
                     "type": "VirtualFollowCamera"
                 }
@@ -168,13 +171,13 @@
             "name": "FollowCamera",
             "transform": {
                 "position": [
-                    -10.902117729187012,
-                    -14.299278259277344,
-                    5.540060997009277
+                    -3.6629638671875,
+                    13.471656799316406,
+                    50.08177947998047
                 ],
                 "rotation": [
-                    0.19739556312561035,
-                    0.0,
+                    0.37145623564720154,
+                    -2.4876606464385986,
                     0.0
                 ],
                 "scale": [
@@ -187,6 +190,7 @@
         {
             "components": [
                 {
+                    "isDepthEnable": true,
                     "material": {
                         "color": [
                             1.0,
@@ -198,7 +202,6 @@
                         "environmentCoefficient": 0.30000001192092896,
                         "metallic": 0.0,
                         "roughness": 0.5,
-                        "textureIndex": 0,
                         "uvTransform": {
                             "rotation": [
                                 0.0,
@@ -218,6 +221,7 @@
                         }
                     },
                     "modelPath": "Resources/plane/plane.obj",
+                    "texPath": "Resources/plane/plane.png",
                     "type": "MeshRendererComponent"
                 }
             ],
@@ -237,6 +241,192 @@
                     500.0,
                     500.0,
                     1.0
+                ]
+            }
+        },
+        {
+            "components": [
+                {
+                    "isDepthEnable": false,
+                    "material": {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "enableLighting": 1,
+                        "environmentCoefficient": 0.30000001192092896,
+                        "metallic": 0.0,
+                        "roughness": 0.5,
+                        "uvTransform": {
+                            "rotation": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "translation": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ]
+                        }
+                    },
+                    "modelPath": "Resources/reticle/reticle.obj",
+                    "texPath": "Resources/reticle/reticle.png",
+                    "type": "MeshRendererComponent"
+                },
+                {
+                    "offsetZ": 100.0,
+                    "type": "ReticleComponent"
+                }
+            ],
+            "name": "reticle",
+            "transform": {
+                "position": [
+                    8.079410552978516,
+                    0.0986013412475586,
+                    -17.64934539794922
+                ],
+                "rotation": [
+                    0.0989992618560791,
+                    15.221040725708008,
+                    0.0
+                ],
+                "scale": [
+                    2.0,
+                    2.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "components": [
+                {
+                    "isDepthEnable": true,
+                    "material": {
+                        "color": [
+                            0.9233871102333069,
+                            0.44680023193359375,
+                            0.0,
+                            1.0
+                        ],
+                        "enableLighting": 1,
+                        "environmentCoefficient": 0.30000001192092896,
+                        "metallic": 0.0,
+                        "roughness": 0.5,
+                        "uvTransform": {
+                            "rotation": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "translation": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ]
+                        }
+                    },
+                    "modelPath": "Resources/stage/stage.obj",
+                    "texPath": "white1x1",
+                    "type": "MeshRendererComponent"
+                }
+            ],
+            "name": "stage",
+            "transform": {
+                "position": [
+                    0.0,
+                    -100.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    -1.5700000524520874
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "components": [
+                {
+                    "isDepthEnable": true,
+                    "material": {
+                        "color": [
+                            0.9596773982048035,
+                            0.14704731106758118,
+                            0.14704731106758118,
+                            1.0
+                        ],
+                        "enableLighting": 1,
+                        "environmentCoefficient": 0.30000001192092896,
+                        "metallic": 0.0,
+                        "roughness": 0.5,
+                        "uvTransform": {
+                            "rotation": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "translation": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ]
+                        }
+                    },
+                    "modelPath": "Resources/Enemy/Bird/bird.obj",
+                    "texPath": "Resources/uvChecker.png",
+                    "type": "MeshRendererComponent"
+                },
+                {
+                    "angle": 2.5012261867523193,
+                    "center": [
+                        0.0,
+                        5.749058723449707,
+                        0.0
+                    ],
+                    "radius": 10.0,
+                    "speed": 1.0,
+                    "type": "BirdEnemyComponent"
+                }
+            ],
+            "name": "bird",
+            "transform": {
+                "position": [
+                    -8.018768310546875,
+                    5.749058723449707,
+                    5.974893569946289
+                ],
+                "rotation": [
+                    0.0,
+                    -0.9304301738739014,
+                    0.0
+                ],
+                "scale": [
+                    0.20000000298023224,
+                    0.20000000298023224,
+                    0.20000000298023224
                 ]
             }
         }

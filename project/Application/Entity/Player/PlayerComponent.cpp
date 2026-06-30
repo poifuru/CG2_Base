@@ -10,6 +10,8 @@
 #include "MeshRendererComponent.h"
 #include "BulletComponent.h"
 #include "BaseScene.h"
+#include "ReticleComponent.h"
+#include "ColliderComponent.h"
 
 // キー入力が無いときに速度を減衰させる定数
 static const float kAttenuationRate = 0.95f;
@@ -20,7 +22,7 @@ void PlayerComponent::Initialize() {
 	cooltime_ = 0.0f;
 
 	// 初期位置を水中に設定（Y = -10.0f）
-	gameObject_->GetTransform().translate = { 0.0f, -10.0f, 0.0f };
+	gameObject_->GetTransform().translate = { 0.0f, 0.3f, 0.0f };
 }
 
 void PlayerComponent::Update() {
@@ -38,6 +40,15 @@ void PlayerComponent::Update() {
 
 	// 射撃処理
 	Shoot();
+}
+
+void PlayerComponent::ResolveReticle(const std::vector<std::unique_ptr<GameObject>>& gameObjects) {
+	for (const auto& obj : gameObjects) {
+		if (obj->GetComponent<ReticleComponent>()) {
+			reticleObject_ = obj.get();
+			return;
+		}
+	}
 }
 
 void PlayerComponent::Move() {
@@ -63,8 +74,8 @@ void PlayerComponent::Move() {
 	if(input->GetRawInput()->Push('D')) { moveDir = Math::Add(moveDir, camRight); }
 
 	// Spaceで上昇、Left Shiftで下降
-	if(input->GetRawInput()->Push(VK_SPACE)) { moveDir.y += 1.0f; }
-	if(input->GetRawInput()->Push(VK_SHIFT)) { moveDir.y -= 1.0f; }
+	/*if(input->GetRawInput()->Push(VK_SPACE)) { moveDir.y += 1.0f; }
+	if(input->GetRawInput()->Push(VK_SHIFT)) { moveDir.y -= 1.0f; }*/
 
 	// 入力があった場合に移動と回転を設定する
 	if(Math::Length(moveDir) > 0.0f) {
@@ -104,15 +115,16 @@ void PlayerComponent::Move() {
 	gameObject_->GetTransform().translate.z += velocity_.z;
 
 	// 水面制限 (Y=-1.0f 以下)
-	const float kWaterSurfaceY = -1.0f;
+	/*const float kWaterSurfaceY = -1.0f;
 	if(gameObject_->GetTransform().translate.y > kWaterSurfaceY) {
 		gameObject_->GetTransform().translate.y = kWaterSurfaceY;
 		velocity_.y = 0.0f;
-	}
+	}*/
 }
 
 void PlayerComponent::Shoot() {
 	InputManager* input = InputManager::GetInstance();
+
 	if (input->GetRawInput()->TriggerMouse(0) && cooltime_ <= 0.0f) {
 		auto* context = gameObject_->GetContext();
 		if (!context || !context->gameObjects) return;
@@ -122,11 +134,15 @@ void PlayerComponent::Shoot() {
 
 		// MeshRendererComponent を追加してモデルを設定（これで描画される！）
 		auto* meshRenderer = bulletObj->AddComponent<MeshRendererComponent>();
-		meshRenderer->SetModel("bullet.obj");
-		meshRenderer->SetTexture("bullet");
+		meshRenderer->SetModel("Resources/bullet/bullet.obj");
+		meshRenderer->SetTexture("Resources/bullet/bullet.png");
 
 		// 弾の挙動コンポーネントを追加
 		auto* bulletComp = bulletObj->AddComponent<BulletComponent>();
+
+		// 弾にコライダーを追加して、当たり判定の大きさを設定する！
+		auto* colliderComp = bulletObj->AddComponent<ColliderComponent>();
+		colliderComp->SetRadius(0.5f); // 弾の半径を 0.5m など適当なサイズにする
 
 		// 開始位置を設定（プレイヤーの位置）
 		bulletObj->GetTransform().translate = gameObject_->GetTransform().translate;
@@ -143,6 +159,19 @@ void PlayerComponent::Shoot() {
 			direction = { 0.0f, 0.0f, 1.0f };
 		}
 		bulletComp->SetDirection(direction);
+
+		// 弾が進行方向を向くように回転を設定する！
+		Vector3 bulletRot = { 0.0f, 0.0f, 0.0f };
+		if (Math::Length(direction) > 0.001f) {
+
+			// ヨー回転（左右）の計算
+			bulletRot.y = std::atan2(direction.x, direction.z);
+
+			// ピッチ回転（上下）の計算
+			float xzLength = std::sqrt(direction.x * direction.x + direction.z * direction.z);
+			bulletRot.x = std::atan2(-direction.y, xzLength);
+		}
+		bulletObj->GetTransform().rotate = bulletRot; // 回転を適用！
 
 		// 初期化して、シーンのオブジェクトリストに追加！
 		bulletObj->Initialize();

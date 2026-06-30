@@ -137,6 +137,40 @@ void GameObject::ImGui() {
 		else {
 			ImGui::TextDisabled("Player Component (Already Added)");
 		}
+		// レティクルコンポーネント
+		if(GetComponent<ReticleComponent>() == nullptr) {
+			if(ImGui::MenuItem("Reticle Component")) {
+				auto* newComp = AddComponent<ReticleComponent>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Reticle Component (Already Added)");
+		}
+		// コライダーコンポーネント
+		if(GetComponent<ColliderComponent>() == nullptr) {
+			if(ImGui::MenuItem("Collider Component")) {
+				auto* newComp = AddComponent<ColliderComponent>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Collider Component (Already Added)");
+		}
+		// 鳥の敵コンポーネント
+		if(GetComponent<BirdEnemyComponent>() == nullptr) {
+			if(ImGui::MenuItem("Bird Enemy Component")) {
+				auto* newComp = AddComponent<BirdEnemyComponent>();
+				newComp->Initialize();
+			}
+		}
+		// 魚の敵コンポーネント
+		if(GetComponent<FishEnemyComponent>() == nullptr) {
+			if(ImGui::MenuItem("Fish Enemy Component")) {
+				auto* newComp = AddComponent<FishEnemyComponent>();
+				newComp->Initialize();
+			}
+		}
 
 		// コンポーネントが増えたらここに
 		ImGui::EndPopup();
@@ -181,6 +215,11 @@ void GameObject::Deserialize(const json& j) {
 	// コンポーネントリストの復元
 	if(j.contains("components")) {
 		for(const auto& compJ : j["components"]) {
+			// null などのオブジェクトじゃないものや、"type" キーが無いものは安全に無視する
+			if (!compJ.is_object() || !compJ.contains("type")) {
+				continue;
+			}
+
 			std::string type = compJ["type"];
 
 			if(type == "MeshRendererComponent") {
@@ -212,6 +251,26 @@ void GameObject::Deserialize(const json& j) {
 			else if(type == "PlayerComponent") {
 				auto* comp = GetComponent<PlayerComponent>();
 				if(!comp) comp = AddComponent<PlayerComponent>();
+				comp->Deserialize(compJ);
+			}
+			else if(type == "ReticleComponent") {
+				auto* comp = GetComponent<ReticleComponent>();
+				if(!comp) comp = AddComponent<ReticleComponent>();
+				comp->Deserialize(compJ);
+			}
+			else if(type == "ColliderComponent") {
+				auto* comp = GetComponent<ColliderComponent>();
+				if(!comp) comp = AddComponent<ColliderComponent>();
+				comp->Deserialize(compJ);
+			}
+			else if(type == "BirdEnemyComponent") {
+				auto* comp = GetComponent<BirdEnemyComponent>();
+				if(!comp) comp = AddComponent<BirdEnemyComponent>();
+				comp->Deserialize(compJ);
+			}
+			else if(type == "FishEnemyComponent") {
+				auto* comp = GetComponent<FishEnemyComponent>();
+				if(!comp) comp = AddComponent<FishEnemyComponent>();
 				comp->Deserialize(compJ);
 			}
 		}

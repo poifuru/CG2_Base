@@ -27,9 +27,12 @@ public:
 
 private:
 	std::unique_ptr<Model> model_ = nullptr;
-	std::string modelPath_ = "Resources/player/player.obj"; // デフォルトモデル
+	std::string modelPath_ = "Resources/plane/plane.obj";	// デフォルトモデル
+	std::string texPath_ = "Resources/uvChecker.png";		// デフォルトテクスチャ
 	uint32_t vsID_ = 0;
 	uint32_t psID_ = 0;
 	uint32_t modelIndex_ = 0;
+	uint32_t texIndex_ = 0;
 	bool isInitialized_ = false;
+	bool isDepthEnable_ = true;
 };

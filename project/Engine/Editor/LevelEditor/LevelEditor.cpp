@@ -7,6 +7,7 @@
 #include "BaseCamera.h"
 #include "EditorManager.h"
 #include "VirtualFollowCamera.h"
+#include "PlayerComponent.h"
 
 void LevelEditor::Initialize(SceneContext* context) {
 	context_ = context;
@@ -246,10 +247,18 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 				}
 				else {
 					auto ext = entry.path().extension().string();
+					// モデルファイルがクリックされた場合、選択中オブジェクトにモデル適用する
 					if((ext == ".obj" || ext == ".gltf") && selectedObject != nullptr) {
 						auto* meshRenderer = selectedObject->GetComponent<MeshRendererComponent>();
 						if(meshRenderer != nullptr) {
 							meshRenderer->SetModel(entry.path().generic_string());
+						}
+					}
+					// 画像ファイルがクリックされた場合、選択中オブジェクトにテクスチャを適用する
+					else if ((ext == ".png" || ext == ".jpg" || ext == ".dds") && selectedObject != nullptr) {
+						auto* meshRenderer = selectedObject->GetComponent<MeshRendererComponent>();
+						if (meshRenderer != nullptr) {
+							meshRenderer->SetTexture(entry.path().generic_string());
 						}
 					}
 				}
@@ -332,9 +341,14 @@ void LevelEditor::LoadScene(std::vector<std::unique_ptr<GameObject>>& gameObject
 				gameObjects.push_back(std::move(newObj));
 			}
 
+			// 全てのオブジェクトが読み込まれた後に紐づけを実行する
 			for (auto& obj : gameObjects) {
 				if (auto* followCam = obj->GetComponent<VirtualFollowCamera>()) {
 					followCam->ResolveTarget(gameObjects);
+				}
+				// プレイヤーにレティクルを紐付ける
+				if (auto* player = obj->GetComponent<PlayerComponent>()) {
+					player->ResolveReticle(gameObjects);
 				}
 			}
 		}

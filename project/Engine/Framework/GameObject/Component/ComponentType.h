@@ -5,3 +5,7 @@
 #include "VirtualFollowCamera.h"
 #include "VirtualDebugCamera.h"
 #include "PlayerComponent.h"
+#include "ReticleComponent.h"
+#include "ColliderComponent.h"
+#include "BirdEnemyComponent.h"
+#include "FishEnemyComponent.h"

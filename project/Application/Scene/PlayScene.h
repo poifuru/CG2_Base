@@ -21,6 +21,8 @@ private:
 private:
 	// 全てのGameObject
 	std::vector<std::unique_ptr<GameObject>> gameObjects_;
+	// 追加待ちのオブジェクトを一時的に溜めるリスト
+	std::vector<std::unique_ptr<GameObject>> createQueue_;
 
 	// 選択中のGameObject
 	GameObject* selectedObject_ = nullptr;
