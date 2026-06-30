@@ -16,6 +16,7 @@ enum class PostEffectType {
 	Vignette,
 	RadialBlur,
 	Dissolve,
+	RandomNoise,
 
 	Count	// エフェクトの総数
 };

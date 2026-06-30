@@ -17,6 +17,7 @@
     <FxCompile Include="Resources\shader\GaussianFilter.PS.hlsl" />
     <FxCompile Include="Resources\shader\Fog.PS.hlsl" />
     <FxCompile Include="Resources\shader\Outline.PS.hlsl" />
+    <FxCompile Include="Resources\shader\RandomNoise.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application\scene\ClearScene.cpp" />
@@ -96,6 +97,7 @@
     <ClCompile Include="magosuya\particle\ParticleRenderer.cpp" />
     <ClCompile Include="Magosuya\PostEffect\Outline.cpp" />
     <ClCompile Include="Magosuya\PostEffect\CopyImage.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\RandomNoise.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -191,6 +193,7 @@
     <ClInclude Include="magosuya\particle\ParticleRenderer.h" />
     <ClInclude Include="Magosuya\PostEffect\Outline.h" />
     <ClInclude Include="Magosuya\PostEffect\CopyImage.h" />
+    <ClInclude Include="Magosuya\PostEffect\RandomNoise.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="magosuya\PSO\RootSignatureManager.h" />

@@ -258,6 +258,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="magosuya\particle\Particle.cpp" />
     <ClCompile Include="magosuya\particle\ParticleRenderer.cpp" />
     <ClCompile Include="Magosuya\PostEffect\Outline.cpp" />
+    <ClCompile Include="Magosuya\PostEffect\RandomNoise.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shader\BoxFilter.PS.hlsl">
@@ -360,6 +361,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Resources\shader\RandomNoise.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Development|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Resources\shader\Skybox.PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -477,6 +483,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="magosuya\particle\Particle.h" />
     <ClInclude Include="magosuya\particle\ParticleRenderer.h" />
     <ClInclude Include="Magosuya\PostEffect\Outline.h" />
+    <ClInclude Include="Magosuya\PostEffect\RandomNoise.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Fullscreen.hlsli" />
