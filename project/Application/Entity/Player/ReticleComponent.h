@@ -14,7 +14,13 @@ public:
 	void Deserialize(const json& j) override;
 
 	const char* GetName() const override { return "ReticleComponent"; }
+
+	// ロックオンしている敵オブジェクトを返すゲッター
+	GameObject* GetLockOnTarget() const { return lockOnTarget_; }
+
 private:
 	float offsetZ_ = 100.0f; // カメラの正面方向への配置距離（m）
 	bool isInitialized_ = false; // ★【追加】初期化済みフラグ
+
+	GameObject* lockOnTarget_ = nullptr; // 現在ロックオンしている敵
 };

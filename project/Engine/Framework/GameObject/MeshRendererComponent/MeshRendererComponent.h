@@ -25,6 +25,9 @@ public:
 	void SetModel(const std::string& modelPath);
 	void SetTexture(const std::string& textureName);
 
+	// マテリアルカラーを直接変更する関数
+	void SetColor(const Vector4& color);
+
 private:
 	std::unique_ptr<Model> model_ = nullptr;
 	std::string modelPath_ = "Resources/plane/plane.obj";	// デフォルトモデル

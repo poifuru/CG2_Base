@@ -170,3 +170,11 @@ void MeshRendererComponent::SetTexture(const std::string& textureName) {
 		model_->SetTextureIndex(texIndex_);
 	}
 }
+
+void MeshRendererComponent::SetColor(const Vector4& color) {
+	if (model_) {
+		if (auto material = model_->GetMaterial()) {
+			material->SetColor(color);
+		}
+	}
+}

@@ -144,6 +144,15 @@ void PlayerComponent::Shoot() {
 		auto* colliderComp = bulletObj->AddComponent<ColliderComponent>();
 		colliderComp->SetRadius(0.5f); // 弾の半径を 0.5m など適当なサイズにする
 
+		// レティクルがロックしている敵がいれば、弾に追尾対象としてセットする！
+		if (reticleObject_) {
+			if (auto* reticleComp = reticleObject_->GetComponent<ReticleComponent>()) {
+				if (auto* target = reticleComp->GetLockOnTarget()) {
+					bulletComp->SetTarget(target);
+				}
+			}
+		}
+
 		// 開始位置を設定（プレイヤーの位置）
 		bulletObj->GetTransform().translate = gameObject_->GetTransform().translate;
 

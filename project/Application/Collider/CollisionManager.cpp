@@ -18,12 +18,11 @@ void CollisionManager::UnregisterObject(CollisionObject* obj) {
 void CollisionManager::UpdateAllCollisions() {
 	if(objects_.size() < 2) return;
 
-	// 総当たり判定
+	// 重複のない総当たり判定（i < j）にすることで自分自身や重複判定を防ぐ
 	for(size_t i = 0; i < objects_.size() - 1; ++i) {
-		for(size_t j = 0; j < objects_.size(); ++j) {
+		for(size_t j = i + 1; j < objects_.size(); ++j) {
 			CollisionObject* a = objects_[i];
 			CollisionObject* b = objects_[j];
-
 			if(CheckActualCollision(a, b)) {
 				// 当たっていたら互いに衝突を通知する
 				a->OnCollision(b);
@@ -34,46 +33,26 @@ void CollisionManager::UpdateAllCollisions() {
 }
 
 bool CollisionManager::CheckActualCollision(CollisionObject* a, CollisionObject* b) {
-	// 両方とも球の場合
+	// 関数内での OnCollision 呼び出しをやめて、純粋に判定結果（bool）だけを返す！
 	if (a->GetCollisionType() == CollisionType::Sphere && 
 		b->GetCollisionType() == CollisionType::Sphere)
 	{
-		if (Math::IsCollision(a->GetSphere(), b->GetSphere()))
-		{
-			a->OnCollision(b);
-			b->OnCollision(a);
-		}
+		return Math::IsCollision(a->GetSphere(), b->GetSphere());
 	}
-	// 両方ともAABBの場合
 	else if (a->GetCollisionType() == CollisionType::AABB && 
 			 b->GetCollisionType() == CollisionType::AABB)
 	{
-		if (Math::IsCollision(a->GetAABB(), b->GetAABB()))
-		{
-			a->OnCollision(b);
-			b->OnCollision(a);
-		}
+		return Math::IsCollision(a->GetAABB(), b->GetAABB());
 	}
-	// AABB と 球 の場合（aがAABB、bが球）
 	else if (a->GetCollisionType() == CollisionType::AABB && 
 			 b->GetCollisionType() == CollisionType::Sphere)
 	{
-		if (Math::IsCollision(a->GetAABB(), b->GetSphere()))
-		{
-			a->OnCollision(b);
-			b->OnCollision(a);
-		}
+		return Math::IsCollision(a->GetAABB(), b->GetSphere());
 	}
-	// AABB と 球 の場合（aが球、bがAABB）
 	else if (a->GetCollisionType() == CollisionType::Sphere && 
 			 b->GetCollisionType() == CollisionType::AABB)
 	{
-		// 引数の順番を AABB, Sphere に合わせて呼び出す
-		if (Math::IsCollision(b->GetAABB(), a->GetSphere()))
-		{
-			a->OnCollision(b);
-			b->OnCollision(a);
-		}
+		return Math::IsCollision(b->GetAABB(), a->GetSphere());
 	}
 	return false;
 }
