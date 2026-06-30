@@ -96,7 +96,7 @@ void ReticleComponent::Update() {
 
 void ReticleComponent::ImGui() {
 	ImGui::DragFloat("offsetZ", &offsetZ_, 0.01f);
-	ImGui::SliderFloat("LockOn Sensitivity", &lockOnAngleCos_, 0.900f, 1.000f, "%.4f");
+	ImGui::DragFloat("LockOn Sensitivity", &lockOnAngleCos_, 0.0001f, 0.9000f, 1.0000f, "%.4f");
 }
 
 void ReticleComponent::Serialize(json& j) const {
