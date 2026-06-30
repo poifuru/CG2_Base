@@ -153,6 +153,22 @@ void PlayerComponent::Shoot() {
 			}
 		}
 
+		// ★【デバッグ用追加】レティクルの紐付け状況を出力する
+		if (!reticleObject_) {
+			OutputDebugStringA("[Shoot] Error: reticleObject is NULL!\n");
+		} else {
+			if (auto* reticleComp = reticleObject_->GetComponent<ReticleComponent>()) {
+				if (auto* target = reticleComp->GetLockOnTarget()) {
+					bulletComp->SetTarget(target);
+					char debugMsg[256];
+					sprintf_s(debugMsg, "[Shoot] Homing Active -> Target: %s\n", target->GetName().c_str());
+					OutputDebugStringA(debugMsg);
+				} else {
+					OutputDebugStringA("[Shoot] Normal Bullet (No Lockon target)\n");
+				}
+			}
+		}
+
 		// 開始位置を設定（プレイヤーの位置）
 		bulletObj->GetTransform().translate = gameObject_->GetTransform().translate;
 

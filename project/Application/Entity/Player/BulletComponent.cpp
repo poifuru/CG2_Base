@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "DeltaTime.h"
 #include "MathFunction.h"
+#include "BaseScene.h"
 
 void BulletComponent::Initialize() {
 	speed_ = 30.0f;
@@ -11,6 +12,24 @@ void BulletComponent::Initialize() {
 
 void BulletComponent::Update() {
 	if (!gameObject_) return;
+
+	// 追尾ターゲットが現在もシーン内に生存しているか安全確認する！
+	if (target_) {
+		bool isTargetAlive = false;
+		auto* context = gameObject_->GetContext();
+		if (context && context->activeGameObjects) {
+			for (const auto& obj : *(context->activeGameObjects)) {
+				if (obj.get() == target_) {
+					isTargetAlive = true;
+					break;
+				}
+			}
+		}
+		// もしすでにシーンから消滅していたら、ターゲットを安全に外す！
+		if (!isTargetAlive) {
+			target_ = nullptr;
+		}
+	}
 
 	// ターゲットが生きていれば、その方向へ徐々に弾の向きを曲げる！
 	if (target_ && !target_->IsDead()) {

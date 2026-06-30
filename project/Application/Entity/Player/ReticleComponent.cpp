@@ -8,6 +8,7 @@
 #include "BirdEnemyComponent.h"
 #include "FishEnemyComponent.h"
 #include "MeshRendererComponent.h"
+#include "ColliderComponent.h"
 
 void ReticleComponent::Initialize() {
 	// すでに初期化済み（ロード済み）なら、デフォルト値での上書きをスキップする
@@ -39,23 +40,48 @@ void ReticleComponent::Update() {
 
 	// 敵オブジェクトを検索して、一番近い敵をロックオンする
 	lockOnTarget_ = nullptr;
-	float closestDist = 3.0f; // ロックオンできるレティクルからの距離（m）
+
+	// 角度（内積）で判定する 1.0に近いほど画面中央。0.985f は画面中心から約10度以内の範囲
+	float maxCos = 0.985f; 
+
 	auto* context = gameObject_->GetContext();
-	if (context && context->gameObjects) {
-		for (const auto& obj : *(context->gameObjects)) {
-			// 鳥か魚のコンポーネントを持っているか、名前がEnemyのものを敵とみなす
-			if (obj->GetComponent<BirdEnemyComponent>() || 
-				obj->GetComponent<FishEnemyComponent>() || 
-				obj->GetName() == "Enemy") 
-			{
-				float dist = Math::Length(Math::Subtract(obj->GetTransform().translate, targetPos));
-				if (dist < closestDist) {
-					closestDist = dist;
-					lockOnTarget_ = obj.get();
+	if (context && context->activeGameObjects) {
+		for (const auto& obj : *(context->activeGameObjects)) {
+			// プレイヤー自身、弾、レティクル、カメラ以外の「コライダー付きオブジェクト」をすべて敵とみなす！
+			if (obj->GetName() != "Player" && 
+				obj->GetName() != "PlayerBullet" && 
+				obj->GetName() != "Reticle" && 
+				obj->GetName() != "FollowCamera" &&
+				obj->GetComponent<ColliderComponent>() != nullptr) {
+
+				Vector3 toEnemy = Math::Subtract(obj->GetTransform().translate, camPos);
+				float distToEnemy = Math::Length(toEnemy);
+				Vector3 dirToEnemy = Math::Normalize(toEnemy);
+				float cosAngle = Math::Dot(dirToEnemy, camForward);
+
+				// ★【デバッグ用ログ】敵ごとの距離と角度（内積）を全部出力する！
+				char debugMsg[256];
+				sprintf_s(debugMsg, "[LockOn-Check] Target:%s | Dist:%.2f | Cos:%.4f (TargetCos:%.3f)\n", 
+						  obj->GetName().c_str(), distToEnemy, cosAngle, maxCos);
+				OutputDebugStringA(debugMsg);
+				if (distToEnemy > 1.0f && distToEnemy < 150.0f) {
+					if (cosAngle > maxCos) {
+						maxCos = cosAngle;
+						lockOnTarget_ = obj.get();
+					}
 				}
 			}
 		}
 	}
+
+	// ★【デバッグ用追加】ロックオンに成功しているか出力する
+	if (lockOnTarget_) {
+		char debugMsg[256];
+		sprintf_s(debugMsg, "[LockOn] Target Found: %s (Cos: %.4f)\n", 
+				  lockOnTarget_->GetName().c_str(), maxCos);
+		OutputDebugStringA(debugMsg);
+	}
+
 	// ロックオン中ならレティクルの色を赤にする（マテリアルカラーの変更）
 	if (auto* renderer = gameObject_->GetComponent<MeshRendererComponent>()) {
 		if (lockOnTarget_) {

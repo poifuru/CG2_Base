@@ -4,6 +4,7 @@
 #include "CollisionManager.h"
 #include "BirdEnemyComponent.h"
 #include "FishEnemyComponent.h"
+#include "MathFunction.h"
 
 // デフォルトは半径1の球として CollisionObject を初期化
 ColliderComponent::ColliderComponent() 
@@ -12,13 +13,19 @@ ColliderComponent::ColliderComponent()
 ColliderComponent::~ColliderComponent() {
 	CollisionManager::GetInstance()->UnregisterObject(this);
 }
-void ColliderComponent::Initialize() {
 
-	// ロード済みならリセット処理をスキップして、マネージャー登録だけ行う
-	if (isInitialized_) {
-		CollisionManager::GetInstance()->RegisterObject(this);
-		return;
+void ColliderComponent::Initialize() {
+	// 初期化時にも、親オブジェクトの位置をコライダーの球の中心に同期させる！
+	if (gameObject_) {
+		Sphere& sphere = const_cast<Sphere&>(GetSphere());
+		sphere.center = gameObject_->GetTransform().translate;
+		sphere.radius = radius_;
 	}
+
+	// 登録処理はここで1回だけ呼ぶようにする！
+	CollisionManager::GetInstance()->RegisterObject(this);
+
+	if (isInitialized_) return;
 	isInitialized_ = true;
 
 	radius_ = 1.0f;
@@ -63,12 +70,19 @@ void ColliderComponent::OnCollision(CollisionObject* other) {
 	GameObject* myObj = GetGameObject();
 	if (!otherObj || !myObj) return;
 
+	// ★【デバッグ用追加】何と何が衝突したかを Visual Studio の出力ウィンドウに表示する！
+	char debugMsg[256];
+	sprintf_s(debugMsg, "[Collision] %s <-> %s (Dist: %.2f)\n", 
+			  myObj->GetName().c_str(), 
+			  otherObj->GetName().c_str(),
+			  Math::Length(Math::Subtract(myObj->GetTransform().translate, otherObj->GetTransform().translate))); // 距離も測る
+	OutputDebugStringA(debugMsg);
+
 	// 自分が「敵（鳥か魚のコンポーネントを持っているか、または名前がEnemy）」で、相手が「弾」なら消滅
 	bool isMyEnemy = (myObj->GetComponent<BirdEnemyComponent>() != nullptr || 
 					  myObj->GetComponent<FishEnemyComponent>() != nullptr ||
 					  myObj->GetName() == "Enemy");
 
-	// ★【修正】作成した isMyEnemy 変数を使って判定するように変更！
 	if (isMyEnemy && otherObj->GetName() == "PlayerBullet") {
 		myObj->Destroy();
 		otherObj->Destroy();

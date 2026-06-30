@@ -3,6 +3,10 @@
 #include "MathFunction.h"
 
 void CollisionManager::RegisterObject(CollisionObject* obj) {
+	// すでに登録されている場合は、二重登録しないように弾く
+	for (auto* o : objects_) {
+		if (o == obj) return;
+	}
 	objects_.push_back(obj);
 }
 

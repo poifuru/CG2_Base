@@ -22,6 +22,9 @@ struct SceneContext {
 
 	// 動的追加のためにオブジェクトリストのポインタを載せる
 	std::vector<std::unique_ptr<GameObject>>* gameObjects = nullptr;
+
+	// 現在シーンに存在する生存オブジェクトリストへのポインタ
+	std::vector<std::unique_ptr<GameObject>>* activeGameObjects = nullptr;
 };
 
 class BaseScene {

@@ -33,6 +33,12 @@ void VirtualFollowCamera::Update() {
 		auto& myTransform = gameObject_->GetTransform();
 		myTransform.translate = Math::Lerp(myTransform.translate, targetPos, 1.0f - delay_);
 
+		// カメラが水面（Y = 0.0f）より下に行かないように制限する！
+		const float kMinCameraY = 0.5f; // 水面の高さ
+		if (myTransform.translate.y < kMinCameraY) {
+			myTransform.translate.y = kMinCameraY;
+		}
+
 		// 常にターゲットの方を向く（LookAt回転）の計算
 		Vector3 targetCenter = Math::Add(target_->GetTransform().translate, { 0.0f, 2.5f, 0.0f }); // ターゲットの位置（注視点）
 		Vector3 direction = Math::Subtract(targetCenter, myTransform.translate); // カメラから見たターゲットへの方向
