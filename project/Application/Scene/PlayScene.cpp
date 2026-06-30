@@ -6,6 +6,7 @@
 #include "ComponentType.h"
 #include "InputManager.h"
 #include "RawInput.h"
+#include "CollisionManager.h"
 
 PlayScene::PlayScene() = default;
 PlayScene::~PlayScene() = default;
@@ -19,7 +20,7 @@ void PlayScene::Initialize() {
 #endif
 
 	// コンテキストにリストのポインタをセットする
-	context_->gameObjects = &gameObjects_;
+	context_->gameObjects = &createQueue_;
 
 	// ライトマネージャーの初期化
 	lightManager_ = std::make_unique<LightManager>();
@@ -45,9 +46,6 @@ void PlayScene::Update(CameraData* cameraData) {
 		}
 	}
 
-	// 死亡フラグが立っているオブジェクトを削除
-	CleanupObject();
-
 	// 毎フレーム、全てのコンポーネントにデバッグ状態を通知する
 	for (auto& obj : gameObjects_) {
 		obj->SetIsDebugMode(isDebugMode_);
@@ -58,8 +56,29 @@ void PlayScene::Update(CameraData* cameraData) {
 		obj->Update();
 	}
 
+	// ループ終了後に、追加待ちのオブジェクトをメインリストに合流させる！
+	if (!createQueue_.empty()) {
+		for (auto& newObj : createQueue_) {
+			gameObjects_.push_back(std::move(newObj));
+		}
+		createQueue_.clear(); // キューを空にする
+	}
+
+	// 当たり判定の実行
+	CollisionManager::GetInstance()->UpdateAllCollisions();
+
+	// 死亡フラグが立っているオブジェクトを削除
+	CleanupObject();
+
 	// カメラの更新
 	CameraOrganizer::GetInstance()->Update();
+
+	// 最新のカメラ座標に基づいて、レティクルを更新する！
+	for (auto& obj : gameObjects_) {
+		if (auto* reticle = obj->GetComponent<ReticleComponent>()) {
+			reticle->Update();
+		}
+	}
 
 	// ライトの更新
 	if (lightManager_) {
