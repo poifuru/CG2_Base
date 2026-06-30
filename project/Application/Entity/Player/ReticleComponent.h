@@ -20,7 +20,8 @@ public:
 
 private:
 	float offsetZ_ = 100.0f; // カメラの正面方向への配置距離（m）
-	bool isInitialized_ = false; // ★【追加】初期化済みフラグ
+	float lockOnAngleCos_ = 0.995f; // ロックオンのしきい値
+	bool isInitialized_ = false; // 初期化済みフラグ
 
 	GameObject* lockOnTarget_ = nullptr; // 現在ロックオンしている敵
 };

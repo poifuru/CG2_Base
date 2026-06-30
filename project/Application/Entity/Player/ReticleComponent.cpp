@@ -42,7 +42,7 @@ void ReticleComponent::Update() {
 	lockOnTarget_ = nullptr;
 
 	// 角度（内積）で判定する 1.0に近いほど画面中央。0.985f は画面中心から約10度以内の範囲
-	float maxCos = 0.985f; 
+	float maxCos = lockOnAngleCos_; 
 
 	auto* context = gameObject_->GetContext();
 	if (context && context->activeGameObjects) {
@@ -96,14 +96,17 @@ void ReticleComponent::Update() {
 
 void ReticleComponent::ImGui() {
 	ImGui::DragFloat("offsetZ", &offsetZ_, 0.01f);
+	ImGui::SliderFloat("LockOn Sensitivity", &lockOnAngleCos_, 0.900f, 1.000f, "%.4f");
 }
 
 void ReticleComponent::Serialize(json& j) const {
 	j["type"] = "ReticleComponent";
 	j["offsetZ"] = offsetZ_;
+	j["lockOnAngleCos"] = lockOnAngleCos_;
 }
 
 void ReticleComponent::Deserialize(const json& j) {
 	isInitialized_ = true;
 	if (j.contains("offsetZ")) offsetZ_ = j["offsetZ"];
+	if (j.contains("lockOnAngleCos")) lockOnAngleCos_ = j["lockOnAngleCos"];
 }
