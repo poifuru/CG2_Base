@@ -31,10 +31,16 @@ private:	// プライベート関数
 
 private:
 	// プレイヤーのパラメータ
-	float speed_ = 1.5f;
+	float speed_;
+	float maxSpeed_; // 最高速度
+	float attenuationRate_;	// 速度の減衰率(慣性)
+	float brakeAttenuationRate_; // ブレーキ時の減衰（値が小さいほど急制動）
 	Vector3 velocity_{};
 	Vector3 acceleration_{};
-	float cooltime_ = 0.0f;
+	float cooltime_;		// 発射クールタイム
+	float turnSpeed_;		// 左右への回転を補完するスピード
+	float dirRatioZ_;		// 曲がるときにどのくらいの比率を掛けるか(前方)
+	float dirRatioX_;		// 曲がるときにどのくらいの比率を掛けるか(左右)
 
 	// 外部参照用ポインタ
 	GameObject* reticleObject_ = nullptr;

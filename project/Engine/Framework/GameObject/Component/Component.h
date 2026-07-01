@@ -28,6 +28,7 @@ public:
 	void SetIsDebugMode(bool flag) { isDebugMode_ = flag; }
 
 protected:
-	GameObject* gameObject_ = nullptr; // 親オブジェクトへのポインタ
-	bool isDebugMode_ = true;
+	GameObject* gameObject_ = nullptr;	// 親オブジェクトへのポインタ
+	bool isDebugMode_ = true;			// デバッグモード中であるか
+	bool isInitialized_ = false;		// 初期化ガード用フラグ
 };

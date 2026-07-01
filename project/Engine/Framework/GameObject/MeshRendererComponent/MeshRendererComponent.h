@@ -36,6 +36,5 @@ private:
 	uint32_t psID_ = 0;
 	uint32_t modelIndex_ = 0;
 	uint32_t texIndex_ = 0;
-	bool isInitialized_ = false;
 	bool isDepthEnable_ = true;
 };

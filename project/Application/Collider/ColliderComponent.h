@@ -23,6 +23,4 @@ public:
 	void OnCollision(CollisionObject* other) override;
 private:
 	float radius_ = 1.0f;
-
-	bool isInitialized_ = false; // リセット防止用のフラグ
 };
