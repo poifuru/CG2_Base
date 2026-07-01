@@ -338,6 +338,7 @@ project/Development/
 
 # Visual Studio Intermediate & Build Files
 *.obj
+!/project/Resources/**/*.obj
 *.ilk
 *.pch
 *.pdb
