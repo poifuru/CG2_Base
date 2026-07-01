@@ -42,6 +42,10 @@ private:
 	float dirRatioZ_;		// 曲がるときにどのくらいの比率を掛けるか(前方)
 	float dirRatioX_;		// 曲がるときにどのくらいの比率を掛けるか(左右)
 
+	// ハープーンガンのパラメータ
+	float harpoonSpeed_ = 120.0f;         // 弾速
+	float harpoonHomingStrength_ = 0.02f; // 追尾力
+
 	// 外部参照用ポインタ
 	GameObject* reticleObject_ = nullptr;
 };

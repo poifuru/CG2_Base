@@ -6,6 +6,9 @@
 #include "BaseScene.h"
 
 void BulletComponent::Initialize() {
+	if (isInitialized_) return;
+	isInitialized_ = true;
+
 	speed_ = 30.0f;
 	activeTimer_ = 3.0f;
 }
@@ -36,13 +39,10 @@ void BulletComponent::Update() {
 		Vector3 targetPos = target_->GetTransform().translate;
 		Vector3 myPos = gameObject_->GetTransform().translate;
 		Vector3 toTarget = Math::Subtract(targetPos, myPos);
-
 		if (Math::Length(toTarget) > 0.001f) {
 			toTarget = Math::Normalize(toTarget);
-
-			// 旋回力（0.1f = 毎フレーム10%ターゲットの方向へ曲がる）
-			float turnSpeed = 0.1f;
-			direction_ = Math::Lerp(direction_, toTarget, turnSpeed);
+			// 旋回力（毎フレームhomingStrength_%ターゲットの方向へ曲がる）
+			direction_ = Math::Lerp(direction_, toTarget, homingStrength_);
 			direction_ = Math::Normalize(direction_);
 		}
 	}

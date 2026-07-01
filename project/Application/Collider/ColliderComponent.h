@@ -21,6 +21,9 @@ public:
 
 	// 衝突した時のコールバック（CollisionObjectの仮想関数をオーバーライド）
 	void OnCollision(CollisionObject* other) override;
+
+	const Vector3& GetPrevPosition() const { return prevPosition_; }
 private:
 	float radius_ = 1.0f;
+	Vector3 prevPosition_{};	// 前フレームの座標
 };

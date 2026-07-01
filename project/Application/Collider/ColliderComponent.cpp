@@ -20,6 +20,8 @@ void ColliderComponent::Initialize() {
 		Sphere& sphere = const_cast<Sphere&>(GetSphere());
 		sphere.center = gameObject_->GetTransform().translate;
 		sphere.radius = radius_;
+
+		prevPosition_ = sphere.center; 
 	}
 
 	// 登録処理はここで1回だけ呼ぶようにする！
@@ -37,10 +39,13 @@ void ColliderComponent::Initialize() {
 void ColliderComponent::Update() {
 	if (!gameObject_) return;
 
+	// 位置が更新される前に「前フレームの座標」として保存する！
+	prevPosition_ = GetSphere().center;
+
 	// 親GameObjectの座標に合わせて、コライダーの球の中心座標を更新する
 	Vector3 myPos = gameObject_->GetTransform().translate;
 
-	// CollisionObject内部の幾何データを更新（強引にキャストして書き換える）
+	// CollisionObject内部の幾何データを更新
 	Sphere& sphere = const_cast<Sphere&>(GetSphere());
 	sphere.center = myPos;
 	sphere.radius = radius_;

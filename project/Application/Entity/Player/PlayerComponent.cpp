@@ -194,8 +194,14 @@ void PlayerComponent::Shoot() {
 		meshRenderer->SetModel("Resources/bullet/bullet.obj");
 		meshRenderer->SetTexture("Resources/bullet/bullet.png");
 
+		bulletObj->Initialize();
+
 		// 弾の挙動コンポーネントを追加
 		auto* bulletComp = bulletObj->AddComponent<BulletComponent>();
+
+		// 生成した弾にプレイヤーで設定しているハープーンのパラメータを適用
+		bulletComp->SetSpeed(harpoonSpeed_);
+		bulletComp->SetHomingStrength(harpoonHomingStrength_);
 
 		// 弾にコライダーを追加して、当たり判定の大きさを設定する
 		auto* colliderComp = bulletObj->AddComponent<ColliderComponent>();
@@ -211,12 +217,21 @@ void PlayerComponent::Shoot() {
 		}
 
 		// 開始位置を設定（プレイヤーの位置）
-		bulletObj->GetTransform().translate = gameObject_->GetTransform().translate;
+		bulletObj->GetTransform().translate.x = gameObject_->GetTransform().translate.x;
+		bulletObj->GetTransform().translate.y = gameObject_->GetTransform().translate.y + 0.25f;
+		bulletObj->GetTransform().translate.z = gameObject_->GetTransform().translate.z;
 
 		// 方向の計算
 		Vector3 targetPos = { 0.0f, 0.0f, 100.0f };
 		if (reticleObject_) {
 			targetPos = reticleObject_->GetTransform().translate;
+
+			// もし敵をロックオンしているなら、その敵の座標を直接狙う
+			if (auto* reticleComp = reticleObject_->GetComponent<ReticleComponent>()) {
+				if (auto* lockOnEnemy = reticleComp->GetLockOnTarget()) {
+					targetPos = lockOnEnemy->GetTransform().translate; // 敵の座標に上書き
+				}
+			}
 		}
 		Vector3 direction = Math::Subtract(targetPos, bulletObj->GetTransform().translate);
 		if (Math::Length(direction) > 0.001f) {
@@ -239,8 +254,7 @@ void PlayerComponent::Shoot() {
 		}
 		bulletObj->GetTransform().rotate = bulletRot; // 回転を適用
 
-		// 初期化してシーンのオブジェクトリストに追加
-		bulletObj->Initialize();
+		// シーンのオブジェクトリストに追加
 		context->gameObjects->push_back(std::move(bulletObj));
 		cooltime_ = 0.25f;
 	}
@@ -262,6 +276,10 @@ void PlayerComponent::ImGui() {
 		dirRatioX_ = std::clamp(dirRatioX_, 0.0f, 1.0f);
 		dirRatioZ_ = 1.0f - dirRatioX_;
 	}
+
+	ImGui::Text("--- Harpoon Gun ---");
+	ImGui::DragFloat("Harpoon Speed", &harpoonSpeed_, 1.0f, 10.0f, 300.0f);
+	ImGui::SliderFloat("Homing Strength", &harpoonHomingStrength_, 0.0f, 0.5f);
 #endif
 }
 
