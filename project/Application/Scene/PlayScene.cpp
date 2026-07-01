@@ -17,6 +17,12 @@ void PlayScene::Initialize() {
 #ifdef USEIMGUI
 	levelEditor_ = std::make_unique<LevelEditor>();
 	levelEditor_->Initialize(context_);
+
+	// 初回ロード時に defaultScene.json が存在すれば読み込む
+	const std::string defaultScenePath = "Resources/Scene/defaultScene.json";
+	if (std::filesystem::exists(defaultScenePath)) {
+		levelEditor_->LoadScene(defaultScenePath, gameObjects_, selectedObject_);
+	}
 #endif
 
 	// コンテキストにリストのポインタをセットする

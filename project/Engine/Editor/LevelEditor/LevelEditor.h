@@ -17,12 +17,25 @@ public:
 		GameObject*& selectedObject, 
 		CameraData* cameraData
 	);
+
+	void SaveScene(const std::string& fileName, 
+				   const std::vector<std::unique_ptr<GameObject>>& gameObjects
+	);
+
+	void LoadScene(const std::string& fileName, 
+				   std::vector<std::unique_ptr<GameObject>>& gameObjects,
+				   GameObject*& selectedObject
+	);
+
 private:
 	// フォルダツリー描画などのプライベート関数もここに引っ越す
 	void DrawDirectoryTree(const std::filesystem::path& path);
-	void SaveScene(const std::vector<std::unique_ptr<GameObject>>& gameObjects);
-	void LoadScene(std::vector<std::unique_ptr<GameObject>>& gameObjects, GameObject*& selectedObject);
+	
 private:
 	SceneContext* context_ = nullptr;
 	std::filesystem::path currentDirectory_ = "Resources";
+
+	// セーブ/ロードUI用のバッファと選択インデックス
+	char saveFileName_[128] = "defaultScene.json";
+	int selectedSceneFileIndex_ = 0;
 };

@@ -12,7 +12,7 @@ void VirtualDebugCamera::Initialize() {
 }
 
 void VirtualDebugCamera::Update() {
-	if (!gameObject_ || !input_) return;
+	if (!gameObject_ || !input_ || !isDebugMode_) return;
 	auto& trans = gameObject_->GetTransform();
 
 	// カメラのワールド行列を一時的に計算して、正面(Z軸)・右(X軸)の方向ベクトルを抽出する

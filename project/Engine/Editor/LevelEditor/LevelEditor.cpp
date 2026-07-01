@@ -26,16 +26,105 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 	}
 	// ---- ヒエラルキー ----
 	ImGui::Begin("ヒエラルキー");
-	// シーン保存ボタン
+
 	if(ImGui::Button("シーンを保存")) {
-		SaveScene(gameObjects);
+		ImGui::OpenPopup("シーンを保存"); // ポップアップを開くトリガー
 	}
+
 	ImGui::SameLine();
-	// シーン読込ボタン
+
 	if(ImGui::Button("シーン読み込み")) {
-		LoadScene(gameObjects, selectedObject);
+		ImGui::OpenPopup("シーン読み込み"); // ポップアップを開くトリガー
 	}
+
 	ImGui::Separator();
+
+	// 保存用のモーダルポップアップ画面
+	if (ImGui::BeginPopupModal("シーンを保存", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		ImGui::Text("保存するシーンファイル名を入力してください。");
+		ImGui::Spacing();
+
+		ImGui::InputText("ファイル名", saveFileName_, sizeof(saveFileName_));
+		ImGui::Spacing();
+
+		if (ImGui::Button("保存", ImVec2(120, 0))) {
+			std::string fileToSave = saveFileName_;
+			if (fileToSave.find(".json") == std::string::npos) {
+				fileToSave += ".json";
+			}
+
+			const std::string sceneFolder = "Resources/Scene";
+			if (!std::filesystem::exists(sceneFolder)) {
+				std::filesystem::create_directories(sceneFolder);
+			}
+
+			std::string fullPath = sceneFolder + "/" + fileToSave;
+			SaveScene(fullPath, gameObjects);
+			ImGui::CloseCurrentPopup(); // ポップアップを閉じる
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("キャンセル", ImVec2(120, 0))) {
+			ImGui::CloseCurrentPopup(); // ポップアップを閉じる
+		}
+
+		ImGui::EndPopup();
+	}
+
+	// 読み込み用のモーダルポップアップ画面
+	if (ImGui::BeginPopupModal("シーン読み込み", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		ImGui::Text("読み込むシーンファイルを選択してください。");
+		ImGui::Spacing();
+
+		// Resources/Scene内の .json ファイルをスキャンする
+		const std::string sceneFolder = "Resources/Scene";
+		if (!std::filesystem::exists(sceneFolder)) {
+			std::filesystem::create_directories(sceneFolder);
+		}
+
+		std::vector<std::string> sceneFiles;
+		for (const auto& entry : std::filesystem::directory_iterator(sceneFolder)) {
+			if (entry.is_regular_file() && entry.path().extension() == ".json") {
+				sceneFiles.push_back(entry.path().filename().string());
+			}
+		}
+
+		// ImGuiのCombo用に const char* の配列を作る
+		std::vector<const char*> sceneFileNames;
+		for (const auto& name : sceneFiles) {
+			sceneFileNames.push_back(name.c_str());
+		}
+
+		if (!sceneFileNames.empty()) {
+			if (selectedSceneFileIndex_ >= static_cast<int>(sceneFileNames.size())) {
+				selectedSceneFileIndex_ = 0;
+			}
+
+			ImGui::Combo("ファイル名", &selectedSceneFileIndex_, sceneFileNames.data(), static_cast<int>(sceneFileNames.size()));
+			
+			ImGui::Spacing();
+
+			if (ImGui::Button("読み込み", ImVec2(120, 0))) {
+				std::string fileToLoad = sceneFolder + "/" + sceneFiles[selectedSceneFileIndex_];
+				LoadScene(fileToLoad, gameObjects, selectedObject);
+				ImGui::CloseCurrentPopup(); // ポップアップを閉じる
+			}
+
+			ImGui::SameLine();
+
+		} 
+		else {
+			ImGui::Text("シーンファイル (*.json) が見つかりません。");
+		}
+
+		if (ImGui::Button("キャンセル", ImVec2(120, 0))) {
+			ImGui::CloseCurrentPopup(); // ポップアップを閉じる
+		}
+
+		ImGui::EndPopup();
+	}
+
 	// 新規GameObject作成ボタン
 	if(ImGui::Button("新規 GameObject 作成")) {
 		gameObjects.push_back(std::make_unique<GameObject>(context_, "New GameObject"));
@@ -311,24 +400,29 @@ void LevelEditor::DrawDirectoryTree(const std::filesystem::path& path) {
 	}
 }
 
-void LevelEditor::SaveScene(const std::vector<std::unique_ptr<GameObject>>& gameObjects) {
+void LevelEditor::SaveScene(const std::string& fileName, 
+							const std::vector<std::unique_ptr<GameObject>>& gameObjects
+) {
 	json sceneJ;
 	sceneJ["name"] = "scene";
 	sceneJ["objects"] = json::array();
 	for(const auto& obj : gameObjects) {
 		sceneJ["objects"].push_back(obj->Serialize());
 	}
-	std::ofstream file("scene.json");
+	std::ofstream file(fileName);
 	if(file.is_open()) {
 		file << sceneJ.dump(4);
 		file.close();
 	}
 }
 
-void LevelEditor::LoadScene(std::vector<std::unique_ptr<GameObject>>& gameObjects, GameObject*& selectedObject) {
+void LevelEditor::LoadScene(const std::string& fileName, 
+							std::vector<std::unique_ptr<GameObject>>& gameObjects,
+							GameObject*& selectedObject
+) {
 	gameObjects.clear();
 	selectedObject = nullptr;
-	std::ifstream file("scene.json");
+	std::ifstream file(fileName);
 	if(file.is_open()) {
 		json sceneJ;
 		file >> sceneJ;
@@ -340,13 +434,11 @@ void LevelEditor::LoadScene(std::vector<std::unique_ptr<GameObject>>& gameObject
 				newObj->Initialize();
 				gameObjects.push_back(std::move(newObj));
 			}
-
 			// 全てのオブジェクトが読み込まれた後に紐づけを実行する
 			for (auto& obj : gameObjects) {
 				if (auto* followCam = obj->GetComponent<VirtualFollowCamera>()) {
 					followCam->ResolveTarget(gameObjects);
 				}
-				// プレイヤーにレティクルを紐付ける
 				if (auto* player = obj->GetComponent<PlayerComponent>()) {
 					player->ResolveReticle(gameObjects);
 				}

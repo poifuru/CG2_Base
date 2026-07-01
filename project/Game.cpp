@@ -14,6 +14,9 @@ Game::Game() {
 	// ロード用コマンドリストをリセットしてロード開始
 	engine_->ResetCommandList();
 
+	// カメラの初期化
+	CameraOrganizer::GetInstance()->Initialize();
+
 	// SceneManagerの生成と初期化
 	sceneManager_ = std::make_unique<SceneManager>();
 	sceneManager_->Initialize(
@@ -29,9 +32,6 @@ Game::Game() {
 
 	// コマンドリストを実行し、GPUのアップロード完了を待つ
 	engine_->ExecuteCommandList();
-
-	// カメラの初期化
-	CameraOrganizer::GetInstance()->Initialize();
 
 	// ImGuiの初期化
 	ImGuiManager::GetInstance()->Initialize(engine_.get());
