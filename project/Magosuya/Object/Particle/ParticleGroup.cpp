@@ -32,81 +32,8 @@ ParticleGroup::~ParticleGroup() {
 void ParticleGroup::Initialize(const std::string& name) {
 	name_ = name;
 
-	std::vector<ParticleVertex> vertices(kParticleVertexNum);
-	std::vector<uint32_t> indices(kParticleIndexNum);
-
-	// バッファ初期化
-	if(primitiveType_ == ParticlePrimitiveType::Quad) {
-		
-		vertices[0] = {	// 左上
-			{-1.0f, 1.0f, 0.0f, 1.0f},
-			{0.0f, 0.0f},
-		};
-		vertices[1] = {	// 右上
-			{1.0f, 1.0f, 0.0f, 1.0f},
-			{1.0f, 0.0f},
-		};
-		vertices[2] = {	// 左下
-			{-1.0f, -1.0f, 0.0f, 1.0f},
-			{0.0f, 1.0f},
-		};
-		vertices[3] = {	// 右下
-			{1.0f, -1.0f, 0.0f, 1.0f},
-			{1.0f, 1.0f},
-		};
-		vertexBuffer_->Initialize(dxCommon_, vertices);
-		vertexBuffer_->Update(vertices);
-
-		std::vector<uint32_t> indices = {
-		0, 1, 2,
-		1, 3, 2
-		};
-
-		indexBuffer_->Initialize(dxCommon_, kParticleIndexNum);
-		indexBuffer_->Update(indices);
-	}
-	else if(primitiveType_ == ParticlePrimitiveType::Ring) {
-		// 頂点を1つ増やして、UVの終点(1.0)用の頂点を作るよ！
-		uint32_t totalVertices = (kRingDivide + 1) * 2; 
-		uint32_t totalIndices = kRingDivide * 6;
-		vertices.resize(totalVertices);
-		indices.resize(totalIndices);
-		// 1. 頂点バッファの生成
-		// 「<」ではなく「<=」にして、1周回った最後の頂点(UV=1.0)まで作る
-		for (uint32_t i = 0; i <= kRingDivide; ++i) {
-			float angle = float(i) * radianPerDivide;
-			float cosAngle = std::cos(angle);
-			float sinAngle = std::sin(angle);
-			// 内周の頂点
-			vertices[i].position = { cosAngle * kInnerRadius, sinAngle * kInnerRadius, 0.0f, 1.0f };
-			vertices[i].texcoord = { float(i) / float(kRingDivide), 1.0f }; // UVの割り当て（内側）
-			// 外周の頂点 (オフセットが kRingDivide + 1)
-			vertices[i + (kRingDivide + 1)].position = { cosAngle * kOutRadius, sinAngle * kOutRadius, 0.0f, 1.0f };
-			vertices[i + (kRingDivide + 1)].texcoord = { float(i) / float(kRingDivide), 0.0f }; // UVの割り当て（外側）
-		}
-		// 2. インデックスバッファの生成
-		for (uint32_t i = 0; i < kRingDivide; ++i) {
-			// 1周回って0に戻す「% kRingDivide」を外して、素直に新しく作った終点の頂点を指すようにする
-			uint32_t currentInner = i;
-			uint32_t nextInner = i + 1;
-			// 外周のインデックスも kRingDivide + 1 ずらす
-			uint32_t currentOuter = i + (kRingDivide + 1);
-			uint32_t nextOuter = nextInner + (kRingDivide + 1);
-			// 三角形1枚目 (内側現在 -> 外側現在 -> 内側次)
-			indices[i * 6 + 0] = currentInner;
-			indices[i * 6 + 1] = currentOuter;
-			indices[i * 6 + 2] = nextInner;
-			// 三角形2枚目 (外側現在 -> 外側次 -> 内側次)
-			indices[i * 6 + 3] = currentOuter;
-			indices[i * 6 + 4] = nextOuter;
-			indices[i * 6 + 5] = nextInner;
-		}
-		// 先ほど追加してもらったバッファ転送処理
-		vertexBuffer_->Initialize(dxCommon_, vertices);
-		vertexBuffer_->Update(vertices);
-		indexBuffer_->Initialize(dxCommon_, totalIndices);
-		indexBuffer_->Update(indices);
-	}
+	mesh_ = std::make_unique<RingParticleMesh>();
+	CreateMesh();
 
 	instancingBuffer_->Initialize(dxCommon_, kMaxParticleNum_);
 
@@ -124,6 +51,20 @@ void ParticleGroup::Initialize(const std::string& name) {
 	psoDesc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;	//Depthの書き込みを行わない
 	layer_ = 1;
 	renderType_ = RenderType::Particle;
+}
+
+void ParticleGroup::CreateMesh() {
+	if (!mesh_) return;
+
+	std::vector<ParticleVertex> vertices;
+	std::vector<uint32_t> indices;
+
+	mesh_->GenerateMesh(vertices, indices);
+
+	vertexBuffer_->Initialize(dxCommon_, vertices);
+	vertexBuffer_->Update(vertices);
+	indexBuffer_->Initialize(dxCommon_, static_cast<uint32_t>(indices.size()));
+	indexBuffer_->Update(indices);
 }
 
 // 更新処理
@@ -207,10 +148,10 @@ void ParticleGroup::Draw() {
 	cmd.vbViews[0] = vertexBuffer_->GetView();
 	cmd.ibv = indexBuffer_->GetView();
 
-	if (primitiveType_ == ParticlePrimitiveType::Quad) {
-		cmd.indexCount = kParticleIndexNum;
+	if (mesh_) {
+		cmd.indexCount = mesh_->GetIndexCount();
 	} else {
-		cmd.indexCount = kRingDivide * 6;
+		cmd.indexCount = kParticleIndexNum;
 	}
 
 	// 現在のパーティクル数をインスタンス数として設定！
@@ -248,8 +189,15 @@ void ParticleGroup::ImGui() {
 		name_ = nameBuffer;
 	}
 
+	// テクスチャロード用の静的バッファ（ImGui表示用）
+	static char texPathBuffer[256] = "";
+	static std::string s_lastGroupName = "";
+	if (s_lastGroupName != name_ || texPathBuffer[0] == '\0') {
+		snprintf(texPathBuffer, sizeof(texPathBuffer), "%s", texInfo_.filePath.c_str());
+		s_lastGroupName = name_;
+	}
+
 	// 使っているテクスチャ表示
-	//std::string currentPath = TextureManager::GetInstance()->GetTexturePath(texInfo_.index);
 	ImGui::Text("Texture: %s", texInfo_.filePath.empty() ? "None" : texInfo_.filePath.c_str());
 
 	ImGui::SameLine(); // ボタンを横並びにする
@@ -266,7 +214,25 @@ void ParticleGroup::ImGui() {
 				SetTextureIndex(newIndex);
 				// ★パスを直接メンバー変数に記憶しちゃう！
 				texInfo_.filePath = relPath; 
+				snprintf(texPathBuffer, sizeof(texPathBuffer), "%s", relPath.c_str()); // バッファも同期する
 			}
+		}
+	}
+
+	// 手動パス入力ロード機能
+	if (ImGui::InputText(("Texture Path" + label).c_str(), texPathBuffer, sizeof(texPathBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+		int newIndex = TextureManager::GetInstance()->LoadTexture(texPathBuffer);
+		if (newIndex >= 0) {
+			SetTextureIndex(newIndex);
+			texInfo_.filePath = texPathBuffer;
+		}
+	}
+	ImGui::SameLine();
+	if (ImGui::Button(("Load##Tex" + label).c_str())) {
+		int newIndex = TextureManager::GetInstance()->LoadTexture(texPathBuffer);
+		if (newIndex >= 0) {
+			SetTextureIndex(newIndex);
+			texInfo_.filePath = texPathBuffer;
 		}
 	}
 
@@ -335,6 +301,28 @@ void ParticleGroup::ImGui() {
 	} 
 	else {
 		ImGui::DragFloat(("LifeTime (Fixed)" + label).c_str(), &behavior_.minLifeTime, 0.05f, 0.0f, 10.0f);
+	}
+
+	ImGui::Separator();
+
+	// --- Particle Shape ---
+	if (mesh_) {
+		std::string currentShape = mesh_->GetName();
+		if (ImGui::BeginCombo(("Primitive Type" + label).c_str(), currentShape.c_str())) {
+			if (ImGui::Selectable("Quad", currentShape == "Quad")) {
+				mesh_ = std::make_unique<QuadParticleMesh>();
+				CreateMesh();
+			}
+			if (ImGui::Selectable("Ring", currentShape == "Ring")) {
+				mesh_ = std::make_unique<RingParticleMesh>();
+				CreateMesh();
+			}
+			if (ImGui::Selectable("Cylinder", currentShape == "Cylinder")) {
+				mesh_ = std::make_unique<CylinderParticleMesh>();
+				CreateMesh();
+			}
+			ImGui::EndCombo();
+		}
 	}
 
 	ImGui::Separator();
@@ -417,6 +405,10 @@ void ParticleGroup::SaveConfig(json& jsonOut) const {
 
 	// useBillboard
 	jsonOut["useBillboard"] = useBillboard_;
+
+	if (mesh_) {
+		jsonOut["primitiveType"] = mesh_->GetName();
+	}
 }
 
 void ParticleGroup::LoadConfig(const json& jsonIn) {
@@ -501,6 +493,21 @@ void ParticleGroup::LoadConfig(const json& jsonIn) {
 	}
 
 	if(jsonIn.contains("useBillboard")) useBillboard_ = jsonIn["useBillboard"];
+
+	if (jsonIn.contains("primitiveType")) {
+		std::string primType = jsonIn["primitiveType"];
+		if (primType == "Quad") {
+			mesh_ = std::make_unique<QuadParticleMesh>();
+		} else if (primType == "Cylinder") {
+			mesh_ = std::make_unique<CylinderParticleMesh>();
+		} else {
+			mesh_ = std::make_unique<RingParticleMesh>();
+		}
+		CreateMesh();
+	} else {
+		mesh_ = std::make_unique<RingParticleMesh>();
+		CreateMesh();
+	}
 }
 
 void ParticleGroup::SetTextureIndex(int index) {

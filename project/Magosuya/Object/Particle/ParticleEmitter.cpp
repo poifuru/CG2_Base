@@ -15,6 +15,7 @@ ParticleEmitter::ParticleEmitter(const std::string& name) {
 	emitterData_.count = 10;
 	emitterData_.frequency = 1.0f;
 	emitterData_.frequencyTime = 0.0f;
+	shape_ = std::make_unique<BoxEmitterShape>();
 }
 
 void ParticleEmitter::Update() {
@@ -47,6 +48,22 @@ void ParticleEmitter::ImGui() {
 		emitterData_.count = tempCount;
 	}
 	ImGui::DragFloat("Frequency", &emitterData_.frequency, 0.01f, 0.0f, 180.0f);
+
+	// 形状切り替えUI
+	if (shape_) {
+		std::string currentShape = shape_->GetName();
+		if (ImGui::BeginCombo("Shape Type", currentShape.c_str())) {
+			if (ImGui::Selectable("Box", currentShape == "Box")) {
+				shape_ = std::make_unique<BoxEmitterShape>();
+			}
+			if (ImGui::Selectable("Cylinder", currentShape == "Cylinder")) {
+				shape_ = std::make_unique<CylinderEmitterShape>();
+			}
+			ImGui::EndCombo();
+		}
+		shape_->ImGui();
+	}
+
 	ImGui::Separator();
 	if(ImGui::Button("Emit TargetParticle") && !targetGroups_.empty()) {
 		for(size_t i = 0; i < targetGroups_.size(); ++i) {
@@ -75,24 +92,12 @@ void ParticleEmitter::Emit(ParticleGroup* group) {
 	data.transform.rotate.y = ApplyRandomRange(behavior.isRandomRotate, behavior.minRotate.y, behavior.maxRotate.y);
 	data.transform.rotate.z = ApplyRandomRange(behavior.isRandomRotate, behavior.minRotate.z, behavior.maxRotate.z);
 
-	// 出現位置の決定：エミッターの Transform（translate, scale）に基づいて計算する
-	// エミッターの中心位置 (translate) から、サイズ (scale) の半分だけマイナス〜プラスの範囲で散らす
-	// X軸の出現範囲： [中心 - scale.x/2, 中心 + scale.x/2]
-	float minX = emitterData_.transform.translate.x - (emitterData_.transform.scale.x * 0.5f);
-	float maxX = emitterData_.transform.translate.x + (emitterData_.transform.scale.x * 0.5f);
-
-	// Y軸の出現範囲： [中心 - scale.y/2, 中心 + scale.y/2]
-	float minY = emitterData_.transform.translate.y - (emitterData_.transform.scale.y * 0.5f);
-	float maxY = emitterData_.transform.translate.y + (emitterData_.transform.scale.y * 0.5f);
-
-	// Z軸の出現範囲： [中心 - scale.z/2, 中心 + scale.z/2]
-	float minZ = emitterData_.transform.translate.z - (emitterData_.transform.scale.z * 0.5f);
-	float maxZ = emitterData_.transform.translate.z + (emitterData_.transform.scale.z * 0.5f);
-
-	// メンバ関数の ApplyRandomRange を使って、範囲内からランダムに位置を決定（ラムダ式は使わない）
-	data.transform.translate.x = ApplyRandomRange(behavior.isRandomTranslate, minX, maxX);
-	data.transform.translate.y = ApplyRandomRange(behavior.isRandomTranslate, minY, maxY);
-	data.transform.translate.z = ApplyRandomRange(behavior.isRandomTranslate, minZ, maxZ);
+	// 出現位置の決定：エミッター形状クラス（shape_）に委譲する
+	if (shape_) {
+		data.transform.translate = shape_->GeneratePosition(emitterData_.transform, behavior, randomEngine_);
+	} else {
+		data.transform.translate = emitterData_.transform.translate;
+	}
 
 	// 速度の決定（グループ側の設定を適用）
 	data.velocity.x = ApplyRandomRange(behavior.isRandomVelocity, behavior.minVelocity.x, behavior.maxVelocity.x);
@@ -124,6 +129,13 @@ void ParticleEmitter::SaveConfig(json& jsonOut) const {
 	e["scale"] = { emitterData_.transform.scale.x, emitterData_.transform.scale.y, emitterData_.transform.scale.z };
 	e["rotate"] = { emitterData_.transform.rotate.x, emitterData_.transform.rotate.y, emitterData_.transform.rotate.z };
 	e["translate"] = { emitterData_.transform.translate.x, emitterData_.transform.translate.y, emitterData_.transform.translate.z };
+
+	if (shape_) {
+		e["shapeType"] = shape_->GetName();
+		json shapeData = json::object();
+		shape_->SaveConfig(shapeData);
+		e["shapeData"] = shapeData;
+	}
 
 	// このエミッターが狙っているターゲットグループの名前を保存しておく
 	nlohmann::json targets = nlohmann::json::array();
@@ -160,6 +172,21 @@ void ParticleEmitter::LoadConfig(const json& jsonIn) {
 
 		// Frequency
 		emitterData_.frequency = e["frequency"];
+
+		// 形状のロード
+		if (e.contains("shapeType")) {
+			std::string shapeType = e["shapeType"];
+			if (shapeType == "Cylinder") {
+				shape_ = std::make_unique<CylinderEmitterShape>();
+			} else {
+				shape_ = std::make_unique<BoxEmitterShape>();
+			}
+			if (e.contains("shapeData")) {
+				shape_->LoadConfig(e["shapeData"]);
+			}
+		} else {
+			shape_ = std::make_unique<BoxEmitterShape>();
+		}
 	}
 }
 

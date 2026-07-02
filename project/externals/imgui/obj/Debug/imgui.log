@@ -1,0 +1,9 @@
+﻿  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  imgui_impl_dx12.cpp
+  imgui_impl_win32.cpp
+  コードを生成中...
+  imgui.vcxproj -> C:\MagosuyaEngine_vs2026\project\externals\imgui\lib\Debug\imgui.lib

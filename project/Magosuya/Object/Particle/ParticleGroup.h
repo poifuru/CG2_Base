@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <list>
+#include <memory>
 #include <json.hpp>
 using namespace nlohmann;
 #include "DxCommon.h"
@@ -9,12 +10,7 @@ using namespace nlohmann;
 #include "MaterialData.h"
 #include "RenderSystem.h"
 #include "CameraComponent.h"
-
-// パーティクルの形状
-enum class ParticlePrimitiveType {
-	Quad,   // 従来の四角形ポリゴン
-	Ring,   // 今回追加するリング（線形）
-};
+#include "IParticleMesh.h"
 
 // パーティクルごとに異なる粒の挙動パラメータ
 struct ParticleBehavior {
@@ -87,6 +83,11 @@ public:
 	const ParticleBehavior& GetBehavior() const { return behavior_; }
 	const MaterialTex& GetTexInfo()const { return texInfo_; }
 
+	// メッシュの構築
+	void CreateMesh();
+	IParticleMesh* GetMesh() const { return mesh_.get(); }
+	void SetMesh(std::unique_ptr<IParticleMesh> mesh) { mesh_ = std::move(mesh); }
+
 private:
 	DxCommon* dxCommon_ = nullptr;
 
@@ -118,5 +119,5 @@ private:
 	const uint32_t kMaxParticleNum_ = 10000;
 
 	// 形状切り替え用
-	ParticlePrimitiveType primitiveType_ = ParticlePrimitiveType::Ring;
+	std::unique_ptr<IParticleMesh> mesh_;
 };

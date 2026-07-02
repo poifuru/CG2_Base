@@ -234,7 +234,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Magosuya\Object\3d\ModelFactory.cpp" />
     <ClCompile Include="Magosuya\Object\Particle\ParticleField.cpp" />
     <ClCompile Include="Magosuya\Object\Particle\ParticleGroup.cpp" />
+    <ClCompile Include="Magosuya\Object\Particle\IParticleMesh.cpp" />
     <ClCompile Include="Magosuya\Object\Particle\ParticleEmitter.cpp" />
+    <ClCompile Include="Magosuya\Object\Particle\IEmitterShape.cpp" />
     <ClCompile Include="Magosuya\Object\Particle\ParticleSystem.cpp" />
     <ClCompile Include="Magosuya\Event\TimelineManager.cpp" />
   </ItemGroup>
@@ -375,7 +377,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Magosuya\Object\3d\ModelFactory.h" />
     <ClInclude Include="Magosuya\Object\Particle\ParticleField.h" />
     <ClInclude Include="Magosuya\Object\Particle\ParticleGroup.h" />
+    <ClInclude Include="Magosuya\Object\Particle\IParticleMesh.h" />
     <ClInclude Include="Magosuya\Object\Particle\ParticleEmitter.h" />
+    <ClInclude Include="Magosuya\Object\Particle\IEmitterShape.h" />
     <ClInclude Include="Magosuya\Object\Particle\ParticleSystem.h" />
     <ClInclude Include="Magosuya\Event\TimelineManager.h" />
   </ItemGroup>

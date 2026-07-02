@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <FxCompile Include="Resources\shader\Line.PS.hlsl" />
@@ -62,7 +62,9 @@
     <ClCompile Include="Magosuya\Object\Animation\Animator.cpp" />
     <ClCompile Include="Magosuya\Object\Particle\ParticleField.cpp" />
     <ClCompile Include="Magosuya\Object\Particle\ParticleGroup.cpp" />
+    <ClCompile Include="Magosuya\Object\Particle\IParticleMesh.cpp" />
     <ClCompile Include="Magosuya\Object\Particle\ParticleEmitter.cpp" />
+    <ClCompile Include="Magosuya\Object\Particle\IEmitterShape.cpp" />
     <ClCompile Include="Magosuya\Object\Particle\ParticleSystem.cpp" />
     <ClCompile Include="Magosuya\Imgui\EditorManager.cpp" />
     <ClCompile Include="Magosuya\Event\TimelineManager.cpp" />
@@ -149,7 +151,9 @@
     <ClInclude Include="Magosuya\Object\Particle\IParticleField.h" />
     <ClInclude Include="Magosuya\Object\Particle\ParticleField.h" />
     <ClInclude Include="Magosuya\Object\Particle\ParticleGroup.h" />
+    <ClInclude Include="Magosuya\Object\Particle\IParticleMesh.h" />
     <ClInclude Include="Magosuya\Object\Particle\ParticleEmitter.h" />
+    <ClInclude Include="Magosuya\Object\Particle\IEmitterShape.h" />
     <ClInclude Include="Magosuya\Object\Particle\ParticleSystem.h" />
     <ClInclude Include="Magosuya\Imgui\EditorManager.h" />
     <ClInclude Include="Magosuya\Object\GameObject\GameObject.h" />

@@ -29,10 +29,6 @@ PixelShaderOutput main(VertexShaderOutput input)
     output.color = gMaterial.color * textureColor * input.color;
     
     //textureのアルファ値が一定以下ならその後の処理をしない(2値抜き)
-    if (textureColor.a <= 0.5f)
-    {
-        discard;
-    }
     if (output.color.a == 0.0f)
     {
         discard;
