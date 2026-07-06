@@ -13,7 +13,6 @@
     <ClCompile Include="Engine\Editor\ImGui\ImGuiManager.cpp" />
     <ClCompile Include="Engine\Editor\ImGui\EditorManager.cpp" />
     <ClCompile Include="Engine\Core\LeakChecker.cpp" />
-    <ClCompile Include="Engine\Core\DxCommon.cpp" />
     <ClCompile Include="Engine\Core\General\function.cpp" />
     <ClCompile Include="Engine\Core\Input\GamePad.cpp" />
     <ClCompile Include="Engine\Core\Input\InputManager.cpp" />
@@ -62,8 +61,6 @@
     <ClCompile Include="Engine\Render\PostEffect\ColorGrading.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\Vignette.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\Fog.cpp" />
-    <ClCompile Include="Engine\Framework\Particle\Particle.cpp" />
-    <ClCompile Include="Engine\Framework\Particle\ParticleRenderer.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\Outline.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\CopyImage.cpp" />
     <ClCompile Include="Engine\Core\Engine.cpp" />
@@ -98,6 +95,8 @@
     <ClCompile Include="Application\Collider\ColliderComponent.cpp" />
     <ClCompile Include="Application\Entity\Enemy\BirdEnemyComponent.cpp" />
     <ClCompile Include="Application\Entity\Enemy\FishEnemyComponent.cpp" />
+    <ClCompile Include="Engine\Editor\ParticleEditer\EmitterComponent.cpp" />
+    <ClCompile Include="Engine\Editor\ParticleEditer\ParticleData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -126,7 +125,6 @@
     <ClInclude Include="Engine\Editor\ImGui\ImGuiManager.h" />
     <ClInclude Include="Engine\Editor\ImGui\EditorManager.h" />
     <ClInclude Include="Engine\Core\LeakChecker.h" />
-    <ClInclude Include="Engine\Core\DxCommon.h" />
     <ClInclude Include="Engine\Core\Input\GamePad.h" />
     <ClInclude Include="Engine\Core\General\function.h" />
     <ClInclude Include="Engine\Core\General\MathFunction.h" />
@@ -176,8 +174,6 @@
     <ClInclude Include="Engine\Render\PostEffect\ColorGrading.h" />
     <ClInclude Include="Engine\Render\PostEffect\Vignette.h" />
     <ClInclude Include="Engine\Render\PostEffect\Fog.h" />
-    <ClInclude Include="Engine\Framework\Particle\Particle.h" />
-    <ClInclude Include="Engine\Framework\Particle\ParticleRenderer.h" />
     <ClInclude Include="Engine\Render\PostEffect\Outline.h" />
     <ClInclude Include="Engine\Render\PostEffect\CopyImage.h" />
     <ClInclude Include="Engine\Core\IEngine.h" />
@@ -194,7 +190,7 @@
     <ClInclude Include="Engine\Framework\Buffer\SpriteData.h" />
     <ClInclude Include="Engine\Framework\Buffer\SkinCluster.h" />
     <ClInclude Include="Engine\Framework\Buffer\Skeleton.h" />
-    <ClInclude Include="Engine\Framework\Buffer\ParticleData.h" />
+    <ClInclude Include="Engine\Editor\ParticleEditer\ParticleData.h" />
     <ClInclude Include="Engine\Framework\Buffer\MeshData.h" />
     <ClInclude Include="Engine\Framework\Buffer\MaterialData.h" />
     <ClInclude Include="Engine\Framework\Buffer\Animation.h" />
@@ -227,6 +223,7 @@
     <ClInclude Include="Application\Collider\ColliderComponent.h" />
     <ClInclude Include="Application\Entity\Enemy\BirdEnemyComponent.h" />
     <ClInclude Include="Application\Entity\Enemy\FishEnemyComponent.h" />
+    <ClInclude Include="Engine\Editor\ParticleEditer\EmitterComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />
