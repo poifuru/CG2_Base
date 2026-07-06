@@ -178,18 +178,16 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="application\entity\enemy\SmallFish.cpp" />
     <ClCompile Include="application\entity\player\PlayerComponent.cpp" />
     <ClCompile Include="application\scene\ClearScene.cpp" />
     <ClCompile Include="application\scene\GameoverScene.cpp" />
     <ClCompile Include="application\entity\Entity.cpp" />
     <ClCompile Include="application\scene\DebugScene.cpp" />
-    <ClCompile Include="application\entity\enemy\BaseEnemy.cpp" />
     <ClCompile Include="application\entity\player\BulletComponent.cpp" />
-    <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
     <ClCompile Include="Application\Collider\CollisionManager.cpp" />
     <ClCompile Include="Application\Collider\ColliderComponent.cpp" />
     <ClCompile Include="Application\Entity\Enemy\BirdEnemyComponent.cpp" />
+    <ClCompile Include="Application\Entity\Enemy\EnemyManagerComponent.cpp" />
     <ClCompile Include="Engine\Editor\ParticleEditer\EmitterComponent.cpp" />
     <ClCompile Include="Engine\Editor\ParticleEditer\ParticleData.cpp" />
     <ClCompile Include="Engine\Framework\GameObject\CameraComponent\VirtualCameraComponent.cpp" />
@@ -316,18 +314,16 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Collider\Collision.h" />
-    <ClInclude Include="application\entity\enemy\SmallFish.h" />
     <ClInclude Include="application\scene\BaseScene.h" />
     <ClInclude Include="application\scene\ClearScene.h" />
     <ClInclude Include="application\entity\Entity.h" />
     <ClInclude Include="application\entity\boss\Boss.h" />
     <ClInclude Include="application\scene\DebugScene.h" />
-    <ClInclude Include="application\entity\enemy\BaseEnemy.h" />
     <ClInclude Include="application\entity\player\BulletComponent.h" />
-    <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="Application\Collider\CollisionManager.h" />
     <ClInclude Include="Application\Collider\ColliderComponent.h" />
     <ClInclude Include="Application\Entity\Enemy\BirdEnemyComponent.h" />
+    <ClInclude Include="Application\Entity\Enemy\EnemyManagerComponent.h" />
     <ClInclude Include="Engine\Editor\ParticleEditer\EmitterComponent.h" />
     <ClInclude Include="Engine\Common\Structure\Geometry.h" />
     <ClInclude Include="Engine\Common\Structure\MathTypes.h" />

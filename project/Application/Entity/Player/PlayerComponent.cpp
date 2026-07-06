@@ -194,17 +194,18 @@ void PlayerComponent::Shoot() {
 		meshRenderer->SetModel("Resources/bullet/bullet.obj");
 		meshRenderer->SetTexture("Resources/bullet/bullet.png");
 
-		bulletObj->Initialize();
-
-		// 弾の挙動コンポーネントを追加
+		// 弾の挙動コンポーネントと当たり判定コンポーネントを追加
 		auto* bulletComp = bulletObj->AddComponent<BulletComponent>();
+		auto* colliderComp = bulletObj->AddComponent<ColliderComponent>();
+
+		// コンポーネントたちを初期化
+		bulletObj->Initialize();
 
 		// 生成した弾にプレイヤーで設定しているハープーンのパラメータを適用
 		bulletComp->SetSpeed(harpoonSpeed_);
 		bulletComp->SetHomingStrength(harpoonHomingStrength_);
 
-		// 弾にコライダーを追加して、当たり判定の大きさを設定する
-		auto* colliderComp = bulletObj->AddComponent<ColliderComponent>();
+		// 当たり判定の大きさを設定する
 		colliderComp->SetRadius(0.5f);
 
 		// レティクルがロックしている敵がいれば、弾に追尾対象としてセットする

@@ -47,14 +47,11 @@
     <ClCompile Include="Engine\Audio\AudioManager.cpp" />
     <ClCompile Include="application\entity\player\PlayerComponent.cpp" />
     <ClCompile Include="application\scene\DebugScene.cpp" />
-    <ClCompile Include="application\entity\enemy\BaseEnemy.cpp" />
     <ClCompile Include="application\scene\TestScene.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\Skybox.cpp" />
     <ClCompile Include="Engine\Core\RenderTexture.cpp" />
     <ClCompile Include="application\entity\player\BulletComponent.cpp" />
     <ClCompile Include="application\entity\player\ReticleComponent.cpp" />
-    <ClCompile Include="application\entity\enemy\SmallFish.cpp" />
-    <ClCompile Include="application\entity\enemy\EnemyManager.cpp" />
     <ClCompile Include="Application\Collider\CollisionManager.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\PostEffectManager.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\BasePostEffect.cpp" />
@@ -97,6 +94,7 @@
     <ClCompile Include="Application\Entity\Enemy\FishEnemyComponent.cpp" />
     <ClCompile Include="Engine\Editor\ParticleEditer\EmitterComponent.cpp" />
     <ClCompile Include="Engine\Editor\ParticleEditer\ParticleData.cpp" />
+    <ClCompile Include="Application\Entity\Enemy\EnemyManagerComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -158,15 +156,12 @@
     <ClInclude Include="Engine\Audio\AudioManager.h" />
     <ClInclude Include="Engine\Audio\VoiceCallback.h" />
     <ClInclude Include="application\scene\DebugScene.h" />
-    <ClInclude Include="application\entity\enemy\BaseEnemy.h" />
     <ClInclude Include="application\scene\TestScene.h" />
     <ClInclude Include="Engine\Framework\Object\3d\Skybox.h" />
     <ClInclude Include="Engine\Core\RenderTexture.h" />
     <ClInclude Include="Engine\Core\General\DeltaTime.h" />
     <ClInclude Include="application\entity\player\BulletComponent.h" />
     <ClInclude Include="application\entity\player\ReticleComponent.h" />
-    <ClInclude Include="application\entity\enemy\SmallFish.h" />
-    <ClInclude Include="application\entity\enemy\EnemyManager.h" />
     <ClInclude Include="Application\Collider\Collision.h" />
     <ClInclude Include="Application\Collider\CollisionManager.h" />
     <ClInclude Include="Engine\Render\PostEffect\PostEffectManager.h" />
@@ -224,6 +219,7 @@
     <ClInclude Include="Application\Entity\Enemy\BirdEnemyComponent.h" />
     <ClInclude Include="Application\Entity\Enemy\FishEnemyComponent.h" />
     <ClInclude Include="Engine\Editor\ParticleEditer\EmitterComponent.h" />
+    <ClInclude Include="Application\Entity\Enemy\EnemyManagerComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />
