@@ -255,6 +255,9 @@ void PlayerComponent::Shoot() {
 		}
 		bulletObj->GetTransform().rotate = bulletRot; // 回転を適用
 
+		// セーブ対象外
+		bulletObj->SetSerializable(false);
+
 		// シーンのオブジェクトリストに追加
 		context->gameObjects->push_back(std::move(bulletObj));
 		cooltime_ = 0.25f;

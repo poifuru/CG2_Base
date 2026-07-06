@@ -164,12 +164,28 @@ void GameObject::ImGui() {
 				newComp->Initialize();
 			}
 		}
+		else {
+			ImGui::TextDisabled("Bird Enemy Component (Already Added)");
+		}
 		// 魚の敵コンポーネント
 		if(GetComponent<FishEnemyComponent>() == nullptr) {
 			if(ImGui::MenuItem("Fish Enemy Component")) {
 				auto* newComp = AddComponent<FishEnemyComponent>();
 				newComp->Initialize();
 			}
+		}
+		else {
+			ImGui::TextDisabled("Fish Enemy Component (Already Added)");
+		}
+		// エネミーマネージャーコンポーネント
+		if(GetComponent<EnemyManagerComponent>() == nullptr) {
+			if(ImGui::MenuItem("Enemy Manager Component")) {
+				auto* newComp = AddComponent<EnemyManagerComponent>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Enemy Manager Component (Already Added)");
 		}
 
 		// コンポーネントが増えたらここに
@@ -271,6 +287,11 @@ void GameObject::Deserialize(const json& j) {
 			else if(type == "FishEnemyComponent") {
 				auto* comp = GetComponent<FishEnemyComponent>();
 				if(!comp) comp = AddComponent<FishEnemyComponent>();
+				comp->Deserialize(compJ);
+			}
+			else if(type == "EnemyManagerComponent") {
+				auto* comp = GetComponent<EnemyManagerComponent>();
+				if(!comp) comp = AddComponent<EnemyManagerComponent>();
 				comp->Deserialize(compJ);
 			}
 		}

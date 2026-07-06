@@ -9,3 +9,4 @@
 #include "ColliderComponent.h"
 #include "BirdEnemyComponent.h"
 #include "FishEnemyComponent.h"
+#include "EnemyManagerComponent.h"

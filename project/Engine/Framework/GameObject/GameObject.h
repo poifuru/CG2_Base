@@ -33,6 +33,9 @@ public:
 	bool IsDead() { return isDead_; }
 	void Destroy() { isDead_ = true; } // 死ぬときに呼ぶ
 
+	void SetSerializable(bool flag) { isSerializable_ = flag; }
+	bool IsSerializable() const { return isSerializable_; }
+
 	// --- コンポーネント操作のテンプレート関数 --- //
 	// コンポーネントの追加
 	template <typename T, typename... Args>
@@ -73,6 +76,7 @@ private:
 	EulerTransform transform_;
 	std::vector<std::unique_ptr<Component>> components_;
 	bool isDead_ = false;
+	bool isSerializable_ = true;	// シリアライズするかのフラグ
 
 	SceneContext* context_ = nullptr;
 };

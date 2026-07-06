@@ -407,7 +407,9 @@ void LevelEditor::SaveScene(const std::string& fileName,
 	sceneJ["name"] = "scene";
 	sceneJ["objects"] = json::array();
 	for(const auto& obj : gameObjects) {
-		sceneJ["objects"].push_back(obj->Serialize());
+		if (obj->IsSerializable()) { // 保存対象だけを保存
+			sceneJ["objects"].push_back(obj->Serialize());
+		}
 	}
 	std::ofstream file(fileName);
 	if(file.is_open()) {

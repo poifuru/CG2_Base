@@ -41,24 +41,24 @@
                 {
                     "attenuation": 0.9900000095367432,
                     "brakeAttenuation": 0.9800000190734863,
-                    "dirRatioX": 0.029999971389770508,
-                    "dirRatioZ": 0.9700000286102295,
+                    "dirRatioX": 0.009999990463256836,
+                    "dirRatioZ": 0.9900000095367432,
                     "maxSpeed": 0.5,
-                    "speed": 0.10000000149011612,
-                    "turnSpeed": 0.30000001192092896,
+                    "speed": 0.15000000596046448,
+                    "turnSpeed": 0.10000000149011612,
                     "type": "PlayerComponent"
                 }
             ],
             "name": "Player",
             "transform": {
                 "position": [
-                    28.746959686279297,
+                    108.80167388916016,
                     0.30000001192092896,
-                    13.143762588500977
+                    155.30380249023438
                 ],
                 "rotation": [
                     0.0,
-                    34.92966079711914,
+                    52.745689392089844,
                     0.0
                 ],
                 "scale": [
@@ -112,13 +112,13 @@
             "name": "MainCamera",
             "transform": {
                 "position": [
-                    35.43562316894531,
-                    10.622015953063965,
-                    40.59770202636719
+                    80.263427734375,
+                    6.582148551940918,
+                    163.6771240234375
                 ],
                 "rotation": [
-                    0.21999981999397278,
-                    -2.5749807357788086,
+                    0.12648935616016388,
+                    1.8561935424804688,
                     0.0
                 ],
                 "scale": [
@@ -132,7 +132,7 @@
             "components": [
                 {
                     "fov": 0.44999998807907104,
-                    "priority": 20,
+                    "priority": 10,
                     "sensitivity": 0.0010000000474974513,
                     "speed": 0.30000001192092896,
                     "type": "VirtualDebugCamera"
@@ -141,13 +141,13 @@
             "name": "DebugCamera",
             "transform": {
                 "position": [
-                    35.43562316894531,
-                    10.622015953063965,
-                    40.59770202636719
+                    11.77601146697998,
+                    11.169093132019043,
+                    21.30025863647461
                 ],
                 "rotation": [
-                    0.21999981999397278,
-                    -2.5749807357788086,
+                    0.09799982607364655,
+                    0.7780197858810425,
                     0.0
                 ],
                 "scale": [
@@ -160,8 +160,8 @@
         {
             "components": [
                 {
-                    "angleX": 0.19126243889331818,
-                    "angleY": 60.809814453125,
+                    "angleX": 0.04626286029815674,
+                    "angleY": 77.2544174194336,
                     "delay": 0.5,
                     "fov": 0.44999998807907104,
                     "offset": [
@@ -169,7 +169,7 @@
                         4.900000095367432,
                         -30.0
                     ],
-                    "priority": 10,
+                    "priority": 20,
                     "targetName": "Player",
                     "type": "VirtualFollowCamera"
                 }
@@ -177,13 +177,13 @@
             "name": "FollowCamera",
             "transform": {
                 "position": [
-                    54.413604736328125,
-                    10.813602447509766,
-                    25.581512451171875
+                    80.263427734375,
+                    6.582148551940918,
+                    163.6771240234375
                 ],
                 "rotation": [
-                    0.27390551567077637,
-                    -2.022038459777832,
+                    0.12648935616016388,
+                    1.8561935424804688,
                     0.0
                 ],
                 "scale": [
@@ -296,13 +296,13 @@
             "name": "reticle",
             "transform": {
                 "position": [
-                    -16.948265075683594,
-                    -11.200928688049316,
-                    -41.74115753173828
+                    175.4518280029297,
+                    -6.033084869384766,
+                    135.74818420410156
                 ],
                 "rotation": [
-                    0.21999981999397278,
-                    -2.5749807357788086,
+                    0.12648935616016388,
+                    1.8561935424804688,
                     0.0
                 ],
                 "scale": [
@@ -372,144 +372,27 @@
         {
             "components": [
                 {
-                    "isDepthEnable": true,
-                    "material": {
-                        "color": [
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0
-                        ],
-                        "enableLighting": 1,
-                        "environmentCoefficient": 0.30000001192092896,
-                        "metallic": 0.0,
-                        "roughness": 0.5,
-                        "uvTransform": {
-                            "rotation": [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            "scale": [
-                                1.0,
-                                1.0,
-                                1.0
-                            ],
-                            "translation": [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        }
-                    },
-                    "modelPath": "Resources/Enemy/Bird/bird.obj",
-                    "texPath": "white1x1",
-                    "type": "MeshRendererComponent"
-                },
-                {
-                    "radius": 1.0,
-                    "type": "ColliderComponent"
-                },
-                {
-                    "angle": 2.108245611190796,
-                    "center": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "radius": 10.0,
-                    "speed": 1.0,
-                    "type": "BirdEnemyComponent"
+                    "spawnInterval": 5.0,
+                    "spawnRadius": 40.0,
+                    "type": "EnemyManagerComponent"
                 }
             ],
-            "name": "bird_0",
+            "name": "EnemySpwner",
             "transform": {
                 "position": [
-                    -5.1194658279418945,
                     0.0,
-                    8.59017276763916
+                    0.0,
+                    0.0
                 ],
                 "rotation": [
                     0.0,
-                    -0.5374495983123779,
+                    0.0,
                     0.0
                 ],
                 "scale": [
-                    0.20000000298023224,
-                    0.20000000298023224,
-                    0.20000000298023224
-                ]
-            }
-        },
-        {
-            "components": [
-                {
-                    "isDepthEnable": true,
-                    "material": {
-                        "color": [
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0
-                        ],
-                        "enableLighting": 1,
-                        "environmentCoefficient": 0.30000001192092896,
-                        "metallic": 0.0,
-                        "roughness": 0.5,
-                        "uvTransform": {
-                            "rotation": [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            "scale": [
-                                1.0,
-                                1.0,
-                                1.0
-                            ],
-                            "translation": [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        }
-                    },
-                    "modelPath": "Resources/Enemy/Bird/bird.obj",
-                    "texPath": "white1x1",
-                    "type": "MeshRendererComponent"
-                },
-                {
-                    "radius": 1.0,
-                    "type": "ColliderComponent"
-                },
-                {
-                    "angle": 0.9071938395500183,
-                    "center": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "radius": 10.0,
-                    "speed": 1.0,
-                    "type": "BirdEnemyComponent"
-                }
-            ],
-            "name": "bird_1",
-            "transform": {
-                "position": [
-                    6.159587860107422,
-                    0.0,
-                    7.87778377532959
-                ],
-                "rotation": [
-                    0.0,
-                    0.6636021733283997,
-                    0.0
-                ],
-                "scale": [
-                    0.20000000298023224,
-                    0.20000000298023224,
-                    0.20000000298023224
+                    1.0,
+                    1.0,
+                    1.0
                 ]
             }
         }
