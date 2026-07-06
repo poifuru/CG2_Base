@@ -16,7 +16,7 @@ void WindowsAPI::Initialize(int32_t width, int32_t height) {
 	//ウィンドウプロシージャ
 	windowClass_.lpfnWndProc = WindowProc;
 	//ウィンドウクラス名
-	windowClass_.lpszClassName = L"LE3A_14_マスヤ_ゴウ";
+	windowClass_.lpszClassName = L"MagosuyaEngine";
 	//インスタンスハンドル
 	windowClass_.hInstance = GetModuleHandle(nullptr);
 	//カーソル
@@ -34,7 +34,7 @@ void WindowsAPI::Initialize(int32_t width, int32_t height) {
 	//ウィンドウを生成
 	hwnd_ = CreateWindow(
 		windowClass_.lpszClassName,	//利用するクラス名
-		L"Magosuya Engine",			//タイトルバーの文字
+		L"とりうおハント！",			//タイトルバーの文字
 		WS_OVERLAPPEDWINDOW,		//よく見るウィンドウスタイル
 		CW_USEDEFAULT,				//表示x座標(Windowsに任せる)
 		CW_USEDEFAULT,				//表示y座標(WindowsOSに任せる)
