@@ -1,6 +1,7 @@
 #include "PCH.h"
 #include "LeakChecker.h"
 
+#ifdef USEIMGUI
 LeakChecker::~LeakChecker() {
 	Microsoft::WRL::ComPtr<IDXGIDebug> debug;
 	if(SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(debug.GetAddressOf())))) {
@@ -9,3 +10,4 @@ LeakChecker::~LeakChecker() {
 		debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
 	}
 }
+#endif

@@ -23,7 +23,35 @@ void PlayScene::Initialize() {
 	if (std::filesystem::exists(defaultScenePath)) {
 		levelEditor_->LoadScene(defaultScenePath, gameObjects_, selectedObject_);
 	}
+#else
+	// リリースビルドでも、シーンのロードだけは行う
+	const std::string defaultScenePath = "Resources/Scene/defaultScene.json";
+	if (std::filesystem::exists(defaultScenePath)) {
+		LevelEditor tempEditor;
+		tempEditor.Initialize(context_);
+		tempEditor.LoadScene(defaultScenePath, gameObjects_, selectedObject_);
+	}
 #endif
+
+	// --- カメラの初期優先度設定 ---
+	for (auto& obj : gameObjects_) {
+		// デバッグカメラ
+		if (auto* debugCam = obj->GetComponent<VirtualDebugCamera>()) {
+#ifdef USEIMGUI
+			debugCam->SetPriority(20); // 開発用ビルドなら優先度高
+#else
+			debugCam->SetPriority(10); // リリースビルドなら優先度低
+#endif
+		}
+		// 追従カメラ
+		if (auto* followCam = obj->GetComponent<VirtualFollowCamera>()) {
+#ifdef USEIMGUI
+			followCam->SetPriority(10); // 開発用ビルドなら優先度低
+#else
+			followCam->SetPriority(20); // リリースビルドなら優先度高
+#endif
+		}
+	}
 
 	// コンテキストにリストのポインタをセットする
 	context_->gameObjects = &createQueue_;
@@ -38,7 +66,7 @@ void PlayScene::Initialize() {
 
 void PlayScene::Update(CameraData* cameraData) {
 	InputManager* input = InputManager::GetInstance();
-
+#ifdef USEIMGUI
 	// Tabキーでプレイモード/デバッグモードを切り替える
 	if (input->GetRawInput()->Trigger(VK_TAB)) {
 		isDebugMode_ = !isDebugMode_;
@@ -54,11 +82,16 @@ void PlayScene::Update(CameraData* cameraData) {
 			}
 		}
 	}
-
 	// 毎フレーム、全てのコンポーネントにデバッグ状態を通知する
 	for (auto& obj : gameObjects_) {
 		obj->SetIsDebugMode(isDebugMode_);
 	}
+#else
+	// リリースビルド時は常にデバッグモードをOFF
+	for (auto& obj : gameObjects_) {
+		obj->SetIsDebugMode(false);
+	}
+#endif
 
 	// 全オブジェクトの更新
 	for (auto& obj : gameObjects_) {

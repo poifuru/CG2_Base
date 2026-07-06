@@ -1,6 +1,5 @@
 #include "PCH.h"
 #include "BasePostEffect.h"
-#include "DxCommon.h"
 
 void BasePostEffect::Initialize(DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
