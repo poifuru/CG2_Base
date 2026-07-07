@@ -299,7 +299,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Render\Light\SpotLight.cpp" />
     <ClCompile Include="Engine\Render\Light\RectLight.cpp" />
     <ClCompile Include="application\scene\TestScene.cpp" />
-    <ClCompile Include="Engine\Framework\Object\3d\Skybox.cpp" />
+    <ClCompile Include="Engine\Framework\Object\3d\SkyboxComponent.cpp" />
     <ClCompile Include="Engine\Core\RenderTexture.cpp" />
     <ClCompile Include="Engine\Render\PostEffect\PostEffectManager.cpp" />
     <ClCompile Include="application\entity\player\ReticleComponent.cpp" />
@@ -430,7 +430,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Render\Light\RectLight.h" />
     <ClInclude Include="Engine\Audio\VoiceCallback.h" />
     <ClInclude Include="application\scene\TestScene.h" />
-    <ClInclude Include="Engine\Framework\Object\3d\Skybox.h" />
+    <ClInclude Include="Engine\Framework\Object\3d\SkyboxComponent.h" />
     <ClInclude Include="Engine\Core\RenderTexture.h" />
     <ClInclude Include="Engine\Render\PostEffect\PostEffectManager.h" />
     <ClInclude Include="application\entity\player\ReticleComponent.h" />

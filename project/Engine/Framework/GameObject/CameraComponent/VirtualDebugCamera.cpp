@@ -5,6 +5,7 @@
 #include "RawInput.h"
 #include "WindowsAPI.h"
 #include "MathFunction.h"
+#include <cmath>
 
 void VirtualDebugCamera::Initialize() {
 	VirtualCameraComponent::Initialize();
@@ -71,6 +72,13 @@ void VirtualDebugCamera::Update() {
 	if (middlePressed) {
 		trans.rotate.y += input_->GetRawInput()->GetMouseDeltaX() * sensitivity_;
 		trans.rotate.x += input_->GetRawInput()->GetMouseDeltaY() * sensitivity_;
+
+		// 左右回転（Y軸）を 0 〜 2*PI の範囲に制限する（オーバーフロー防止）
+		const float kTwoPi = 6.2831853f;
+		trans.rotate.y = std::fmod(trans.rotate.y, kTwoPi);
+		if (trans.rotate.y < 0.0f) {
+			trans.rotate.y += kTwoPi;
+		}
 
 		// 上を向きすぎるのを防止する
 		if (trans.rotate.x > pitchOver_) {

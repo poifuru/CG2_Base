@@ -18,14 +18,14 @@ void ParticleSpawner::SpawnExplosion(SceneContext* context, const Vector3& posit
 		auto* partComp = partObj->AddComponent<ParticleComponent>();
 
 		partObj->GetTransform().translate = position;
-		// 💡 スケールを大きくする（0.3f 〜 0.7f）
+		// スケールを大きくする（0.3f 〜 0.7f）
 		float scaleSize = 0.3f + static_cast<float>(rand()) / RAND_MAX * 0.4f;
 		partObj->GetTransform().scale = { scaleSize, scaleSize, scaleSize };
 
-		// 💡 ① 先に初期化する（これでデフォルト値が一度セットされる）
+		// 先に初期化する（これでデフォルト値が一度セットされる）
 		partObj->Initialize();
 
-		// 💡 ② 初期化された後に、モデルや色、ライティング設定を上書きする！（リセット防止）
+		// 初期化された後に、モデルや色、ライティング設定を上書きする！（リセット防止）
 		mesh->SetModel("Resources/plane/plane.obj");
 		mesh->SetTexture("Resources/ParticleAssets/circle2.png");
 		mesh->SetEnableLighting(false);
@@ -47,7 +47,7 @@ void ParticleSpawner::SpawnExplosion(SceneContext* context, const Vector3& posit
 		partComp->SetLifeTime(0.3f + static_cast<float>(rand()) / RAND_MAX * 0.4f);
 		partComp->SetColorFade({ 1.0f, 0.6f, 0.1f, 1.0f }, { 1.0f, 0.0f, 0.0f, 0.0f });
 
-		// 💡 ③ 生成された最初のフレームの描画前に確実にGPUにデータを送るため、手動でUpdateを走らせる！
+		// 生成された最初のフレームの描画前に確実にGPUにデータを送るため、手動でUpdateを走らせる！
 		partObj->Update();
 
 		context->gameObjects->push_back(std::move(partObj));
@@ -64,15 +64,15 @@ void ParticleSpawner::SpawnTrail(SceneContext* context, const Vector3& position,
 	auto* partComp = partObj->AddComponent<ParticleComponent>();
 
 	partObj->GetTransform().translate = position;
-	// 💡 スケールを大きくする（0.3f）
+	// スケールを大きくする（0.3f）
 	partObj->GetTransform().scale = { 0.3f, 0.3f, 0.3f };
 
-	// 💡 ① 先に初期化する
+	// 先に初期化する
 	partObj->Initialize();
 
-	// 💡 ② 初期化された後に、モデルや色、ライティング設定を上書きする！（リセット防止）
+	// 初期化された後に、モデルや色、ライティング設定を上書きする！（リセット防止）
 	mesh->SetModel("Resources/plane/plane.obj");
-	mesh->SetTexture("Resources/ParticleAssets/circle2dddd.png"); // テスト用の circle2.png のままにしています
+	mesh->SetTexture("Resources/ParticleAssets/circle2.png"); // テスト用の circle2.png のままにしています
 	mesh->SetEnableLighting(false);
 	mesh->SetBlendMode(BlendModeType::Alpha);
 	mesh->SetColor({ 1.0f, 1.0f, 1.0f, 0.5f });
@@ -91,7 +91,7 @@ void ParticleSpawner::SpawnTrail(SceneContext* context, const Vector3& position,
 	partComp->SetLifeTime(0.3f);
 	partComp->SetColorFade({ 1.0f, 1.0f, 1.0f, 0.5f }, { 1.0f, 1.0f, 1.0f, 0.0f });
 
-	// 💡 ③ 生成された最初のフレームの描画前に確実にGPUにデータを送るため、手動でUpdateを走らせる！
+	// 生成された最初のフレームの描画前に確実にGPUにデータを送るため、手動でUpdateを走らせる！
 	partObj->Update();
 
 	context->gameObjects->push_back(std::move(partObj));

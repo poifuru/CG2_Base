@@ -34,6 +34,12 @@ public:
 	// ブレンドモードを設定する関数
 	void SetBlendMode(BlendModeType mode);
 
+	// デプスの有効・無効を設定する関数
+	void SetDepthEnable(bool flag);
+
+	// レンダリングレイヤーを設定する関数
+	void SetLayer(uint8_t layer);
+
 private:
 	std::unique_ptr<Model> model_ = nullptr;
 	std::string modelPath_ = "Resources/plane/plane.obj";	// デフォルトモデル

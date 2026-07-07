@@ -192,3 +192,16 @@ void MeshRendererComponent::SetBlendMode(BlendModeType mode) {
 		model_->SetBlendMode(mode);
 	}
 }
+
+void MeshRendererComponent::SetDepthEnable(bool flag) {
+	isDepthEnable_ = flag;
+	if (model_) {
+		model_->SetDepthEnable(flag);
+	}
+}
+
+void MeshRendererComponent::SetLayer(uint8_t layer) {
+	if (model_) {
+		model_->SetLayer(layer);
+	}
+}

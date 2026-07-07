@@ -45,6 +45,9 @@ public:
 		transformBuffer_ = std::move(transformBuffer);
 	}
 
+	void SetLayer(uint8_t layer) { layer_ = layer; }
+	uint8_t GetLayer() const { return layer_; }
+
 	D3D12_GPU_VIRTUAL_ADDRESS GetTransformGPUAddress() const { return transformBuffer_ ? transformBuffer_->GetGPUVirtualAddress() : 0; }
 	uint32_t GetMaterialDescriptorIndex() const { return material_ ? material_->GetDescriptorIndex() : 0; } // バインドレス用インデックスゲッター
 

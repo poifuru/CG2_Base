@@ -48,7 +48,7 @@
     <ClCompile Include="application\entity\player\PlayerComponent.cpp" />
     <ClCompile Include="application\scene\DebugScene.cpp" />
     <ClCompile Include="application\scene\TestScene.cpp" />
-    <ClCompile Include="Engine\Framework\Object\3d\Skybox.cpp" />
+    <ClCompile Include="Engine\Framework\Object\3d\SkyboxComponent.cpp" />
     <ClCompile Include="Engine\Core\RenderTexture.cpp" />
     <ClCompile Include="application\entity\player\BulletComponent.cpp" />
     <ClCompile Include="application\entity\player\ReticleComponent.cpp" />
@@ -159,7 +159,7 @@
     <ClInclude Include="Engine\Audio\VoiceCallback.h" />
     <ClInclude Include="application\scene\DebugScene.h" />
     <ClInclude Include="application\scene\TestScene.h" />
-    <ClInclude Include="Engine\Framework\Object\3d\Skybox.h" />
+    <ClInclude Include="Engine\Framework\Object\3d\SkyboxComponent.h" />
     <ClInclude Include="Engine\Core\RenderTexture.h" />
     <ClInclude Include="Engine\Core\General\DeltaTime.h" />
     <ClInclude Include="application\entity\player\BulletComponent.h" />

@@ -22,6 +22,7 @@ void SceneManager::Initialize(
 	context_.device = device;
 	context_.cmdList = cmdList;
 	context_.heapManager = heapManager;
+	context_.graphicsDevice = graphicsDevice;
 }
 
 void SceneManager::Update(CameraData* cameraData) {

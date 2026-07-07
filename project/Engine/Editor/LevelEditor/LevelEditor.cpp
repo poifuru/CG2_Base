@@ -8,6 +8,7 @@
 #include "EditorManager.h"
 #include "VirtualFollowCamera.h"
 #include "PlayerComponent.h"
+#include "SkyboxComponent.h"
 
 void LevelEditor::Initialize(SceneContext* context) {
 	context_ = context;
@@ -348,6 +349,10 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 						auto* meshRenderer = selectedObject->GetComponent<MeshRendererComponent>();
 						if (meshRenderer != nullptr) {
 							meshRenderer->SetTexture(entry.path().generic_string());
+						}
+						auto* skybox = selectedObject->GetComponent<SkyboxComponent>();
+						if (skybox != nullptr) {
+							skybox->SetTexture(entry.path().generic_string());
 						}
 					}
 				}

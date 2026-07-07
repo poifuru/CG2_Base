@@ -84,12 +84,17 @@ void ReticleComponent::Update() {
 
 	// ロックオン中ならレティクルの色を赤にする（マテリアルカラーの変更）
 	if (auto* renderer = gameObject_->GetComponent<MeshRendererComponent>()) {
+		// レティクルは常に最前面に描画するためデプスを無効にする
+		renderer->SetDepthEnable(false);
+		// 最も手前（一番最後）に描画されるようにレイヤーを大きくする
+		renderer->SetLayer(200);
+
 		if (lockOnTarget_) {
 			// ロックオン中：赤
 			renderer->SetColor({ 1.0f, 0.0f, 0.0f, 0.5f });
 		} else {
-			// 通常時：黒（元の色）
-			renderer->SetColor({ 0.0f, 0.0f, 0.0f, 0.5f });
+			// 通常時：白（元の色）
+			renderer->SetColor({ 1.0f, 1.0f, 1.0f, 0.5f });
 		}
 	}
 }

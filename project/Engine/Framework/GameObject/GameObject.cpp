@@ -4,6 +4,7 @@
 #include "imgui.h"
 #include "BaseScene.h"
 #include "ComponentType.h"
+#include "SkyboxComponent.h"
 
 GameObject::GameObject(SceneContext* context, const std::string& name)
 	: context_(context), name_(name) {
@@ -188,6 +189,17 @@ void GameObject::ImGui() {
 			ImGui::TextDisabled("Enemy Manager Component (Already Added)");
 		}
 
+		// スカイボックスコンポーネント
+		if(GetComponent<SkyboxComponent>() == nullptr) {
+			if(ImGui::MenuItem("Skybox Component")) {
+				auto* newComp = AddComponent<SkyboxComponent>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Skybox Component (Already Added)");
+		}
+
 		// コンポーネントが増えたらここに
 		ImGui::EndPopup();
 	}
@@ -292,6 +304,11 @@ void GameObject::Deserialize(const json& j) {
 			else if(type == "EnemyManagerComponent") {
 				auto* comp = GetComponent<EnemyManagerComponent>();
 				if(!comp) comp = AddComponent<EnemyManagerComponent>();
+				comp->Deserialize(compJ);
+			}
+			else if(type == "SkyboxComponent") {
+				auto* comp = GetComponent<SkyboxComponent>();
+				if(!comp) comp = AddComponent<SkyboxComponent>();
 				comp->Deserialize(compJ);
 			}
 		}
