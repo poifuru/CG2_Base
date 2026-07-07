@@ -92,9 +92,11 @@
     <ClCompile Include="Application\Collider\ColliderComponent.cpp" />
     <ClCompile Include="Application\Entity\Enemy\BirdEnemyComponent.cpp" />
     <ClCompile Include="Application\Entity\Enemy\FishEnemyComponent.cpp" />
-    <ClCompile Include="Engine\Editor\ParticleEditer\EmitterComponent.cpp" />
-    <ClCompile Include="Engine\Editor\ParticleEditer\ParticleData.cpp" />
+    <ClCompile Include="Engine\Editor\ParticleEditor\EmitterComponent.cpp" />
     <ClCompile Include="Application\Entity\Enemy\EnemyManagerComponent.cpp" />
+    <ClCompile Include="Engine\Editor\ParticleEditor\ParticleComponent.cpp" />
+    <ClCompile Include="Engine\Editor\ParticleEditor\ParticleSpawner.cpp" />
+    <ClCompile Include="Engine\Editor\ParticleEditor\ParticleData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -185,7 +187,7 @@
     <ClInclude Include="Engine\Framework\Buffer\SpriteData.h" />
     <ClInclude Include="Engine\Framework\Buffer\SkinCluster.h" />
     <ClInclude Include="Engine\Framework\Buffer\Skeleton.h" />
-    <ClInclude Include="Engine\Editor\ParticleEditer\ParticleData.h" />
+    <ClInclude Include="Engine\Editor\ParticleEditor\ParticleData.h" />
     <ClInclude Include="Engine\Framework\Buffer\MeshData.h" />
     <ClInclude Include="Engine\Framework\Buffer\MaterialData.h" />
     <ClInclude Include="Engine\Framework\Buffer\Animation.h" />
@@ -218,8 +220,10 @@
     <ClInclude Include="Application\Collider\ColliderComponent.h" />
     <ClInclude Include="Application\Entity\Enemy\BirdEnemyComponent.h" />
     <ClInclude Include="Application\Entity\Enemy\FishEnemyComponent.h" />
-    <ClInclude Include="Engine\Editor\ParticleEditer\EmitterComponent.h" />
+    <ClInclude Include="Engine\Editor\ParticleEditor\EmitterComponent.h" />
     <ClInclude Include="Application\Entity\Enemy\EnemyManagerComponent.h" />
+    <ClInclude Include="Engine\Editor\ParticleEditor\ParticleSpawner.h" />
+    <ClInclude Include="Engine\Editor\ParticleEditor\ParticleComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

@@ -12,6 +12,7 @@
 #include "BaseScene.h"
 #include "ReticleComponent.h"
 #include "ColliderComponent.h"
+#include "../../../../Engine/Editor/ParticleEditor/ParticleSpawner.h"
 
 void PlayerComponent::Initialize() {
 	if (isInitialized_) return;
@@ -254,6 +255,9 @@ void PlayerComponent::Shoot() {
 			bulletRot.x = std::atan2(-direction.y, xzLength);
 		}
 		bulletObj->GetTransform().rotate = bulletRot; // 回転を適用
+
+		// 💡 弾発射時の位置から、小規模な火花を6個飛び散らせる！
+		ParticleSpawner::SpawnExplosion(context, bulletObj->GetTransform().translate, 6);
 
 		// セーブ対象外
 		bulletObj->SetSerializable(false);
