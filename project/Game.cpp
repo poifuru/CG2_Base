@@ -20,7 +20,6 @@ Game::Game() {
 	// SceneManagerの生成と初期化
 	sceneManager_ = std::make_unique<SceneManager>();
 	sceneManager_->Initialize(
-		engine_->GetDevice(),
 		engine_->GetGraphicsDevice(),
 		engine_->GetCommandList(),
 		engine_->GetDescriptorHeapManager(),
@@ -29,6 +28,7 @@ Game::Game() {
 
 	// 初期シーンにPlayScene（三角形を描画するデモシーン）を設定
 	sceneManager_->ChangeScene<PlayScene>();
+	sceneManager_->SetRenderSystem(engine_->GetRenderSystem());
 
 	// コマンドリストを実行し、GPUのアップロード完了を待つ
 	engine_->ExecuteCommandList();

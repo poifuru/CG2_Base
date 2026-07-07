@@ -1,28 +1,26 @@
 #include "PCH.h"
 #include "SceneManager.h"
 #include "RenderSystem.h"
+#include "GraphicsDevice.h"
 
 void SceneManager::Initialize(
-	ID3D12Device* device,
 	GraphicsDevice* graphicsDevice,
 	ID3D12GraphicsCommandList* cmdList,
 	DescriptorHeapManager* heapManager,
 	ShaderManager* shaderManager
 ) {
 	// マネージャー群を初期化
-	textureManager_.Initialize(device, cmdList, heapManager);
-	modelManager_.Initialize(device, &textureManager_);
+	textureManager_.Initialize(graphicsDevice->GetDevice(), cmdList, heapManager);
+	modelManager_.Initialize(graphicsDevice->GetDevice(), &textureManager_);
 	modelFactory_.Initialize(graphicsDevice, heapManager, &modelManager_, &textureManager_, shaderManager);
 
 	// シーン配布用のコンテキストを組み立てる
+	context_.graphicsDevice = graphicsDevice;
+	context_.heapManager = heapManager;
 	context_.textureManager = &textureManager_;
 	context_.modelFactory = &modelFactory_;
 	context_.shaderManager = shaderManager;
 	context_.modelManager = &modelManager_;
-	context_.device = device;
-	context_.cmdList = cmdList;
-	context_.heapManager = heapManager;
-	context_.graphicsDevice = graphicsDevice;
 }
 
 void SceneManager::Update(CameraData* cameraData) {

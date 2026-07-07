@@ -10,6 +10,7 @@
 #include "Material.h"
 #include "CameraOrganizer.h"
 #include "BaseCamera.h"
+#include "GraphicsDevice.h"
 #include <cassert>
 
 namespace {
@@ -62,7 +63,7 @@ void SkyboxComponent::Initialize() {
 	SceneContext* context = owner->GetContext();
 	if (!context) return;
 
-	ID3D12Device* device = context->device;
+	ID3D12Device* device = context->graphicsDevice->GetDevice();
 
 	// === 各種シェーダーのコンパイル ===
 	vsID_ = context->shaderManager->CompileAndCacheShader(L"Resources/shader/Skybox.VS.hlsl", L"vs_6_0");

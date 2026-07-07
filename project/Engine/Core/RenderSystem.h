@@ -46,6 +46,9 @@ public:
 
 	void ClearCommands();
 
+	// 一時的なアクセッサ
+	ID3D12Device* GetDevice() { return device_; }
+
 public:
 	// コピー・移動禁止
 	RenderSystem(const RenderSystem&) = delete;
@@ -54,6 +57,7 @@ public:
 	RenderSystem& operator=(RenderSystem&&) = delete;
 
 private:
+	ID3D12Device* device_;
 	std::vector<RenderCommand> commandQueue_;
 
 	// カメラ用の定数バッファ

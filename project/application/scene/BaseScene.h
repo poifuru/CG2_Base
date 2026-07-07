@@ -5,11 +5,10 @@ class ModelFactory;
 class ShaderManager;
 class ModelManager;
 struct CameraData;
-struct ID3D12Device;
-struct ID3D12GraphicsCommandList;
-class DescriptorHeapManager;
 class GameObject;
+class RenderSystem;
 class GraphicsDevice;
+class DescriptorHeapManager;
 
 // シーンで必要になる高レベルマネージャーや低レイヤー参照のポインタを束ねた薄い構造体
 struct SceneContext {
@@ -17,10 +16,8 @@ struct SceneContext {
 	ModelFactory* modelFactory = nullptr;
 	ShaderManager* shaderManager = nullptr;
 	ModelManager* modelManager = nullptr;
-	ID3D12Device* device = nullptr;
-	ID3D12GraphicsCommandList* cmdList = nullptr;
-	DescriptorHeapManager* heapManager = nullptr;
 	GraphicsDevice* graphicsDevice = nullptr;
+	DescriptorHeapManager* heapManager = nullptr;
 
 	// 動的追加のためにオブジェクトリストのポインタを載せる
 	std::vector<std::unique_ptr<GameObject>>* gameObjects = nullptr;
@@ -38,6 +35,8 @@ public:
 		context_ = context;
 	}
 
+	void SetRenderSystem(RenderSystem* renderSystem) { renderSys_ = renderSystem; }
+
 	virtual void Initialize () = 0;
 	virtual void Update (CameraData* cameraData) = 0;
 	virtual void Draw (class RenderSystem* renderSystem) = 0;
@@ -46,4 +45,5 @@ public:
 protected:
 	// 借りてきたポインタ群
 	SceneContext* context_ = nullptr;
+	RenderSystem* renderSys_ = nullptr;
 };

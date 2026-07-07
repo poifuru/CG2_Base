@@ -7,6 +7,7 @@
 
 void RenderSystem::Initialize(ID3D12Device* device) {
 	assert(device != nullptr);
+	device_ = device;
 	cameraBuffer_.Initialize(device);
 }
 
