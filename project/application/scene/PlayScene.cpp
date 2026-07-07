@@ -7,6 +7,7 @@
 #include "InputManager.h"
 #include "RawInput.h"
 #include "CollisionManager.h"
+#include "GraphicsDevice.h"
 
 PlayScene::PlayScene() = default;
 PlayScene::~PlayScene() = default;
@@ -56,12 +57,12 @@ void PlayScene::Initialize() {
 	// コンテキストにリストのポインタをセットする
 	context_->gameObjects = &createQueue_;
 
-	// 本番の生存リストをセット！
+	// 本番の生存リストをセット
 	context_->activeGameObjects = &gameObjects_;
 
 	// ライトマネージャーの初期化
 	lightManager_ = std::make_unique<LightManager>();
-	lightManager_->Initialize(context_->device);
+	lightManager_->Initialize(context_->graphicsDevice->GetDevice());
 }
 
 void PlayScene::Update(CameraData* cameraData) {
