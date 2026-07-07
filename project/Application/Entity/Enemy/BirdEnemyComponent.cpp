@@ -2,6 +2,8 @@
 #include "BirdEnemyComponent.h"
 #include "GameObject.h"
 #include "DeltaTime.h"
+#include "MeshRendererComponent.h"
+#include "../../../../Engine/Editor/ParticleEditor/ParticleSpawner.h"
 
 void BirdEnemyComponent::Initialize() {
 	if (isInitialized_) return;
@@ -17,6 +19,36 @@ void BirdEnemyComponent::Initialize() {
 }
 void BirdEnemyComponent::Update() {
 	if (!gameObject_) return;
+
+	// 死亡演出の更新
+	if (isDead_) {
+		deathTimer_ += kDeltaTime;
+		const float kDeathDuration = 1.0f; // 1.0秒で消滅
+		float progress = deathTimer_ / kDeathDuration;
+		if (progress >= 1.0f) {
+			gameObject_->Destroy();
+			return;
+		}
+
+		// スケールアウト
+		float scaleFactor = 1.0f - progress;
+		gameObject_->GetTransform().scale = {
+			originalScale_.x * scaleFactor,
+			originalScale_.y * scaleFactor,
+			originalScale_.z * scaleFactor
+		};
+
+		// 高度を下げる（落下演出）
+		float fallDist = 5.0f * progress;
+		gameObject_->GetTransform().translate.y = originalPosition_.y - fallDist;
+
+		// フェードアウト
+		if (auto* mesh = gameObject_->GetComponent<MeshRendererComponent>()) {
+			mesh->SetBlendMode(BlendModeType::Alpha);
+			mesh->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f - progress });
+		}
+		return;
+	}
 
 	// 角度を回転させる
 	angle_ += speed_ * kDeltaTime;
@@ -55,4 +87,17 @@ void BirdEnemyComponent::Deserialize(const json& j) {
 	if (j.contains("radius")) radius_ = j["radius"];
 	if (j.contains("speed")) speed_ = j["speed"];
 	if (j.contains("angle")) angle_ = j["angle"];
+}
+
+void BirdEnemyComponent::OnDead() {
+	if (isDead_) return;
+	isDead_ = true;
+	deathTimer_ = 0.0f;
+	if (gameObject_) {
+		originalScale_ = gameObject_->GetTransform().scale;
+		originalPosition_ = gameObject_->GetTransform().translate;
+
+		// 被弾位置に爆発パーティクルを生成
+		ParticleSpawner::SpawnExplosion(gameObject_->GetContext(), gameObject_->GetTransform().translate, 15);
+	}
 }

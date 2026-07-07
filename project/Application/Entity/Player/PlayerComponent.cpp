@@ -178,6 +178,30 @@ void PlayerComponent::Move() {
 		gameObject_->GetTransform().translate.y = kWaterSurfaceY;
 		velocity_.y = 0.0f;
 	}*/
+
+	// 💡 移動トレイルの発生
+	float speed = Math::Length(velocity_);
+	if (speed > 0.05f) {
+		// 潜水艦の現在の回転（向き）から、正面ベクトルを計算する
+		float ry = gameObject_->GetTransform().rotate.y;
+		float rx = gameObject_->GetTransform().rotate.x;
+		Vector3 forward = {
+			std::sin(ry) * std::cos(rx),
+			-std::sin(rx),
+			std::cos(ry) * std::cos(rx)
+		};
+		if (Math::Length(forward) > 0.001f) {
+			forward = Math::Normalize(forward);
+		}
+
+		// 進行方向ではなく、常に潜水艦の「真後ろ」から出るようにオフセットを計算
+		Vector3 offset = Math::Multiply(2.1f, forward);
+		Vector3 spawnPos = Math::Subtract(gameObject_->GetTransform().translate, offset);
+		spawnPos.y = spawnPos.y - 0.1f; // 高さの微調整
+
+		Vector3 moveDir = Math::Normalize(velocity_);
+		ParticleSpawner::SpawnTrail(gameObject_->GetContext(), spawnPos, moveDir);
+	}
 }
 
 void PlayerComponent::Shoot() {
@@ -256,8 +280,13 @@ void PlayerComponent::Shoot() {
 		}
 		bulletObj->GetTransform().rotate = bulletRot; // 回転を適用
 
-		// 💡 弾発射時の位置から、小規模な火花を6個飛び散らせる！
-		ParticleSpawner::SpawnExplosion(context, bulletObj->GetTransform().translate, 6);
+		// 弾発射時の位置から、小規模な火花を6個飛び散らせる！
+		ParticleSpawner::SpawnExplosion(context, 
+										{ bulletObj->GetTransform().translate.x, 
+										bulletObj->GetTransform().translate.y + 1.0f,
+										bulletObj->GetTransform().translate.z
+										},
+										6);
 
 		// セーブ対象外
 		bulletObj->SetSerializable(false);
@@ -300,6 +329,8 @@ void PlayerComponent::Serialize(json& j) const {
 	j["turnSpeed"] = turnSpeed_;
 	j["dirRatioZ"] = dirRatioZ_;
 	j["dirRatioX"] = dirRatioX_;
+	j["harpoonSpeed"] = harpoonSpeed_;
+	j["homingStrength"] = harpoonHomingStrength_;
 }
 
 void PlayerComponent::Deserialize(const json& j) {
@@ -325,5 +356,11 @@ void PlayerComponent::Deserialize(const json& j) {
 	}
 	if(j.contains("dirRatioX")) {
 		dirRatioX_ = j["dirRatioX"];
+	}
+	if(j.contains("harpoonSpeed")) {
+		harpoonSpeed_ = j["harpoonSpeed"];
+	}
+	if(j.contains("homingStrength")) {
+		harpoonHomingStrength_ = j["homingStrength"];
 	}
 }

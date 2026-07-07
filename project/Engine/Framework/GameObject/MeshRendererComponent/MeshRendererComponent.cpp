@@ -178,3 +178,17 @@ void MeshRendererComponent::SetColor(const Vector4& color) {
 		}
 	}
 }
+
+void MeshRendererComponent::SetEnableLighting(bool flag) {
+	if (model_) {
+		if (auto material = model_->GetMaterial()) {
+			material->SetEnableLighting(flag ? TRUE : FALSE);
+		}
+	}
+}
+
+void MeshRendererComponent::SetBlendMode(BlendModeType mode) {
+	if (model_) {
+		model_->SetBlendMode(mode);
+	}
+}

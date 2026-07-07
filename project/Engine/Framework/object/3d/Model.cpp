@@ -33,7 +33,7 @@ void Model::Draw(RenderSystem* renderSystem) {
 		cmd.psoDesc.VS_ID = vsID;
 		cmd.psoDesc.PS_ID = psID;
 		cmd.psoDesc.InputLayoutID = InputLayoutType::Standard3D;
-		cmd.psoDesc.BlendMode = BlendModeType::Opaque;
+		cmd.psoDesc.BlendMode = blendMode_;
 		cmd.psoDesc.CullMode = D3D12_CULL_MODE_NONE; // 両面表示
 		cmd.psoDesc.DepthEnable = isDepthEnable_;
 

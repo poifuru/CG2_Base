@@ -89,7 +89,22 @@ void ColliderComponent::OnCollision(CollisionObject* other) {
 					  myObj->GetName() == "Enemy");
 
 	if (isMyEnemy && otherObj->GetName() == "PlayerBullet") {
-		myObj->Destroy();
+		bool alreadyDead = false;
+		if (auto* bird = myObj->GetComponent<BirdEnemyComponent>()) {
+			alreadyDead = bird->IsDead();
+			bird->OnDead();
+		}
+		else if (auto* fish = myObj->GetComponent<FishEnemyComponent>()) {
+			alreadyDead = fish->IsDead();
+			fish->OnDead();
+		}
+		else {
+			myObj->Destroy();
+		}
+
+		if (!alreadyDead) {
+			CollisionManager::GetInstance()->UnregisterObject(this);
+		}
 		otherObj->Destroy();
 	}
 }

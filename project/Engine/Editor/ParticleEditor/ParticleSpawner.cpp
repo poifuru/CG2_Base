@@ -15,8 +15,22 @@ void ParticleSpawner::SpawnExplosion(SceneContext* context, const Vector3& posit
 		partObj->SetSerializable(false); // セーブ対象から除外
 
 		auto* mesh = partObj->AddComponent<MeshRendererComponent>();
-		mesh->SetModel("Resources/bullet/bullet.obj");
-		mesh->SetTexture("white1x1");
+		auto* partComp = partObj->AddComponent<ParticleComponent>();
+
+		partObj->GetTransform().translate = position;
+		// 💡 スケールを大きくする（0.3f 〜 0.7f）
+		float scaleSize = 0.3f + static_cast<float>(rand()) / RAND_MAX * 0.4f;
+		partObj->GetTransform().scale = { scaleSize, scaleSize, scaleSize };
+
+		// 💡 ① 先に初期化する（これでデフォルト値が一度セットされる）
+		partObj->Initialize();
+
+		// 💡 ② 初期化された後に、モデルや色、ライティング設定を上書きする！（リセット防止）
+		mesh->SetModel("Resources/plane/plane.obj");
+		mesh->SetTexture("Resources/ParticleAssets/circle2.png");
+		mesh->SetEnableLighting(false);
+		mesh->SetBlendMode(BlendModeType::Additive);
+		mesh->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
 		float theta = static_cast<float>(rand()) / RAND_MAX * 3.14159265f * 2.0f;
 		float phi = static_cast<float>(rand()) / RAND_MAX * 3.14159265f;
@@ -28,19 +42,13 @@ void ParticleSpawner::SpawnExplosion(SceneContext* context, const Vector3& posit
 			speed * std::sin(phi) * std::sin(theta)
 		};
 
-		auto* partComp = partObj->AddComponent<ParticleComponent>();
-
-		partObj->GetTransform().translate = position;
-		float scaleSize = 0.05f + static_cast<float>(rand()) / RAND_MAX * 0.1f;
-		partObj->GetTransform().scale = { scaleSize, scaleSize, scaleSize };
-
-		partObj->Initialize();
-
 		partComp->SetVelocity(velocity);
 		partComp->SetGravity(9.8f);
 		partComp->SetLifeTime(0.3f + static_cast<float>(rand()) / RAND_MAX * 0.4f);
-
 		partComp->SetColorFade({ 1.0f, 0.6f, 0.1f, 1.0f }, { 1.0f, 0.0f, 0.0f, 0.0f });
+
+		// 💡 ③ 生成された最初のフレームの描画前に確実にGPUにデータを送るため、手動でUpdateを走らせる！
+		partObj->Update();
 
 		context->gameObjects->push_back(std::move(partObj));
 	}
@@ -53,8 +61,21 @@ void ParticleSpawner::SpawnTrail(SceneContext* context, const Vector3& position,
 	partObj->SetSerializable(false);
 
 	auto* mesh = partObj->AddComponent<MeshRendererComponent>();
-	mesh->SetModel("Resources/bullet/bullet.obj");
-	mesh->SetTexture("white1x1");
+	auto* partComp = partObj->AddComponent<ParticleComponent>();
+
+	partObj->GetTransform().translate = position;
+	// 💡 スケールを大きくする（0.3f）
+	partObj->GetTransform().scale = { 0.3f, 0.3f, 0.3f };
+
+	// 💡 ① 先に初期化する
+	partObj->Initialize();
+
+	// 💡 ② 初期化された後に、モデルや色、ライティング設定を上書きする！（リセット防止）
+	mesh->SetModel("Resources/plane/plane.obj");
+	mesh->SetTexture("Resources/ParticleAssets/circle2dddd.png"); // テスト用の circle2.png のままにしています
+	mesh->SetEnableLighting(false);
+	mesh->SetBlendMode(BlendModeType::Alpha);
+	mesh->SetColor({ 1.0f, 1.0f, 1.0f, 0.5f });
 
 	float randX = (static_cast<float>(rand()) / RAND_MAX - 0.5f) * 1.5f;
 	float randY = (static_cast<float>(rand()) / RAND_MAX - 0.5f) * 1.5f;
@@ -65,18 +86,13 @@ void ParticleSpawner::SpawnTrail(SceneContext* context, const Vector3& position,
 		-direction.z * 2.0f + randZ
 	};
 
-	auto* partComp = partObj->AddComponent<ParticleComponent>();
-
-	partObj->GetTransform().translate = position;
-	partObj->GetTransform().scale = { 0.05f, 0.05f, 0.05f };
-
-	partObj->Initialize();
-
 	partComp->SetVelocity(velocity);
 	partComp->SetGravity(0.0f);
 	partComp->SetLifeTime(0.3f);
-
 	partComp->SetColorFade({ 1.0f, 1.0f, 1.0f, 0.5f }, { 1.0f, 1.0f, 1.0f, 0.0f });
+
+	// 💡 ③ 生成された最初のフレームの描画前に確実にGPUにデータを送るため、手動でUpdateを走らせる！
+	partObj->Update();
 
 	context->gameObjects->push_back(std::move(partObj));
 }

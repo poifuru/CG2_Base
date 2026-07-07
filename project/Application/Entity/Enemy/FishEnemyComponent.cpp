@@ -2,6 +2,8 @@
 #include "FishEnemyComponent.h"
 #include "GameObject.h"
 #include "DeltaTime.h"
+#include "MeshRendererComponent.h"
+#include "../../../../Engine/Editor/ParticleEditor/ParticleSpawner.h"
 
 void FishEnemyComponent::Initialize() {
 	if (isInitialized_) return;
@@ -17,6 +19,33 @@ void FishEnemyComponent::Initialize() {
 }
 void FishEnemyComponent::Update() {
 	if (!gameObject_) return;
+
+	// 死亡演出の更新
+	if (isDead_) {
+		deathTimer_ += kDeltaTime;
+		const float kDeathDuration = 1.0f; // 1.0秒で消滅
+		float progress = deathTimer_ / kDeathDuration;
+		if (progress >= 1.0f) {
+			gameObject_->Destroy();
+			return;
+		}
+
+		// スケールアウト
+		float scaleFactor = 1.0f - progress;
+		gameObject_->GetTransform().scale = {
+			originalScale_.x * scaleFactor,
+			originalScale_.y * scaleFactor,
+			originalScale_.z * scaleFactor
+		};
+
+		// フェードアウト
+		if (auto* mesh = gameObject_->GetComponent<MeshRendererComponent>()) {
+			mesh->SetBlendMode(BlendModeType::Alpha);
+			mesh->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f - progress });
+		}
+		return;
+	}
+
 	auto& trans = gameObject_->GetTransform();
 
 	// 左右に移動
@@ -52,4 +81,16 @@ void FishEnemyComponent::Deserialize(const json& j) {
 	if (j.contains("moveRange")) moveRange_ = j["moveRange"];
 	if (j.contains("speed")) speed_ = j["speed"];
 	if (j.contains("direction")) direction_ = j["direction"];
+}
+
+void FishEnemyComponent::OnDead() {
+	if (isDead_) return;
+	isDead_ = true;
+	deathTimer_ = 0.0f;
+	if (gameObject_) {
+		originalScale_ = gameObject_->GetTransform().scale;
+
+		// 被弾位置に爆発パーティクルを生成
+		ParticleSpawner::SpawnExplosion(gameObject_->GetContext(), gameObject_->GetTransform().translate, 15);
+	}
 }

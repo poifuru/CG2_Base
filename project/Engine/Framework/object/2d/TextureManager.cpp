@@ -104,8 +104,15 @@ uint32_t TextureManager::LoadTexture (const std::string& filePath) {
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = newData.metadata.format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = static_cast<UINT>(newData.metadata.mipLevels);
+	
+	if (newData.metadata.miscFlags & DirectX::TEX_MISC_TEXTURECUBE) {
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+		srvDesc.TextureCube.MipLevels = static_cast<UINT>(newData.metadata.mipLevels);
+		srvDesc.TextureCube.MostDetailedMip = 0;
+	} else {
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MipLevels = static_cast<UINT>(newData.metadata.mipLevels);
+	}
 
 	// ヒープマネージャーに、指定されたインデックス位置へSRVを生成してもらう
 	heapManager_->CreateSRVforTexture2D(newData.textureIndex, newData.textureResource.Get(), srvDesc);

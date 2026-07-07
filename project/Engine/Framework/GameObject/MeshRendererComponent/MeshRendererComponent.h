@@ -28,6 +28,12 @@ public:
 	// マテリアルカラーを直接変更する関数
 	void SetColor(const Vector4& color);
 
+	// ライティングの有効・無効を切り替える関数
+	void SetEnableLighting(bool flag);
+
+	// ブレンドモードを設定する関数
+	void SetBlendMode(BlendModeType mode);
+
 private:
 	std::unique_ptr<Model> model_ = nullptr;
 	std::string modelPath_ = "Resources/plane/plane.obj";	// デフォルトモデル

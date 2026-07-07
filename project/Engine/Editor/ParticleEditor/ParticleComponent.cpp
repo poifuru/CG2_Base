@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "DeltaTime.h"
 #include "MeshRendererComponent.h"
+#include "CameraOrganizer.h" // 💡 カメラデータ取得用
 
 void ParticleComponent::Initialize() {
 	if (isInitialized_) return;
@@ -24,6 +25,10 @@ void ParticleComponent::Update() {
 	auto& trans = gameObject_->GetTransform();
 	trans.translate = Math::Add(trans.translate, Math::Multiply(kDeltaTime, velocity_));
 
+	// 💡 ビルボード設定（常にカメラの方向を向くように回転をコピーする）
+	CameraData& cameraData = CameraOrganizer::GetInstance()->GetCameraData();
+	trans.rotate = cameraData.transform.rotate;
+
 	// 3. 徐々にスケールを小さくする
 	float ratio = lifeTime_ / maxLifeTime_;
 	trans.scale = Math::Multiply(ratio, trans.scale);
@@ -41,3 +46,4 @@ void ParticleComponent::Update() {
 		}
 	}
 }
+
