@@ -1,12 +1,12 @@
-// =========================== //
-// デバイスの生成・初期化のみを行う //
-// =========================== //
-
 #pragma once
+
+// ＝＝＝＝＝＝＝＝＝＝ //
+// デバイスの保持を行う //
+// ＝＝＝＝＝＝＝＝＝＝ //
 
 class GraphicsDevice {
 public:
-	GraphicsDevice();
+	GraphicsDevice() = default;
 	~GraphicsDevice() = default;
 
 	/// <summary>
@@ -14,12 +14,17 @@ public:
 	/// </summary>
 	void Initialize();
 
-	// --- アクセッサ --- //
+	/// <summary>
+	/// Deviceを取得
+	/// </summary>
+	/// <returns></returns>
 	ID3D12Device* GetDevice() const { return device_.Get(); }
+
+	/// <summary>
+	/// DxgiFactoryを取得
+	/// </summary>
+	/// <returns></returns>
 	IDXGIFactory7* GetDxgiFactory() const { return dxgiFactory_.Get(); }
-	IDxcUtils* GetDxcUtils() const { return dxcUtils_.Get(); }
-	IDxcCompiler3* GetDxcCompiler() const { return dxcCompiler_.Get(); }
-	IDxcIncludeHandler* GetIncludeHandler() const { return includeHandler_.Get(); }
 
 public:
 	// コピーと移動の禁止
@@ -29,15 +34,6 @@ public:
 	GraphicsDevice& operator=(GraphicsDevice&&) = delete;
 
 private:
-	void EnableDebugLayer();
-	void SetupInfoQueue();
-
-private:
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
 	Microsoft::WRL::ComPtr<ID3D12Device> device_;
-
-	// DXCシェーダーコンパイラ関連
-	Microsoft::WRL::ComPtr<IDxcUtils> dxcUtils_;
-	Microsoft::WRL::ComPtr<IDxcCompiler3> dxcCompiler_;
-	Microsoft::WRL::ComPtr<IDxcIncludeHandler> includeHandler_;
 };
