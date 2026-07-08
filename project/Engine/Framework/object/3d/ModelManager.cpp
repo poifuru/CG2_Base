@@ -50,17 +50,23 @@ uint32_t ModelManager::LoadModelData(const std::string& filePath, bool inversion
 
 	// 新規読み込み
 	ModelData cpuData = LoadModelFile(filePath, inversion);
+
+	// ロードしたテクスチャのインデックスを保存する領域を確保
+	cpuData.defaultTextureIndices.resize(cpuData.meshes.size());
 	
 	// 頂点バッファ・インデックスバッファの生成と設定、及びテクスチャ自動ロード
-	for (auto& mesh : cpuData.meshes) {
+	for (size_t i = 0; i < cpuData.meshes.size(); ++i) {
+		auto& mesh = cpuData.meshes[i];
 		mesh.meshResource.Initialize(device_, mesh.meshData);
 		mesh.vbView = mesh.meshResource.vertexBuffer.GetView();
 		mesh.ibView = mesh.meshResource.indexBuffer.GetView();
 
-		if (!mesh.textureFilePath.empty()) {
-			mesh.textureIndex = textureManager_->LoadTexture(mesh.textureFilePath);
+		// i番目のメッシュに対応するテクスチャパスを取り出してロードする
+		std::string texPath = cpuData.defaultTexturePaths[i];
+		if (!texPath.empty()) {
+			cpuData.defaultTextureIndices[i] = textureManager_->LoadTexture(texPath);
 		} else {
-			mesh.textureIndex = textureManager_->LoadTexture("white1x1");
+			cpuData.defaultTextureIndices[i] = textureManager_->LoadTexture("white1x1");
 		}
 	}
 
@@ -188,15 +194,16 @@ ModelData ModelManager::LoadModelFile(const std::string& filePath, bool inversio
 		}
 
 		// このメッシュに適用されているマテリアルのテクスチャパスを取得
+		std::string texPath = "";
 		if(scene->mNumMaterials > 0 && mesh->mMaterialIndex < scene->mNumMaterials) {
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 			if(material->GetTextureCount(aiTextureType_DIFFUSE) != 0) {
 				aiString textureFilePath;
 				material->GetTexture(aiTextureType_DIFFUSE, 0, &textureFilePath);
-				myMesh.textureFilePath = directoryPath + "/" + textureFilePath.C_Str();
+				texPath = directoryPath + "/" + textureFilePath.C_Str();
 			}
 		}
-
+		modelData.defaultTexturePaths.push_back(texPath); 
 		modelData.meshes.push_back(std::move(myMesh));
 	}
 

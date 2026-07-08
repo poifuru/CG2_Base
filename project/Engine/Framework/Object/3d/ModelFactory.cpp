@@ -23,8 +23,6 @@ void ModelFactory::Initialize(
 }
 
 std::unique_ptr<Model> ModelFactory::CreateModel(
-	uint32_t vsID,
-	uint32_t psID,
 	uint32_t modelIndex,
 	uint32_t textureIndex
 ) {
@@ -40,6 +38,11 @@ std::unique_ptr<Model> ModelFactory::CreateModel(
 	auto transformBuffer = std::make_unique<TransformMatrixResource>();
 	transformBuffer->Initialize(device_->GetDevice());
 	model->SetTransformBuffer(std::move(transformBuffer));
+
+	// デフォルトのシェーダーIDを取得
+	// シェーダーのコンパイル＆キャッシュ（既存のシェーダーを使用）
+	uint32_t vsID = shaderManager_->CompileAndCacheShader(L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
+	uint32_t psID = shaderManager_->CompileAndCacheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
 
 	// 新しいマテリアルを作成して初期化
 	auto material = std::make_shared<Material>();

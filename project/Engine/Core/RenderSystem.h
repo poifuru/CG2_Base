@@ -22,7 +22,15 @@ public:
 	~RenderSystem() = default;
 
 	// リソース初期化用
-	void Initialize(ID3D12Device* device);
+	void Initialize(
+		ID3D12Device* device,
+		DescriptorHeapManager* heapManager,
+		PSOManager* psoManager,
+		const ShaderManager* shaderManager,
+		const InputLayoutManager* inputLayoutManager,
+		const BlendModeManager* blendModeManager,
+		ID3D12RootSignature* commonRootSignature
+	);
 
 	// コマンドの積み込み
 	void PushCommand(const RenderCommand& command);
@@ -33,16 +41,7 @@ public:
 	// アクティブなライトマネージャーの登録用
 	void SetLightManager(LightManager* lightManager);
 
-	void ExecuteCommands(
-		ID3D12Device* device,
-		ID3D12GraphicsCommandList* cmdList,
-		ID3D12RootSignature* commonRootSignature,
-		DescriptorHeapManager& heapManager,
-		PSOManager& psoManager,
-		const ShaderManager& shaderManager,
-		const InputLayoutManager& inputLayoutManager,
-		const BlendModeManager& blendModeManager
-	);
+	void ExecuteCommands(ID3D12GraphicsCommandList* cmdList);
 
 	void ClearCommands();
 
@@ -57,7 +56,14 @@ public:
 	RenderSystem& operator=(RenderSystem&&) = delete;
 
 private:
-	ID3D12Device* device_;
+	ID3D12Device* device_ = nullptr;
+	DescriptorHeapManager* heapManager_ = nullptr;
+	PSOManager* psoManager_ = nullptr;
+	const ShaderManager* shaderManager_ = nullptr;
+	const InputLayoutManager* inputLayoutManager_ = nullptr;
+	const BlendModeManager* blendModeManager_ = nullptr;
+	ID3D12RootSignature* commonRootSignature_ = nullptr;
+
 	std::vector<RenderCommand> commandQueue_;
 
 	// カメラ用の定数バッファ

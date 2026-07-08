@@ -30,7 +30,7 @@ struct MeshResource {
 	}
 };
 
-// 単一メッシュの描画用データ構造
+// 形状データだけをもつMesh構造体
 struct Mesh {
 	MeshData meshData;
 	MeshResource meshResource;
@@ -39,13 +39,12 @@ struct Mesh {
 	D3D12_INDEX_BUFFER_VIEW  ibView{};
 	uint32_t vertexCount = 0;
 	uint32_t indexCount = 0;
-
-	std::string textureFilePath{};
-	uint32_t textureIndex = 0;
 };
 
 struct ModelData {
-	std::vector<Mesh> meshes;
+	std::vector<Mesh> meshes;						// 各メッシュの形状データのリスト
+	std::vector<std::string> defaultTexturePaths;	// 各メッシュの初期テクスチャのリスト
+	std::vector<uint32_t> defaultTextureIndices;	// 各メッシュの初期テクスチャインデックスのリスト
 
 	// CPU側の階層構造やスキンクラスター用の生データ
 	Node rootNode{};

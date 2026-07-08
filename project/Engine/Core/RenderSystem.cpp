@@ -5,9 +5,23 @@
 #include "ShaderManager.h"
 #include "LightManager.h"
 
-void RenderSystem::Initialize(ID3D12Device* device) {
+void RenderSystem::Initialize(
+	ID3D12Device* device,
+	DescriptorHeapManager* heapManager,
+	PSOManager* psoManager,
+	const ShaderManager* shaderManager,
+	const InputLayoutManager* inputLayoutManager,
+	const BlendModeManager* blendModeManager,
+	ID3D12RootSignature* commonRootSignature
+) {
 	assert(device != nullptr);
 	device_ = device;
+	heapManager_ = heapManager;
+	psoManager_ = psoManager;
+	shaderManager_ = shaderManager;
+	inputLayoutManager_ = inputLayoutManager;
+	blendModeManager_ = blendModeManager;
+	commonRootSignature_ = commonRootSignature;
 	cameraBuffer_.Initialize(device);
 }
 
@@ -26,30 +40,21 @@ void RenderSystem::SetLightManager(LightManager* lightManager) {
 	activeLightManager_ = lightManager;
 }
 
-void RenderSystem::ExecuteCommands(
-	ID3D12Device* device,
-	ID3D12GraphicsCommandList* cmdList,
-	ID3D12RootSignature* commonRootSignature,
-	DescriptorHeapManager& heapManager,
-	PSOManager& psoManager,
-	const ShaderManager& shaderManager,
-	const InputLayoutManager& inputLayoutManager,
-	const BlendModeManager& blendModeManager
-) {
+void RenderSystem::ExecuteCommands(ID3D12GraphicsCommandList* cmdList) {
 	// レイヤー順（不透明・半透明）にソート
 	std::sort(commandQueue_.begin(), commandQueue_.end(), [](const RenderCommand& a, const RenderCommand& b) {
 		return a.layer < b.layer;
 	});
 
 	// 共通ルートシグネチャをセット（フレームで1回固定）
-	cmdList->SetGraphicsRootSignature(commonRootSignature);
+	cmdList->SetGraphicsRootSignature(commonRootSignature_);
 
 	// 巨大ディスクリプタヒープをステージング
-	heapManager.SetGraphicsHeap(cmdList);
+	heapManager_->SetGraphicsHeap(cmdList);
 
 	// Slot 2 と Slot 3 に、巨大ヒープの「先頭のGPUハンドル」をセット
-	cmdList->SetGraphicsRootDescriptorTable(2, heapManager.GetGpuHandle(0));
-	cmdList->SetGraphicsRootDescriptorTable(3, heapManager.GetGpuHandle(0));
+	cmdList->SetGraphicsRootDescriptorTable(2, heapManager_->GetGpuHandle(0));
+	cmdList->SetGraphicsRootDescriptorTable(3, heapManager_->GetGpuHandle(0));
 
 	if (commandQueue_.empty()) return;
 
@@ -71,8 +76,8 @@ void RenderSystem::ExecuteCommands(
 	for (const auto& cmd : commandQueue_) {
 
 		// 直前と同じパイプライン（PSO）なら、切り替え（SetPipelineState）をスキップ
-		ID3D12PipelineState* currentPSO = psoManager.GetOrCreatePSO(
-			device, cmd.psoDesc, commonRootSignature, shaderManager, inputLayoutManager, blendModeManager
+		ID3D12PipelineState* currentPSO = psoManager_->GetOrCreatePSO(
+			device_, cmd.psoDesc, commonRootSignature_, *shaderManager_, *inputLayoutManager_, *blendModeManager_
 		);
 		if (currentPSO != lastPSO) {
 			cmdList->SetPipelineState(currentPSO);

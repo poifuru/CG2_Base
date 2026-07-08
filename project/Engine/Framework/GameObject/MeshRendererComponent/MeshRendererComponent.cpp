@@ -137,17 +137,13 @@ void MeshRendererComponent::SetModel(const std::string& modelPath) {
 	SceneContext* context = owner->GetContext();
 	if (!context) return;
 	modelPath_ = modelPath;
-
-	// シェーダーのコンパイル＆キャッシュ（既存のシェーダーを使用）
-	vsID_ = context->shaderManager->CompileAndCacheShader(L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
-	psID_ = context->shaderManager->CompileAndCacheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
 	
 	// モデルデータのロード
 	modelIndex_ = context->modelManager->LoadModelData(modelPath_);
 	
 	// モデルの生成（一旦リセットしてから再生成）
 	model_.reset();
-	model_ = context->modelFactory->CreateModel(vsID_, psID_, modelIndex_, 0);
+	model_ = context->modelFactory->CreateModel(modelIndex_, 0);
 
 	if (model_ && gameObject_) {
 		model_->SetParentTransform(&gameObject_->GetTransform());

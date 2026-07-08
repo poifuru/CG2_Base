@@ -69,7 +69,15 @@ void Engine::Initialize() {
 	psoManager_ = std::make_unique<PSOManager>();
 
 	renderSystem_ = std::make_unique<RenderSystem>();
-	renderSystem_->Initialize(device_->GetDevice());
+	renderSystem_->Initialize(
+		device_->GetDevice(),
+		heapManager_.get(),
+		psoManager_.get(),
+		shaderManager_.get(),
+		inputLayoutManager_.get(),
+		blendModeManager_.get(),
+		rootSigManager_->GetCommonRootSignature()
+	);
 
 	renderTexture_ = std::make_unique<RenderTexture>();
 	renderTexture_->Initialize(device_->GetDevice(), heapManager_.get());
@@ -137,16 +145,7 @@ void Engine::PreImGui() {
 	Vector3 cameraPos = CameraOrganizer::GetInstance()->GetCameraData().transform.translate;
 	renderSystem_->SetCameraPosition(cameraPos);
 
-	renderSystem_->ExecuteCommands(
-		device_->GetDevice(),
-		cmdList,
-		rootSigManager_->GetCommonRootSignature(),
-		*heapManager_,
-		*psoManager_,
-		*shaderManager_,
-		*inputLayoutManager_,
-		*blendModeManager_
-	);
+	renderSystem_->ExecuteCommands(cmdList);
 	renderSystem_->ClearCommands();
 
 #ifdef USEIMGUI

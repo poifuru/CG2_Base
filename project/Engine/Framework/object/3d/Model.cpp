@@ -26,7 +26,7 @@ void Model::Draw(RenderSystem* renderSystem) {
 		textureIndex = material_->GetTextureIndex();
 	}
 
-	for (const auto& mesh : modelData_->meshes) {
+	for (size_t i = 0; i < modelData_->meshes.size(); ++i) {
 		// RenderCommandの組み立てと積み込み
 		RenderCommand cmd{};
 
@@ -38,13 +38,14 @@ void Model::Draw(RenderSystem* renderSystem) {
 		cmd.psoDesc.DepthEnable = isDepthEnable_;
 
 		// メッシュ情報の設定
+		auto& mesh = modelData_->meshes[i];
 		cmd.vbView = mesh.vbView;
 		cmd.ibv = mesh.ibView;
 		cmd.indexCount = mesh.indexCount;
 
 		// バインドレスマテリアルのインデックスとテクスチャインデックスを設定
 		cmd.materialIndex = GetMaterialDescriptorIndex();
-		cmd.textureIndex = (textureIndex != 0) ? textureIndex : mesh.textureIndex;
+		cmd.textureIndex = (textureIndex != 0) ? textureIndex : modelData_->defaultTextureIndices[i];
 		
 		// トランスフォームバッファのGPUアドレスを設定
 		cmd.transformGPUAddress = GetTransformGPUAddress();

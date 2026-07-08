@@ -24,8 +24,6 @@ public:
 
 	// アセットが紐づいたModelを組み立てて出力する
 	std::unique_ptr<Model> CreateModel(
-		uint32_t vsID,
-		uint32_t psID,
 		uint32_t modelIndex,
 		uint32_t textureIndex = 0
 	);
