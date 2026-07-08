@@ -66,7 +66,7 @@
     <ClCompile Include="Engine\Core\LowLevel\CommandContext.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\DescriptorHeapManager.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\FrameRateController.cpp" />
-    <ClCompile Include="Engine\Core\LowLevel\GraphicsDevice.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\GraphicsDevice\GraphicsDevice.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\SwapChain.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\WindowsAPI.cpp" />
     <ClCompile Include="Engine\Framework\Buffer\Material.cpp" />
@@ -97,6 +97,7 @@
     <ClCompile Include="Engine\Editor\ParticleEditor\ParticleComponent.cpp" />
     <ClCompile Include="Engine\Editor\ParticleEditor\ParticleSpawner.cpp" />
     <ClCompile Include="Engine\Editor\ParticleEditor\ParticleData.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\GraphicsDevice\GraphicsDeviceCreator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -194,7 +195,7 @@
     <ClInclude Include="Engine\Core\LowLevel\CommandContext.h" />
     <ClInclude Include="Engine\Core\LowLevel\DescriptorHeapManager.h" />
     <ClInclude Include="Engine\Core\LowLevel\FrameRateController.h" />
-    <ClInclude Include="Engine\Core\LowLevel\GraphicsDevice.h" />
+    <ClInclude Include="Engine\Core\LowLevel\GraphicsDevice\GraphicsDevice.h" />
     <ClInclude Include="Engine\Core\LowLevel\SwapChain.h" />
     <ClInclude Include="Engine\Core\LowLevel\WindowsAPI.h" />
     <ClInclude Include="Engine\Framework\Buffer\Material.h" />
@@ -224,6 +225,7 @@
     <ClInclude Include="Application\Entity\Enemy\EnemyManagerComponent.h" />
     <ClInclude Include="Engine\Editor\ParticleEditor\ParticleSpawner.h" />
     <ClInclude Include="Engine\Editor\ParticleEditor\ParticleComponent.h" />
+    <ClInclude Include="Engine\Core\LowLevel\GraphicsDevice\GraphicsDeviceCreator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />
