@@ -6,19 +6,6 @@
 
 class CommandContext {
 public:
-	CommandContext();
-	~CommandContext();
-
-	/// <summary>
-	/// 初期化処理
-	/// </summary>
-	/// <param name="device">デバイス</param>
-	void Initialize(ID3D12Device* device);
-
-	void Reset();
-
-	void Execute();
-
 	void SignalAndWait();
 
 	// --- アクセッサ --- //

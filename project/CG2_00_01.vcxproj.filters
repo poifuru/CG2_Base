@@ -63,7 +63,7 @@
     <ClCompile Include="Engine\Core\Engine.cpp" />
     <ClCompile Include="Engine\Core\RenderSystem.cpp" />
     <ClCompile Include="Engine\Framework\Buffer\Animation.cpp" />
-    <ClCompile Include="Engine\Core\LowLevel\CommandList\CommandContext.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\GraphicsCommand\CommandContext.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\DescriptorHeapManager.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\FrameRateController.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\GraphicsDevice\GraphicsDevice.cpp" />
@@ -99,6 +99,9 @@
     <ClCompile Include="Engine\Editor\ParticleEditor\ParticleData.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\GraphicsDevice\GraphicsDeviceCreator.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\DxcCompiler\DxcCompiler.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\GraphicsCommand\CommandQueue.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\GraphicsCommand\CommandList.cpp" />
+    <ClCompile Include="Engine\Core\LowLevel\GraphicsCommand\GraphicsCommandCreator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -193,7 +196,7 @@
     <ClInclude Include="Engine\Framework\Buffer\MeshData.h" />
     <ClInclude Include="Engine\Framework\Buffer\MaterialData.h" />
     <ClInclude Include="Engine\Framework\Buffer\Animation.h" />
-    <ClInclude Include="Engine\Core\LowLevel\CommandList\CommandContext.h" />
+    <ClInclude Include="Engine\Core\LowLevel\GraphicsCommand\CommandContext.h" />
     <ClInclude Include="Engine\Core\LowLevel\DescriptorHeapManager.h" />
     <ClInclude Include="Engine\Core\LowLevel\FrameRateController.h" />
     <ClInclude Include="Engine\Core\LowLevel\GraphicsDevice\GraphicsDevice.h" />
@@ -228,6 +231,9 @@
     <ClInclude Include="Engine\Editor\ParticleEditor\ParticleComponent.h" />
     <ClInclude Include="Engine\Core\LowLevel\GraphicsDevice\GraphicsDeviceCreator.h" />
     <ClInclude Include="Engine\Core\LowLevel\DxcCompiler\DxcCompiler.h" />
+    <ClInclude Include="Engine\Core\LowLevel\GraphicsCommand\CommandQueue.h" />
+    <ClInclude Include="Engine\Core\LowLevel\GraphicsCommand\CommandList.h" />
+    <ClInclude Include="Engine\Core\LowLevel\GraphicsCommand\GraphicsCommandCreator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />
