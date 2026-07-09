@@ -29,13 +29,20 @@ public:
 	void SetIsSkinning(bool flag) { isSkinning_ = flag; }
 	const SkinClusterResource& GetSkinCluster() const { return skinCluster_; }
 
+	// CSスキニング済みの頂点バッファビューを取得
+	const D3D12_VERTEX_BUFFER_VIEW& GetSkinnedVBView() const { return skinCluster_.GetSkinnedVBView(); }
+
 	// Modelがワールド行列を作るときに呼び出すルートの行列
 	Matrix4x4 GetRootAnimationMatrix() const { return rootAnimationMatrix_; }
 
 	// スキニング用の頂点バッファビューを取得
 	D3D12_VERTEX_BUFFER_VIEW GetInfluenceVBV() { return skinCluster_.GetInfluenceView(); }
 
+	// CS用の静的パイプライン初期化
+	static void InitializeComputePipeline(DxCommon* dxCommon);
+
 private:
+	void DispatchCS();
 	void AnimationTimeUpdate();
 	Skeleton CreateSkeleton(const Node& roodNode);
 	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
@@ -59,4 +66,8 @@ private:
 	Skeleton skeleton_ = {};
 	SkinClusterResource skinCluster_ = {};
 	SkinClusterData skinClusterData_;
+
+	// 静的パイプラインリソース
+	static ComPtr<ID3D12RootSignature> sCsRootSignature_;
+	static ComPtr<ID3D12PipelineState> sCsPSO_;
 };

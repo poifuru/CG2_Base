@@ -5,6 +5,7 @@
     <FxCompile Include="Resources\shader\Line.VS.hlsl" />
     <FxCompile Include="Resources\shader\Particle.PS.hlsl" />
     <FxCompile Include="Resources\shader\Particle.VS.hlsl" />
+    <FxCompile Include="Resources\shader\Skinning.CS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Magosuya\Object\Camera\CameraOrganizer.cpp" />

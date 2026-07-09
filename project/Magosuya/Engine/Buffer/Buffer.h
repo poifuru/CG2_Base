@@ -76,6 +76,12 @@ public:
 	/// <returns>VBV</returns>
 	const D3D12_VERTEX_BUFFER_VIEW& GetView() const { return vbv_; }
 
+	/// <summary>
+	/// リソースの生ポインタを返す
+	/// </summary>
+	/// <returns>ID3D12Resource*</returns>
+	ID3D12Resource* GetResource() const { return buffer_.Get(); }
+
 public:
 	// コピー禁止（ポインタの二重管理を防ぐため）
 	VertexBuffer(const VertexBuffer&) = delete;

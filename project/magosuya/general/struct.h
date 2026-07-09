@@ -184,3 +184,10 @@ struct QuaternionTransform {
 	Quaternion rotate;
 	Vector3 translate;
 };
+
+// 汎用的な頂点データの構造体
+struct VertexData {
+	Vector4 position;
+	Vector2 texcoord;
+	Vector3 normal;
+};

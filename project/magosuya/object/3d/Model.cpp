@@ -63,10 +63,15 @@ void Model::Draw() {
 	cmd.binds[5].descriptorHandle = textureHandle_;
 
 	if(animator_->IsSkinning() && renderType_ == RenderType::Skining) {
-		cmd.vbViews[1] = animator_->GetInfluenceVBV();
+		// CSスキニングで変形された頂点バッファを第0ストリームにセット
+		cmd.vbViews[0] = animator_->GetSkinnedVBView();
 
-		cmd.binds[6].type = BindingType::SRV_Table;
-		cmd.binds[6].descriptorHandle = animator_->GetSkinCluster().GetPaletteSRVHandle();
+		// 描画用のRootSignatureとPSOはスキニングなしのものを使用する
+		cmd.rootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::Standard3D);
+		cmd.psoDesc.RootSignatureID = cmd.rootSignatureID;
+		cmd.psoDesc.VS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
+		cmd.psoDesc.PS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
+		cmd.psoDesc.InputLayoutID = InputLayoutType::Standard3D;
 	}
 
 	// 透明

@@ -2,6 +2,11 @@
 #include "Model.h"
 #include "DeltaTime.h"
 #include "MathFunction.h"
+#include "ShaderManager.h" // ShaderManagerを使用するために追加
+
+// 静的メンバの実体定義
+ComPtr<ID3D12RootSignature> Animator::sCsRootSignature_ = nullptr;
+ComPtr<ID3D12PipelineState> Animator::sCsPSO_ = nullptr;
 
 Animator::Animator(DxCommon* dxCommon) : dxCommon_(dxCommon) {}
 Animator::~Animator() {}
@@ -9,6 +14,11 @@ Animator::~Animator() {}
 void Animator::Initialize(Model* targetModel) {
 	targetModel_ = targetModel;
 	isSkinning_ = true;
+
+	// CS用の静的パイプラインが未初期化なら初期化する
+	if (!sCsPSO_) {
+		InitializeComputePipeline(dxCommon_);
+	}
 
 	// targetModel->GetModelData()->rootNode からスケルトン(Jointの階層)を生成する
 	CreateSkeleton(targetModel->GetModelData()->rootNode);
@@ -31,6 +41,11 @@ void Animator::Update() {
 	// アニメーションの更新
 	AnimationTimeUpdate();
 	AnimationUpdate();
+
+	// CSスキニングの実行
+	if (isSkinning_) {
+		DispatchCS();
+	}
 }
 
 void Animator::AnimationTimeUpdate() {
@@ -229,4 +244,123 @@ void Animator::SkeletonUpdate() {
 			joint.skeletonSpaceMatrix = joint.localMatrix;
 		}
 	}
+}
+
+void Animator::InitializeComputePipeline(DxCommon* dxCommon) {
+	ID3D12Device* device = dxCommon->GetDevice();
+
+	// Root Signatureの作成
+	// パラメータ構成：
+	// 0: b0 (SkinningInformation) -> Root Constants (1DWord: numVertices)
+	// 1: t0 (gMatrixPalette) -> Root SRV
+	// 2: t1 (gInputVertices) -> Root SRV
+	// 3: t2 (gInfluence) -> Root SRV
+	// 4: u0 (gOutputVertices) -> Root UAV
+	D3D12_ROOT_PARAMETER rootParameters[5] = {};
+
+	// b0 (Root Constants)
+	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	rootParameters[0].Constants.ShaderRegister = 0;
+	rootParameters[0].Constants.RegisterSpace = 0;
+	rootParameters[0].Constants.Num32BitValues = 1;
+	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+	// t0 (Root SRV)
+	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+	rootParameters[1].Descriptor.ShaderRegister = 0;
+	rootParameters[1].Descriptor.RegisterSpace = 0;
+	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+	// t1 (Root SRV)
+	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+	rootParameters[2].Descriptor.ShaderRegister = 1;
+	rootParameters[2].Descriptor.RegisterSpace = 0;
+	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+	// t2 (Root SRV)
+	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+	rootParameters[3].Descriptor.ShaderRegister = 2;
+	rootParameters[3].Descriptor.RegisterSpace = 0;
+	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+	// u0 (Root UAV)
+	rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
+	rootParameters[4].Descriptor.ShaderRegister = 0;
+	rootParameters[4].Descriptor.RegisterSpace = 0;
+	rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+	D3D12_ROOT_SIGNATURE_DESC rsDesc = {};
+	rsDesc.NumParameters = _countof(rootParameters);
+	rsDesc.pParameters = rootParameters;
+	rsDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
+
+	ComPtr<ID3DBlob> signatureBlob = nullptr;
+	ComPtr<ID3DBlob> errorBlob = nullptr;
+	HRESULT hr = D3D12SerializeRootSignature(&rsDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+	if (FAILED(hr)) {
+		if (errorBlob) {
+			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+		}
+		assert(false);
+	}
+	device->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&sCsRootSignature_));
+
+	// CSコンパイル
+	uint32_t csShaderID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Skinning.CS.hlsl", L"cs_6_0");
+	D3D12_SHADER_BYTECODE csBytecode = ShaderManager::GetInstance()->GetShaderBytecode(csShaderID);
+
+	// Compute PSO作成
+	D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc = {};
+	psoDesc.pRootSignature = sCsRootSignature_.Get();
+	psoDesc.CS = csBytecode;
+	psoDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
+
+	device->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&sCsPSO_));
+}
+
+void Animator::DispatchCS() {
+	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+	ModelData* modelData = targetModel_->GetModelData();
+	if (!modelData) return;
+
+	uint32_t vertexCount = modelData->vertexCount;
+	if (vertexCount == 0) return;
+
+	// 1. スキニング後頂点バッファを UAV 状態に遷移
+	D3D12_RESOURCE_BARRIER barrier = {};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Transition.pResource = skinCluster_.GetSkinnedVertexBuffer();
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	commandList->ResourceBarrier(1, &barrier);
+
+	// 2. パイプライン設定
+	commandList->SetPipelineState(sCsPSO_.Get());
+	commandList->SetComputeRootSignature(sCsRootSignature_.Get());
+
+	// 3. 引数のバインド (Root Descriptorを使ってアドレス直渡し)
+	// Param 0: numVertices (Root Constant)
+	commandList->SetComputeRoot32BitConstants(0, 1, &vertexCount, 0);
+
+	// Param 1: MatrixPalette (t0)
+	commandList->SetComputeRootShaderResourceView(1, skinCluster_.GetPaletteBuffer()->GetGPUVirtualAddress());
+
+	// Param 2: InputVertices (t1) -> 元の頂点バッファ
+	commandList->SetComputeRootShaderResourceView(2, modelData->meshResource.vertexBuffer.GetResource()->GetGPUVirtualAddress());
+
+	// Param 3: Influence (t2)
+	commandList->SetComputeRootShaderResourceView(3, skinCluster_.GetInfluenceBuffer()->GetGPUVirtualAddress());
+
+	// Param 4: OutputVertices (u0)
+	commandList->SetComputeRootUnorderedAccessView(4, skinCluster_.GetSkinnedVertexBuffer()->GetGPUVirtualAddress());
+
+	// 4. Dispatch
+	UINT numGroupsX = (vertexCount + 1023) / 1024;
+	commandList->Dispatch(numGroupsX, 1, 1);
+
+	// 5. スキニング後頂点バッファを Vertex Buffer 状態に戻す
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+	commandList->ResourceBarrier(1, &barrier);
 }

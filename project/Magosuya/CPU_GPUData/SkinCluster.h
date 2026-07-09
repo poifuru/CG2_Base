@@ -6,6 +6,7 @@
 #include "SRVManager.h"
 #include "MathFunction.h"
 #include "Skeleton.h"
+#include "struct.h"
 
 // 頂点のウェイトデータ
 struct VertexWeightData {
@@ -67,6 +68,36 @@ public:
 		// InfluenceBufferの初期化とデータ転送
 		influenceBuffer_.Initialize(dxCommon, cpuData.vertexInfluences);
 		influenceBuffer_.Update(cpuData.vertexInfluences);
+
+		// スキニング後の頂点用リソースの初期化 (UAV/VBV兼用)
+		UINT vertexCount = static_cast<UINT>(cpuData.vertexInfluences.size());
+		D3D12_RESOURCE_DESC resDesc = {};
+		resDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+		resDesc.Width = sizeof(VertexData) * vertexCount;
+		resDesc.Height = 1;
+		resDesc.DepthOrArraySize = 1;
+		resDesc.MipLevels = 1;
+		resDesc.Format = DXGI_FORMAT_UNKNOWN;
+		resDesc.SampleDesc.Count = 1;
+		resDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+		resDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+		D3D12_HEAP_PROPERTIES heapProps = {};
+		heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+
+		dxCommon->GetDevice()->CreateCommittedResource(
+			&heapProps,
+			D3D12_HEAP_FLAG_NONE,
+			&resDesc,
+			D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+			nullptr,
+			IID_PPV_ARGS(&skinnedVertexBuffer_)
+		);
+
+		// VBVの設定
+		skinnedVBView_.BufferLocation = skinnedVertexBuffer_->GetGPUVirtualAddress();
+		skinnedVBView_.SizeInBytes = static_cast<UINT>(sizeof(VertexData) * vertexCount);
+		skinnedVBView_.StrideInBytes = sizeof(VertexData);
 	}
 
 	void UpdatePalette(const Skeleton& skeleton, const std::vector<Matrix4x4>& inverseBindMatrices) {	
@@ -99,11 +130,18 @@ public:
 			SRVManager::GetInstance()->Free(srvIndex_);
 			srvIndex_ = 0xFFFFFFFF;
 		}
+
+		skinnedVertexBuffer_ = nullptr;
+		skinnedVBView_ = {};
 	}
 
 	// ゲッター
 	const D3D12_VERTEX_BUFFER_VIEW& GetInfluenceView() const { return influenceBuffer_.GetView(); }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetPaletteSRVHandle() const { return paletteSrvHandle_.gpu; }
+	const D3D12_VERTEX_BUFFER_VIEW& GetSkinnedVBView() const { return skinnedVBView_; }
+	ID3D12Resource* GetSkinnedVertexBuffer() const { return skinnedVertexBuffer_.Get(); }
+	ID3D12Resource* GetInfluenceBuffer() const { return influenceBuffer_.GetResource(); }
+	ID3D12Resource* GetPaletteBuffer() const { return paletteBuffer_.Get(); }
 
 public:
 	// コピー禁止
@@ -119,6 +157,8 @@ public:
 			Release();
 			paletteBuffer_ = std::move(other.paletteBuffer_);
 			influenceBuffer_ = std::move(other.influenceBuffer_);
+			skinnedVertexBuffer_ = std::move(other.skinnedVertexBuffer_);
+			skinnedVBView_ = other.skinnedVBView_;
 			paletteMappedData_ = other.paletteMappedData_;
 			paletteSrvHandle_.gpu = other.paletteSrvHandle_.gpu;
 			jointCount_ = other.jointCount_;
@@ -126,6 +166,7 @@ public:
 			other.paletteMappedData_ = nullptr;
 			other.paletteSrvHandle_.gpu = {};
 			other.jointCount_ = 0;
+			other.skinnedVBView_ = {};
 		}
 		return *this;
 	}
@@ -140,4 +181,8 @@ private:
 
 	// 頂点影響度(別ストリーム兆点バッファ)用
 	VertexBuffer<VertexInfluence> influenceBuffer_;
+
+	// CSスキニング用
+	ComPtr<ID3D12Resource> skinnedVertexBuffer_;
+	D3D12_VERTEX_BUFFER_VIEW skinnedVBView_{};
 };

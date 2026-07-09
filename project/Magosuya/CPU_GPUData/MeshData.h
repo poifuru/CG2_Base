@@ -3,13 +3,6 @@
 #include "Skeleton.h"
 #include "SkinCluster.h"
 
-// 汎用的な頂点データの構造体
-struct VertexData {
-	Vector4 position;
-	Vector2 texcoord;
-	Vector3 normal;
-};
-
 // メッシュ描画用の頂点データ
 struct MeshData {
 	std::vector<VertexData> vertices;

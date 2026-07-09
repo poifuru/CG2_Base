@@ -54,20 +54,6 @@ Skinned Skinning(VertexShaderInput input)
     skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[input.index.w].skeletonSpaceInverseTransposeMatrix) * input.weight.w;
     skinned.normal = normalize(skinned.normal); // ³‹K‰»‚µ‚Ä–ß‚µ‚Ä‚ ‚°‚é
     
-    //// ˆÊ’u‚Ì•ÏŠ·
-    //skinned.position += mul(gMatrixPalette[input.index.x].skeletonSpaceMatrix, input.position) * input.weight.x;
-    //skinned.position += mul(gMatrixPalette[input.index.y].skeletonSpaceMatrix, input.position) * input.weight.y;
-    //skinned.position += mul(gMatrixPalette[input.index.z].skeletonSpaceMatrix, input.position) * input.weight.z;
-    //skinned.position += mul(gMatrixPalette[input.index.w].skeletonSpaceMatrix, input.position) * input.weight.w;
-    //skinned.position.w = 1.0f; // ŠmÀ‚É1‚ğ“ü‚ê‚é
-    
-    //// –@ü‚Ì•ÏŠ·
-    //skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[input.index.x].skeletonSpaceInverseTransposeMatrix) * input.weight.x;
-    //skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[input.index.y].skeletonSpaceInverseTransposeMatrix) * input.weight.y;
-    //skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[input.index.z].skeletonSpaceInverseTransposeMatrix) * input.weight.z;
-    //skinned.normal += mul(input.normal, (float3x3) gMatrixPalette[input.index.w].skeletonSpaceInverseTransposeMatrix) * input.weight.w;
-    //skinned.normal = normalize(skinned.normal); // ³‹K‰»‚µ‚Ä–ß‚µ‚Ä‚ ‚°‚é
-    
     return skinned;
 }
 
