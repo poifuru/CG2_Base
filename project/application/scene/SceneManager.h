@@ -5,7 +5,9 @@
 #include "ModelFactory.h"
 
 struct ID3D12GraphicsCommandList;
-class GraphicsDevice;
+namespace MyEngine::LowLevel {
+	class GraphicsDevice;
+}
 class DescriptorHeapManager;
 class ShaderManager;
 struct CameraData;
@@ -17,7 +19,7 @@ public:
 
 	// 各マネージャーの初期化に必要なポインタ群を受け取って初期化
 	void Initialize(
-		GraphicsDevice* graphicsDevice,
+		MyEngine::LowLevel::GraphicsDevice* graphicsDevice,
 		ID3D12GraphicsCommandList* cmdList,
 		DescriptorHeapManager* heapManager,
 		ShaderManager* shaderManager

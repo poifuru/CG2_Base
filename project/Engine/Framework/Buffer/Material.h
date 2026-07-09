@@ -4,7 +4,9 @@
 #include "StructuredBuffer.h"
 #include "struct.h"
 
-class GraphicsDevice;
+namespace MyEngine::LowLevel {
+	class GraphicsDevice;
+}
 class DescriptorHeapManager;
 
 class Material {
@@ -12,7 +14,7 @@ public:
 	Material() = default;
 	~Material() = default;
 	// デバイスやヒープを用いて初期化
-	void Initialize(GraphicsDevice* device, DescriptorHeapManager* heapManager);
+	void Initialize(MyEngine::LowLevel::GraphicsDevice* device, DescriptorHeapManager* heapManager);
 	// シェーダーやテクスチャの設定
 	void SetShader(uint32_t vsID, uint32_t psID) { vsID_ = vsID; psID_ = psID; }
 	void SetTextureIndex(uint32_t textureIndex) { textureIndex_ = textureIndex; }

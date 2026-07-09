@@ -21,6 +21,60 @@ namespace MyEngine::LowLevel {
 		/// </summary>
 		void Reset();
 
+		/// <summary>
+		/// バリアの変更
+		/// </summary>
+		/// <param name="resource"></param>
+		/// <param name="stateBefore"></param>
+		/// <param name="stateAfter"></param>
+		void TransitionBarrier(
+			ID3D12Resource* resource,
+			D3D12_RESOURCE_STATES stateBefore,
+			D3D12_RESOURCE_STATES stateAfter
+		);
+
+		/// <summary>
+		/// レンダーターゲットをクリア
+		/// </summary>
+		/// <param name="rtvHandle"></param>
+		/// <param name="color"></param>
+		void ClearRenderTarget(
+			D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle,
+			const float color[4]
+		);
+
+		/// <summary>
+		/// レンダーターゲットをセット
+		/// </summary>
+		/// <param name="rtvHandle"></param>
+		/// <param name="dsvHandle"></param>
+		void SetRenderTargets(
+			D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle,
+			const D3D12_CPU_DESCRIPTOR_HANDLE* dsvHandle = nullptr
+		);
+
+		/// <summary>
+		/// 深度バッファをクリア
+		/// </summary>
+		/// <param name="dsvHandle"></param>
+		/// <param name="depth"></param>
+		void ClearDepthBuffer(
+			D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle,
+			float depth = 1.0f
+		);
+
+		/// <summary>
+		/// コマンドアロケータを取得
+		/// </summary>
+		/// <returns></returns>
+		ID3D12CommandAllocator* GetCommandAllocator() { return commandAllocator_.Get(); }
+
+		/// <summary>
+		/// コマンドリストを取得
+		/// </summary>
+		/// <returns></returns>
+		ID3D12GraphicsCommandList* GetCommandList() { return commandList_.Get(); }
+
 	private:
 		// コマンドアロケータ
 		Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;

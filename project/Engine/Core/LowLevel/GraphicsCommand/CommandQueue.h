@@ -14,16 +14,24 @@ namespace MyEngine::LowLevel {
 		/// 初期化処理
 		/// </summary>
 		/// <param name="device"></param>
-		void Initialize(Microsoft::WRL::ComPtr<ID3D12Device> device);
+		void Initialize(ID3D12Device* device);
 
 		/// <summary>
 		/// コマンドを実行する
 		/// </summary>
 		/// <param name="cmdList"></param>
-		void ExecuteCommandList(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& cmdList);
+		void ExecuteCommandList(ID3D12GraphicsCommandList* cmdList);
 
-
+		/// <summary>
+		/// コマンドキューとGPUの同期
+		/// </summary>
 		void SignalAndWait();
+
+		/// <summary>
+		/// コマンドキューを取得
+		/// </summary>
+		/// <returns></returns>
+		ID3D12CommandQueue* GetCommandQueue() { return commandQueue_.Get(); }
 
 	private:
 		// コマンドキュー

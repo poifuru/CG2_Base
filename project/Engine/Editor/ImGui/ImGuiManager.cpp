@@ -6,6 +6,7 @@
 #include "WindowsAPI.h"
 #include "DescriptorHeapManager.h"
 #include "EditorManager.h"
+#include "Engine.h"
 
 ImGuiManager::~ImGuiManager() {
 	Finalize();
@@ -22,7 +23,7 @@ void ImGuiManager::Finalize() {
 	engine_ = nullptr;
 }
 
-void ImGuiManager::Initialize(IEngine* engine) {
+void ImGuiManager::Initialize(Engine* engine) {
 	engine_ = engine;
 #ifdef USEIMGUI
 	IMGUI_CHECKVERSION();

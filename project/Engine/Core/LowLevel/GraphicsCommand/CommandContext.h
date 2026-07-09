@@ -6,17 +6,7 @@
 
 class CommandContext {
 public:
-	void SignalAndWait();
-
-	// --- アクセッサ --- //
-	ID3D12GraphicsCommandList* GetCommandList() const { return commandList_.Get(); }
-	ID3D12CommandQueue* GetCommandQueue() const { return commandQueue_.Get(); }
-
-	// --- コマンド記録のヘルパー --- //
-	void TransitionBarrier(ID3D12Resource* resource, D3D12_RESOURCE_STATES stateBefore, D3D12_RESOURCE_STATES stateAfter);
-	void ClearRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, const float color[4]);
-	void ClearDepthBuffer(D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle, float depth = 1.0f);
-	void SetRenderTargets(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle, const D3D12_CPU_DESCRIPTOR_HANDLE* dsvHandle = nullptr);
+	
 
 public:
 	// コピー・移動禁止
@@ -26,13 +16,5 @@ public:
 	CommandContext& operator=(CommandContext&&) = delete;
 
 private:
-	// コマンド関連
-	Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue_;
-	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator_;
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_;
-
-	// 同期（フェンス）用
-	Microsoft::WRL::ComPtr<ID3D12Fence> fence_;
-	uint64_t fenceValue_ = 0;
-	HANDLE fenceEvent_ = nullptr;
+	
 };

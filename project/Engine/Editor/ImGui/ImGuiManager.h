@@ -1,5 +1,6 @@
 #pragma once
-#include "IEngine.h"
+
+class Engine;
 
 class ImGuiManager {
 public:
@@ -9,12 +10,12 @@ public:
 	}
 	~ImGuiManager();
 
-	void Initialize(IEngine* engine);
+	void Initialize(Engine* engine);
 	void Finalize();
 	void Draw();
 	void BeginFrame();
 
-	IEngine* GetEngine() const { return engine_; }
+	Engine* GetEngine() const { return engine_; }
 
 private:
 	void RenderDockingSpace();
@@ -26,6 +27,6 @@ private:
 	ImGuiManager(ImGuiManager&&) = delete;
 	ImGuiManager& operator=(ImGuiManager&&) = delete;
 
-	IEngine* engine_ = nullptr;
+	Engine* engine_ = nullptr;
 };
 

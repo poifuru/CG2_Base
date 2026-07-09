@@ -1,11 +1,11 @@
 #include "PCH.h"
 #include "SwapChain.h"
-#include "CommandContext.h"
+#include "CommandList.h"
 #include "function.h"
 
-SwapChain::SwapChain() = default;
+MyEngine::LowLevel::SwapChain::SwapChain() = default;
 
-void SwapChain::Initialize(
+void MyEngine::LowLevel::SwapChain::Initialize(
 	IDXGIFactory7* dxgiFactory,
 	ID3D12CommandQueue* cmdQueue,
 	HWND hwnd,
@@ -97,26 +97,26 @@ void SwapChain::Initialize(
 	d3dDevice->CreateDepthStencilView(depthBuffer_.Get(), &dsvDesc, dsvHandle_);
 }
 
-void SwapChain::Present() {
+void MyEngine::LowLevel::SwapChain::Present() {
 	// 垂直同期（V-Sync）を有効にするなら第1引数を 1 に、無制限にするなら 0 にする
 	HRESULT hr = swapChain_->Present(1, 0);
 	assert(SUCCEEDED(hr));
 }
 
-void SwapChain::BeginRender(CommandContext* cmdContext, const float clearColor[4]) {
+void MyEngine::LowLevel::SwapChain::BeginRender(MyEngine::LowLevel::CommandList* cmdList, const float clearColor[4]) {
 	uint32_t bbIndex = GetCurrentBackBufferIndex();
 	ID3D12Resource* backBuffer = GetBackBufferResource(bbIndex);
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = GetRtvHandle(bbIndex);
 
-	cmdContext->TransitionBarrier(backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	cmdContext->SetRenderTargets(rtvHandle, &dsvHandle_);
-	cmdContext->ClearRenderTarget(rtvHandle, clearColor);
-	cmdContext->ClearDepthBuffer(dsvHandle_, 1.0f);
+	cmdList->TransitionBarrier(backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	cmdList->SetRenderTargets(rtvHandle, &dsvHandle_);
+	cmdList->ClearRenderTarget(rtvHandle, clearColor);
+	cmdList->ClearDepthBuffer(dsvHandle_, 1.0f);
 }
 
-void SwapChain::EndRender(CommandContext* cmdContext) {
+void MyEngine::LowLevel::SwapChain::EndRender(MyEngine::LowLevel::CommandList* cmdList) {
 	uint32_t bbIndex = GetCurrentBackBufferIndex();
 	ID3D12Resource* backBuffer = GetBackBufferResource(bbIndex);
 
-	cmdContext->TransitionBarrier(backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	cmdList->TransitionBarrier(backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 }

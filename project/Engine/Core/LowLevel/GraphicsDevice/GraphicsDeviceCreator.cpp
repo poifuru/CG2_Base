@@ -1,6 +1,36 @@
 #include "PCH.h"
 #include "GraphicsDeviceCreator.h"
 
+namespace {
+	void EnableDebugLayer() {
+		Microsoft::WRL::ComPtr<ID3D12Debug1> debugController;
+		if(SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(debugController.GetAddressOf())))) {
+			debugController->EnableDebugLayer();
+			debugController->SetEnableGPUBasedValidation(true);
+		}
+	}
+
+	void SetupInfoQueue(Microsoft::WRL::ComPtr<ID3D12Device> device) {
+		Microsoft::WRL::ComPtr<ID3D12InfoQueue> infoQueue;
+		if(SUCCEEDED(device->QueryInterface(IID_PPV_ARGS(infoQueue.GetAddressOf())))) {
+			infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
+			infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
+
+			// Windows11等でのバグによる既知のメッセージを抑制
+			D3D12_MESSAGE_ID denyIds[] = { D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE };
+			D3D12_MESSAGE_SEVERITY severities[] = { D3D12_MESSAGE_SEVERITY_INFO };
+
+			D3D12_INFO_QUEUE_FILTER filter{};
+			filter.DenyList.NumIDs = _countof(denyIds);
+			filter.DenyList.pIDList = denyIds;
+			filter.DenyList.NumSeverities = _countof(severities);
+			filter.DenyList.pSeverityList = severities;
+
+			infoQueue->PushStorageFilter(&filter);
+		}
+	}
+}
+
 void MyEngine::LowLevel::GraphicsDeviceCreator::CreateAndSetup(
 	Microsoft::WRL::ComPtr<ID3D12Device>& device,
 	Microsoft::WRL::ComPtr<IDXGIFactory7>& dxgiFactory
@@ -44,34 +74,4 @@ void MyEngine::LowLevel::GraphicsDeviceCreator::CreateAndSetup(
 #ifdef USEIMGUI
 	SetupInfoQueue(device);
 #endif
-}
-
-namespace {
-	void EnableDebugLayer() {
-		Microsoft::WRL::ComPtr<ID3D12Debug1> debugController;
-		if(SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(debugController.GetAddressOf())))) {
-			debugController->EnableDebugLayer();
-			debugController->SetEnableGPUBasedValidation(true);
-		}
-	}
-
-	void SetupInfoQueue(Microsoft::WRL::ComPtr<ID3D12Device> device) {
-		Microsoft::WRL::ComPtr<ID3D12InfoQueue> infoQueue;
-		if(SUCCEEDED(device->QueryInterface(IID_PPV_ARGS(infoQueue.GetAddressOf())))) {
-			infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
-			infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
-
-			// Windows11等でのバグによる既知のメッセージを抑制
-			D3D12_MESSAGE_ID denyIds[] = { D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE };
-			D3D12_MESSAGE_SEVERITY severities[] = { D3D12_MESSAGE_SEVERITY_INFO };
-
-			D3D12_INFO_QUEUE_FILTER filter{};
-			filter.DenyList.NumIDs = _countof(denyIds);
-			filter.DenyList.pIDList = denyIds;
-			filter.DenyList.NumSeverities = _countof(severities);
-			filter.DenyList.pSeverityList = severities;
-
-			infoQueue->PushStorageFilter(&filter);
-		}
-	}
 }

@@ -1,5 +1,6 @@
 #pragma once
-#include "IEngine.h"
+
+class Engine;
 
 class EditorManager {
 public:
@@ -10,7 +11,7 @@ public:
 	~EditorManager() = default;
 
 	// 毎フレームImGuiManagerで呼び出す
-	void UpdateAndDraw(IEngine* engine);
+	void UpdateAndDraw(Engine* engine);
 
 	// 外部がゲーム画面の状態を知るためのゲッター
 	bool IsGameWindowHovered() const { return isGameWindowHovered_; }
@@ -26,7 +27,7 @@ private:
 	EditorManager& operator=(const EditorManager&) = delete;
 
 	// 各ウィンドウの描画関数を小分けにする
-	void DrawGameWindow(IEngine* engine);
+	void DrawGameWindow(Engine* engine);
 
 private:
 	bool isGameWindowHovered_ = false;

@@ -4,7 +4,9 @@
 #include "InputManager.h"
 #include "FrameRateController.h"
 #include "GraphicsDevice.h"
-#include "CommandContext.h"
+#include "DxcCompiler.h"
+#include "CommandQueue.h"
+#include "CommandList.h"
 #include "SwapChain.h"
 #include "DescriptorHeapManager.h"
 #include "RootSignatureManager.h"
@@ -32,16 +34,22 @@ void Engine::Initialize() {
 
 	frameRateController_ = std::make_unique<FrameRateController>();
 
-	device_ = std::make_unique<GraphicsDevice>();
+	device_ = std::make_unique<MyEngine::LowLevel::GraphicsDevice>();
 	device_->Initialize();
 
-	cmdContext_ = std::make_unique<CommandContext>();
-	cmdContext_->Initialize(device_->GetDevice());
+	dxcCompiler_ = std::make_unique<MyEngine::LowLevel::DxcCompiler>();
+	dxcCompiler_->Initialize();
 
-	swapChain_ = std::make_unique<SwapChain>();
+	cmdQueue_ = std::make_unique<MyEngine::LowLevel::CommandQueue>();
+	cmdQueue_->Initialize(device_->GetDevice());
+
+	cmdList_ = std::make_unique<MyEngine::LowLevel::CommandList>();
+	cmdList_->Initialize(device_->GetDevice());
+
+	swapChain_ = std::make_unique<MyEngine::LowLevel::SwapChain>();
 	swapChain_->Initialize(
 		device_->GetDxgiFactory(),
-		cmdContext_->GetCommandQueue(),
+		cmdQueue_->GetCommandQueue(),
 		WindowsAPI::GetInstance()->GetHwnd(),
 		WindowsAPI::GetInstance()->GetWindowWidth(),
 		WindowsAPI::GetInstance()->GetWindowHeight()
@@ -55,9 +63,9 @@ void Engine::Initialize() {
 
 	shaderManager_ = std::make_unique<ShaderManager>();
 	shaderManager_->Initialize(
-		device_->GetDxcCompiler(),
-		device_->GetDxcUtils(),
-		device_->GetIncludeHandler()
+		dxcCompiler_->GetDxcCompiler(),
+		dxcCompiler_->GetDxcUtils(),
+		dxcCompiler_->GetIncludeHandler()
 	);
 
 	inputLayoutManager_ = std::make_unique<InputLayoutManager>();
@@ -90,34 +98,34 @@ bool Engine::ProcessMessage() {
 void Engine::BeginFrame() {
 	frameRateController_->Update();
 	InputManager::GetInstance()->Update();
-	cmdContext_->Reset();
+	cmdList_->Reset();
 
 #ifdef USEIMGUI
 	// RenderTextureをレンダーターゲットに設定
-	ID3D12GraphicsCommandList* cmdList = cmdContext_->GetCommandList();
-	cmdContext_->TransitionBarrier(renderTexture_->GetResource(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	ID3D12GraphicsCommandList* cmdList = cmdList_->GetCommandList();
+	cmdList_->TransitionBarrier(renderTexture_->GetResource(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = renderTexture_->GetDescriptorHandle();
 	float clearColor[] = { 0.14f, 0.14f, 0.14f, 1.0f };
-	cmdContext_->ClearRenderTarget(rtvHandle, clearColor);
+	cmdList_->ClearRenderTarget(rtvHandle, clearColor);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = swapChain_->GetDsvHandle();
-	cmdContext_->ClearDepthBuffer(dsvHandle);
+	cmdList_->ClearDepthBuffer(dsvHandle);
 
-	cmdContext_->SetRenderTargets(rtvHandle, &dsvHandle);
+	cmdList_->SetRenderTargets(rtvHandle, &dsvHandle);
 #else
 	// 直接SwapChainのバックバッファに描画する
 	float clearColor[] = { 0.14f, 0.14f, 0.14f, 1.0f };
-	swapChain_->BeginRender(cmdContext_.get(), clearColor);
+	swapChain_->BeginRender(cmdList_.get(), clearColor);
 #endif
 }
 
 void Engine::EndFrame() {
 
-	swapChain_->EndRender(cmdContext_.get());
-	cmdContext_->Execute();
+	swapChain_->EndRender(cmdList_.get());
+	cmdQueue_->ExecuteCommandList(cmdList_->GetCommandList());
 	swapChain_->Present();
-	cmdContext_->SignalAndWait();
+	cmdQueue_->SignalAndWait();
 
 	InputManager::GetInstance()->EndFrame();
 }
@@ -137,7 +145,7 @@ void Engine::PreImGui() {
 	scissorRect.right = WindowsAPI::GetInstance()->GetWindowWidth();
 	scissorRect.bottom = WindowsAPI::GetInstance()->GetWindowHeight();
 
-	ID3D12GraphicsCommandList* cmdList = cmdContext_->GetCommandList();
+	ID3D12GraphicsCommandList* cmdList = cmdList_->GetCommandList();
 	cmdList->RSSetViewports(1, &viewport);
 	cmdList->RSSetScissorRects(1, &scissorRect);
 
@@ -150,21 +158,21 @@ void Engine::PreImGui() {
 
 #ifdef USEIMGUI
 	// RenderTextureへの描画が終わったのでSRVに遷移
-	cmdContext_->TransitionBarrier(renderTexture_->GetResource(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	cmdList_->TransitionBarrier(renderTexture_->GetResource(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 	// SwapChainの準備 (ImGuiの描画先)
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
-	swapChain_->BeginRender(cmdContext_.get(), clearColor);
+	swapChain_->BeginRender(cmdList_.get(), clearColor);
 #endif
 }
 
 void Engine::ResetCommandList() {
-	cmdContext_->Reset();
+	cmdList_->Reset();
 }
 
 void Engine::ExecuteCommandList() {
-	cmdContext_->Execute();
-	cmdContext_->SignalAndWait();
+	cmdQueue_->ExecuteCommandList(cmdList_->GetCommandList());
+	cmdQueue_->SignalAndWait();
 }
 
 ID3D12Device* Engine::GetDevice() {
@@ -172,11 +180,11 @@ ID3D12Device* Engine::GetDevice() {
 }
 
 ID3D12GraphicsCommandList* Engine::GetCommandList() {
-	return cmdContext_->GetCommandList();
+	return cmdList_->GetCommandList();
 }
 
 ID3D12CommandQueue* Engine::GetCommandQueue() {
-	return cmdContext_->GetCommandQueue();
+	return cmdQueue_->GetCommandQueue();
 }
 
 ShaderManager& Engine::GetShaderManager() {

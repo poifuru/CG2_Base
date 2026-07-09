@@ -9,7 +9,7 @@
 #include "ShaderManager.h"
 
 void ModelFactory::Initialize(
-	GraphicsDevice* device,
+	MyEngine::LowLevel::GraphicsDevice* device,
 	DescriptorHeapManager* heapManager,
 	ModelManager* modelManager,
 	TextureManager* textureManager,

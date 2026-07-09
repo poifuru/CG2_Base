@@ -3,15 +3,16 @@
 #include <imgui.h>
 #include "RenderTexture.h"
 #include "DescriptorHeapManager.h"
+#include "Engine.h"
 
-void EditorManager::UpdateAndDraw(IEngine* engine) {
+void EditorManager::UpdateAndDraw(Engine* engine) {
 #ifdef USEIMGUI
 	// 各ウィンドウを順番に描画していく
 	DrawGameWindow(engine);
 #endif
 }
 
-void EditorManager::DrawGameWindow(IEngine* engine) {
+void EditorManager::DrawGameWindow(Engine* engine) {
 	// ギズモ操作中はウィンドウが動かないようにする
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
 	if (isGizmoActive_) {

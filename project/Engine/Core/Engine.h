@@ -1,5 +1,4 @@
 #pragma once
-#include "IEngine.h"
 #include "LeakChecker.h"
 
 // 前方宣言
@@ -7,9 +6,13 @@ struct ID3D12Device;
 struct ID3D12GraphicsCommandList;
 struct ID3D12CommandQueue;
 class FrameRateController;
-class GraphicsDevice;
-class CommandContext;
-class SwapChain;
+namespace MyEngine::LowLevel {
+	class GraphicsDevice;
+	class DxcCompiler;
+	class CommandQueue;
+	class CommandList;
+	class SwapChain;
+}
 class DescriptorHeapManager;
 class RootSignatureManager;
 class ShaderManager;
@@ -19,40 +22,42 @@ class PSOManager;
 class RenderSystem;
 class RenderTexture;
 
-class Engine : public IEngine {
+class Engine {
 public:
 	Engine();
-	~Engine() override;
+	~Engine();
 
-	void Initialize() override;
-	bool ProcessMessage() override;
-	void BeginFrame() override;
-	void EndFrame() override;
-	void PreImGui() override;
+	void Initialize();
+	bool ProcessMessage();
+	void BeginFrame();
+	void EndFrame();
+	void PreImGui();
 
-	RenderSystem* GetRenderSystem() override { return renderSystem_.get(); }
+	RenderSystem* GetRenderSystem() { return renderSystem_.get(); }
 
 	// コマンド制御（オーバーライド）
-	void ResetCommandList() override;
-	void ExecuteCommandList() override;
+	void ResetCommandList();
+	void ExecuteCommandList();
 
 	// 低レイヤーアクセッサ（オーバーライド）
-	ID3D12Device* GetDevice() override;
-	GraphicsDevice* GetGraphicsDevice() override { return device_.get(); }
-	DescriptorHeapManager* GetDescriptorHeapManager() override { return heapManager_.get(); }
-	ID3D12GraphicsCommandList* GetCommandList() override;
-	ID3D12CommandQueue* GetCommandQueue() override;
-	ShaderManager& GetShaderManager() override;
-	RenderTexture* GetRenderTexture() override { return renderTexture_.get(); }
+	ID3D12Device* GetDevice();
+	MyEngine::LowLevel::GraphicsDevice* GetGraphicsDevice() { return device_.get(); }
+	DescriptorHeapManager* GetDescriptorHeapManager() { return heapManager_.get(); }
+	ID3D12GraphicsCommandList* GetCommandList();
+	ID3D12CommandQueue* GetCommandQueue();
+	ShaderManager& GetShaderManager();
+	RenderTexture* GetRenderTexture() { return renderTexture_.get(); }
 
 private:
 	LeakChecker leakCheck_{};
 
 	// ---上から順に初期化、下から順に破棄--- //
 	std::unique_ptr<FrameRateController> frameRateController_;
-	std::unique_ptr<GraphicsDevice> device_;
-	std::unique_ptr<CommandContext> cmdContext_;
-	std::unique_ptr<SwapChain> swapChain_;
+	std::unique_ptr<MyEngine::LowLevel::GraphicsDevice> device_;
+	std::unique_ptr<MyEngine::LowLevel::DxcCompiler> dxcCompiler_;
+	std::unique_ptr<MyEngine::LowLevel::CommandQueue> cmdQueue_;
+	std::unique_ptr<MyEngine::LowLevel::CommandList> cmdList_;
+	std::unique_ptr<MyEngine::LowLevel::SwapChain> swapChain_;
 	std::unique_ptr<DescriptorHeapManager> heapManager_;
 
 	std::unique_ptr<RootSignatureManager> rootSigManager_;

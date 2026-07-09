@@ -1,7 +1,8 @@
 #pragma once
 #include <memory>
-#include "IEngine.h"
 #include "SceneManager.h"
+
+class Engine;
 
 class Game {
 public:
@@ -11,6 +12,6 @@ public:
 	void Run();
 
 private:
-	std::unique_ptr<IEngine> engine_ = nullptr;
+	std::unique_ptr<Engine> engine_ = nullptr;
 	std::unique_ptr<SceneManager> sceneManager_ = nullptr;
 };

@@ -178,7 +178,6 @@
     <ClInclude Include="Engine\Render\PostEffect\Fog.h" />
     <ClInclude Include="Engine\Render\PostEffect\Outline.h" />
     <ClInclude Include="Engine\Render\PostEffect\CopyImage.h" />
-    <ClInclude Include="Engine\Core\IEngine.h" />
     <ClInclude Include="Engine\Core\Engine.h" />
     <ClInclude Include="Engine\Core\RenderSystem.h" />
     <ClInclude Include="Engine\Core\RenderCommand.h" />

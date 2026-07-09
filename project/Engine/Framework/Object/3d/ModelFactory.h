@@ -3,7 +3,10 @@
 #include <string>
 
 class Model;
-class GraphicsDevice;
+// 前方宣言
+namespace MyEngine::LowLevel {
+	class GraphicsDevice;
+}
 class DescriptorHeapManager;
 class ModelManager;
 class TextureManager;
@@ -15,7 +18,7 @@ public:
 	~ModelFactory() = default;
 
 	void Initialize(
-		GraphicsDevice* device,
+		MyEngine::LowLevel::GraphicsDevice* device,
 		DescriptorHeapManager* heapManager,
 		ModelManager* modelManager,
 		TextureManager* textureManager,
@@ -36,7 +39,7 @@ public:
 	ModelFactory& operator=(ModelFactory&&) = delete;
 
 private:
-	GraphicsDevice* device_ = nullptr;
+	MyEngine::LowLevel::GraphicsDevice* device_ = nullptr;
 	DescriptorHeapManager* heapManager_ = nullptr;
 	ModelManager* modelManager_ = nullptr;
 	TextureManager* textureManager_ = nullptr;

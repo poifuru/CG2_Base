@@ -4,7 +4,7 @@
 #include "GraphicsDevice.h"
 
 void SceneManager::Initialize(
-	GraphicsDevice* graphicsDevice,
+	MyEngine::LowLevel::GraphicsDevice* graphicsDevice,
 	ID3D12GraphicsCommandList* cmdList,
 	DescriptorHeapManager* heapManager,
 	ShaderManager* shaderManager
