@@ -29,7 +29,10 @@ void MyEngine::LowLevel::CommandQueue::ExecuteCommandList(
 }
 
 void MyEngine::LowLevel::CommandQueue::SignalAndWait() {
+	// フェンスのバリューを増やす
 	fenceValue_++;
+
+	// 
 	HRESULT hr = commandQueue_->Signal(fence_.Get(), fenceValue_);
 	assert(SUCCEEDED(hr));
 
