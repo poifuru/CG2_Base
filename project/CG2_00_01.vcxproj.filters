@@ -102,6 +102,7 @@
     <ClCompile Include="Engine\Core\LowLevel\GraphicsCommand\CommandQueue.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\GraphicsCommand\CommandList.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\GraphicsCommand\GraphicsCommandCreator.cpp" />
+    <ClCompile Include="Engine\Render\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -233,6 +234,7 @@
     <ClInclude Include="Engine\Core\LowLevel\GraphicsCommand\CommandQueue.h" />
     <ClInclude Include="Engine\Core\LowLevel\GraphicsCommand\CommandList.h" />
     <ClInclude Include="Engine\Core\LowLevel\GraphicsCommand\GraphicsCommandCreator.h" />
+    <ClInclude Include="Engine\Render\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

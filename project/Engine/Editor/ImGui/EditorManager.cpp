@@ -5,14 +5,14 @@
 #include "DescriptorHeapManager.h"
 #include "Engine.h"
 
-void EditorManager::UpdateAndDraw(Engine* engine) {
+void EditorManager::UpdateAndDraw(MyEngine::LowLevel::Engine* engine) {
 #ifdef USEIMGUI
 	// 各ウィンドウを順番に描画していく
 	DrawGameWindow(engine);
 #endif
 }
 
-void EditorManager::DrawGameWindow(Engine* engine) {
+void EditorManager::DrawGameWindow(MyEngine::LowLevel::Engine* engine) {
 	// ギズモ操作中はウィンドウが動かないようにする
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
 	if (isGizmoActive_) {

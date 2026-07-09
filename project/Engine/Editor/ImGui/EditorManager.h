@@ -1,6 +1,8 @@
 #pragma once
 
-class Engine;
+namespace MyEngine::LowLevel {
+	class Engine;
+}
 
 class EditorManager {
 public:
@@ -11,7 +13,7 @@ public:
 	~EditorManager() = default;
 
 	// 毎フレームImGuiManagerで呼び出す
-	void UpdateAndDraw(Engine* engine);
+	void UpdateAndDraw(MyEngine::LowLevel::Engine* engine);
 
 	// 外部がゲーム画面の状態を知るためのゲッター
 	bool IsGameWindowHovered() const { return isGameWindowHovered_; }
@@ -27,7 +29,7 @@ private:
 	EditorManager& operator=(const EditorManager&) = delete;
 
 	// 各ウィンドウの描画関数を小分けにする
-	void DrawGameWindow(Engine* engine);
+	void DrawGameWindow(MyEngine::LowLevel::Engine* engine);
 
 private:
 	bool isGameWindowHovered_ = false;

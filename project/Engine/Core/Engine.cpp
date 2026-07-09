@@ -9,23 +9,17 @@
 #include "CommandList.h"
 #include "SwapChain.h"
 #include "DescriptorHeapManager.h"
-#include "RootSignatureManager.h"
-#include "ShaderManager.h"
-#include "InputLayoutManager.h"
-#include "BlendModeManager.h"
-#include "PSOManager.h"
-#include "RenderSystem.h"
-#include "RenderTexture.h"
+
 #include "CameraOrganizer.h"
 #include "MainCameraComponent.h"
 #include "LogManager.h"
 
-Engine::Engine() = default;
-Engine::~Engine() {
+MyEngine::LowLevel::Engine::Engine() = default;
+MyEngine::LowLevel::Engine::~Engine() {
 	WindowsAPI::GetInstance()->Finalize();
 }
 
-void Engine::Initialize() {
+void MyEngine::LowLevel::Engine::Initialize() {
 	WindowsAPI::GetInstance()->Initialize(1280, 720);
 
 	LogManager::GetInstance()->Initialize();
@@ -57,45 +51,16 @@ void Engine::Initialize() {
 
 	heapManager_ = std::make_unique<MyEngine::LowLevel::DescriptorHeapManager>();
 	heapManager_->Initialize(device_->GetDevice(), 4096);
-
-	rootSigManager_ = std::make_unique<RootSignatureManager>();
-	rootSigManager_->Initialize(device_->GetDevice());
-
-	shaderManager_ = std::make_unique<ShaderManager>();
-	shaderManager_->Initialize(
-		dxcCompiler_->GetDxcCompiler(),
-		dxcCompiler_->GetDxcUtils(),
-		dxcCompiler_->GetIncludeHandler()
-	);
-
-	inputLayoutManager_ = std::make_unique<InputLayoutManager>();
-	inputLayoutManager_->Initialize();
-
-	blendModeManager_ = std::make_unique<BlendModeManager>();
-	blendModeManager_->Initialize();
-
-	psoManager_ = std::make_unique<PSOManager>();
-
-	renderSystem_ = std::make_unique<RenderSystem>();
-	renderSystem_->Initialize(
-		device_->GetDevice(),
-		heapManager_.get(),
-		psoManager_.get(),
-		shaderManager_.get(),
-		inputLayoutManager_.get(),
-		blendModeManager_.get(),
-		rootSigManager_->GetCommonRootSignature()
-	);
-
-	renderTexture_ = std::make_unique<RenderTexture>();
-	renderTexture_->Initialize(device_->GetDevice(), heapManager_.get());
 }
 
-bool Engine::ProcessMessage() {
+bool MyEngine::LowLevel::Engine::ProcessMessage() {
 	return WindowsAPI::GetInstance()->ProcessMessage();
 }
 
-void Engine::BeginFrame() {
+void MyEngine::LowLevel::Engine::BeginFrame(
+	ID3D12Resource* renderTexResource,
+	D3D12_CPU_DESCRIPTOR_HANDLE renderTexDescriptorHandle
+) {
 	frameRateController_->Update();
 	InputManager::GetInstance()->Update();
 	cmdList_->Reset();
@@ -103,9 +68,9 @@ void Engine::BeginFrame() {
 #ifdef USEIMGUI
 	// RenderTextureをレンダーターゲットに設定
 	ID3D12GraphicsCommandList* cmdList = cmdList_->GetCommandList();
-	cmdList_->TransitionBarrier(renderTexture_->GetResource(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	cmdList_->TransitionBarrier(renderTexResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = renderTexture_->GetDescriptorHandle();
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = renderTexDescriptorHandle;
 	float clearColor[] = { 0.14f, 0.14f, 0.14f, 1.0f };
 	cmdList_->ClearRenderTarget(rtvHandle, clearColor);
 
@@ -120,7 +85,7 @@ void Engine::BeginFrame() {
 #endif
 }
 
-void Engine::EndFrame() {
+void MyEngine::LowLevel::Engine::EndFrame() {
 
 	swapChain_->EndRender(cmdList_.get());
 	cmdQueue_->ExecuteCommandList(cmdList_->GetCommandList());
@@ -130,7 +95,7 @@ void Engine::EndFrame() {
 	InputManager::GetInstance()->EndFrame();
 }
 
-void Engine::PreImGui() {
+void MyEngine::LowLevel::Engine::PreImGui() {
 	D3D12_VIEWPORT viewport{};
 	viewport.Width = static_cast<float>(WindowsAPI::GetInstance()->GetWindowWidth());
 	viewport.Height = static_cast<float>(WindowsAPI::GetInstance()->GetWindowHeight());
@@ -166,27 +131,23 @@ void Engine::PreImGui() {
 #endif
 }
 
-void Engine::ResetCommandList() {
+void MyEngine::LowLevel::Engine::ResetCommandList() {
 	cmdList_->Reset();
 }
 
-void Engine::ExecuteCommandList() {
+void MyEngine::LowLevel::Engine::ExecuteCommandList() {
 	cmdQueue_->ExecuteCommandList(cmdList_->GetCommandList());
 	cmdQueue_->SignalAndWait();
 }
 
-ID3D12Device* Engine::GetDevice() {
+ID3D12Device* MyEngine::LowLevel::Engine::GetDevice() {
 	return device_->GetDevice();
 }
 
-ID3D12GraphicsCommandList* Engine::GetCommandList() {
+ID3D12GraphicsCommandList* MyEngine::LowLevel::Engine::GetCommandList() {
 	return cmdList_->GetCommandList();
 }
 
-ID3D12CommandQueue* Engine::GetCommandQueue() {
+ID3D12CommandQueue* MyEngine::LowLevel::Engine::GetCommandQueue() {
 	return cmdQueue_->GetCommandQueue();
-}
-
-ShaderManager& Engine::GetShaderManager() {
-	return *shaderManager_;
 }

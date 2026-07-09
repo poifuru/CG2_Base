@@ -1,6 +1,8 @@
 #pragma once
 
-class Engine;
+namespace MyEngine::LowLevel {
+	class Engine;
+}
 
 class ImGuiManager {
 public:
@@ -10,12 +12,12 @@ public:
 	}
 	~ImGuiManager();
 
-	void Initialize(Engine* engine);
+	void Initialize(MyEngine::LowLevel::Engine* engine);
 	void Finalize();
 	void Draw();
 	void BeginFrame();
 
-	Engine* GetEngine() const { return engine_; }
+	MyEngine::LowLevel::Engine* GetEngine() const { return engine_; }
 
 private:
 	void RenderDockingSpace();
@@ -27,6 +29,6 @@ private:
 	ImGuiManager(ImGuiManager&&) = delete;
 	ImGuiManager& operator=(ImGuiManager&&) = delete;
 
-	Engine* engine_ = nullptr;
+	MyEngine::LowLevel::Engine* engine_ = nullptr;
 };
 

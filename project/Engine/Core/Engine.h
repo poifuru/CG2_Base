@@ -11,58 +11,43 @@ namespace MyEngine::LowLevel {
 	class SwapChain;
 	class DescriptorHeapManager;
 }
-class RootSignatureManager;
-class ShaderManager;
-class InputLayoutManager;
-class BlendModeManager;
-class PSOManager;
-class RenderSystem;
-class RenderTexture;
 
-class Engine {
-public:
-	Engine();
-	~Engine();
+namespace MyEngine::LowLevel {
+	class Engine {
+	public:
+		Engine();
+		~Engine();
 
-	void Initialize();
-	bool ProcessMessage();
-	void BeginFrame();
-	void EndFrame();
-	void PreImGui();
+		void Initialize();
+		bool ProcessMessage();
+		void BeginFrame(
+			ID3D12Resource* renderTexResource,
+			D3D12_CPU_DESCRIPTOR_HANDLE renderTexDescriptorHandle
+		);
+		void EndFrame();
+		void PreImGui();
 
-	RenderSystem* GetRenderSystem() { return renderSystem_.get(); }
+		// コマンド制御
+		void ResetCommandList();
+		void ExecuteCommandList();
 
-	// コマンド制御（オーバーライド）
-	void ResetCommandList();
-	void ExecuteCommandList();
+		// 低レイヤーアクセッサ
+		ID3D12Device* GetDevice();
+		MyEngine::LowLevel::GraphicsDevice* GetGraphicsDevice() { return device_.get(); }
+		MyEngine::LowLevel::DescriptorHeapManager* GetDescriptorHeapManager() { return heapManager_.get(); }
+		ID3D12GraphicsCommandList* GetCommandList();
+		ID3D12CommandQueue* GetCommandQueue();
 
-	// 低レイヤーアクセッサ（オーバーライド）
-	ID3D12Device* GetDevice();
-	MyEngine::LowLevel::GraphicsDevice* GetGraphicsDevice() { return device_.get(); }
-	MyEngine::LowLevel::DescriptorHeapManager* GetDescriptorHeapManager() { return heapManager_.get(); }
-	ID3D12GraphicsCommandList* GetCommandList();
-	ID3D12CommandQueue* GetCommandQueue();
-	ShaderManager& GetShaderManager();
-	RenderTexture* GetRenderTexture() { return renderTexture_.get(); }
+	private:
+		LeakChecker leakCheck_{};
 
-private:
-	LeakChecker leakCheck_{};
-
-	// ---上から順に初期化、下から順に破棄--- //
-	std::unique_ptr<MyEngine::LowLevel::FrameRateController> frameRateController_;
-	std::unique_ptr<MyEngine::LowLevel::GraphicsDevice> device_;
-	std::unique_ptr<MyEngine::LowLevel::DxcCompiler> dxcCompiler_;
-	std::unique_ptr<MyEngine::LowLevel::CommandQueue> cmdQueue_;
-	std::unique_ptr<MyEngine::LowLevel::CommandList> cmdList_;
-	std::unique_ptr<MyEngine::LowLevel::SwapChain> swapChain_;
-	std::unique_ptr<MyEngine::LowLevel::DescriptorHeapManager> heapManager_;
-
-	std::unique_ptr<RootSignatureManager> rootSigManager_;
-	std::unique_ptr<ShaderManager> shaderManager_;
-	std::unique_ptr<InputLayoutManager> inputLayoutManager_;
-	std::unique_ptr<BlendModeManager> blendModeManager_;
-	std::unique_ptr<PSOManager> psoManager_;
-
-	std::unique_ptr<RenderSystem> renderSystem_;
-	std::unique_ptr<RenderTexture> renderTexture_;
-};
+		// ---上から順に初期化、下から順に破棄--- //
+		std::unique_ptr<MyEngine::LowLevel::FrameRateController> frameRateController_;
+		std::unique_ptr<MyEngine::LowLevel::GraphicsDevice> device_;
+		std::unique_ptr<MyEngine::LowLevel::DxcCompiler> dxcCompiler_;
+		std::unique_ptr<MyEngine::LowLevel::CommandQueue> cmdQueue_;
+		std::unique_ptr<MyEngine::LowLevel::CommandList> cmdList_;
+		std::unique_ptr<MyEngine::LowLevel::SwapChain> swapChain_;
+		std::unique_ptr<MyEngine::LowLevel::DescriptorHeapManager> heapManager_;
+	};
+}

@@ -23,7 +23,7 @@ void ImGuiManager::Finalize() {
 	engine_ = nullptr;
 }
 
-void ImGuiManager::Initialize(Engine* engine) {
+void ImGuiManager::Initialize(MyEngine::LowLevel::Engine* engine) {
 	engine_ = engine;
 #ifdef USEIMGUI
 	IMGUI_CHECKVERSION();

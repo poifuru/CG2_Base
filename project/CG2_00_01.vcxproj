@@ -318,6 +318,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Framework\GameObject\CameraComponent\VirtualDebugCamera.cpp" />
     <ClCompile Include="Engine\Editor\ParticleEditor\ParticleComponent.cpp" />
     <ClCompile Include="Engine\Editor\ParticleEditor\ParticleSpawner.cpp" />
+    <ClCompile Include="Engine\Render\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Collider\Collision.h" />
@@ -455,6 +456,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Editor\ParticleEditor\ParticleSpawner.h" />
     <ClInclude Include="Engine\Core\LowLevel\GraphicsDevice\GraphicsDeviceCreator.h" />
     <ClInclude Include="Engine\Core\LowLevel\GraphicsCommand\GraphicsCommandCreator.h" />
+    <ClInclude Include="Engine\Render\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shader\Fullscreen.hlsli" />

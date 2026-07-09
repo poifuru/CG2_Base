@@ -8,7 +8,7 @@
 #pragma comment(lib, "DirectXTex.lib")
 
 Game::Game() {
-	engine_ = std::make_unique<Engine>();
+	engine_ = std::make_unique<MyEngine::LowLevel::Engine>();
 	engine_->Initialize();
 
 	// ロード用コマンドリストをリセットしてロード開始

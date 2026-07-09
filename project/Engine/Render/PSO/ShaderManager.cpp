@@ -5,7 +5,11 @@
 #include "LogManager.h"
 #include "ChangeString.h"
 
-void ShaderManager::Initialize (IDxcCompiler3* compiler, IDxcUtils* utils, IDxcIncludeHandler* includeHandler) {
+void ShaderManager::Initialize (
+	IDxcUtils* utils, 
+	IDxcCompiler3* compiler,
+	IDxcIncludeHandler* includeHandler
+) {
 	assert(compiler != nullptr && utils != nullptr && includeHandler != nullptr);
 	dxcCompiler_ = compiler;
 	dxcUtils_ = utils;

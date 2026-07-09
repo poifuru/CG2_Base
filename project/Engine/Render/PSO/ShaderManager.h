@@ -17,7 +17,11 @@ public:		// メンバ関数
 	ShaderManager() = default;
 	~ShaderManager() = default;
 
-	void Initialize (IDxcCompiler3* compiler, IDxcUtils* utils, IDxcIncludeHandler* includeHandler);
+	void Initialize (
+		IDxcUtils* utils,
+		IDxcCompiler3* compiler,
+		IDxcIncludeHandler* includeHandler
+	);
 
 	// シェーダーのコンパイルとキャッシュ登録
 	uint32_t CompileAndCacheShader(const std::wstring& filePath, const wchar_t* profile);
