@@ -9,8 +9,8 @@ class GameObject;
 class RenderSystem;
 namespace MyEngine::LowLevel {
 	class GraphicsDevice;
+	class DescriptorHeapManager;
 }
-class DescriptorHeapManager;
 
 // シーンで必要になる高レベルマネージャーや低レイヤー参照のポインタを束ねた薄い構造体
 struct SceneContext {
@@ -19,7 +19,7 @@ struct SceneContext {
 	ShaderManager* shaderManager = nullptr;
 	ModelManager* modelManager = nullptr;
 	MyEngine::LowLevel::GraphicsDevice* graphicsDevice = nullptr;
-	DescriptorHeapManager* heapManager = nullptr;
+	MyEngine::LowLevel::DescriptorHeapManager* heapManager = nullptr;
 
 	// 動的追加のためにオブジェクトリストのポインタを載せる
 	std::vector<std::unique_ptr<GameObject>>* gameObjects = nullptr;

@@ -7,7 +7,7 @@
 
 void RenderSystem::Initialize(
 	ID3D12Device* device,
-	DescriptorHeapManager* heapManager,
+	MyEngine::LowLevel::DescriptorHeapManager* heapManager,
 	PSOManager* psoManager,
 	const ShaderManager* shaderManager,
 	const InputLayoutManager* inputLayoutManager,

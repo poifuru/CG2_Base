@@ -4,7 +4,9 @@
 #include <cstdint>
 #include "struct.h"
 
-class DescriptorHeapManager;
+namespace MyEngine::LowLevel {
+	class DescriptorHeapManager;
+}
 
 class RenderTexture {
 public:
@@ -14,7 +16,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(ID3D12Device* device, DescriptorHeapManager* heapManager);
+	void Initialize(ID3D12Device* device, MyEngine::LowLevel::DescriptorHeapManager* heapManager);
 
 	/// <summary>
 	/// RenderTexture生成関数

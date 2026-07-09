@@ -1,12 +1,12 @@
 #include "PCH.h"
 #include "FrameRateController.h"
 
-FrameRateController::FrameRateController() {
+MyEngine::LowLevel::FrameRateController::FrameRateController() {
 	// 初期化時点のタイムスタンプを記録しておく
 	lastTime_ = std::chrono::steady_clock::now();
 }
 
-void FrameRateController::Update() {
+void MyEngine::LowLevel::FrameRateController::Update() {
 	// 現在の時間を取得
 	std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
 

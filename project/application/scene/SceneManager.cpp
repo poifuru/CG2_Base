@@ -6,7 +6,7 @@
 void SceneManager::Initialize(
 	MyEngine::LowLevel::GraphicsDevice* graphicsDevice,
 	ID3D12GraphicsCommandList* cmdList,
-	DescriptorHeapManager* heapManager,
+	MyEngine::LowLevel::DescriptorHeapManager* heapManager,
 	ShaderManager* shaderManager
 ) {
 	// マネージャー群を初期化

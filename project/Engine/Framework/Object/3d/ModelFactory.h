@@ -6,8 +6,9 @@ class Model;
 // 前方宣言
 namespace MyEngine::LowLevel {
 	class GraphicsDevice;
+	class DescriptorHeapManager;
 }
-class DescriptorHeapManager;
+
 class ModelManager;
 class TextureManager;
 class ShaderManager;
@@ -19,7 +20,7 @@ public:
 
 	void Initialize(
 		MyEngine::LowLevel::GraphicsDevice* device,
-		DescriptorHeapManager* heapManager,
+		MyEngine::LowLevel::DescriptorHeapManager* heapManager,
 		ModelManager* modelManager,
 		TextureManager* textureManager,
 		ShaderManager* shaderManager
@@ -40,7 +41,7 @@ public:
 
 private:
 	MyEngine::LowLevel::GraphicsDevice* device_ = nullptr;
-	DescriptorHeapManager* heapManager_ = nullptr;
+	MyEngine::LowLevel::DescriptorHeapManager* heapManager_ = nullptr;
 	ModelManager* modelManager_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
 	ShaderManager* shaderManager_ = nullptr;

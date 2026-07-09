@@ -4,7 +4,7 @@
 #include "DescriptorHeapManager.h"
 #include "MathFunction.h"
 
-void Material::Initialize(MyEngine::LowLevel::GraphicsDevice* device, DescriptorHeapManager* heapManager) {
+void Material::Initialize(MyEngine::LowLevel::GraphicsDevice* device, MyEngine::LowLevel::DescriptorHeapManager* heapManager) {
 	buffer_ = std::make_unique<StructuredBuffer<MaterialData>>();
 	buffer_->Initialize(device->GetDevice(), *heapManager, 1);
 

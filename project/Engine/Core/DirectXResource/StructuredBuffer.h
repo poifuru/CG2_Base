@@ -10,7 +10,7 @@ public:
 	~StructuredBuffer() { Release(); }
 
 	// 要素数(count)を指定して初期化
-	void Initialize(ID3D12Device* device, DescriptorHeapManager& heapManager, size_t count) {
+	void Initialize(ID3D12Device* device, MyEngine::LowLevel::DescriptorHeapManager& heapManager, size_t count) {
 		Release();
 		assert(device != nullptr);
 
@@ -120,5 +120,5 @@ private:
 	size_t elementCount_ = 0;
 
 	uint32_t descriptorIndex_ = 0;
-	DescriptorHeapManager* heapManager_ = nullptr;
+	MyEngine::LowLevel::DescriptorHeapManager* heapManager_ = nullptr;
 };

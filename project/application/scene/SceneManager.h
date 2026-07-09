@@ -7,8 +7,9 @@
 struct ID3D12GraphicsCommandList;
 namespace MyEngine::LowLevel {
 	class GraphicsDevice;
+	class DescriptorHeapManager;
 }
-class DescriptorHeapManager;
+
 class ShaderManager;
 struct CameraData;
 
@@ -21,7 +22,7 @@ public:
 	void Initialize(
 		MyEngine::LowLevel::GraphicsDevice* graphicsDevice,
 		ID3D12GraphicsCommandList* cmdList,
-		DescriptorHeapManager* heapManager,
+		MyEngine::LowLevel::DescriptorHeapManager* heapManager,
 		ShaderManager* shaderManager
 	);
 

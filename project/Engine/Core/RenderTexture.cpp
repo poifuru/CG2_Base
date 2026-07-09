@@ -4,7 +4,7 @@
 #include "WindowsAPI.h"
 #include <cassert>
 
-void RenderTexture::Initialize(ID3D12Device* device, DescriptorHeapManager* heapManager) {
+void RenderTexture::Initialize(ID3D12Device* device, MyEngine::LowLevel::DescriptorHeapManager* heapManager) {
 	// オフスクリーンレンダリング用のクリアカラー
 	const Vector4 kRenderTargetClearValue{ 0.14f, 0.14f, 0.14f, 1.0f }; // SwapChainのClear色と合わせる
 

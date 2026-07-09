@@ -4,8 +4,10 @@
 #include "RenderCommand.h"
 
 // 前方宣言
+namespace MyEngine::LowLevel{
+	class DescriptorHeapManager;
+}
 class PSOManager;
-class DescriptorHeapManager;
 class ShaderManager;
 class InputLayoutManager;
 class BlendModeManager;
@@ -24,7 +26,7 @@ public:
 	// リソース初期化用
 	void Initialize(
 		ID3D12Device* device,
-		DescriptorHeapManager* heapManager,
+		MyEngine::LowLevel::DescriptorHeapManager* heapManager,
 		PSOManager* psoManager,
 		const ShaderManager* shaderManager,
 		const InputLayoutManager* inputLayoutManager,
@@ -57,7 +59,7 @@ public:
 
 private:
 	ID3D12Device* device_ = nullptr;
-	DescriptorHeapManager* heapManager_ = nullptr;
+	MyEngine::LowLevel::DescriptorHeapManager* heapManager_ = nullptr;
 	PSOManager* psoManager_ = nullptr;
 	const ShaderManager* shaderManager_ = nullptr;
 	const InputLayoutManager* inputLayoutManager_ = nullptr;

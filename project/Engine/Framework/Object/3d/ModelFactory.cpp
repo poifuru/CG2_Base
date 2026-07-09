@@ -10,7 +10,7 @@
 
 void ModelFactory::Initialize(
 	MyEngine::LowLevel::GraphicsDevice* device,
-	DescriptorHeapManager* heapManager,
+	MyEngine::LowLevel::DescriptorHeapManager* heapManager,
 	ModelManager* modelManager,
 	TextureManager* textureManager,
 	ShaderManager* shaderManager

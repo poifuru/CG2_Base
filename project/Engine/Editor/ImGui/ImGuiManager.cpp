@@ -37,7 +37,7 @@ void ImGuiManager::Initialize(Engine* engine) {
 	io.FontDefault = fontJP;
 	ImGui_ImplWin32_Init(WindowsAPI::GetInstance()->GetHwnd());
 
-	DescriptorHeapManager* heapManager = engine_->GetDescriptorHeapManager();
+	MyEngine::LowLevel::DescriptorHeapManager* heapManager = engine_->GetDescriptorHeapManager();
 
 	ImGui_ImplDX12_InitInfo initInfo = {};
 	initInfo.Device = engine_->GetDevice();
@@ -47,13 +47,13 @@ void ImGuiManager::Initialize(Engine* engine) {
 	initInfo.SrvDescriptorHeap = heapManager->GetHeap();
 	
 	initInfo.SrvDescriptorAllocFn = [](ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE* out_cpu_desc_handle, D3D12_GPU_DESCRIPTOR_HANDLE* out_gpu_desc_handle) {
-		DescriptorHeapManager* mgr = ImGuiManager::GetInstance()->GetEngine()->GetDescriptorHeapManager();
+		MyEngine::LowLevel::DescriptorHeapManager* mgr = ImGuiManager::GetInstance()->GetEngine()->GetDescriptorHeapManager();
 		uint32_t srvIndex = mgr->AllocateIndex();
 		*out_cpu_desc_handle = mgr->GetCpuHandle(srvIndex);
 		*out_gpu_desc_handle = mgr->GetGpuHandle(srvIndex);
 	};
 	initInfo.SrvDescriptorFreeFn = [](ImGui_ImplDX12_InitInfo* info, D3D12_CPU_DESCRIPTOR_HANDLE cpu_desc_handle, D3D12_GPU_DESCRIPTOR_HANDLE gpu_desc_handle) {
-		DescriptorHeapManager* mgr = ImGuiManager::GetInstance()->GetEngine()->GetDescriptorHeapManager();
+		MyEngine::LowLevel::DescriptorHeapManager* mgr = ImGuiManager::GetInstance()->GetEngine()->GetDescriptorHeapManager();
 		uint32_t srvIndex = mgr->GetIndex(cpu_desc_handle);
 		mgr->FreeIndex(srvIndex);
 	};

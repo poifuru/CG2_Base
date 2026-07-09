@@ -32,7 +32,7 @@ void Engine::Initialize() {
 
 	InputManager::GetInstance()->Initialize(WindowsAPI::GetInstance()->GetHwnd());
 
-	frameRateController_ = std::make_unique<FrameRateController>();
+	frameRateController_ = std::make_unique<MyEngine::LowLevel::FrameRateController>();
 
 	device_ = std::make_unique<MyEngine::LowLevel::GraphicsDevice>();
 	device_->Initialize();
@@ -55,7 +55,7 @@ void Engine::Initialize() {
 		WindowsAPI::GetInstance()->GetWindowHeight()
 	);
 
-	heapManager_ = std::make_unique<DescriptorHeapManager>();
+	heapManager_ = std::make_unique<MyEngine::LowLevel::DescriptorHeapManager>();
 	heapManager_->Initialize(device_->GetDevice(), 4096);
 
 	rootSigManager_ = std::make_unique<RootSignatureManager>();
