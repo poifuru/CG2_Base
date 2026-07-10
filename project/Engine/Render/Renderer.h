@@ -23,6 +23,8 @@ namespace MyEngine::Rendering {
 		MyEngine::LowLevel::DescriptorHeapManager* heapManager
 		);
 
+
+
 		RenderSystem* GetRenderSystem() { return renderSystem_.get(); }
 		ShaderManager* GetShaderManager() { return shaderManager_.get(); }
 		RenderTexture* GetRenderTexture() { return renderTexture_.get(); }

@@ -40,7 +40,7 @@ void RenderSystem::SetLightManager(LightManager* lightManager) {
 	activeLightManager_ = lightManager;
 }
 
-void RenderSystem::ExecuteCommands(ID3D12GraphicsCommandList* cmdList) {
+void RenderSystem::WriteCommandList(ID3D12GraphicsCommandList* cmdList) {
 	// レイヤー順（不透明・半透明）にソート
 	std::sort(commandQueue_.begin(), commandQueue_.end(), [](const RenderCommand& a, const RenderCommand& b) {
 		return a.layer < b.layer;

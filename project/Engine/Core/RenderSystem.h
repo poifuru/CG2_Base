@@ -43,7 +43,7 @@ public:
 	// アクティブなライトマネージャーの登録用
 	void SetLightManager(LightManager* lightManager);
 
-	void ExecuteCommands(ID3D12GraphicsCommandList* cmdList);
+	void WriteCommandList(ID3D12GraphicsCommandList* cmdList);
 
 	void ClearCommands();
 
