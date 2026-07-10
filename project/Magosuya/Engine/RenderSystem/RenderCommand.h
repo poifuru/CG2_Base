@@ -48,6 +48,10 @@ struct RenderCommand {
 	// ルートパラメータのインデックス（0〜15）にダイレクトに対応させる
 	RenderBind binds[kMaxRootParameters]{};
 
+	// 間接描画用
+	bool useIndirect = false;
+	ID3D12Resource* indirectArgumentBuffer = nullptr;
+
 	// 描画順ソート用のプライオリティ(不透明:0、透明:1など)
 	uint8_t layer = 0;
 

@@ -37,6 +37,8 @@ public:
 	void CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT Format, UINT MipLevels, const DirectX::TexMetadata& texMetadata);
 	//SRV生成(Structured Buffer)
 	void CreateSRVStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByteStride);
+	//UAV生成(Structured Buffer)
+	void CreateUAVStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByteStride);
 
 private:
 	//ディスクリプタヒープ作成関数

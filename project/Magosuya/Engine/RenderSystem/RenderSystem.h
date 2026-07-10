@@ -41,6 +41,7 @@ private:
 
 	DxCommon* dxCommon_ = nullptr;
 	ID3D12GraphicsCommandList* commandList_ = nullptr;
+	ComPtr<ID3D12CommandSignature> indirectCommandSignature_ = nullptr;
 
 	// 共通のバッファ
 	D3D12_GPU_VIRTUAL_ADDRESS cameraCBVAddress_;

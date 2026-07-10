@@ -310,6 +310,57 @@ public:
 		// 描画時にコマンドリストへ渡すためのGPUハンドルを取得して保持しておく
 		srvHandle_.gpu = SRVManager::GetInstance()->GetGPUDescriptorHandle(srvIndex_);
 	}
+
+	// UAV(かつSRV)として初期化
+	void InitializeUAV(DxCommon* dxCommon, size_t count) {
+		Release();
+		elementCount_ = count;
+		size_t bufferSize = sizeof(T) * elementCount_;
+
+		ID3D12Device* device = dxCommon->GetDevice();
+
+		// Default Heapにリソース作成（UAVを許可）
+		D3D12_HEAP_PROPERTIES heapProperties = {};
+		heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
+		heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+		heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+		heapProperties.CreationNodeMask = 1;
+		heapProperties.VisibleNodeMask = 1;
+
+		D3D12_RESOURCE_DESC desc = {};
+		desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+		desc.Alignment = 0;
+		desc.Width = bufferSize;
+		desc.Height = 1;
+		desc.DepthOrArraySize = 1;
+		desc.MipLevels = 1;
+		desc.Format = DXGI_FORMAT_UNKNOWN;
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+		desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+		HRESULT hr = device->CreateCommittedResource(
+			&heapProperties,
+			D3D12_HEAP_FLAG_NONE,
+			&desc,
+			D3D12_RESOURCE_STATE_COMMON,
+			nullptr,
+			IID_PPV_ARGS(&buffer_)
+		);
+		assert(SUCCEEDED(hr));
+
+		// SRVの生成
+		srvIndex_ = SRVManager::GetInstance()->Allocate();
+		SRVManager::GetInstance()->CreateSRVStructuredBuffer(srvIndex_, buffer_.Get(), static_cast<UINT>(elementCount_), static_cast<UINT>(sizeof(T)));
+		srvHandle_.gpu = SRVManager::GetInstance()->GetGPUDescriptorHandle(srvIndex_);
+
+		// UAVの生成
+		uavIndex_ = SRVManager::GetInstance()->Allocate();
+		SRVManager::GetInstance()->CreateUAVStructuredBuffer(uavIndex_, buffer_.Get(), static_cast<UINT>(elementCount_), static_cast<UINT>(sizeof(T)));
+		uavHandle_.gpu = SRVManager::GetInstance()->GetGPUDescriptorHandle(uavIndex_);
+		hasUAV_ = true;
+	}
 		
 	void Update(const std::vector<T>& data) {
 		if(!mappedData_ || data.empty()) return;
@@ -319,18 +370,23 @@ public:
 	}
 
 	void Release() {
-		// buffer_ が存在している（SRVを作った）場合のみ解放する
+		// buffer_ が存在している場合のみ解放する
 		if(buffer_) {
 			if(mappedData_) {
 				buffer_->Unmap(0, nullptr);
 			}
 			SRVManager::GetInstance()->Free(srvIndex_);
+			if (hasUAV_) {
+				SRVManager::GetInstance()->Free(uavIndex_);
+			}
 		}
 		buffer_ = nullptr;
 		mappedData_ = nullptr;
 		elementCount_ = 0;
 		// 念のため初期値に戻す
 		srvIndex_ = 0;
+		uavIndex_ = 0;
+		hasUAV_ = false;
 	}
 
 	// SRV作成時に必要な情報をゲッターで提供
@@ -338,6 +394,7 @@ public:
 	size_t GetElementCount() const { return elementCount_; }
 	UINT GetStride() const { return static_cast<UINT>(sizeof(T)); }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVHandle() const { return srvHandle_.gpu; }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetUAVHandle() const { return uavHandle_.gpu; }
 
 public:
 	// コピー禁止（ポインタの二重管理を防ぐため）
@@ -356,11 +413,17 @@ public:
 			elementCount_ = other.elementCount_;
 			srvIndex_ = other.srvIndex_;
 			srvHandle_ = other.srvHandle_;
+			uavIndex_ = other.uavIndex_;
+			uavHandle_ = other.uavHandle_;
+			hasUAV_ = other.hasUAV_;
 
 			// ムーブ元を空にする
 			other.buffer_ = nullptr;
 			other.mappedData_ = nullptr;
 			other.elementCount_ = 0;
+			other.srvIndex_ = 0;
+			other.uavIndex_ = 0;
+			other.hasUAV_ = false;
 		}
 		return *this;
 	}
@@ -373,4 +436,9 @@ private:
 	// SRV管理用の変数を追加
 	UINT srvIndex_ = 0;
 	DescriptorHandle srvHandle_{};
+
+	// UAV管理用の変数を追加
+	UINT uavIndex_ = 0;
+	DescriptorHandle uavHandle_{};
+	bool hasUAV_ = false;
 };

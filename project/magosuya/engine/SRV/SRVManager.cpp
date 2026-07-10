@@ -106,6 +106,19 @@ void SRVManager::CreateSRVStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pR
 	dxCommon_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, handleCPU);
 }
 
+void SRVManager::CreateUAVStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT numElements, UINT structureByteStride) {
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+	uavDesc.Buffer.FirstElement = 0;
+	uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
+	uavDesc.Buffer.NumElements = numElements;
+	uavDesc.Buffer.StructureByteStride = structureByteStride;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = GetCPUDescriptorHandle(srvIndex);
+	dxCommon_->GetDevice()->CreateUnorderedAccessView(pResource, nullptr, &uavDesc, handleCPU);
+}
+
 void SRVManager::CreateDescriptorHeap() {
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
 

@@ -41,6 +41,39 @@ struct ParticleBehavior {
 	bool isRandomLifeTime = true;
 };
 
+struct GPUParticle {
+	Vector3 position;
+	Vector3 velocity;
+	Vector4 color;
+	float maxLifeTime;
+	float currentTime;
+	Vector3 scale;
+	Vector3 rotate;
+	uint32_t active;
+};
+
+struct ParticleEmitRequest {
+	Vector3 position;
+	Vector3 velocity;
+	Vector4 color;
+	float lifeTime;
+	Vector3 scale;
+	Vector3 rotate;
+};
+
+struct UpdateParams {
+	Matrix4x4 cameraWorld;
+	Matrix4x4 vp;
+	float deltaTime;
+	uint32_t useBillboard;
+	float padding[2];
+};
+
+struct EmitParams {
+	uint32_t emitCount;
+	float padding[3];
+};
+
 class IParticleField;
 
 class ParticleGroup {
@@ -71,7 +104,7 @@ public:
 	// 名前を変更・取得
 	void SetName(const std::string& name) { name_ = name; }
 	std::string GetName() const { return name_; }
-	// TexInfoのindexセット
+	// TexInfo of indexセット
 	void SetTextureIndex(int index);
 	void SetTexturePath(const std::string& path) { texInfo_.filePath = path; }
 
@@ -88,10 +121,13 @@ public:
 	IParticleMesh* GetMesh() const { return mesh_.get(); }
 	void SetMesh(std::unique_ptr<IParticleMesh> mesh) { mesh_ = std::move(mesh); }
 
+	// CS用の静的パイプライン初期化
+	static void InitializeComputePipelines(DxCommon* dxCommon);
+
 private:
 	DxCommon* dxCommon_ = nullptr;
 
-	// パイプライン設定（子クラスの Initialize で具体的なIDを詰めさせる）
+	// パイプライン設定
 	PSODescriptor psoDesc_{};
 	uint8_t layer_ = 1;
 	RenderType renderType_ = RenderType::Particle;
@@ -99,14 +135,24 @@ private:
 	// バッファ
 	std::unique_ptr<VertexBuffer<ParticleVertex>> vertexBuffer_;
 	std::unique_ptr<IndexBuffer<uint32_t>> indexBuffer_;
-	std::unique_ptr<StructuredBuffer<ParticleForGPU>> instancingBuffer_;
 	std::unique_ptr<MaterialResource> materialBuffer_;
 
-	// CPUデータ
+	// GPUパーティクル用バッファ
+	std::unique_ptr<StructuredBuffer<GPUParticle>> poolBuffer_;
+	std::unique_ptr<StructuredBuffer<uint32_t>> freeListBuffer_;
+	std::unique_ptr<StructuredBuffer<int32_t>> freeListCounterBuffer_;
+	std::unique_ptr<StructuredBuffer<ParticleForGPU>> drawParticlesBuffer_;
+	std::unique_ptr<StructuredBuffer<D3D12_DRAW_INDEXED_ARGUMENTS>> drawArgumentsBuffer_;
+
+	// CPUからの転送バッファ
+	std::unique_ptr<StructuredBuffer<ParticleEmitRequest>> emitRequestsBuffer_;
+	std::unique_ptr<ConstantBuffer<UpdateParams>> updateParamsBuffer_;
+
+	// CPU一時蓄積データ
 	std::string name_{};
 	ParticleBehavior behavior_;
 	MaterialData material_{};
-	std::list<ParticleData> particles_;
+	std::vector<ParticleEmitRequest> emitRequests_;
 	std::vector<IParticleField*> fields_; // 適用するフィールドのポインタ配列
 	// テクスチャハンドル
 	D3D12_GPU_DESCRIPTOR_HANDLE textureHandle_{};
@@ -120,4 +166,14 @@ private:
 
 	// 形状切り替え用
 	std::unique_ptr<IParticleMesh> mesh_;
+
+	// CS用の静的パイプライン
+	static ComPtr<ID3D12RootSignature> sInitRootSignature_;
+	static ComPtr<ID3D12PipelineState> sInitPSO_;
+	static ComPtr<ID3D12RootSignature> sEmitRootSignature_;
+	static ComPtr<ID3D12PipelineState> sEmitPSO_;
+	static ComPtr<ID3D12RootSignature> sUpdateRootSignature_;
+	static ComPtr<ID3D12PipelineState> sUpdatePSO_;
+	static ComPtr<ID3D12RootSignature> sClearRootSignature_;
+	static ComPtr<ID3D12PipelineState> sClearPSO_;
 };

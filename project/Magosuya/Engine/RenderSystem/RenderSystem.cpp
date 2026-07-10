@@ -8,6 +8,23 @@
 void RenderSystem::Initialize(DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
 	commandList_ = dxCommon->GetCommandList();
+
+	// コマンドシグネチャの作成 (DrawIndexed用)
+	D3D12_INDIRECT_ARGUMENT_DESC argumentDesc = {};
+	argumentDesc.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW_INDEXED;
+
+	D3D12_COMMAND_SIGNATURE_DESC signatureDesc = {};
+	signatureDesc.ByteStride = 20; // sizeof(D3D12_DRAW_INDEXED_ARGUMENTS) は 20 バイト
+	signatureDesc.NumArgumentDescs = 1;
+	signatureDesc.pArgumentDescs = &argumentDesc;
+	signatureDesc.NodeMask = 0;
+
+	HRESULT hr = dxCommon_->GetDevice()->CreateCommandSignature(
+		&signatureDesc,
+		nullptr,
+		IID_PPV_ARGS(&indirectCommandSignature_)
+	);
+	assert(SUCCEEDED(hr));
 }
 
 void RenderSystem::PushCommand(const RenderCommand& command) {
@@ -61,7 +78,19 @@ void RenderSystem::ExecuteCommands() {
 		}
 
 		// 描画！
-		commandList_->DrawIndexedInstanced(cmd.indexCount, cmd.instanceCount, 0, 0, 0);
+		if (cmd.useIndirect) {
+			assert(cmd.indirectArgumentBuffer != nullptr);
+			commandList_->ExecuteIndirect(
+				indirectCommandSignature_.Get(),
+				1,
+				cmd.indirectArgumentBuffer,
+				0,
+				nullptr,
+				0
+			);
+		} else {
+			commandList_->DrawIndexedInstanced(cmd.indexCount, cmd.instanceCount, 0, 0, 0);
+		}
 	}
 }
 
