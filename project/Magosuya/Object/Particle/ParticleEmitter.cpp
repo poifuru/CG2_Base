@@ -44,7 +44,7 @@ void ParticleEmitter::ImGui() {
 	ImGui::DragFloat3("Rotate", &emitterData_.transform.rotate.x, 0.01f);
 	ImGui::DragFloat3("Translate", &emitterData_.transform.translate.x, 0.01f);
 	int tempCount = static_cast<int>(emitterData_.count);
-	if(ImGui::DragInt("Emit Count", &tempCount, 1, 0, 100)) {
+	if(ImGui::DragInt("Emit Count", &tempCount, 1, 0, 10000)) {
 		emitterData_.count = tempCount;
 	}
 	ImGui::DragFloat("Frequency", &emitterData_.frequency, 0.01f, 0.0f, 180.0f);

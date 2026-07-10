@@ -2,8 +2,8 @@
     "emitters": [
         {
             "emitterData": {
-                "count": 1,
-                "frequency": 1.0,
+                "count": 10000,
+                "frequency": 0.009999999776482582,
                 "rotate": [
                     0.0,
                     0.0,
@@ -35,11 +35,11 @@
                 "isRandomRotate": false,
                 "isRandomScale": false,
                 "isRandomTranslate": false,
-                "isRandomVelocity": false,
+                "isRandomVelocity": true,
                 "maxColor": [
                     1.0,
-                    1.0,
-                    1.0,
+                    0.0,
+                    0.0,
                     1.0
                 ],
                 "maxLifeTime": 3.0,
@@ -86,9 +86,9 @@
                     0.0
                 ],
                 "minVelocity": [
-                    0.0,
-                    0.0,
-                    0.0
+                    -1.0,
+                    -1.0,
+                    -1.0
                 ],
                 "rotate": [
                     1.5700000524520874,
@@ -112,8 +112,8 @@
                 ]
             },
             "name": "Group_0",
-            "primitiveType": "Cylinder",
-            "texturePath": "Resources/Particle/gradationLine.png",
+            "primitiveType": "Quad",
+            "texturePath": "Resources/Particle/circle2.png",
             "useBillboard": false
         }
     ]
