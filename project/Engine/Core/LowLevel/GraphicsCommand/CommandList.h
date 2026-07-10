@@ -22,18 +22,6 @@ namespace MyEngine::LowLevel {
 		void Reset();
 
 		/// <summary>
-		/// バリアの変更
-		/// </summary>
-		/// <param name="resource"></param>
-		/// <param name="stateBefore"></param>
-		/// <param name="stateAfter"></param>
-		void TransitionBarrier(
-			ID3D12Resource* resource,
-			D3D12_RESOURCE_STATES stateBefore,
-			D3D12_RESOURCE_STATES stateAfter
-		);
-
-		/// <summary>
 		/// レンダーターゲットをクリア
 		/// </summary>
 		/// <param name="rtvHandle"></param>

@@ -9,10 +9,8 @@
 #include "CommandList.h"
 #include "SwapChain.h"
 #include "DescriptorHeapManager.h"
-
-#include "CameraOrganizer.h"
-#include "MainCameraComponent.h"
 #include "LogManager.h"
+#include "Function.h"
 
 MyEngine::LowLevel::Engine::Engine() = default;
 MyEngine::LowLevel::Engine::~Engine() {
@@ -68,7 +66,7 @@ void MyEngine::LowLevel::Engine::BeginFrame(
 #ifdef USEIMGUI
 	// RenderTextureをレンダーターゲットに設定
 	ID3D12GraphicsCommandList* cmdList = cmdList_->GetCommandList();
-	cmdList_->TransitionBarrier(renderTexResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	MyEngine::Utility::TransitionBarrier(cmdList, renderTexResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = renderTexDescriptorHandle;
 	float clearColor[] = { 0.14f, 0.14f, 0.14f, 1.0f };
@@ -95,36 +93,8 @@ void MyEngine::LowLevel::Engine::EndFrame() {
 	InputManager::GetInstance()->EndFrame();
 }
 
-void MyEngine::LowLevel::Engine::PreImGui() {
-	D3D12_VIEWPORT viewport{};
-	viewport.Width = static_cast<float>(WindowsAPI::GetInstance()->GetWindowWidth());
-	viewport.Height = static_cast<float>(WindowsAPI::GetInstance()->GetWindowHeight());
-	viewport.TopLeftX = 0.0f;
-	viewport.TopLeftY = 0.0f;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-
-	D3D12_RECT scissorRect{};
-	scissorRect.left = 0;
-	scissorRect.top = 0;
-	scissorRect.right = WindowsAPI::GetInstance()->GetWindowWidth();
-	scissorRect.bottom = WindowsAPI::GetInstance()->GetWindowHeight();
-
-	ID3D12GraphicsCommandList* cmdList = cmdList_->GetCommandList();
-	cmdList->RSSetViewports(1, &viewport);
-	cmdList->RSSetScissorRects(1, &scissorRect);
-
-	// カメラ座標を取得して RenderSystem に設定
-	Vector3 cameraPos = CameraOrganizer::GetInstance()->GetCameraData().transform.translate;
-	renderSystem_->SetCameraPosition(cameraPos);
-
-	renderSystem_->ExecuteCommands(cmdList);
-	renderSystem_->ClearCommands();
-
+void MyEngine::LowLevel::Engine::BeginSwapChainRender() {
 #ifdef USEIMGUI
-	// RenderTextureへの描画が終わったのでSRVに遷移
-	cmdList_->TransitionBarrier(renderTexture_->GetResource(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-
 	// SwapChainの準備 (ImGuiの描画先)
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
 	swapChain_->BeginRender(cmdList_.get(), clearColor);
@@ -140,14 +110,26 @@ void MyEngine::LowLevel::Engine::ExecuteCommandList() {
 	cmdQueue_->SignalAndWait();
 }
 
-ID3D12Device* MyEngine::LowLevel::Engine::GetDevice() {
-	return device_->GetDevice();
+MyEngine::LowLevel::GraphicsDevice* MyEngine::LowLevel::Engine::GetGraphicsDevice() {
+	return device_.get();
 }
 
 ID3D12GraphicsCommandList* MyEngine::LowLevel::Engine::GetCommandList() {
-	return cmdList_->GetCommandList();
+	return cmdList_->GetCommandList();;
 }
 
 ID3D12CommandQueue* MyEngine::LowLevel::Engine::GetCommandQueue() {
 	return cmdQueue_->GetCommandQueue();
+}
+
+IDxcUtils* MyEngine::LowLevel::Engine::GetDxcUtils() {
+	return dxcCompiler_->GetDxcUtils();
+}
+
+IDxcCompiler3* MyEngine::LowLevel::Engine::GetDxcCompiler() {
+	return dxcCompiler_->GetDxcCompiler();
+}
+
+IDxcIncludeHandler* MyEngine::LowLevel::Engine::GetIncludeHandler() {
+	return dxcCompiler_->GetIncludeHandler();
 }

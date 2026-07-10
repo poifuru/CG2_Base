@@ -3,16 +3,22 @@
 #include <imgui.h>
 #include "RenderTexture.h"
 #include "DescriptorHeapManager.h"
-#include "Engine.h"
+#include "Renderer.h"
 
-void EditorManager::UpdateAndDraw(MyEngine::LowLevel::Engine* engine) {
+void EditorManager::UpdateAndDraw(
+	MyEngine::LowLevel::DescriptorHeapManager* heapManager,
+	MyEngine::Rendering::RenderTexture* renderTexture
+) {
 #ifdef USEIMGUI
 	// 各ウィンドウを順番に描画していく
-	DrawGameWindow(engine);
+	DrawGameWindow(heapManager, renderTexture);
 #endif
 }
 
-void EditorManager::DrawGameWindow(MyEngine::LowLevel::Engine* engine) {
+void EditorManager::DrawGameWindow(
+	MyEngine::LowLevel::DescriptorHeapManager* heapManager,
+	MyEngine::Rendering::RenderTexture* renderTexture
+) {
 	// ギズモ操作中はウィンドウが動かないようにする
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_None;
 	if (isGizmoActive_) {
@@ -40,10 +46,9 @@ void EditorManager::DrawGameWindow(MyEngine::LowLevel::Engine* engine) {
 	isGameWindowHovered_ = isHovered || isGameWindowDragging_;
 
 	// RenderTextureのSRVからGPUハンドルを取得
-	RenderTexture* renderTexture = engine->GetRenderTexture();
 	if (renderTexture) {
 		uint32_t srvIndex = renderTexture->GetSrvIndex();
-		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = engine->GetDescriptorHeapManager()->GetGpuHandle(srvIndex);
+		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = heapManager->GetGpuHandle(srvIndex);
 
 		// ウィンドウの大きさに合わせてゲーム画面を描画
 		ImVec2 contentSize = ImGui::GetContentRegionAvail();

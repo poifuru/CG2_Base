@@ -1,7 +1,7 @@
 #include "PCH.h"
 #include "SwapChain.h"
 #include "CommandList.h"
-#include "function.h"
+#include "Function.h"
 
 MyEngine::LowLevel::SwapChain::SwapChain() = default;
 
@@ -79,7 +79,7 @@ void MyEngine::LowLevel::SwapChain::Initialize(
 	}
 
 	// 深度バッファの作成
-	depthBuffer_ = CreateDepthStencilTextureResource(d3dDevice.Get(), width, height);
+	depthBuffer_ = MyEngine::Utility::CreateDepthStencilTextureResource(d3dDevice.Get(), width, height);
 
 	// DSV用ディスクリプタヒープの作成
 	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc{};
@@ -108,7 +108,7 @@ void MyEngine::LowLevel::SwapChain::BeginRender(MyEngine::LowLevel::CommandList*
 	ID3D12Resource* backBuffer = GetBackBufferResource(bbIndex);
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = GetRtvHandle(bbIndex);
 
-	cmdList->TransitionBarrier(backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	MyEngine::Utility::TransitionBarrier(cmdList->GetCommandList(), backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	cmdList->SetRenderTargets(rtvHandle, &dsvHandle_);
 	cmdList->ClearRenderTarget(rtvHandle, clearColor);
 	cmdList->ClearDepthBuffer(dsvHandle_, 1.0f);
@@ -118,5 +118,5 @@ void MyEngine::LowLevel::SwapChain::EndRender(MyEngine::LowLevel::CommandList* c
 	uint32_t bbIndex = GetCurrentBackBufferIndex();
 	ID3D12Resource* backBuffer = GetBackBufferResource(bbIndex);
 
-	cmdList->TransitionBarrier(backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	MyEngine::Utility::TransitionBarrier(cmdList->GetCommandList(), backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 }

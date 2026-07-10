@@ -18,14 +18,36 @@ namespace MyEngine::LowLevel {
 		Engine();
 		~Engine();
 
+		/// <summary>
+		/// 初期化
+		/// </summary>
 		void Initialize();
+
+		/// <summary>
+		/// ウィンドウからのメッセージを処理する
+		/// </summary>
+		/// <returns></returns>
 		bool ProcessMessage();
+
+		/// <summary>
+		/// 描画前処理
+		/// </summary>
+		/// <param name="renderTexResource"></param>
+		/// <param name="renderTexDescriptorHandle"></param>
 		void BeginFrame(
 			ID3D12Resource* renderTexResource,
 			D3D12_CPU_DESCRIPTOR_HANDLE renderTexDescriptorHandle
 		);
+
+		/// <summary>
+		/// 描画後処理
+		/// </summary>
 		void EndFrame();
-		void PreImGui();
+
+		/// <summary>
+		/// ImGui描画前処理
+		/// </summary>
+		void BeginSwapChainRender();
 
 		// コマンド制御
 		void ResetCommandList();
@@ -33,10 +55,14 @@ namespace MyEngine::LowLevel {
 
 		// 低レイヤーアクセッサ
 		ID3D12Device* GetDevice();
-		MyEngine::LowLevel::GraphicsDevice* GetGraphicsDevice() { return device_.get(); }
-		MyEngine::LowLevel::DescriptorHeapManager* GetDescriptorHeapManager() { return heapManager_.get(); }
+		MyEngine::LowLevel::GraphicsDevice* GetGraphicsDevice();
 		ID3D12GraphicsCommandList* GetCommandList();
 		ID3D12CommandQueue* GetCommandQueue();
+		IDxcUtils* GetDxcUtils();
+		IDxcCompiler3* GetDxcCompiler();
+		IDxcIncludeHandler* GetIncludeHandler();
+
+		MyEngine::LowLevel::DescriptorHeapManager* GetDescriptorHeapManager() { return heapManager_.get(); }
 
 	private:
 		LeakChecker leakCheck_{};

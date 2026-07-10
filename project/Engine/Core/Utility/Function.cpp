@@ -1,10 +1,10 @@
 #include "PCH.h"
-#include "function.h"
+#include "Function.h"
 #include "LogManager.h"
 #include "String.h"
 
 //クラッシュハンドルを登録するための関数
-LONG WINAPI ExportDump(EXCEPTION_POINTERS* exception) {
+LONG WINAPI MyEngine::Utility::ExportDump(EXCEPTION_POINTERS* exception) {
 	//時刻を取得して、時刻を名前に入れたファイルを作成。Dumpsディレクトリ以下に出力
 	SYSTEMTIME time;
 	GetLocalTime(&time);
@@ -27,7 +27,7 @@ LONG WINAPI ExportDump(EXCEPTION_POINTERS* exception) {
 }
 
 //DepthStencilTexture作成関数
-Microsoft::WRL::ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height) {
+Microsoft::WRL::ComPtr<ID3D12Resource> MyEngine::Utility::CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height) {
 	//生成するResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Width = width;		//Textureの幅
@@ -60,4 +60,20 @@ Microsoft::WRL::ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(ID3D12D
 	assert(SUCCEEDED(hr));
 
 	return resource;
+}
+
+void MyEngine::Utility::TransitionBarrier(
+	ID3D12GraphicsCommandList* cmdList, 
+	ID3D12Resource* resource,
+	D3D12_RESOURCE_STATES stateBefore,
+	D3D12_RESOURCE_STATES stateAfter
+) {
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = resource;
+	barrier.Transition.StateBefore = stateBefore;
+	barrier.Transition.StateAfter = stateAfter;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	cmdList->ResourceBarrier(1, &barrier);
 }

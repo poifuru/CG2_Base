@@ -4,7 +4,7 @@
 #include "WindowsAPI.h"
 #include <cassert>
 
-void RenderTexture::Initialize(ID3D12Device* device, MyEngine::LowLevel::DescriptorHeapManager* heapManager) {
+void MyEngine::Rendering::RenderTexture::Initialize(ID3D12Device* device, MyEngine::LowLevel::DescriptorHeapManager* heapManager) {
 	// オフスクリーンレンダリング用のクリアカラー
 	const Vector4 kRenderTargetClearValue{ 0.14f, 0.14f, 0.14f, 1.0f }; // SwapChainのClear色と合わせる
 
@@ -45,7 +45,7 @@ void RenderTexture::Initialize(ID3D12Device* device, MyEngine::LowLevel::Descrip
 	heapManager->CreateSRVforTexture2D(srvIndex_, resource_.Get(), srvDesc);
 }
 
-Microsoft::WRL::ComPtr<ID3D12Resource> RenderTexture::CreateRenderTextureResource(ID3D12Device* device, uint32_t width, uint32_t height, DXGI_FORMAT format, const Vector4& clearColor) {
+Microsoft::WRL::ComPtr<ID3D12Resource> MyEngine::Rendering::RenderTexture::CreateRenderTextureResource(ID3D12Device* device, uint32_t width, uint32_t height, DXGI_FORMAT format, const Vector4& clearColor) {
 	// Resourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;

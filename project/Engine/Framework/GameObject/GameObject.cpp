@@ -28,7 +28,7 @@ void GameObject::Update() {
 	}
 }
 
-void GameObject::Draw(class RenderSystem* renderSystem) {
+void GameObject::Draw(MyEngine::Rendering::RenderSystem* renderSystem) {
 	for (auto& component : components_) {
 		component->Draw(renderSystem);
 	}

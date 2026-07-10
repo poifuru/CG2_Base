@@ -4,6 +4,10 @@ using json = nlohmann::json;
 class Component;
 struct SceneContext;
 
+namespace MyEngine::Rendering {
+	class RenderSystem;
+}
+
 class GameObject {
 public:
 	GameObject(SceneContext* context, const std::string& name = "GameObject");
@@ -11,7 +15,7 @@ public:
 
 	void Initialize();
 	void Update();
-	void Draw(class RenderSystem* renderSystem);
+	void Draw(MyEngine::Rendering::RenderSystem* renderSystem);
 	void ImGui();
 
 	// シリアライズ用

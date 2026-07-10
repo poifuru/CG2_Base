@@ -3,6 +3,10 @@ using json = nlohmann::json;
 
 class GameObject;
 
+namespace MyEngine::Rendering {
+	class RenderSystem;
+}
+
 class Component {
 public:
 	Component() = default;
@@ -11,7 +15,7 @@ public:
 	// 基本ライフサイクル
 	virtual void Initialize() {}
 	virtual void Update() {}
-	virtual void Draw(class RenderSystem* renderSystem) {}
+	virtual void Draw(MyEngine::Rendering::RenderSystem* renderSystem) {}
 	virtual void ImGui() {}
 
 	// Jsonへの書き出し

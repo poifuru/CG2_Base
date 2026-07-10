@@ -1,7 +1,11 @@
 #pragma once
 
 namespace MyEngine::LowLevel {
-	class Engine;
+	class DescriptorHeapManager;
+}
+
+namespace MyEngine::Rendering {
+	class RenderTexture;
 }
 
 class EditorManager {
@@ -13,7 +17,10 @@ public:
 	~EditorManager() = default;
 
 	// 毎フレームImGuiManagerで呼び出す
-	void UpdateAndDraw(MyEngine::LowLevel::Engine* engine);
+	void UpdateAndDraw(
+		MyEngine::LowLevel::DescriptorHeapManager* heapManager,
+		MyEngine::Rendering::RenderTexture* renderTexture
+	);
 
 	// 外部がゲーム画面の状態を知るためのゲッター
 	bool IsGameWindowHovered() const { return isGameWindowHovered_; }
@@ -29,7 +36,10 @@ private:
 	EditorManager& operator=(const EditorManager&) = delete;
 
 	// 各ウィンドウの描画関数を小分けにする
-	void DrawGameWindow(MyEngine::LowLevel::Engine* engine);
+	void DrawGameWindow(
+		MyEngine::LowLevel::DescriptorHeapManager* heapManager,
+		MyEngine::Rendering::RenderTexture* renderTexture
+	);
 
 private:
 	bool isGameWindowHovered_ = false;

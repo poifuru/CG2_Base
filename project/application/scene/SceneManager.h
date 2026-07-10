@@ -27,11 +27,11 @@ public:
 	);
 
 	void Update(CameraData* cameraData);
-	void Draw(class RenderSystem* renderSystem);
+	void Draw(MyEngine::Rendering::RenderSystem* renderSystem);
 	void DrawUI();
 
-	RenderSystem* GetRenderSystem() { return renderSys_; }
-	void SetRenderSystem(RenderSystem* renderSystem) { renderSys_ = renderSystem; }
+	MyEngine::Rendering::RenderSystem* GetRenderSystem() { return renderSys_; }
+	void SetRenderSystem(MyEngine::Rendering::RenderSystem* renderSystem) { renderSys_ = renderSystem; }
 
 	// シーン遷移用のテンプレート関数
 	template <typename T>
@@ -55,5 +55,5 @@ private:
 	SceneContext context_;
 
 	// RenderSystemのポインタを借りる
-	RenderSystem* renderSys_ = nullptr;
+	MyEngine::Rendering::RenderSystem* renderSys_ = nullptr;
 };

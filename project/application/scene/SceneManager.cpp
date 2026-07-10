@@ -29,7 +29,7 @@ void SceneManager::Update(CameraData* cameraData) {
 	}
 }
 
-void SceneManager::Draw(RenderSystem* renderSystem) {
+void SceneManager::Draw(MyEngine::Rendering::RenderSystem* renderSystem) {
 	if (currentScene_) {
 		currentScene_->Draw(renderSystem);
 	}

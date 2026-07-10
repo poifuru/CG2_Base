@@ -1,15 +1,24 @@
 #include "PCH.h"
 #include "Game.h"
 #include "Engine.h"
+#include "Renderer.h"
 #include "PlayScene.h"
 #include "CameraOrganizer.h"
 #include "ImGuiManager.h"
-
-#pragma comment(lib, "DirectXTex.lib")
+#include "RenderTexture.h"
 
 Game::Game() {
 	engine_ = std::make_unique<MyEngine::LowLevel::Engine>();
 	engine_->Initialize();
+
+	renderer_ = std::make_unique<MyEngine::Rendering::Renderer>();
+	renderer_->Initialize(
+		engine_->GetDevice(),
+		engine_->GetDxcUtils(),
+		engine_->GetDxcCompiler(),
+		engine_->GetIncludeHandler(),
+		engine_->GetDescriptorHeapManager()
+	);
 
 	// ロード用コマンドリストをリセットしてロード開始
 	engine_->ResetCommandList();
@@ -23,18 +32,22 @@ Game::Game() {
 		engine_->GetGraphicsDevice(),
 		engine_->GetCommandList(),
 		engine_->GetDescriptorHeapManager(),
-		&engine_->GetShaderManager()
+		renderer_->GetShaderManager()
 	);
 
-	// 初期シーンにPlayScene（三角形を描画するデモシーン）を設定
+	// 初期シーンの設定
 	sceneManager_->ChangeScene<PlayScene>();
-	sceneManager_->SetRenderSystem(engine_->GetRenderSystem());
+	sceneManager_->SetRenderSystem(renderer_->GetRenderSystem());
 
 	// コマンドリストを実行し、GPUのアップロード完了を待つ
 	engine_->ExecuteCommandList();
 
 	// ImGuiの初期化
-	ImGuiManager::GetInstance()->Initialize(engine_.get());
+	ImGuiManager::GetInstance()->Initialize(
+		engine_->GetDevice(),
+		engine_->GetCommandQueue(),
+		engine_->GetDescriptorHeapManager()
+	);
 }
 
 Game::~Game() {
@@ -50,21 +63,30 @@ void Game::Run() {
 		}
 
 		// ImGui 新しいフレーム開始
-		ImGuiManager::GetInstance()->BeginFrame();
+		ImGuiManager::GetInstance()->BeginFrame(
+			engine_->GetDescriptorHeapManager(),
+			renderer_->GetRenderTexture()
+		);
 
 		//フレーム開始
-		engine_->BeginFrame();
+		engine_->BeginFrame(
+			renderer_->GetRenderTexture()->GetResource(),
+			renderer_->GetRenderTexture()->GetDescriptorHandle()
+		);
 
+		// シーンの更新
 		sceneManager_->Update(&CameraOrganizer::GetInstance()->GetCameraData());
-
 		// シーンの描画コマンドの積み込み
-		sceneManager_->Draw(engine_->GetRenderSystem());
+		sceneManager_->Draw(renderer_->GetRenderSystem());
 
-		// シーン描画の実行とSwapChainへの切り替え
-		engine_->PreImGui();
+		// rendererで実際に描画
+		renderer_->RenderScene(engine_->GetCommandList());
+
+		// SwapChainの切り替え(USEIMGUI時)
+		engine_->BeginSwapChainRender();
 
 		// ImGuiの描画コマンド積み込み
-		ImGuiManager::GetInstance()->Draw();
+		ImGuiManager::GetInstance()->Draw(engine_->GetCommandList());
 
 		//フレーム終了
 		engine_->EndFrame();

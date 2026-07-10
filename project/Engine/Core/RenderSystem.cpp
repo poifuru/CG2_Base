@@ -5,7 +5,7 @@
 #include "ShaderManager.h"
 #include "LightManager.h"
 
-void RenderSystem::Initialize(
+void MyEngine::Rendering::RenderSystem::Initialize(
 	ID3D12Device* device,
 	MyEngine::LowLevel::DescriptorHeapManager* heapManager,
 	PSOManager* psoManager,
@@ -25,22 +25,22 @@ void RenderSystem::Initialize(
 	cameraBuffer_.Initialize(device);
 }
 
-void RenderSystem::PushCommand(const RenderCommand& command) {
+void MyEngine::Rendering::RenderSystem::PushCommand(const RenderCommand& command) {
 	commandQueue_.push_back(command);
 }
 
-void RenderSystem::SetCameraPosition(const Vector3& cameraPos) {
+void MyEngine::Rendering::RenderSystem::SetCameraPosition(const Vector3& cameraPos) {
 	CameraForGPU gpuData{};
 	gpuData.worldPosition = cameraPos;
 	gpuData.padding = 0.0f;
 	cameraBuffer_.Update(gpuData);
 }
 
-void RenderSystem::SetLightManager(LightManager* lightManager) {
+void MyEngine::Rendering::RenderSystem::SetLightManager(LightManager* lightManager) {
 	activeLightManager_ = lightManager;
 }
 
-void RenderSystem::WriteCommandList(ID3D12GraphicsCommandList* cmdList) {
+void MyEngine::Rendering::RenderSystem::WriteCommandList(ID3D12GraphicsCommandList* cmdList) {
 	// レイヤー順（不透明・半透明）にソート
 	std::sort(commandQueue_.begin(), commandQueue_.end(), [](const RenderCommand& a, const RenderCommand& b) {
 		return a.layer < b.layer;
@@ -100,7 +100,7 @@ void RenderSystem::WriteCommandList(ID3D12GraphicsCommandList* cmdList) {
 	}
 }
 
-void RenderSystem::ClearCommands() {
+void MyEngine::Rendering::RenderSystem::ClearCommands() {
 	commandQueue_.clear();
 	activeLightManager_ = nullptr;
 }

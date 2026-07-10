@@ -143,7 +143,7 @@ void PlayScene::Update(CameraData* cameraData) {
 #endif
 }
 
-void PlayScene::Draw(RenderSystem* renderSystem) {
+void PlayScene::Draw(MyEngine::Rendering::RenderSystem* renderSystem) {
 	// ライトマネージャーを RenderSystem に登録
 	if (lightManager_ && renderSystem) {
 		renderSystem->SetLightManager(lightManager_.get());

@@ -1,7 +1,11 @@
 #pragma once
 
 namespace MyEngine::LowLevel {
-	class Engine;
+	class DescriptorHeapManager;
+}
+
+namespace MyEngine::Rendering {
+	class RenderTexture;
 }
 
 class ImGuiManager {
@@ -12,15 +16,38 @@ public:
 	}
 	~ImGuiManager();
 
-	void Initialize(MyEngine::LowLevel::Engine* engine);
-	void Finalize();
-	void Draw();
-	void BeginFrame();
+	void Initialize(
+		ID3D12Device* device,
+		ID3D12CommandQueue* cmdQueue,
+		MyEngine::LowLevel::DescriptorHeapManager* heapManager
+	);
 
-	MyEngine::LowLevel::Engine* GetEngine() const { return engine_; }
+	void Finalize();
+
+	void Draw(ID3D12GraphicsCommandList* cmdList);
+
+	void BeginFrame(
+		MyEngine::LowLevel::DescriptorHeapManager* heapManager,
+		MyEngine::Rendering::RenderTexture* renderTexture
+	);
 
 private:
-	void RenderDockingSpace();
+	void RenderDockingSpace(
+		MyEngine::LowLevel::DescriptorHeapManager* heapManager,
+		MyEngine::Rendering::RenderTexture* renderTexture
+	);
+
+	// コールバック用の静的メンバ関数
+	static void AllocDescriptor(
+		ImGui_ImplDX12_InitInfo* info, 
+		D3D12_CPU_DESCRIPTOR_HANDLE* out_cpu_desc_handle, 
+		D3D12_GPU_DESCRIPTOR_HANDLE* out_gpu_desc_handle
+	);
+	static void FreeDescriptor(
+		ImGui_ImplDX12_InitInfo* info, 
+		D3D12_CPU_DESCRIPTOR_HANDLE cpu_desc_handle, 
+		D3D12_GPU_DESCRIPTOR_HANDLE gpu_desc_handle
+	);
 
 private:
 	ImGuiManager() = default;
@@ -28,7 +55,5 @@ private:
 	ImGuiManager& operator=(const ImGuiManager&) = delete;
 	ImGuiManager(ImGuiManager&&) = delete;
 	ImGuiManager& operator=(ImGuiManager&&) = delete;
-
-	MyEngine::LowLevel::Engine* engine_ = nullptr;
 };
 

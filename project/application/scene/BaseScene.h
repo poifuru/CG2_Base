@@ -6,10 +6,14 @@ class ShaderManager;
 class ModelManager;
 struct CameraData;
 class GameObject;
-class RenderSystem;
+
 namespace MyEngine::LowLevel {
 	class GraphicsDevice;
 	class DescriptorHeapManager;
+}
+
+namespace MyEngine::Rendering {
+	class RenderSystem;
 }
 
 // シーンで必要になる高レベルマネージャーや低レイヤー参照のポインタを束ねた薄い構造体
@@ -37,15 +41,15 @@ public:
 		context_ = context;
 	}
 
-	void SetRenderSystem(RenderSystem* renderSystem) { renderSys_ = renderSystem; }
+	void SetRenderSystem(MyEngine::Rendering::RenderSystem* renderSystem) { renderSys_ = renderSystem; }
 
 	virtual void Initialize () = 0;
 	virtual void Update (CameraData* cameraData) = 0;
-	virtual void Draw (class RenderSystem* renderSystem) = 0;
+	virtual void Draw (MyEngine::Rendering::RenderSystem* renderSystem) = 0;
 	virtual void DrawUI () {}
 
 protected:
 	// 借りてきたポインタ群
 	SceneContext* context_ = nullptr;
-	RenderSystem* renderSys_ = nullptr;
+	MyEngine::Rendering::RenderSystem* renderSys_ = nullptr;
 };
