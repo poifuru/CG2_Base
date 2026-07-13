@@ -11,6 +11,10 @@ struct Emitter {
 };
 
 // 前方宣言
+namespace MyEngine::Rendering {
+	class Renderer;
+}
+
 struct Particle;
 struct ParticleConfig;
 
@@ -21,7 +25,7 @@ class EmitterComponent : public Component {
 	// 基本ライフサイクル
 	void Initialize() override;
 	void Update() override;
-	void Draw(class RenderSystem* renderSystem) override;
+	void Draw(MyEngine::Rendering::Renderer* renderer) override;
 	void ImGui() override;
 
 	// Jsonへの書き出し

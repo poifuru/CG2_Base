@@ -76,15 +76,14 @@ void MyEngine::Rendering::RenderSystem::WriteCommandList(ID3D12GraphicsCommandLi
 	for (const auto& cmd : commandQueue_) {
 
 		// 直前と同じパイプライン（PSO）なら、切り替え（SetPipelineState）をスキップ
-		ID3D12PipelineState* currentPSO = psoManager_->GetOrCreatePSO(
-			device_, cmd.psoDesc, commonRootSignature_, *shaderManager_, *inputLayoutManager_, *blendModeManager_
-		);
-		if (currentPSO != lastPSO) {
+		ID3D12PipelineState* currentPSO = cmd.pso;
+
+		if (currentPSO && currentPSO != lastPSO) {
 			cmdList->SetPipelineState(currentPSO);
 			lastPSO = currentPSO;
 		}
 
-		// メッシュ（三角形）のバインド
+		// メッシュのバインド
 		cmdList->IASetVertexBuffers(0, 1, &cmd.vbView);
 		cmdList->IASetIndexBuffer(&cmd.ibv);
 
@@ -95,7 +94,7 @@ void MyEngine::Rendering::RenderSystem::WriteCommandList(ID3D12GraphicsCommandLi
 		uint32_t indices[2] = { cmd.materialIndex, cmd.textureIndex };
 		cmdList->SetGraphicsRoot32BitConstants(1, 2, indices, 0);
 
-		// ドローコール！
+		// ドローコール
 		cmdList->DrawIndexedInstanced(cmd.indexCount, 1, 0, 0, 0);
 	}
 }

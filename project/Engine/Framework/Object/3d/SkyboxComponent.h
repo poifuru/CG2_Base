@@ -10,6 +10,11 @@
 #include "ConstantBuffer.h"
 #include "TransformMatrixData.h"
 
+// 前方宣言
+namespace MyEngine::Rendering {
+	struct PSODescriptor;
+}
+
 struct SkyboxVertex {
 	Vector4 position;
 };
@@ -21,7 +26,7 @@ public:
 
 	void Initialize() override;
 	void Update() override;
-	void Draw(class RenderSystem* renderSystem) override;
+	void Draw(MyEngine::Rendering::Renderer* renderer) override;
 
 	void SetTexture(const std::string& filePath);
 	const std::string& GetTexturePath() const { return texturePath_; }
@@ -35,7 +40,7 @@ public:
 
 private:
 	// PSO
-	PSODescriptor desc_{};
+	MyEngine::Rendering::PSODescriptor desc_{};
 
 	// バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexBuffer_ = nullptr;

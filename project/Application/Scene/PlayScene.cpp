@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include "PlayScene.h"
+#include "Renderer.h"
 #include "RenderSystem.h"
 #include "CameraOrganizer.h"
 #include "LevelEditor.h"
@@ -143,14 +144,14 @@ void PlayScene::Update(CameraData* cameraData) {
 #endif
 }
 
-void PlayScene::Draw(MyEngine::Rendering::RenderSystem* renderSystem) {
+void PlayScene::Draw(MyEngine::Rendering::Renderer* renderer) {
 	// ライトマネージャーを RenderSystem に登録
-	if (lightManager_ && renderSystem) {
-		renderSystem->SetLightManager(lightManager_.get());
+	if (lightManager_ && renderer) {
+		renderer->GetRenderSystem()->SetLightManager(lightManager_.get());
 	}
 
 	for (auto& obj : gameObjects_) {
-		obj->Draw(renderSystem);
+		obj->Draw(renderer);
 	}
 }
 

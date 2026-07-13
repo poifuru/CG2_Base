@@ -40,7 +40,7 @@ void FishEnemyComponent::Update() {
 
 		// フェードアウト
 		if (auto* mesh = gameObject_->GetComponent<MeshRendererComponent>()) {
-			mesh->SetBlendMode(BlendModeType::Alpha);
+			mesh->SetBlendMode(MyEngine::Rendering::BlendModeType::Alpha);
 			mesh->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f - progress });
 		}
 		return;

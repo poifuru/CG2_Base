@@ -10,7 +10,14 @@ namespace MyEngine::LowLevel {
 	class DescriptorHeapManager;
 }
 
-class ShaderManager;
+namespace MyEngine::Rendering {
+	class Renderer;
+	class RootSignatureManager;
+	class PSOManager;
+	class ShaderManager;
+	class InputLayoutManager;
+	class BlendModeManager;
+}
 struct CameraData;
 
 class SceneManager {
@@ -23,22 +30,26 @@ public:
 		MyEngine::LowLevel::GraphicsDevice* graphicsDevice,
 		ID3D12GraphicsCommandList* cmdList,
 		MyEngine::LowLevel::DescriptorHeapManager* heapManager,
-		ShaderManager* shaderManager
+		MyEngine::Rendering::RootSignatureManager* rootSigManager, 
+		MyEngine::Rendering::PSOManager* psoManager,
+		MyEngine::Rendering::ShaderManager* shaderManager,
+		MyEngine::Rendering::InputLayoutManager* inputLayoutManager,
+		MyEngine::Rendering::BlendModeManager* blendModeManager
 	);
 
 	void Update(CameraData* cameraData);
-	void Draw(MyEngine::Rendering::RenderSystem* renderSystem);
+	void Draw(MyEngine::Rendering::Renderer* renderSystem);
 	void DrawUI();
 
-	MyEngine::Rendering::RenderSystem* GetRenderSystem() { return renderSys_; }
-	void SetRenderSystem(MyEngine::Rendering::RenderSystem* renderSystem) { renderSys_ = renderSystem; }
+	MyEngine::Rendering::Renderer* GetRenderer() { return renderer_; }
+	void SetRenderer(MyEngine::Rendering::Renderer* renderer) { renderer_ = renderer; }
 
 	// シーン遷移用のテンプレート関数
 	template <typename T>
 	void ChangeScene() {
 		auto nextScene = std::make_unique<T>();
 		nextScene->SetContext(&context_);
-		nextScene->SetRenderSystem(renderSys_);
+		nextScene->SetRenderer(renderer_);
 		nextScene->Initialize();
 		currentScene_ = std::move(nextScene);
 	}
@@ -55,5 +66,5 @@ private:
 	SceneContext context_;
 
 	// RenderSystemのポインタを借りる
-	MyEngine::Rendering::RenderSystem* renderSys_ = nullptr;
+	MyEngine::Rendering::Renderer* renderer_ = nullptr;
 };

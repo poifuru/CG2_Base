@@ -4,6 +4,7 @@
 #include "MeshRendererComponent.h"
 #include "ParticleComponent.h"
 #include "BaseScene.h"
+#include "BlendModeManager.h"
 #include <cstdlib>
 #include <cmath>
 
@@ -29,7 +30,7 @@ void ParticleSpawner::SpawnExplosion(SceneContext* context, const Vector3& posit
 		mesh->SetModel("Resources/plane/plane.obj");
 		mesh->SetTexture("Resources/ParticleAssets/circle2.png");
 		mesh->SetEnableLighting(false);
-		mesh->SetBlendMode(BlendModeType::Additive);
+		mesh->SetBlendMode(MyEngine::Rendering::BlendModeType::Additive);
 		mesh->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 
 		float theta = static_cast<float>(rand()) / RAND_MAX * 3.14159265f * 2.0f;
@@ -74,7 +75,7 @@ void ParticleSpawner::SpawnTrail(SceneContext* context, const Vector3& position,
 	mesh->SetModel("Resources/plane/plane.obj");
 	mesh->SetTexture("Resources/ParticleAssets/circle2.png"); // テスト用の circle2.png のままにしています
 	mesh->SetEnableLighting(false);
-	mesh->SetBlendMode(BlendModeType::Alpha);
+	mesh->SetBlendMode(MyEngine::Rendering::BlendModeType::Alpha);
 	mesh->SetColor({ 1.0f, 1.0f, 1.0f, 0.5f });
 
 	float randX = (static_cast<float>(rand()) / RAND_MAX - 0.5f) * 1.5f;

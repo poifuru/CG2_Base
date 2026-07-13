@@ -1,7 +1,9 @@
 #include "PCH.h"
 #include "Model.h"
+#include "Renderer.h"
 #include "RenderSystem.h"
 #include "RenderCommand.h"
+#include "InputLayoutManager.h"
 
 Model::Model() : BaseObject3d() {
 }
@@ -13,46 +15,20 @@ void Model::Initialize(ModelData* modelData) {
 	layer_ = 0; // 不透明
 }
 
-void Model::Draw(RenderSystem* renderSystem) {
-	if(!modelData_ || !renderSystem) return;
-
-	// マテリアルから各種IDを取得する
-	uint32_t vsID = 0;
-	uint32_t psID = 0;
-	uint32_t textureIndex = 0;
-	if (material_) {
-		vsID = material_->GetVsID();
-		psID = material_->GetPsID();
-		textureIndex = material_->GetTextureIndex();
-	}
+void Model::Draw(MyEngine::Rendering::Renderer* renderer) {
+	if(!modelData_ || !renderer) return;
 
 	for (size_t i = 0; i < modelData_->meshes.size(); ++i) {
-		// RenderCommandの組み立てと積み込み
-		RenderCommand cmd{};
-
-		cmd.psoDesc.VS_ID = vsID;
-		cmd.psoDesc.PS_ID = psID;
-		cmd.psoDesc.InputLayoutID = InputLayoutType::Standard3D;
-		cmd.psoDesc.BlendMode = blendMode_;
-		cmd.psoDesc.CullMode = D3D12_CULL_MODE_NONE; // 両面表示
-		cmd.psoDesc.DepthEnable = isDepthEnable_;
-
-		// メッシュ情報の設定
 		auto& mesh = modelData_->meshes[i];
-		cmd.vbView = mesh.vbView;
-		cmd.ibv = mesh.ibView;
-		cmd.indexCount = mesh.indexCount;
 
-		// バインドレスマテリアルのインデックスとテクスチャインデックスを設定
-		cmd.materialIndex = GetMaterialDescriptorIndex();
-		cmd.textureIndex = (textureIndex != 0) ? textureIndex : modelData_->defaultTextureIndices[i];
-		
-		// トランスフォームバッファのGPUアドレスを設定
-		cmd.transformGPUAddress = GetTransformGPUAddress();
-		
-		cmd.layer = layer_;
-
-		// コマンドを積む
-		renderSystem->PushCommand(cmd);
+		// ★抽象化された窓口(Submit)に、必要なデータとマテリアルを渡す
+		renderer->Submit(
+			mesh.vbView,
+			mesh.ibView,
+			mesh.indexCount,
+			GetTransformGPUAddress(),
+			material_.get(),
+			layer_
+		);
 	}
 }

@@ -3,7 +3,7 @@
 
 // 最初のゴール：マテリアル付き三角形のための最小限の構造体
 struct RenderCommand {
-	PSODescriptor psoDesc{};       // どのパイプラインで描画するか（VS/PSのIDなどが入る）
+	ID3D12PipelineState* pso = nullptr;
 
 	// メッシュ情報（三角形）
 	D3D12_VERTEX_BUFFER_VIEW vbView{};

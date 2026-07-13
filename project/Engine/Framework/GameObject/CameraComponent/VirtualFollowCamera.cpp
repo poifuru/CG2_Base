@@ -5,6 +5,7 @@
 #include "BaseScene.h" // SceneContextやGameObject検索用
 #include "InputManager.h"
 #include "RawInput.h"
+#include "GamePad.h"
 
 void VirtualFollowCamera::Update() {
 	if(target_ && gameObject_) {
@@ -15,11 +16,21 @@ void VirtualFollowCamera::Update() {
 			float sensitivity = 0.005f; // マウス感度
 			angleY_ += input->GetRawInput()->GetMouseDeltaX() * sensitivity;
 			angleX_ += input->GetRawInput()->GetMouseDeltaY() * sensitivity;
-
-			// 上下（Pitch）の回転角度を制限する（床抜けや頭頂部フリップを防ぐ。約-80度〜80度）
-			const float maxPitch = 80.0f * (3.14159265f / 180.0f);
-			angleX_ = std::clamp(angleX_, -maxPitch, maxPitch);
 		}
+
+		// ゲームパッドの右スティックでカメラの角度を更新する
+		if (input->GetGamePad()->IsConection()) {
+			Vector2 rStick = input->GetGamePad()->GetStick(LR::Right);
+			if (rStick.x != 0.0f || rStick.y != 0.0f) {
+				float padSensitivity = 0.03f; // パッド回転感度
+				angleY_ += rStick.x * padSensitivity;
+				angleX_ -= rStick.y * padSensitivity; // 上下ノーマル操作（引いて上、倒して下）
+			}
+		}
+
+		// 上下（Pitch）の回転角度を制限する（床抜けや頭頂部フリップを防ぐ。約-80度〜80度）
+		const float maxPitch = 80.0f * (3.14159265f / 180.0f);
+		angleX_ = std::clamp(angleX_, -maxPitch, maxPitch);
 		// 回転行列を作成して、オフセットを回転させる
 		Matrix4x4 rotX = Math::MakeRotateXMatrix(angleX_);
 		Matrix4x4 rotY = Math::MakeRotateYMatrix(angleY_);

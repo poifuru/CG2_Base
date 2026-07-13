@@ -13,7 +13,7 @@ public:
 
 	void Initialize() override;
 	void Update(CameraData* cameraData) override;
-	void Draw(MyEngine::Rendering::RenderSystem* renderSystem) override;
+	void Draw(MyEngine::Rendering::Renderer* renderer) override;
 
 private:
 	void CleanupObject();

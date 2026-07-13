@@ -5,13 +5,15 @@
 #include "BaseScene.h"
 #include "TextureManager.h"
 #include "ShaderManager.h"
+#include "Renderer.h"
 #include "RenderSystem.h"
 #include "MathFunction.h"
 #include "Material.h"
 #include "CameraOrganizer.h"
 #include "BaseCamera.h"
 #include "GraphicsDevice.h"
-#include <cassert>
+#include "BlendModeManager.h"
+#include "InputLayoutManager.h"
 
 namespace {
 	const uint32_t kVertexNum = 8;
@@ -115,16 +117,27 @@ void SkyboxComponent::Initialize() {
 
 	// マテリアルの生成と設定
 	material_ = std::make_shared<Material>();
-	material_->Initialize(context->graphicsDevice, context->heapManager);
-	material_->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-	material_->SetEnableLighting(FALSE);
+	material_->Initialize(context->graphicsDevice,
+						  context->heapManager,
+						  context->rootSigManager,
+						  context->psoManager,
+						  context->shaderManager,
+						  context->inputLayoutManager,
+						  context->blendModeManager
+	);
+	material_->SetShader(vsID_, psID_);
+	material_->SetBlendMode(MyEngine::Rendering::BlendModeType::Opaque);
+	material_->SetDoubleSided(true); // カリングを無効化（両面描画）
+	material_->SetInputLayout(MyEngine::Rendering::InputLayoutType::Skybox);
+	material_->SetDepthWrite(false); // 深度の書き込みをしない
+	material_->SetTextureIndex(textureIndex_);
 
 	// PSOの基本設定
 	desc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO; // 深度値の書き込みをしない！
 	desc_.VS_ID = vsID_;
 	desc_.PS_ID = psID_;
-	desc_.InputLayoutID = InputLayoutType::Skybox;
-	desc_.BlendMode = BlendModeType::Opaque;
+	desc_.InputLayoutID = MyEngine::Rendering::InputLayoutType::Skybox;
+	desc_.BlendMode = MyEngine::Rendering::BlendModeType::Opaque;
 	desc_.CullMode = D3D12_CULL_MODE_NONE; // 内側から見るためカリングを無効化
 
 	// デシリアライズ等でテクスチャパスが既に設定されていればロードする
@@ -157,23 +170,19 @@ void SkyboxComponent::Update() {
 	matrixBuffer_.Update(transformMatrixData);
 }
 
-void SkyboxComponent::Draw(RenderSystem* renderSystem) {
-	if (!renderSystem) return;
-
-	// テクスチャが未設定、もしくはまだロードされていない場合は描画をスキップしてGPUエラーを防ぐ
+void SkyboxComponent::Draw(MyEngine::Rendering::Renderer* renderer) {
+	if (!renderer) return;
+	// テクスチャが未設定、もしくはまだロードされていない場合は描画をスキップ
 	if (texturePath_.empty() || textureIndex_ == 0) return;
-
-	RenderCommand cmd{};
-	cmd.psoDesc = desc_;
-	cmd.vbView = vbv_;
-	cmd.ibv = ibv_;
-	cmd.indexCount = kIndexNum;
-	cmd.transformGPUAddress = matrixBuffer_.GetGPUVirtualAddress();
-	cmd.materialIndex = material_ ? material_->GetDescriptorIndex() : 0;
-	cmd.textureIndex = textureIndex_;
-	cmd.layer = 0; // 不透明（ソートで最初の方に描画される）
-
-	renderSystem->PushCommand(cmd);
+	
+	renderer->Submit(
+		vbv_,
+		ibv_,
+		kIndexNum,
+		matrixBuffer_.GetGPUVirtualAddress(),
+		material_.get(),
+		0 // layer = 0（不透明）
+	);
 }
 
 void SkyboxComponent::SetTexture(const std::string& filePath) {
@@ -184,6 +193,10 @@ void SkyboxComponent::SetTexture(const std::string& filePath) {
 	if (!context) return;
 
 	textureIndex_ = context->textureManager->LoadTexture(filePath);
+
+	if (material_) {
+		material_->SetTextureIndex(textureIndex_);
+	}
 }
 
 void SkyboxComponent::Serialize(json& j) const {

@@ -1,9 +1,7 @@
 #include "PCH.h"
 #include "RootSignatureManager.h"
-#include <cassert>
-#include <dxcapi.h>
 
-void RootSignatureManager::Initialize (ID3D12Device* device) {
+void MyEngine::Rendering::RootSignatureManager::Initialize (ID3D12Device* device) {
 	assert(device != nullptr);
 	HRESULT hr = S_OK;
 

@@ -2,8 +2,6 @@
 #include "BaseObject3d.h"
 #include "MeshData.h"
 
-class RenderSystem;
-
 class Model : public BaseObject3d {
 public:
 	Model();
@@ -12,7 +10,7 @@ public:
 	// アセットはファクトリーから直接流してもらう
 	void Initialize(ModelData* modelData);
 
-	void Draw(RenderSystem* renderSystem) override;
+	void Draw(MyEngine::Rendering::Renderer* renderSystem) override;
 
 	// モデルデータを外に渡せるように
 	ModelData* GetModelData() const { return modelData_; }

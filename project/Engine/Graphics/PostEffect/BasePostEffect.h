@@ -7,6 +7,10 @@ using namespace Microsoft::WRL;
 #include "RenderTexture.h"
 #include "struct.h"
 
+namespace MyEngine::Rendering {
+	struct PSODescriptor;
+}
+
 class DxCommon;
 class CameraOrganizer;
 
@@ -26,7 +30,7 @@ public:
 
 protected:
 	DxCommon* dxCommon_ = nullptr;
-	PSODescriptor psoDesc_{};
+	MyEngine::Rendering::PSODescriptor psoDesc_{};
 
 	// ポストエフェクトを有効にするかのフラグ
 	bool isActive_ = false;

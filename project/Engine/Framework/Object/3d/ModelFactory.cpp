@@ -11,12 +11,21 @@
 void ModelFactory::Initialize(
 	MyEngine::LowLevel::GraphicsDevice* device,
 	MyEngine::LowLevel::DescriptorHeapManager* heapManager,
+	MyEngine::Rendering::RootSignatureManager* rootSigManager, 
+	MyEngine::Rendering::PSOManager* psoManager,
+	MyEngine::Rendering::ShaderManager* shaderManager,
+	MyEngine::Rendering::InputLayoutManager* inputLayoutManager,
+	MyEngine::Rendering::BlendModeManager* blendModeManager,
 	ModelManager* modelManager,
-	TextureManager* textureManager,
-	ShaderManager* shaderManager
+	TextureManager* textureManager
 ) {
 	device_ = device;
 	heapManager_ = heapManager;
+	rootSigManager_ = rootSigManager;
+	psoManager_ = psoManager;
+	shaderManager_ = shaderManager;
+	inputLayoutManager_ = inputLayoutManager;
+	blendModeManager_ = blendModeManager;
 	modelManager_ = modelManager;
 	textureManager_ = textureManager;
 	shaderManager_ = shaderManager;
@@ -46,7 +55,15 @@ std::unique_ptr<Model> ModelFactory::CreateModel(
 
 	// 新しいマテリアルを作成して初期化
 	auto material = std::make_shared<Material>();
-	material->Initialize(device_, heapManager_);
+	material->Initialize(
+		device_,
+		heapManager_,
+		rootSigManager_,
+		psoManager_,
+		shaderManager_,
+		inputLayoutManager_,
+		blendModeManager_
+	);
 	material->SetTextureIndex(textureIndex);
 	material->SetShader(vsID, psID);
 	// モデルにマテリアルをセット

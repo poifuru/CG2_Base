@@ -5,7 +5,7 @@ class Component;
 struct SceneContext;
 
 namespace MyEngine::Rendering {
-	class RenderSystem;
+	class Renderer;
 }
 
 class GameObject {
@@ -15,7 +15,7 @@ public:
 
 	void Initialize();
 	void Update();
-	void Draw(MyEngine::Rendering::RenderSystem* renderSystem);
+	void Draw(MyEngine::Rendering::Renderer* renderer);
 	void ImGui();
 
 	// シリアライズ用

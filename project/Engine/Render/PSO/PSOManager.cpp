@@ -1,15 +1,17 @@
 #include "PCH.h"
 #include "PSOManager.h"
 #include "ShaderManager.h"
+#include "BlendModeManager.h"
+#include "InputLayoutManager.h"
 #include <cassert>
 
-ID3D12PipelineState* PSOManager::GetOrCreatePSO (
+ID3D12PipelineState* MyEngine::Rendering::PSOManager::GetOrCreatePSO (
 	ID3D12Device* device,
-	const PSODescriptor& desc,
+	const MyEngine::Rendering::PSODescriptor& desc,
 	ID3D12RootSignature* commonRootSignature,
 	const ShaderManager& shaderManager,
-	const InputLayoutManager& inputLayoutManager,
-	const BlendModeManager& blendModeManager
+	const MyEngine::Rendering::InputLayoutManager& inputLayoutManager,
+	const MyEngine::Rendering::BlendModeManager& blendModeManager
 ) {
 	assert(device != nullptr && commonRootSignature != nullptr);
 
@@ -82,7 +84,7 @@ inline void hash_combine_simple(uint64_t& seed, uint64_t value) {
 	seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
-uint64_t PSOManager::ComputeHash (const PSODescriptor& desc) const {
+uint64_t MyEngine::Rendering::PSOManager::ComputeHash (const PSODescriptor& desc) const {
 	uint64_t hash = 0;
 
 	// --- マネージャー管理のIDをハッシュ化（最重要）---

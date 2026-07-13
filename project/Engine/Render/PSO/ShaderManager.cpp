@@ -1,11 +1,9 @@
 #include "PCH.h"
 #include "ShaderManager.h"
-#include <cassert>
-#include <format>
 #include "LogManager.h"
 #include "ChangeString.h"
 
-void ShaderManager::Initialize (
+void MyEngine::Rendering::ShaderManager::Initialize (
 	IDxcUtils* utils, 
 	IDxcCompiler3* compiler,
 	IDxcIncludeHandler* includeHandler
@@ -16,7 +14,7 @@ void ShaderManager::Initialize (
 	includeHandler_ = includeHandler;
 }
 
-uint32_t ShaderManager::CompileAndCacheShader (const std::wstring& filePath, const wchar_t* profile) {
+uint32_t MyEngine::Rendering::ShaderManager::CompileAndCacheShader (const std::wstring& filePath, const wchar_t* profile) {
 	//ファイルパスとプロファイルを組み合わせたキーを生成
 	std::wstring key = filePath + L"_" + profile;
 
@@ -48,7 +46,7 @@ uint32_t ShaderManager::CompileAndCacheShader (const std::wstring& filePath, con
 	return newID;
 }
 
-D3D12_SHADER_BYTECODE ShaderManager::GetShaderBytecode (uint32_t shaderID) const {
+D3D12_SHADER_BYTECODE MyEngine::Rendering::ShaderManager::GetShaderBytecode (uint32_t shaderID) const {
 	// GetShaderBytecodeの内部処理
 	const auto& info = shaderCache_.at (shaderID);
 
@@ -60,7 +58,7 @@ D3D12_SHADER_BYTECODE ShaderManager::GetShaderBytecode (uint32_t shaderID) const
 	return bytecode;
 }
 
-Microsoft::WRL::ComPtr<IDxcBlob> ShaderManager::CompilerShader (const std::wstring& filePath, const wchar_t* profile) {
+Microsoft::WRL::ComPtr<IDxcBlob> MyEngine::Rendering::ShaderManager::CompilerShader (const std::wstring& filePath, const wchar_t* profile) {
 	/*1.hlslファイルを読み込む*/
 	//これからシェーダーをコンパイルする旨をログに出力する
 	LogManager::GetInstance()->LogManager::Log (String::ConvertString (std::format (L"Begin CompileShader, path:{}, profile:{}\n", filePath, profile)));

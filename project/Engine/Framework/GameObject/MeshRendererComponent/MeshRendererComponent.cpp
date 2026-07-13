@@ -28,11 +28,11 @@ void MeshRendererComponent::Update() {
 	model_->Update(&cameraData);
 }
 
-void MeshRendererComponent::Draw(RenderSystem* renderSystem) {
+void MeshRendererComponent::Draw(MyEngine::Rendering::Renderer* renderer) {
 	if (!model_) return;
 
 	// モデルの描画
-	model_->Draw(renderSystem);
+	model_->Draw(renderer);
 }
 
 void MeshRendererComponent::ImGui() {
@@ -183,7 +183,7 @@ void MeshRendererComponent::SetEnableLighting(bool flag) {
 	}
 }
 
-void MeshRendererComponent::SetBlendMode(BlendModeType mode) {
+void MeshRendererComponent::SetBlendMode(MyEngine::Rendering::BlendModeType mode) {
 	if (model_) {
 		model_->SetBlendMode(mode);
 	}

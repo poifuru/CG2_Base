@@ -1,9 +1,8 @@
 #include "PCH.h"
 #include "InputLayoutManager.h"
-#include <cassert>
 
-void InputLayoutManager::Initialize () {
-	InputLayoutData data;
+void MyEngine::Rendering::InputLayoutManager::Initialize () {
+	MyEngine::Rendering::InputLayoutData data;
 
 	//InputLayoutの設定
 	//***Standard3D***//
@@ -43,7 +42,7 @@ void InputLayoutManager::Initialize () {
 	data.desc.NumElements = (UINT)data.elements.size ();
 
 	//キャッシュに登録
-	m_LayoutCache[InputLayoutType::Standard3D] = std::move (data);
+	m_LayoutCache[MyEngine::Rendering::InputLayoutType::Standard3D] = std::move (data);
 	//新しい設定を登録するためにdataをclear
 	data.elements.clear ();
 	//******//
@@ -101,7 +100,7 @@ void InputLayoutManager::Initialize () {
 	data.desc.NumElements = (UINT)data.elements.size();
 
 	//キャッシュに登録
-	m_LayoutCache[InputLayoutType::SkinningStandard3D] = std::move(data);
+	m_LayoutCache[MyEngine::Rendering::InputLayoutType::SkinningStandard3D] = std::move(data);
 	//新しい設定を登録するためにdataをclear
 	data.elements.clear();
 	//******//
@@ -143,7 +142,7 @@ void InputLayoutManager::Initialize () {
 	data.desc.NumElements = (UINT)data.elements.size ();
 
 	//キャッシュに登録
-	m_LayoutCache[InputLayoutType::Particle] = std::move (data);
+	m_LayoutCache[MyEngine::Rendering::InputLayoutType::Particle] = std::move (data);
 	//新しい設定を登録するためにdataをclear
 	data.elements.clear ();
 	//******//
@@ -175,7 +174,7 @@ void InputLayoutManager::Initialize () {
 	data.desc.NumElements = (UINT)data.elements.size ();
 
 	//キャッシュに登録
-	m_LayoutCache[InputLayoutType::LineMesh] = std::move (data);
+	m_LayoutCache[MyEngine::Rendering::InputLayoutType::LineMesh] = std::move (data);
 	//新しい設定を登録するためにdataをclear
 	data.elements.clear ();
 	//******//
@@ -207,7 +206,7 @@ void InputLayoutManager::Initialize () {
 	data.desc.NumElements = (UINT)data.elements.size ();
 
 	//キャッシュに登録
-	m_LayoutCache[InputLayoutType::CubeMesh] = std::move (data);
+	m_LayoutCache[MyEngine::Rendering::InputLayoutType::CubeMesh] = std::move (data);
 	//新しい設定を登録するためにdataをclear
 	data.elements.clear ();
 	//******//
@@ -229,7 +228,7 @@ void InputLayoutManager::Initialize () {
 	data.desc.NumElements = (UINT)data.elements.size ();
 
 	//キャッシュに登録
-	m_LayoutCache[InputLayoutType::Skybox] = std::move (data);
+	m_LayoutCache[MyEngine::Rendering::InputLayoutType::Skybox] = std::move (data);
 	//新しい設定を登録するためにdataをclear
 	data.elements.clear ();
 	//******//
@@ -237,19 +236,19 @@ void InputLayoutManager::Initialize () {
 	//***PostProcess***//
 	data.desc.pInputElementDescs = nullptr;
 	data.desc.NumElements = 0;
-	m_LayoutCache[InputLayoutType::PostProcess] = std::move (data);
+	m_LayoutCache[MyEngine::Rendering::InputLayoutType::PostProcess] = std::move (data);
 	data.elements.clear ();
 	//******//
 
 	//***MeshShader***//
 	data.desc.pInputElementDescs = nullptr;
 	data.desc.NumElements = 0;
-	m_LayoutCache[InputLayoutType::MeshShader] = std::move (data);
+	m_LayoutCache[MyEngine::Rendering::InputLayoutType::MeshShader] = std::move (data);
 	data.elements.clear ();
 	//******//
 }
 
-const D3D12_INPUT_LAYOUT_DESC* InputLayoutManager::GetInputLayout (InputLayoutType type) const {
+const D3D12_INPUT_LAYOUT_DESC* MyEngine::Rendering::InputLayoutManager::GetInputLayout (MyEngine::Rendering::InputLayoutType type) const {
 	if (m_LayoutCache.count (type)) {
 		return &m_LayoutCache.at (type).desc;
 	}

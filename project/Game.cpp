@@ -32,12 +32,16 @@ Game::Game() {
 		engine_->GetGraphicsDevice(),
 		engine_->GetCommandList(),
 		engine_->GetDescriptorHeapManager(),
-		renderer_->GetShaderManager()
+		renderer_->GetRootSigManager(),
+		renderer_->GetPSOManager(),
+		renderer_->GetShaderManager(),
+		renderer_->GetInputLayoutManager(),
+		renderer_->GetBlendModeManager()
 	);
 
 	// 初期シーンの設定
 	sceneManager_->ChangeScene<PlayScene>();
-	sceneManager_->SetRenderSystem(renderer_->GetRenderSystem());
+	sceneManager_->SetRenderer(renderer_.get());
 
 	// コマンドリストを実行し、GPUのアップロード完了を待つ
 	engine_->ExecuteCommandList();
@@ -77,7 +81,7 @@ void Game::Run() {
 		// シーンの更新
 		sceneManager_->Update(&CameraOrganizer::GetInstance()->GetCameraData());
 		// シーンの描画コマンドの積み込み
-		sceneManager_->Draw(renderer_->GetRenderSystem());
+		sceneManager_->Draw(renderer_.get());
 
 		// rendererで実際に描画
 		renderer_->RenderScene(engine_->GetCommandList());

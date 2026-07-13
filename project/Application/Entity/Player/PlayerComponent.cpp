@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "InputManager.h"
 #include "RawInput.h"
+#include "GamePad.h"
 #include "DeltaTime.h"
 #include "MathFunction.h"
 #include "CameraOrganizer.h"
@@ -27,6 +28,7 @@ void PlayerComponent::Initialize() {
 	attenuationRate_ = 0.98f;
 	brakeAttenuationRate_ = 0.90f;
 	maxSpeed_ = 2.5f; 
+	preTriggerR_ = 0.0f;
 
 	gameObject_->GetTransform().translate = { 0.0f, 0.3f, 0.0f };
 }
@@ -84,6 +86,15 @@ void PlayerComponent::Move() {
 	if(input->GetRawInput()->Push('S')) { moveDir = Math::Subtract(moveDir, camForward); }
 	if(input->GetRawInput()->Push('A')) { moveDir = Math::Subtract(moveDir, camRight); }
 	if(input->GetRawInput()->Push('D')) { moveDir = Math::Add(moveDir, camRight); }
+
+	// ゲームパッド入力で移動方向を蓄積
+	if (input->GetGamePad()->IsConection()) {
+		Vector2 lStick = input->GetGamePad()->GetStick(LR::Left);
+		if (lStick.x != 0.0f || lStick.y != 0.0f) {
+			moveDir = Math::Add(moveDir, Math::Multiply(lStick.y, camForward));
+			moveDir = Math::Add(moveDir, Math::Multiply(lStick.x, camRight));
+		}
+	}
 
 	// Spaceで上昇、Left Shiftで下降
 	/*if(input->GetRawInput()->Push(VK_SPACE)) { moveDir.y += 1.0f; }
@@ -147,9 +158,16 @@ void PlayerComponent::Move() {
 	}
 
 	// 速度の減衰と制限
-	// 通常は attenuationRate_ だが、スペースキーが押されている間は強いブレーキにする
+	// 通常は attenuationRate_ だが、スペースキーまたはパッドのAボタンが押されている間は強いブレーキにする
 	float currentAttenuation = attenuationRate_;
-	if (input->GetRawInput()->Push(VK_SPACE)) {
+	bool isBrakePressed = input->GetRawInput()->Push(VK_SPACE);
+	if (input->GetGamePad()->IsConection()) {
+		if (input->GetGamePad()->PushButton(Button::A)) {
+			isBrakePressed = true;
+		}
+	}
+
+	if (isBrakePressed) {
 		currentAttenuation = brakeAttenuationRate_;
 	}
 
@@ -207,7 +225,18 @@ void PlayerComponent::Move() {
 void PlayerComponent::Shoot() {
 	InputManager* input = InputManager::GetInstance();
 
-	if (input->GetRawInput()->TriggerMouse(0) && cooltime_ <= 0.0f) {
+	bool isShootTriggered = input->GetRawInput()->TriggerMouse(0);
+	if (input->GetGamePad()->IsConection()) {
+		float triggerR = input->GetGamePad()->GetTrigger(LR::Right);
+		if (triggerR > 0.5f && preTriggerR_ <= 0.5f) {
+			isShootTriggered = true;
+		}
+		preTriggerR_ = triggerR;
+	} else {
+		preTriggerR_ = 0.0f;
+	}
+
+	if (isShootTriggered && cooltime_ <= 0.0f) {
 		auto* context = gameObject_->GetContext();
 		if (!context || !context->gameObjects) return;
 

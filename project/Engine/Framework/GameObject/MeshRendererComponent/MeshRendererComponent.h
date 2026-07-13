@@ -4,7 +4,9 @@
 #include <string>
 #include "Model.h"
 
-class RenderSystem;
+namespace MyEngine::Rendering {
+	class Renderer;
+}
 
 class MeshRendererComponent : public Component {
 public:
@@ -13,7 +15,7 @@ public:
 
 	void Initialize() override;
 	void Update() override;
-	void Draw(RenderSystem* renderSystem) override;
+	void Draw(MyEngine::Rendering::Renderer* renderer) override;
 	void ImGui() override;
 
 	void Serialize(json& j) const override;
@@ -32,7 +34,7 @@ public:
 	void SetEnableLighting(bool flag);
 
 	// ブレンドモードを設定する関数
-	void SetBlendMode(BlendModeType mode);
+	void SetBlendMode(MyEngine::Rendering::BlendModeType mode);
 
 	// デプスの有効・無効を設定する関数
 	void SetDepthEnable(bool flag);

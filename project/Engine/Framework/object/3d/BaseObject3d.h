@@ -9,6 +9,10 @@
 #include "StructuredBuffer.h" // 構造化バッファをインクルード
 #include "BlendModeManager.h" // 💡 ブレンドモード用
 
+namespace MyEngine::Rendering {
+	class Renderer;
+}
+
 class BaseObject3d {
 public:
 	BaseObject3d();
@@ -18,7 +22,7 @@ public:
 
 	virtual void Update(CameraData* cameraData);
 
-	virtual void Draw(class RenderSystem* renderSystem) = 0;
+	virtual void Draw(MyEngine::Rendering::Renderer* renderer) = 0;
 
 	virtual void ImGui(const std::string& label);
 
@@ -36,9 +40,9 @@ public:
 	void SetDepthEnable(bool flag) { isDepthEnable_ = flag; }
 	bool GetDepthEnable() const { return isDepthEnable_; }
 
-	// 💡 ブレンドモードを設定するゲッター・セッター
-	void SetBlendMode(BlendModeType mode) { blendMode_ = mode; }
-	BlendModeType GetBlendMode() const { return blendMode_; }
+	// ブレンドモードを設定するゲッター・セッター
+	void SetBlendMode(MyEngine::Rendering::BlendModeType mode) { blendMode_ = mode; }
+	MyEngine::Rendering::BlendModeType GetBlendMode() const { return blendMode_; }
 
 	// 外部（ファクトリ）から初期化済みの共通バッファを受け取る
 	void SetTransformBuffer(std::unique_ptr<TransformMatrixResource>&& transformBuffer) {
@@ -66,7 +70,7 @@ protected:
 	std::shared_ptr<Material> material_ = nullptr;
 
 	uint8_t layer_ = 1;
-	BlendModeType blendMode_ = BlendModeType::Opaque; // 💡 デフォルトは不透明
+	MyEngine::Rendering::BlendModeType blendMode_ = MyEngine::Rendering::BlendModeType::Opaque; // 💡 デフォルトは不透明
 
 	bool isDepthEnable_ = true; // デフォルトはデプス有効
 };

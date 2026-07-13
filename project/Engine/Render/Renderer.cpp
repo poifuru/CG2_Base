@@ -11,6 +11,10 @@
 #include "CameraOrganizer.h"
 #include "MainCameraComponent.h"
 #include "Function.h"
+#include "Material.h"
+
+MyEngine::Rendering::Renderer::Renderer() = default;
+MyEngine::Rendering::Renderer::~Renderer() = default;
 
 void MyEngine::Rendering::Renderer::Initialize(
 	ID3D12Device* device,
@@ -19,23 +23,23 @@ void MyEngine::Rendering::Renderer::Initialize(
 	IDxcIncludeHandler* includeHandler,
 	MyEngine::LowLevel::DescriptorHeapManager* heapManager
 ) {
-	rootSigManager_ = std::make_unique<RootSignatureManager>();
+	rootSigManager_ = std::make_unique<MyEngine::Rendering::RootSignatureManager>();
 	rootSigManager_->Initialize(device);
 
-	shaderManager_ = std::make_unique<ShaderManager>();
+	shaderManager_ = std::make_unique<MyEngine::Rendering::ShaderManager>();
 	shaderManager_->Initialize(
 		dxcUtils,
 		dxcCompiler,
 		includeHandler
 	);
 
-	inputLayoutManager_ = std::make_unique<InputLayoutManager>();
+	inputLayoutManager_ = std::make_unique<MyEngine::Rendering::InputLayoutManager>();
 	inputLayoutManager_->Initialize();
 
-	blendModeManager_ = std::make_unique<BlendModeManager>();
+	blendModeManager_ = std::make_unique<MyEngine::Rendering::BlendModeManager>();
 	blendModeManager_->Initialize();
 
-	psoManager_ = std::make_unique<PSOManager>();
+	psoManager_ = std::make_unique<MyEngine::Rendering::PSOManager>();
 
 	renderSystem_ = std::make_unique<MyEngine::Rendering::RenderSystem>();
 	renderSystem_->Initialize(
@@ -93,4 +97,32 @@ void MyEngine::Rendering::Renderer::RenderScene(ID3D12GraphicsCommandList* cmdLi
 		renderTexture_->GetResource(), 
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+}
+
+void MyEngine::Rendering::Renderer::Submit(
+	const D3D12_VERTEX_BUFFER_VIEW& vbView,
+	const D3D12_INDEX_BUFFER_VIEW& ibv,
+	uint32_t indexCount,
+	D3D12_GPU_VIRTUAL_ADDRESS transformGPUAddress,
+	Material* material,
+	uint32_t layer
+) {
+	if (!material) return;
+	// 要求データを RenderCommand に整理
+	RenderCommand cmd{};
+	cmd.vbView = vbView;
+	cmd.ibv = ibv;
+	cmd.indexCount = indexCount;
+	cmd.transformGPUAddress = transformGPUAddress;
+	cmd.materialIndex = material->GetDescriptorIndex();
+	cmd.textureIndex = material->GetTextureIndex();
+
+	// マテリアルが事前ビルドしたPSOポインタをそのままコピー
+	cmd.pso = material->GetPSO();
+
+	assert(cmd.pso != nullptr); 
+
+	cmd.layer = layer;
+	// 内部の RenderSystem にコマンドを登録
+	renderSystem_->PushCommand(cmd);
 }

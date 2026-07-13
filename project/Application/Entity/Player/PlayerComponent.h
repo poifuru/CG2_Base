@@ -48,4 +48,7 @@ private:
 
 	// 外部参照用ポインタ
 	GameObject* reticleObject_ = nullptr;
+
+	// パッド入力用
+	float preTriggerR_ = 0.0f; // 前フレームのRT（右トリガー）の入力値
 };

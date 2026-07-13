@@ -1,5 +1,7 @@
 #include "PCH.h"
 #include "BasePostEffect.h"
+#include "BlendModeManager.h"
+#include "InputLayoutManager.h"
 
 void BasePostEffect::Initialize(DxCommon* dxCommon) {
 	dxCommon_ = dxCommon;
@@ -7,8 +9,8 @@ void BasePostEffect::Initialize(DxCommon* dxCommon) {
 	// PSOの設定
 	//psoDesc_.VS_ID = ShaderManager::GetInstance()->CompileAndCacheShader(L"Resources/shader/Fullscreen.VS.hlsl", L"vs_6_0");
 	//psoDesc_.RootSignatureID = RootSignatureManager::GetInstance()->GetOrCreateRootSignature(RootSigType::PostProcess);
-	psoDesc_.InputLayoutID = InputLayoutType::PostProcess;
-	psoDesc_.BlendMode = BlendModeType::Opaque;
+	psoDesc_.InputLayoutID = MyEngine::Rendering::InputLayoutType::PostProcess;
+	psoDesc_.BlendMode = MyEngine::Rendering::BlendModeType::Opaque;
 
 	// ラスタライザステート
 	psoDesc_.CullMode = D3D12_CULL_MODE_NONE; // カリングなし

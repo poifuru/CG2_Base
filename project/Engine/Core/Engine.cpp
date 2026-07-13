@@ -110,6 +110,10 @@ void MyEngine::LowLevel::Engine::ExecuteCommandList() {
 	cmdQueue_->SignalAndWait();
 }
 
+ID3D12Device* MyEngine::LowLevel::Engine::GetDevice() {
+	return device_->GetDevice();
+}
+
 MyEngine::LowLevel::GraphicsDevice* MyEngine::LowLevel::Engine::GetGraphicsDevice() {
 	return device_.get();
 }
