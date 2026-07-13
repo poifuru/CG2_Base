@@ -4,6 +4,8 @@
 #include "DeltaTime.h"
 #include "MeshRendererComponent.h"
 #include "../../../../Engine/Editor/ParticleEditor/ParticleSpawner.h"
+#include "GameDirectorComponent.h"
+#include "BaseScene.h"
 
 void FishEnemyComponent::Initialize() {
 	if (isInitialized_) return;
@@ -92,5 +94,15 @@ void FishEnemyComponent::OnDead() {
 
 		// 被弾位置に爆発パーティクルを生成
 		ParticleSpawner::SpawnExplosion(gameObject_->GetContext(), gameObject_->GetTransform().translate, 15);
+
+		// GameDirectorへの撃破通知
+		if (gameObject_->GetContext() && gameObject_->GetContext()->activeGameObjects) {
+			for (auto& obj : *(gameObject_->GetContext()->activeGameObjects)) {
+				if (auto* director = obj->GetComponent<GameDirectorComponent>()) {
+					director->NotifyEnemyDead();
+					break;
+				}
+			}
+		}
 	}
 }

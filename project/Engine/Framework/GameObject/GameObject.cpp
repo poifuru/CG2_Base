@@ -200,6 +200,39 @@ void GameObject::ImGui() {
 			ImGui::TextDisabled("Skybox Component (Already Added)");
 		}
 
+		// スプライトコンポーネント
+		if(GetComponent<SpriteComponent>() == nullptr) {
+			if(ImGui::MenuItem("Sprite Component")) {
+				auto* newComp = AddComponent<SpriteComponent>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Sprite Component (Already Added)");
+		}
+
+		// ナンバー表示コンポーネント
+		if(GetComponent<NumberDrawerComponent>() == nullptr) {
+			if(ImGui::MenuItem("Number Drawer Component")) {
+				auto* newComp = AddComponent<NumberDrawerComponent>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Number Drawer Component (Already Added)");
+		}
+
+		// ゲームディレクターコンポーネント
+		if(GetComponent<GameDirectorComponent>() == nullptr) {
+			if(ImGui::MenuItem("Game Director Component")) {
+				auto* newComp = AddComponent<GameDirectorComponent>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Game Director Component (Already Added)");
+		}
+
 		// コンポーネントが増えたらここに
 		ImGui::EndPopup();
 	}
@@ -309,6 +342,21 @@ void GameObject::Deserialize(const json& j) {
 			else if(type == "SkyboxComponent") {
 				auto* comp = GetComponent<SkyboxComponent>();
 				if(!comp) comp = AddComponent<SkyboxComponent>();
+				comp->Deserialize(compJ);
+			}
+			else if(type == "SpriteComponent") {
+				auto* comp = GetComponent<SpriteComponent>();
+				if(!comp) comp = AddComponent<SpriteComponent>();
+				comp->Deserialize(compJ);
+			}
+			else if(type == "NumberDrawerComponent") {
+				auto* comp = GetComponent<NumberDrawerComponent>();
+				if(!comp) comp = AddComponent<NumberDrawerComponent>();
+				comp->Deserialize(compJ);
+			}
+			else if(type == "GameDirectorComponent") {
+				auto* comp = GetComponent<GameDirectorComponent>();
+				if(!comp) comp = AddComponent<GameDirectorComponent>();
 				comp->Deserialize(compJ);
 			}
 		}

@@ -72,6 +72,9 @@
     <ClCompile Include="Engine\Framework\Buffer\Material.cpp" />
     <ClCompile Include="Engine\Framework\GameObject\GameObject.cpp" />
     <ClCompile Include="Engine\Framework\GameObject\MeshRendererComponent\MeshRendererComponent.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\SpriteComponent\SpriteComponent.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\NumberDrawerComponent\NumberDrawerComponent.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\GameDirectorComponent\GameDirectorComponent.cpp" />
     <ClCompile Include="externals\imgui\ImGuizmo.cpp" />
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="externals\imgui\imgui_tables.cpp" />
@@ -206,6 +209,9 @@
     <ClInclude Include="Engine\Framework\GameObject\Component\Component.h" />
     <ClInclude Include="Engine\Framework\GameObject\GameObject.h" />
     <ClInclude Include="Engine\Framework\GameObject\MeshRendererComponent\MeshRendererComponent.h" />
+    <ClInclude Include="Engine\Framework\GameObject\SpriteComponent\SpriteComponent.h" />
+    <ClInclude Include="Engine\Framework\GameObject\NumberDrawerComponent\NumberDrawerComponent.h" />
+    <ClInclude Include="Engine\Framework\GameObject\GameDirectorComponent\GameDirectorComponent.h" />
     <ClInclude Include="externals\imgui\ImGuizmo.h" />
     <ClInclude Include="Engine\Editor\Command\ICommand.h" />
     <ClInclude Include="Engine\Editor\Command\CommandManager.h" />
