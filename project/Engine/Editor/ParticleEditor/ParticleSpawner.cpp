@@ -32,6 +32,7 @@ void ParticleSpawner::SpawnExplosion(SceneContext* context, const Vector3& posit
 		mesh->SetEnableLighting(false);
 		mesh->SetBlendMode(MyEngine::Rendering::BlendModeType::Additive);
 		mesh->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+		mesh->SetDoubleSided(true);
 
 		float theta = static_cast<float>(rand()) / RAND_MAX * 3.14159265f * 2.0f;
 		float phi = static_cast<float>(rand()) / RAND_MAX * 3.14159265f;
@@ -77,6 +78,7 @@ void ParticleSpawner::SpawnTrail(SceneContext* context, const Vector3& position,
 	mesh->SetEnableLighting(false);
 	mesh->SetBlendMode(MyEngine::Rendering::BlendModeType::Alpha);
 	mesh->SetColor({ 1.0f, 1.0f, 1.0f, 0.5f });
+	mesh->SetDoubleSided(true);
 
 	float randX = (static_cast<float>(rand()) / RAND_MAX - 0.5f) * 1.5f;
 	float randY = (static_cast<float>(rand()) / RAND_MAX - 0.5f) * 1.5f;

@@ -153,7 +153,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     float4 transformedUV = mul(float4(input.texcoord, 0.0f, 1.0f), myMaterial.uvTransform);
     float4 textureColor = g_Textures[texIdx].Sample(gSampler, transformedUV.xy);
     
-    if (textureColor.a <= 0.5f || output.color.a == 0.0f) { discard; }
+    if (textureColor.a <= 0.5f || myMaterial.color.a == 0.0f) { discard; }
     
     float3 totalDiffuse = float3(0, 0, 0);
     float3 totalSpecular = float3(0, 0, 0);

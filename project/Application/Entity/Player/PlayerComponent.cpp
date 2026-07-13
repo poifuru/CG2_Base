@@ -29,6 +29,8 @@ void PlayerComponent::Initialize() {
 	brakeAttenuationRate_ = 0.90f;
 	maxSpeed_ = 2.5f; 
 	preTriggerR_ = 0.0f;
+	brakeTurnSpeedMultiplier_ = 3.0f;
+	brakeMoveSpeedMultiplier_ = 0.2f;
 
 	gameObject_->GetTransform().translate = { 0.0f, 0.3f, 0.0f };
 }
@@ -66,6 +68,21 @@ void PlayerComponent::Move() {
 
 	// 入力用のポインタを取得
 	InputManager* input = InputManager::GetInstance();
+
+	// ブレーキ入力の判定
+	bool isBrakePressed = input->GetRawInput()->Push(VK_SPACE);
+	if (input->GetGamePad()->IsConection()) {
+		if (input->GetGamePad()->PushButton(Button::A)) {
+			isBrakePressed = true;
+		}
+	}
+	// ブレーキ状態に応じて旋回力と移動力を変動させる
+	float currentTurnSpeed = turnSpeed_;
+	float currentSpeed = speed_;
+	if (isBrakePressed) {
+		currentTurnSpeed = turnSpeed_ * brakeTurnSpeedMultiplier_;
+		currentSpeed = speed_ * brakeMoveSpeedMultiplier_;
+	}
 
 	acceleration_ = { 0.0f, 0.0f, 0.0f };
 	Vector3 moveDir = { 0.0f, 0.0f, 0.0f };
@@ -115,7 +132,7 @@ void PlayerComponent::Move() {
 		while (diffYaw > 3.14159265f) diffYaw -= 6.2831853f;
 
 		// 旋回速度 (値が小さいほどゆっくり曲がる)
-		gameObject_->GetTransform().rotate.y += diffYaw * turnSpeed_ * kDeltaTime;
+		gameObject_->GetTransform().rotate.y += diffYaw * currentTurnSpeed * kDeltaTime;
 
 		// 上下の旋回目標角度 (Pitch)
 		float xzLength = std::sqrt(moveDir.x * moveDir.x + moveDir.z * moveDir.z);
@@ -124,7 +141,7 @@ void PlayerComponent::Move() {
 		float diffPitch = targetPitch - currentPitch;
 		while (diffPitch < -3.14159265f) diffPitch += 6.2831853f;
 		while (diffPitch > 3.14159265f) diffPitch -= 6.2831853f;
-		gameObject_->GetTransform().rotate.x += diffPitch * turnSpeed_ * kDeltaTime;
+		gameObject_->GetTransform().rotate.x += diffPitch * currentTurnSpeed * kDeltaTime;
 
 		// 移動ベクトルのブレンド (前進 dirRatioZ_ : 入力 dirRatioX_)
 		// 潜水艦の「現在の正面方向」のベクトルを計算する
@@ -149,24 +166,18 @@ void PlayerComponent::Move() {
 		}
 
 		// 加速度を設定
-		acceleration_.x = actualMoveDir.x * speed_ * kDeltaTime;
-		acceleration_.y = actualMoveDir.y * speed_ * kDeltaTime;
-		acceleration_.z = actualMoveDir.z * speed_ * kDeltaTime;
+		acceleration_.x = actualMoveDir.x * currentSpeed * kDeltaTime;
+		acceleration_.y = actualMoveDir.y * currentSpeed * kDeltaTime;
+		acceleration_.z = actualMoveDir.z * currentSpeed * kDeltaTime;
 		velocity_.x += acceleration_.x;
 		velocity_.y += acceleration_.y;
 		velocity_.z += acceleration_.z;
 	}
 
 	// 速度の減衰と制限
-	// 通常は attenuationRate_ だが、スペースキーまたはパッドのAボタンが押されている間は強いブレーキにする
+	// 通常は attenuationRate_ だが、ブレーキ中は強いブレーキにする
 	float currentAttenuation = attenuationRate_;
-	bool isBrakePressed = input->GetRawInput()->Push(VK_SPACE);
-	if (input->GetGamePad()->IsConection()) {
-		if (input->GetGamePad()->PushButton(Button::A)) {
-			isBrakePressed = true;
-		}
-	}
-
+	
 	if (isBrakePressed) {
 		currentAttenuation = brakeAttenuationRate_;
 	}
@@ -343,6 +354,10 @@ void PlayerComponent::ImGui() {
 		dirRatioZ_ = 1.0f - dirRatioX_;
 	}
 
+	ImGui::Text("--- Brake Behavior Trade-off ---");
+	ImGui::SliderFloat("Brake Turn Mult", &brakeTurnSpeedMultiplier_, 1.0f, 10.0f);
+	ImGui::SliderFloat("Brake Move Mult", &brakeMoveSpeedMultiplier_, 0.0f, 1.0f);
+
 	ImGui::Text("--- Harpoon Gun ---");
 	ImGui::DragFloat("Harpoon Speed", &harpoonSpeed_, 1.0f, 10.0f, 300.0f);
 	ImGui::SliderFloat("Homing Strength", &harpoonHomingStrength_, 0.0f, 0.5f);
@@ -360,6 +375,8 @@ void PlayerComponent::Serialize(json& j) const {
 	j["dirRatioX"] = dirRatioX_;
 	j["harpoonSpeed"] = harpoonSpeed_;
 	j["homingStrength"] = harpoonHomingStrength_;
+	j["brakeTurnSpeedMultiplier"] = brakeTurnSpeedMultiplier_;
+	j["brakeMoveSpeedMultiplier"] = brakeMoveSpeedMultiplier_;
 }
 
 void PlayerComponent::Deserialize(const json& j) {
@@ -391,5 +408,11 @@ void PlayerComponent::Deserialize(const json& j) {
 	}
 	if(j.contains("homingStrength")) {
 		harpoonHomingStrength_ = j["homingStrength"];
+	}
+	if(j.contains("brakeTurnSpeedMultiplier")) {
+		brakeTurnSpeedMultiplier_ = j["brakeTurnSpeedMultiplier"];
+	}
+	if(j.contains("brakeMoveSpeedMultiplier")) {
+		brakeMoveSpeedMultiplier_ = j["brakeMoveSpeedMultiplier"];
 	}
 }

@@ -42,6 +42,9 @@ public:
 	// レンダリングレイヤーを設定する関数
 	void SetLayer(uint8_t layer);
 
+	// 両面表示を設定する関数
+	void SetDoubleSided(bool flag);
+
 private:
 	std::unique_ptr<Model> model_ = nullptr;
 	std::string modelPath_ = "Resources/plane/plane.obj";	// デフォルトモデル

@@ -201,3 +201,9 @@ void MeshRendererComponent::SetLayer(uint8_t layer) {
 		model_->SetLayer(layer);
 	}
 }
+
+void MeshRendererComponent::SetDoubleSided(bool flag) {
+	if (model_) {
+		model_->SetDoubleSided(flag);
+	}
+}

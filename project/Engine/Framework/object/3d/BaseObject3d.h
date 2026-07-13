@@ -33,16 +33,42 @@ public:
 	void SetTranslate(const Vector3& translate) { transform_.translate = translate; }
 
 	// マテリアルをセットする
-	void SetMaterial(const std::shared_ptr<Material>& material) { material_ = material; }
+	void SetMaterial(const std::shared_ptr<Material>& material) {
+		material_ = material;
+		if (material_) {
+			material_->SetDepthEnable(isDepthEnable_);
+			material_->SetBlendMode(blendMode_);
+			material_->SetDoubleSided(isDoubleSided_);
+		}
+	}
 	std::shared_ptr<Material> GetMaterial() const { return material_; }
 
 	// デプスの有効・無効を設定するセッター
-	void SetDepthEnable(bool flag) { isDepthEnable_ = flag; }
+	void SetDepthEnable(bool flag) {
+		isDepthEnable_ = flag;
+		if (material_) {
+			material_->SetDepthEnable(flag);
+		}
+	}
 	bool GetDepthEnable() const { return isDepthEnable_; }
 
 	// ブレンドモードを設定するゲッター・セッター
-	void SetBlendMode(MyEngine::Rendering::BlendModeType mode) { blendMode_ = mode; }
+	void SetBlendMode(MyEngine::Rendering::BlendModeType mode) {
+		blendMode_ = mode;
+		if (material_) {
+			material_->SetBlendMode(mode);
+		}
+	}
 	MyEngine::Rendering::BlendModeType GetBlendMode() const { return blendMode_; }
+
+	// 両面表示を設定するセッター
+	void SetDoubleSided(bool flag) {
+		isDoubleSided_ = flag;
+		if (material_) {
+			material_->SetDoubleSided(flag);
+		}
+	}
+	bool GetDoubleSided() const { return isDoubleSided_; }
 
 	// 外部（ファクトリ）から初期化済みの共通バッファを受け取る
 	void SetTransformBuffer(std::unique_ptr<TransformMatrixResource>&& transformBuffer) {
@@ -73,4 +99,5 @@ protected:
 	MyEngine::Rendering::BlendModeType blendMode_ = MyEngine::Rendering::BlendModeType::Opaque; // 💡 デフォルトは不透明
 
 	bool isDepthEnable_ = true; // デフォルトはデプス有効
+	bool isDoubleSided_ = false; // デフォルトは片面表示（カリング有効）
 };

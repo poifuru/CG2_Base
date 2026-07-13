@@ -88,6 +88,12 @@ void ReticleComponent::Update() {
 		renderer->SetDepthEnable(false);
 		// 最も手前（一番最後）に描画されるようにレイヤーを大きくする
 		renderer->SetLayer(200);
+		// アルファブレンドを有効にする
+		renderer->SetBlendMode(MyEngine::Rendering::BlendModeType::Alpha);
+		// ライトの影響を受けないようにする（暗闇で黒くならないようにする）
+		renderer->SetEnableLighting(false);
+		// 両面表示を有効にする（背面カリングで消えないようにする）
+		renderer->SetDoubleSided(true);
 
 		if (lockOnTarget_) {
 			// ロックオン中：赤

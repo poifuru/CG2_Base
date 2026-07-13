@@ -42,7 +42,11 @@ private:
 	float dirRatioZ_;		// 曲がるときにどのくらいの比率を掛けるか(前方)
 	float dirRatioX_;		// 曲がるときにどのくらいの比率を掛けるか(左右)
 
-	// ハープーンガンのパラメータ
+	// ブレーキ時の挙動トレードオフ倍率
+	float brakeTurnSpeedMultiplier_ = 3.0f; // ブレーキ中の旋回力倍率
+	float brakeMoveSpeedMultiplier_ = 0.2f; // ブレーキ中の移動力（加速）倍率
+
+private:	// ハープーンガンのパラメータ
 	float harpoonSpeed_ = 120.0f;         // 弾速
 	float harpoonHomingStrength_ = 0.02f; // 追尾力
 
