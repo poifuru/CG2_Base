@@ -46,6 +46,9 @@ void SpriteComponent::Update() {
 	model_->SetLayer(layer_);
 	if (auto mat = model_->GetMaterial()) {
 		mat->SetColor(color_);
+		// UVのU（左右）のみを反転させて裏返りによる鏡像を補正し、V（上下）はデフォルトのままにする
+		mat->SetUvScale({ -1.0f, 1.0f, 1.0f });
+		mat->SetUvTranslate({ 1.0f, 0.0f, 0.0f });
 	}
 
 	// 画面サイズの取得
@@ -57,7 +60,7 @@ void SpriteComponent::Update() {
 
 	// plane.objは -1.0〜1.0 (サイズ 2.0x2.0) なので、
 	// 希望のサイズにするには width / 2.0f, height / 2.0f をスケールにかける。
-	// Y下向きをプラスにするため、Yスケールをマイナスにする。
+	// Y下向きをプラスにするため、Yスケールをマイナスにする。（UV反転と組み合わせて鏡像を防止）
 	Vector3 finalScale = {
 		(size_.x * scale_.x) / 2.0f,
 		-(size_.y * scale_.y) / 2.0f,

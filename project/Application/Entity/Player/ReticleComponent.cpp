@@ -9,6 +9,7 @@
 #include "FishEnemyComponent.h"
 #include "MeshRendererComponent.h"
 #include "ColliderComponent.h"
+#include "VirtualFollowCamera.h"
 
 void ReticleComponent::Initialize() {
 	// すでに初期化済み（ロード済み）なら、デフォルト値での上書きをスキップする
@@ -20,6 +21,33 @@ void ReticleComponent::Initialize() {
 
 void ReticleComponent::Update() {
 	if (!gameObject_ && !isDebugMode_) return;
+
+	// 固定カメラが最優先（優先度100以上）になっているかチェック
+	bool isFixedCameraActive = false;
+	{
+		auto* context = gameObject_->GetContext();
+		if (context && context->activeGameObjects) {
+			for (const auto& obj : *(context->activeGameObjects)) {
+				if (obj->GetName() == "FixedPointCamera") {
+					if (auto* followCam = obj->GetComponent<VirtualFollowCamera>()) {
+						if (followCam->GetPriority() >= 100) {
+							isFixedCameraActive = true;
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (isFixedCameraActive) {
+		lockOnTarget_ = nullptr;
+		// メッシュレンダラーを取得して透明にし非表示化
+		if (auto* renderer = gameObject_->GetComponent<MeshRendererComponent>()) {
+			renderer->SetColor({ 0.0f, 0.0f, 0.0f, 0.0f });
+		}
+		return; // 位置更新やロックオン判定をスキップ
+	}
 
 	// シングルトンのカメラオーガナイザーから現在のアクティブカメラの情報を取る
 	CameraOrganizer* cameraOrganizer = CameraOrganizer::GetInstance();

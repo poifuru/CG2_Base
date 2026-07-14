@@ -197,13 +197,13 @@ void NumberDrawerComponent::UpdateModels() {
 		if (auto mat = model->GetMaterial()) {
 			mat->SetTextureIndex(texIndex_);
 			mat->SetColor(color_);
-			// アトラスから数字を切り出す (0〜9が横一列に並んでいると仮定)
-			mat->SetUvScale({ 0.1f, 1.0f, 1.0f });
-			mat->SetUvTranslate({ 0.1f * digit, 0.0f, 0.0f });
+			// UVのU（左右）のみを反転させて裏返りによる鏡像を補正し、V（上下）はデフォルトのままにする
+			mat->SetUvScale({ -0.1f, 1.0f, 1.0f });
+			mat->SetUvTranslate({ 0.1f * digit + 0.1f, 0.0f, 0.0f });
 		}
 
 		// 1文字ごとのトランスフォーム設定
-		Vector3 finalScale = { charW / 2.0f, -charH / 2.0f, 1.0f };
+		Vector3 finalScale = { charW / 2.0f, -charH / 2.0f, 1.0f }; // Yをマイナスにして裏返りを相殺し鏡像を防ぐ
 		Vector3 finalRotate = { 0.0f, 0.0f, gameObject_->GetTransform().rotate.z };
 		Vector3 finalTranslate = {
 			baseX + startX + static_cast<float>(i) * (charW + spacing_),

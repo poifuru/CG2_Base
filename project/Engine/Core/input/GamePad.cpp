@@ -150,17 +150,17 @@ Vector2 GamePad::GetStick (LR dir) {
 	}
 
 	// デッドゾーンを超えているかチェック
-	constexpr SHORT DEADZONE = XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
+	SHORT deadZone = stickDeadZone_;
 
 	// XとYそれぞれの軸でデッドゾーンを考慮
-	if (valueX > DEADZONE || valueX < -DEADZONE) {
+	if (valueX > deadZone || valueX < -deadZone) {
 		result.x = static_cast<float> (valueX) / 32767.0f;
 	}
 	else {
 		result.x = 0.0f;
 	}
 
-	if (valueY > DEADZONE || valueY < -DEADZONE) {
+	if (valueY > deadZone || valueY < -deadZone) {
 		result.y = static_cast<float> (valueY) / 32767.0f;
 	}
 	else {
@@ -186,9 +186,9 @@ float GamePad::GetTrigger (LR dir) {
 	}
 
 	// デッドゾーンを超えているかチェック
-	constexpr BYTE TRIGGER_DEADZONE = XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
+	BYTE deadZone = triggerDeadZone_;
 
-	if (value > TRIGGER_DEADZONE) {
+	if (value > deadZone) {
 		result = static_cast<float>(value) / 255.0f;
 	}
 	else {

@@ -45,6 +45,8 @@ void PlayerComponent::Update() {
 		cooltime_ -= kDeltaTime;
 	}
 
+	InputManager::GetInstance()->GetGamePad()->SetStickDeadZone(2000);
+
 	// 移動処理
 	Move();
 

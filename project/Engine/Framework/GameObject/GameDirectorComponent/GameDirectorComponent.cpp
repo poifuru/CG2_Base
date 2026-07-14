@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "BaseScene.h"
 #include "NumberDrawerComponent.h"
+#include "VirtualFollowCamera.h"
 #include "imgui.h"
 #include "LogManager.h" // ログ出力用（存在すれば）
 
@@ -74,14 +75,29 @@ void GameDirectorComponent::NotifyEnemyDead() {
 
 void GameDirectorComponent::OnTargetKillsAchieved() {
 	// 目標撃破数を達成したときの処理！
-	// TODO: ボス出現イベントムービーを流して水中フェーズに移行する
+	// ボス出現イベントムービーを流して水中フェーズに移行する
 	
-	// 例: コンソールやImGuiのログウィンドウに表示
 #ifdef _DEBUG
 	OutputDebugStringA("--- Game Director: Target Kills Achieved! Triggering Boss Spawn Event ---\n");
 #endif
 
-	// 将来、ボスカメラの起動や水中ポストエフェクトの有効化、水中BGM再生などをここに記述します。
+	// FixedPointCameraオブジェクトを検索して最優先に切り替え
+	if (gameObject_) {
+		SceneContext* context = gameObject_->GetContext();
+		if (context && context->activeGameObjects) {
+			for (auto& obj : *(context->activeGameObjects)) {
+				if (obj->GetName() == "FixedPointCamera") {
+					if (auto* followCam = obj->GetComponent<VirtualFollowCamera>()) {
+						followCam->SetPriority(100); // 優先度を最大に引き上げて切り替える
+#ifdef _DEBUG
+						OutputDebugStringA("Game Director: FixedPointCamera found and priority set to 100.\n");
+#endif
+						break;
+					}
+				}
+			}
+		}
+	}
 }
 
 void GameDirectorComponent::UpdateUI() {

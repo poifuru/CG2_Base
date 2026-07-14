@@ -69,7 +69,7 @@ private:
 	std::string texPath_ = "Resources/number_font.png"; // 生成したアトラス画像
 	std::string modelPath_ = "Resources/plane/plane.obj";
 
-	int value_ = 10;                     // 表示する値
+	int value_ = 0;                     // 表示する値
 	Vector2 position_ = { 100.0f, 100.0f };
 	Vector2 size_ = { 32.0f, 64.0f };    // 1文字のサイズ
 	float spacing_ = 0.0f;               // 文字間の隙間（ピクセル）

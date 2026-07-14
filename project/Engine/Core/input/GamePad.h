@@ -52,6 +52,13 @@ public:
 
 	bool IsConection ();
 
+	// デッドゾーンのゲッター・セッター
+	SHORT GetStickDeadZone() const { return stickDeadZone_; }
+	void SetStickDeadZone(SHORT deadZone) { stickDeadZone_ = deadZone; }
+
+	BYTE GetTriggerDeadZone() const { return triggerDeadZone_; }
+	void SetTriggerDeadZone(BYTE deadZone) { triggerDeadZone_ = deadZone; }
+
 private:
 	void SetRumbleTime (float time) { rumbleTimer_ = time; }
 	void SetVibration (float leftMotor, float rightMotor) { leftMotor_ = leftMotor; rightMotor_ = rightMotor; }
@@ -83,5 +90,9 @@ private:
 	float leftMotor_ = 0.0f;
 	float rightMotor_ = 0.0f;
 	float rumbleTimer_ = 0.0f;
+
+	// デッドゾーンの閾値（デフォルトはXInput標準値）
+	SHORT stickDeadZone_ = 7849;
+	BYTE triggerDeadZone_ = 30;
 };
 
