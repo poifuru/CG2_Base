@@ -1,6 +1,6 @@
 #pragma once
+#include "GameObject.h"
 
-// 前方宣言
 namespace MyEngine::LowLevel {
 	class DescriptorHeapManager;
 }
@@ -13,11 +13,19 @@ namespace MyEngine::Rendering {
 	class InputLayoutManager;
 	class BlendModeManager;
 	class PSOManager;
-}
 
-class Material;
+	struct Mesh;
+	class Material;
 
-namespace MyEngine::Rendering {
+	enum class ShadingModel : uint8_t;
+	enum class BlendModeType : uint8_t;
+	enum class InputLayoutType : uint32_t;
+
+	struct ShaderPair {
+		uint32_t vs_ID;
+		uint32_t ps_ID;
+	};
+
 	class Renderer {
 	public:
 		Renderer();
@@ -33,14 +41,7 @@ namespace MyEngine::Rendering {
 
 		void RenderScene(ID3D12GraphicsCommandList* cmdList);
 
-		void Submit(
-			const D3D12_VERTEX_BUFFER_VIEW& vbView,
-			const D3D12_INDEX_BUFFER_VIEW& ibv,
-			uint32_t indexCount,
-			D3D12_GPU_VIRTUAL_ADDRESS transformGPUAddress,
-			Material* material,
-			uint32_t layer
-		);
+		void Draw(std::vector<std::unique_ptr<GameObject>>& objects);
 
 		MyEngine::Rendering::RenderSystem* GetRenderSystem() { return renderSystem_.get(); }
 		MyEngine::Rendering::RenderTexture* GetRenderTexture() { return renderTexture_.get(); }
@@ -51,6 +52,21 @@ namespace MyEngine::Rendering {
 		MyEngine::Rendering::BlendModeManager* GetBlendModeManager() { return blendModeManager_.get(); }
 
 	private:
+		uint64_t MakeShaderKey(
+			MyEngine::Rendering::ShadingModel model,
+			MyEngine::Rendering::InputLayoutType layout
+		);
+
+		void InitializeShaderTable();
+
+		void Submit(
+			const MyEngine::Rendering::Mesh& mesh,
+			MyEngine::Rendering::Material* material,
+			D3D12_GPU_VIRTUAL_ADDRESS transformAddr
+		);
+
+	private:
+		ID3D12Device* device_ = nullptr;
 		std::unique_ptr<MyEngine::Rendering::RootSignatureManager> rootSigManager_;
 		std::unique_ptr<MyEngine::Rendering::ShaderManager> shaderManager_;
 		std::unique_ptr<MyEngine::Rendering::InputLayoutManager> inputLayoutManager_;
@@ -59,5 +75,8 @@ namespace MyEngine::Rendering {
 
 		std::unique_ptr<MyEngine::Rendering::RenderSystem> renderSystem_;
 		std::unique_ptr<MyEngine::Rendering::RenderTexture> renderTexture_;
+
+		// シェーダーの組み合わせを保存しておく
+		std::unordered_map<uint64_t, ShaderPair> shaderTable_;
 	};
 }

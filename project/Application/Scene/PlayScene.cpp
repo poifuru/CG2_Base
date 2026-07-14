@@ -9,6 +9,8 @@
 #include "RawInput.h"
 #include "CollisionManager.h"
 #include "GraphicsDevice.h"
+#include "Model.h"
+#include "MeshData.h"
 
 PlayScene::PlayScene() = default;
 PlayScene::~PlayScene() = default;
@@ -150,9 +152,7 @@ void PlayScene::Draw(MyEngine::Rendering::Renderer* renderer) {
 		renderer->GetRenderSystem()->SetLightManager(lightManager_.get());
 	}
 
-	for (auto& obj : gameObjects_) {
-		obj->Draw(renderer);
-	}
+	renderer->Draw(gameObjects_);
 }
 
 void PlayScene::CleanupObject() {

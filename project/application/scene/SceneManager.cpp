@@ -18,11 +18,6 @@ void SceneManager::Initialize(
 	modelManager_.Initialize(graphicsDevice->GetDevice(), &textureManager_);
 	modelFactory_.Initialize(graphicsDevice,
 							 heapManager,
-							 rootSigManager,
-							 psoManager,
-							 shaderManager,
-							 inputLayoutManager,
-							 blendModeManager,
 							 &modelManager_,
 							 &textureManager_
 	);

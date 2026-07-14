@@ -1,17 +1,13 @@
 #pragma once
-#include <string>
-#include <d3d12.h>
-#include <memory>
-#include "struct.h"
 #include "TransformMatrixData.h"
 #include "Material.h"
-#include "BaseCamera.h"
-#include "StructuredBuffer.h" // 構造化バッファをインクルード
-#include "BlendModeManager.h" // 💡 ブレンドモード用
 
 namespace MyEngine::Rendering {
 	class Renderer;
+	class Material;
 }
+
+struct CameraData;
 
 class BaseObject3d {
 public:
@@ -22,8 +18,6 @@ public:
 
 	virtual void Update(CameraData* cameraData);
 
-	virtual void Draw(MyEngine::Rendering::Renderer* renderer) = 0;
-
 	virtual void ImGui(const std::string& label);
 
 	// === 共通のアクセッサ ===
@@ -33,41 +27,19 @@ public:
 	void SetTranslate(const Vector3& translate) { transform_.translate = translate; }
 
 	// マテリアルをセットする
-	void SetMaterial(const std::shared_ptr<Material>& material) {
-		material_ = material;
-		if (material_) {
-			material_->SetDepthEnable(isDepthEnable_);
-			material_->SetBlendMode(blendMode_);
-			material_->SetDoubleSided(isDoubleSided_);
-		}
-	}
-	std::shared_ptr<Material> GetMaterial() const { return material_; }
+	void SetMaterial(const std::shared_ptr<MyEngine::Rendering::Material>& material);
+	std::shared_ptr<MyEngine::Rendering::Material> GetMaterial() const { return material_; }
 
 	// デプスの有効・無効を設定するセッター
-	void SetDepthEnable(bool flag) {
-		isDepthEnable_ = flag;
-		if (material_) {
-			material_->SetDepthEnable(flag);
-		}
-	}
+	void SetDepthEnable(bool flag);
 	bool GetDepthEnable() const { return isDepthEnable_; }
 
 	// ブレンドモードを設定するゲッター・セッター
-	void SetBlendMode(MyEngine::Rendering::BlendModeType mode) {
-		blendMode_ = mode;
-		if (material_) {
-			material_->SetBlendMode(mode);
-		}
-	}
+	void SetBlendMode(MyEngine::Rendering::BlendModeType mode);
 	MyEngine::Rendering::BlendModeType GetBlendMode() const { return blendMode_; }
 
 	// 両面表示を設定するセッター
-	void SetDoubleSided(bool flag) {
-		isDoubleSided_ = flag;
-		if (material_) {
-			material_->SetDoubleSided(flag);
-		}
-	}
+	void SetDoubleSided(bool flag);
 	bool GetDoubleSided() const { return isDoubleSided_; }
 
 	// 外部（ファクトリ）から初期化済みの共通バッファを受け取る
@@ -75,8 +47,8 @@ public:
 		transformBuffer_ = std::move(transformBuffer);
 	}
 
-	void SetLayer(uint8_t layer) { layer_ = layer; }
-	uint8_t GetLayer() const { return layer_; }
+	void SetLayer(uint8_t layer);
+	uint8_t GetLayer() const;
 
 	D3D12_GPU_VIRTUAL_ADDRESS GetTransformGPUAddress() const { return transformBuffer_ ? transformBuffer_->GetGPUVirtualAddress() : 0; }
 	uint32_t GetMaterialDescriptorIndex() const { return material_ ? material_->GetDescriptorIndex() : 0; } // バインドレス用インデックスゲッター
@@ -93,11 +65,12 @@ protected:
 	TransformMatrixData transformMatrixData_{};
 
 	std::unique_ptr<TransformMatrixResource> transformBuffer_ = nullptr;
-	std::shared_ptr<Material> material_ = nullptr;
+	std::shared_ptr<MyEngine::Rendering::Material> material_ = nullptr;
 
-	uint8_t layer_ = 1;
 	MyEngine::Rendering::BlendModeType blendMode_ = MyEngine::Rendering::BlendModeType::Opaque; // 💡 デフォルトは不透明
 
 	bool isDepthEnable_ = true; // デフォルトはデプス有効
 	bool isDoubleSided_ = false; // デフォルトは片面表示（カリング有効）
+
+	uint8_t layer_ = 0;
 };

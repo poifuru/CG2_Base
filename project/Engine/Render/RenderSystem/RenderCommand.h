@@ -1,16 +1,24 @@
 #pragma once
-#include "PSOManager.h"
+#include "RenderingModel.h"
 
-// 最初のゴール：マテリアル付き三角形のための最小限の構造体
+// RenderSystemが必要とする描画用情報の集合体
 struct RenderCommand {
+	// PSO
 	ID3D12PipelineState* pso = nullptr;
+	MyEngine::Rendering::ShadingModel shadingModel = MyEngine::Rendering::ShadingModel::Standard;
+	MyEngine::Rendering::InputLayoutType inputLayout = MyEngine::Rendering::InputLayoutType::Standard3D;
+	MyEngine::Rendering::BlendModeType blendMode = MyEngine::Rendering::BlendModeType::Opaque;
+	bool depthEnable = true;
+	bool depthWrite = true;
+	bool doubleSided = false;
 
-	// メッシュ情報（三角形）
+
+	// メッシュ情報
 	D3D12_VERTEX_BUFFER_VIEW vbView{};
 	D3D12_INDEX_BUFFER_VIEW ibv{};
 	UINT indexCount = 0;
 
-	// ★バインドレスの核心：ハメ換えるリソースポインタの代わりに、ただの「インデックス（数値）」を持つ！
+	// リソースやバッファのインデックス
 	uint32_t materialIndex = 0;   // 構造化バッファ（マテリアル配列）の何番目か
 	uint32_t textureIndex = 0;    // ディスクリプタヒープの何番目にテクスチャがあるか
 

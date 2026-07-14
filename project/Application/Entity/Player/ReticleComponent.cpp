@@ -5,11 +5,10 @@
 #include "CameraOrganizer.h"
 #include "BaseCamera.h"
 #include "BaseScene.h"
-#include "BirdEnemyComponent.h"
-#include "FishEnemyComponent.h"
 #include "MeshRendererComponent.h"
 #include "ColliderComponent.h"
 #include "VirtualFollowCamera.h"
+#include "RenderingModel.h"
 
 void ReticleComponent::Initialize() {
 	// すでに初期化済み（ロード済み）なら、デフォルト値での上書きをスキップする

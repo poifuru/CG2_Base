@@ -61,7 +61,7 @@
     <ClCompile Include="Engine\Graphics\PostEffect\Outline.cpp" />
     <ClCompile Include="Engine\Graphics\PostEffect\CopyImage.cpp" />
     <ClCompile Include="Engine\Core\Engine.cpp" />
-    <ClCompile Include="Engine\Core\RenderSystem.cpp" />
+    <ClCompile Include="Engine\Render\RenderSystem\RenderSystem.cpp" />
     <ClCompile Include="Engine\Framework\Buffer\Animation.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\GraphicsCommand\CommandContext.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\DescriptorHeap\DescriptorHeapManager.cpp" />
@@ -106,6 +106,7 @@
     <ClCompile Include="Engine\Core\LowLevel\GraphicsCommand\CommandList.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\GraphicsCommand\GraphicsCommandCreator.cpp" />
     <ClCompile Include="Engine\Render\Renderer.cpp" />
+    <ClCompile Include="Engine\Render\PSO\RenderingModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -183,8 +184,8 @@
     <ClInclude Include="Engine\Graphics\PostEffect\Outline.h" />
     <ClInclude Include="Engine\Graphics\PostEffect\CopyImage.h" />
     <ClInclude Include="Engine\Core\Engine.h" />
-    <ClInclude Include="Engine\Core\RenderSystem.h" />
-    <ClInclude Include="Engine\Core\RenderCommand.h" />
+    <ClInclude Include="Engine\Render\RenderSystem\RenderSystem.h" />
+    <ClInclude Include="Engine\Render\RenderSystem\RenderCommand.h" />
     <ClInclude Include="Engine\Core\DirectXResource\VertexBuffer.h" />
     <ClInclude Include="Engine\Core\DirectXResource\IndexBuffer.h" />
     <ClInclude Include="Engine\Core\DirectXResource\StructuredBuffer.h" />
@@ -241,6 +242,7 @@
     <ClInclude Include="Engine\Core\LowLevel\GraphicsCommand\CommandList.h" />
     <ClInclude Include="Engine\Core\LowLevel\GraphicsCommand\GraphicsCommandCreator.h" />
     <ClInclude Include="Engine\Render\Renderer.h" />
+    <ClInclude Include="Engine\Render\PSO\RenderingModel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

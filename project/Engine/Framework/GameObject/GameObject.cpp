@@ -28,12 +28,6 @@ void GameObject::Update() {
 	}
 }
 
-void GameObject::Draw(MyEngine::Rendering::Renderer* renderer) {
-	for (auto& component : components_) {
-		component->Draw(renderer);
-	}
-}
-
 void GameObject::ImGui() {
 	// オブジェクト名の編集
 	char nameBuf[128];

@@ -1,33 +1,30 @@
 #pragma once
 #include "BaseObject3d.h"
-#include "MeshData.h"
 
-class Model : public BaseObject3d {
-public:
-	Model();
-	~Model() override = default;
+namespace MyEngine::Rendering {
+	struct ModelData;
+}
 
-	// アセットはファクトリーから直接流してもらう
-	void Initialize(ModelData* modelData);
+namespace MyEngine::Rendering {
+	class Model : public BaseObject3d {
+	public:
+		Model();
+		~Model() override = default;
 
-	void Draw(MyEngine::Rendering::Renderer* renderSystem) override;
+		// アセットはファクトリーから直接流してもらう
+		void Initialize(MyEngine::Rendering::ModelData* modelData);
 
-	// モデルデータを外に渡せるように
-	ModelData* GetModelData() const { return modelData_; }
-	void SetModelData(ModelData* modelData) { modelData_ = modelData; }
+		MyEngine::Rendering::Material* GetMaterial();
 
-	// シェーダーIDやテクスチャインデックスの設定
-	void SetShaders(uint32_t vsID, uint32_t psID) {
-		if (material_) {
-			material_->SetShader(vsID, psID);
-		}
-	}
-	void SetTextureIndex(uint32_t textureIndex) {
-		if (material_) {
-			material_->SetTextureIndex(textureIndex);
-		}
-	}
+		// モデルデータを外に渡せるように
+		MyEngine::Rendering::ModelData* GetModelData() const { return modelData_; }
+		void SetModelData(MyEngine::Rendering::ModelData* modelData) { modelData_ = modelData; }
 
-private:
-	ModelData* modelData_ = nullptr;
-};
+		// シェーディングモデルの設定
+		void SetShaders(MyEngine::Rendering::ShadingModel shadingModel);
+		void SetTextureIndex(uint32_t textureIndex);
+
+	private:
+		MyEngine::Rendering::ModelData* modelData_ = nullptr;
+	};
+}

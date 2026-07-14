@@ -15,7 +15,6 @@ public:
 
 	void Initialize();
 	void Update();
-	void Draw(MyEngine::Rendering::Renderer* renderer);
 	void ImGui();
 
 	// シリアライズ用

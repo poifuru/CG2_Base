@@ -15,7 +15,6 @@ public:
 	// 基本ライフサイクル
 	virtual void Initialize() {}
 	virtual void Update() {}
-	virtual void Draw(MyEngine::Rendering::Renderer* renderer) {}
 	virtual void ImGui() {}
 
 	// Jsonへの書き出し

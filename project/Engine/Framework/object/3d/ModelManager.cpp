@@ -1,45 +1,16 @@
 #include "PCH.h"
 #include "ModelManager.h"
-#include <sstream>
-#include <fstream>
-#include <cassert>
-#include <map>
-#include <filesystem>
 #include "TextureManager.h"
 #include "MathFunction.h"
+#include "MeshData.h"
+#include "Material.h"
+#include "RenderingModel.h"
 
 namespace fs = std::filesystem;
 
 void ModelManager::Initialize(ID3D12Device* device, TextureManager* textureManager) {
 	device_ = device;
 	textureManager_ = textureManager;
-
-	// --- デフォルトの三角形アセット "Triangle" のダミー作成 ---
-	auto triangleData = std::make_shared<ModelData>();
-	
-	Mesh triangleMesh{};
-	triangleMesh.vertexCount = 3;
-	triangleMesh.indexCount = 3;
-
-	// 頂点データ
-	VertexData v0{ { 0.0f,  0.5f, 0.0f, 1.0f }, { 0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f } };
-	VertexData v1{ { 0.5f, -0.5f, 0.0f, 1.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } };
-	VertexData v2{ {-0.5f, -0.5f, 0.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } };
-	triangleMesh.meshData.vertices = { v0, v1, v2 };
-	triangleMesh.meshData.indices = { 0, 1, 2 };
-
-	// 頂点バッファ・インデックスバッファの生成と設定
-	triangleMesh.meshResource.Initialize(device_, triangleMesh.meshData);
-
-	// ビューの情報を設定
-	triangleMesh.vbView = triangleMesh.meshResource.vertexBuffer.GetView();
-	triangleMesh.ibView = triangleMesh.meshResource.indexBuffer.GetView();
-
-	triangleData->meshes.push_back(std::move(triangleMesh));
-
-	// ベクターへ登録
-	models_.push_back(triangleData);
-	modelPathToIndexMap_["Triangle"] = 0;
 }
 
 uint32_t ModelManager::LoadModelData(const std::string& filePath, bool inversion) {
@@ -49,7 +20,7 @@ uint32_t ModelManager::LoadModelData(const std::string& filePath, bool inversion
 	}
 
 	// 新規読み込み
-	ModelData cpuData = LoadModelFile(filePath, inversion);
+	MyEngine::Rendering::ModelData cpuData = LoadModelFile(filePath, inversion);
 
 	// ロードしたテクスチャのインデックスを保存する領域を確保
 	cpuData.defaultTextureIndices.resize(cpuData.meshes.size());
@@ -70,7 +41,7 @@ uint32_t ModelManager::LoadModelData(const std::string& filePath, bool inversion
 		}
 	}
 
-	std::shared_ptr<ModelData> newData = std::make_shared<ModelData>(std::move(cpuData));
+	std::shared_ptr<MyEngine::Rendering::ModelData> newData = std::make_shared<MyEngine::Rendering::ModelData>(std::move(cpuData));
 
 	uint32_t index = static_cast<uint32_t>(models_.size());
 	models_.push_back(newData);
@@ -79,7 +50,7 @@ uint32_t ModelManager::LoadModelData(const std::string& filePath, bool inversion
 	return index;
 }
 
-std::weak_ptr<ModelData> ModelManager::GetModelData(uint32_t index) {
+std::weak_ptr<MyEngine::Rendering::ModelData> ModelManager::GetModelData(uint32_t index) {
 	assert(index < models_.size());
 	return models_[index];
 }
@@ -111,8 +82,8 @@ void ModelManager::UnloadAnimationData(const std::string& id) {
 	animationMap_.erase(id);
 }
 
-MaterialTex ModelManager::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& id) {
-	MaterialTex materialData;
+MyEngine::Rendering::MaterialTex ModelManager::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& id) {
+	MyEngine::Rendering::MaterialTex materialData;
 	std::string line;
 
 	std::ifstream file(directoryPath + "/" + id);
@@ -133,11 +104,11 @@ MaterialTex ModelManager::LoadMaterialTemplateFile(const std::string& directoryP
 	return materialData;
 }
 
-ModelData ModelManager::LoadModelFile(const std::string& filePath, bool inversion) {
+MyEngine::Rendering::ModelData ModelManager::LoadModelFile(const std::string& filePath, bool inversion) {
 	// ★【調査用に追加】今どのファイルをロードしようとしているか出力する！
 	OutputDebugStringA(("Loading Model: " + filePath + "\n").c_str());
 
-	ModelData modelData;
+	MyEngine::Rendering::ModelData modelData;
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(
 		filePath.c_str(),
@@ -155,7 +126,7 @@ ModelData ModelManager::LoadModelFile(const std::string& filePath, bool inversio
 	for(uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
 
-		Mesh myMesh;
+		MyEngine::Rendering::Mesh myMesh;
 
 		for(uint32_t i = 0; i < mesh->mNumVertices; ++i) {
 			aiVector3D& position = mesh->mVertices[i];
@@ -193,6 +164,11 @@ ModelData ModelManager::LoadModelFile(const std::string& filePath, bool inversio
 			continue;
 		}
 
+		// ボーンデータ(スキニング)があるかどうかは aiMesh::mNumBones で判定できる
+		myMesh.inputLayout = (mesh->mNumBones > 0)
+			? MyEngine::Rendering::InputLayoutType::SkinningStandard3D
+			: MyEngine::Rendering::InputLayoutType::Standard3D;
+
 		// このメッシュに適用されているマテリアルのテクスチャパスを取得
 		std::string texPath = "";
 		if(scene->mNumMaterials > 0 && mesh->mMaterialIndex < scene->mNumMaterials) {
@@ -212,7 +188,7 @@ ModelData ModelManager::LoadModelFile(const std::string& filePath, bool inversio
 		for(uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
 			aiBone* bone = mesh->mBones[boneIndex];
 			std::string jointName = bone->mName.C_Str();
-			JointWeightData& jointWeightData = modelData.skinClusterData[jointName];
+			MyEngine::Rendering::JointWeightData& jointWeightData = modelData.skinClusterData[jointName];
 
 			const aiMatrix4x4& ai = bone->mOffsetMatrix;
 			Matrix4x4 ibp;
@@ -235,8 +211,8 @@ ModelData ModelManager::LoadModelFile(const std::string& filePath, bool inversio
 	return modelData;
 }
 
-Node ModelManager::ReadNode(aiNode* node) {
-	Node result;
+MyEngine::Rendering::Node ModelManager::ReadNode(aiNode* node) {
+	MyEngine::Rendering::Node result;
 	aiVector3D scale;
 	aiQuaternion rotate;
 	aiVector3D translate;

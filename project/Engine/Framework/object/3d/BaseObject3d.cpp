@@ -1,7 +1,8 @@
 #include "PCH.h"
 #include "BaseObject3d.h"
 #include "MathFunction.h"
-#include "imgui.h"
+#include "Material.h"
+#include "BaseCamera.h"
 
 BaseObject3d::BaseObject3d() {
 	instanceID_++;
@@ -31,7 +32,7 @@ void BaseObject3d::ImGui(const std::string& label) {
 	if(!material_) return;
 
 	// コピーを取り出してImGuiで編集
-	MaterialData materialData = material_->GetMaterialData();
+	MyEngine::Rendering::MaterialData materialData = material_->GetMaterialData();
 	EulerTransform uvTransform = material_->GetUvTransform();
 
 	if(ImGui::TreeNode("Material")) {
@@ -65,6 +66,48 @@ void BaseObject3d::ImGui(const std::string& label) {
 		ImGui::TreePop();
 	}
 #endif // USEIMGUI
+}
+
+void BaseObject3d::SetMaterial(const std::shared_ptr<MyEngine::Rendering::Material>& material) {
+	material_ = material;
+	if (material_) {
+		material_->SetDepthEnable(isDepthEnable_);
+		material_->SetBlendMode(blendMode_);
+		material_->SetDoubleSided(isDoubleSided_);
+		material_->SetLayer(layer_);
+	}
+}
+
+void BaseObject3d::SetDepthEnable(bool flag) {
+	isDepthEnable_ = flag;
+	if (material_) {
+		material_->SetDepthEnable(flag);
+	}
+}
+
+void BaseObject3d::SetBlendMode(MyEngine::Rendering::BlendModeType mode) {
+	blendMode_ = mode;
+	if (material_) {
+		material_->SetBlendMode(mode);
+	}
+}
+
+void BaseObject3d::SetDoubleSided(bool flag){
+	isDoubleSided_ = flag;
+	if (material_) {
+		material_->SetDoubleSided(flag);
+	}
+}
+
+void BaseObject3d::SetLayer(uint8_t layer) {
+	layer_ = layer;
+	if (material_) {
+		material_->SetLayer(layer);
+	}
+}
+
+uint8_t BaseObject3d::GetLayer() const {
+	return material_->GetLayer();
 }
 
 Matrix4x4 BaseObject3d::CalculateWorldMatrix() {

@@ -1,17 +1,17 @@
 #pragma once
-#include <unordered_map>
-#include <string>
-#include <memory>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include "struct.h"
-#include "MeshData.h"
 #include "Animation.h"
-#include "MaterialData.h"
 
 class TextureManager;
 struct ID3D12Device;
+
+namespace MyEngine::Rendering {
+	struct ModelData;
+	struct Node;
+	struct MaterialTex;
+}
 
 class ModelManager {
 public:
@@ -21,7 +21,7 @@ public:
 	void Initialize(ID3D12Device* device, TextureManager* textureManager);
 
 	uint32_t LoadModelData(const std::string& filePath, bool inversion = false);
-	std::weak_ptr<ModelData> GetModelData(uint32_t index);
+	std::weak_ptr<MyEngine::Rendering::ModelData> GetModelData(uint32_t index);
 	void UnloadModelData(uint32_t index);
 
 	Animation* LoadAnimationData(const std::string& directoryPath, const std::string& fileName);
@@ -37,13 +37,13 @@ public:
 
 private:
 	// マテリアルファイルの読み込み関数
-	MaterialTex LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& id);
+	MyEngine::Rendering::MaterialTex LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& id);
 
 	// モデル読み込みの関数
-	ModelData LoadModelFile(const std::string& filePath, bool inversion);
+	MyEngine::Rendering::ModelData LoadModelFile(const std::string& filePath, bool inversion);
 
 	// assimpのノードからNode構造体に変換する関数
-	Node ReadNode(aiNode* node);
+	MyEngine::Rendering::Node ReadNode(aiNode* node);
 
 	// アニメーション読み込み関数
 	Animation LoadAnimation(const std::string& directoryPath, const std::string& fileName);
@@ -52,7 +52,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(size_t sizeInBytes);
 
 private:
-	std::vector<std::shared_ptr<ModelData>> models_;
+	std::vector<std::shared_ptr<MyEngine::Rendering::ModelData>> models_;
 	std::unordered_map<std::string, uint32_t> modelPathToIndexMap_;
 	std::unordered_map<std::string, std::shared_ptr<Animation>> animationMap_;
 

@@ -4,16 +4,12 @@
 #include "GameObject.h"
 #include "BaseScene.h"
 #include "TextureManager.h"
-#include "ShaderManager.h"
-#include "Renderer.h"
-#include "RenderSystem.h"
+#include "RenderingModel.h"
 #include "MathFunction.h"
 #include "Material.h"
 #include "CameraOrganizer.h"
 #include "BaseCamera.h"
 #include "GraphicsDevice.h"
-#include "BlendModeManager.h"
-#include "InputLayoutManager.h"
 
 namespace {
 	const uint32_t kVertexNum = 8;
@@ -67,10 +63,6 @@ void SkyboxComponent::Initialize() {
 
 	ID3D12Device* device = context->graphicsDevice->GetDevice();
 
-	// === 各種シェーダーのコンパイル ===
-	vsID_ = context->shaderManager->CompileAndCacheShader(L"Resources/shader/Skybox.VS.hlsl", L"vs_6_0");
-	psID_ = context->shaderManager->CompileAndCacheShader(L"Resources/shader/Skybox.PS.hlsl", L"ps_6_0");
-
 	// === リソースの作成とマッピング ===
 	// 頂点バッファ
 	vertexBuffer_ = CreateBuffer(device, sizeof(SkyboxVertex) * kVertexNum);
@@ -113,32 +105,25 @@ void SkyboxComponent::Initialize() {
 	indexData_[33] = 3; indexData_[34] = 7; indexData_[35] = 6;
 
 	// トランスフォーム行列バッファ
-	matrixBuffer_.Initialize(device);
+	matrixBuffer_ = std::make_unique<ConstantBuffer<TransformMatrixData>>();
+	matrixBuffer_->Initialize(device);
+
+	mesh_.vbView = vbv_;
+	mesh_.ibView = ibv_;
+	mesh_.indexCount = kIndexNum;
+	mesh_.inputLayout = MyEngine::Rendering::InputLayoutType::Skybox;
 
 	// マテリアルの生成と設定
-	material_ = std::make_shared<Material>();
+	material_ = std::make_shared<MyEngine::Rendering::Material>();
 	material_->Initialize(context->graphicsDevice,
-						  context->heapManager,
-						  context->rootSigManager,
-						  context->psoManager,
-						  context->shaderManager,
-						  context->inputLayoutManager,
-						  context->blendModeManager
+						  context->heapManager
 	);
-	material_->SetShader(vsID_, psID_);
+
+	material_->SetShadingModel(MyEngine::Rendering::ShadingModel::Skybox);
 	material_->SetBlendMode(MyEngine::Rendering::BlendModeType::Opaque);
 	material_->SetDoubleSided(true); // カリングを無効化（両面描画）
-	material_->SetInputLayout(MyEngine::Rendering::InputLayoutType::Skybox);
 	material_->SetDepthWrite(false); // 深度の書き込みをしない
 	material_->SetTextureIndex(textureIndex_);
-
-	// PSOの基本設定
-	desc_.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO; // 深度値の書き込みをしない！
-	desc_.VS_ID = vsID_;
-	desc_.PS_ID = psID_;
-	desc_.InputLayoutID = MyEngine::Rendering::InputLayoutType::Skybox;
-	desc_.BlendMode = MyEngine::Rendering::BlendModeType::Opaque;
-	desc_.CullMode = D3D12_CULL_MODE_NONE; // 内側から見るためカリングを無効化
 
 	// デシリアライズ等でテクスチャパスが既に設定されていればロードする
 	if (!texturePath_.empty()) {
@@ -167,22 +152,19 @@ void SkyboxComponent::Update() {
 	transformMatrixData.WVP = Math::Multiply(transformMatrixData.World, cameraData.vp);
 	transformMatrixData.WorldInverseTranspose = Math::MakeIdentity4x4();
 
-	matrixBuffer_.Update(transformMatrixData);
+	matrixBuffer_->Update(transformMatrixData);
 }
 
-void SkyboxComponent::Draw(MyEngine::Rendering::Renderer* renderer) {
-	if (!renderer) return;
-	// テクスチャが未設定、もしくはまだロードされていない場合は描画をスキップ
-	if (texturePath_.empty() || textureIndex_ == 0) return;
-	
-	renderer->Submit(
-		vbv_,
-		ibv_,
-		kIndexNum,
-		matrixBuffer_.GetGPUVirtualAddress(),
-		material_.get(),
-		0 // layer = 0（不透明）
-	);
+const MyEngine::Rendering::Mesh& SkyboxComponent::GetMesh() {
+	return mesh_;
+}
+
+MyEngine::Rendering::Material* SkyboxComponent::GetMaterial() {
+	return material_.get();
+}
+
+D3D12_GPU_VIRTUAL_ADDRESS SkyboxComponent::GetTransformAddress() {
+	return matrixBuffer_->GetGPUVirtualAddress();
 }
 
 void SkyboxComponent::SetTexture(const std::string& filePath) {
@@ -208,6 +190,10 @@ void SkyboxComponent::Deserialize(const json& j) {
 	if (j.contains("texturePath")) {
 		texturePath_ = j["texturePath"];
 	}
+}
+
+MyEngine::Rendering::InputLayoutType SkyboxComponent::GetInputLayoutType() {
+	return MyEngine::Rendering::InputLayoutType::Skybox;
 }
 
 void SkyboxComponent::ImGui() {

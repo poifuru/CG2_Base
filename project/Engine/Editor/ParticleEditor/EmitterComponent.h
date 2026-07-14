@@ -25,7 +25,6 @@ class EmitterComponent : public Component {
 	// 基本ライフサイクル
 	void Initialize() override;
 	void Update() override;
-	void Draw(MyEngine::Rendering::Renderer* renderer) override;
 	void ImGui() override;
 
 	// Jsonへの書き出し

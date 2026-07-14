@@ -6,6 +6,7 @@
 #include "../../../../Engine/Editor/ParticleEditor/ParticleSpawner.h"
 #include "GameDirectorComponent.h"
 #include "BaseScene.h"
+#include "RenderingModel.h"
 
 void BirdEnemyComponent::Initialize() {
 	if (isInitialized_) return;

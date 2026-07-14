@@ -4,6 +4,7 @@
 #include "DeltaTime.h"
 #include "MeshRendererComponent.h"
 #include "CameraOrganizer.h" // 💡 カメラデータ取得用
+#include "BaseCamera.h"
 
 void ParticleComponent::Initialize() {
 	if (isInitialized_) return;

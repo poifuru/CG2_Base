@@ -1,34 +1,28 @@
 #include "PCH.h"
 #include "Model.h"
-#include "Renderer.h"
-#include "RenderSystem.h"
-#include "RenderCommand.h"
-#include "InputLayoutManager.h"
 
-Model::Model() : BaseObject3d() {
+MyEngine::Rendering::Model::Model() : BaseObject3d() {
 }
 
-void Model::Initialize(ModelData* modelData) {
+void MyEngine::Rendering::Model::Model::Initialize(MyEngine::Rendering::ModelData* modelData) {
 	BaseObject3d::Initialize();
 
 	modelData_ = modelData;
-	layer_ = 0; // 不透明
 }
 
-void Model::Draw(MyEngine::Rendering::Renderer* renderer) {
-	if(!modelData_ || !renderer) return;
+MyEngine::Rendering::Material * MyEngine::Rendering::Model::GetMaterial()
+{
+	return material_.get();
+}
 
-	for (size_t i = 0; i < modelData_->meshes.size(); ++i) {
-		auto& mesh = modelData_->meshes[i];
+void MyEngine::Rendering::Model::Model::SetShaders(MyEngine::Rendering::ShadingModel shadingModel)  {
+	if (material_) {
+		material_->SetShadingModel(shadingModel);
+	}
+}
 
-		// ★抽象化された窓口(Submit)に、必要なデータとマテリアルを渡す
-		renderer->Submit(
-			mesh.vbView,
-			mesh.ibView,
-			mesh.indexCount,
-			GetTransformGPUAddress(),
-			material_.get(),
-			layer_
-		);
+void MyEngine::Rendering::Model::Model::SetTextureIndex(uint32_t textureIndex)  {
+	if (material_) {
+		material_->SetTextureIndex(textureIndex);
 	}
 }

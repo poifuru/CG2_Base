@@ -1,12 +1,10 @@
 #pragma once
 #include "Component.h"
-#include <memory>
-#include <string>
-#include <vector>
-#include "Model.h"
 
 namespace MyEngine::Rendering {
 	class Renderer;
+	class Model;
+	class Material;
 }
 
 class NumberDrawerComponent : public Component {
@@ -17,18 +15,21 @@ public:
 		Right
 	};
 
-	NumberDrawerComponent() = default;
-	~NumberDrawerComponent() override = default;
+	NumberDrawerComponent();
+	~NumberDrawerComponent() override;
 
 	void Initialize() override;
 	void Update() override;
-	void Draw(MyEngine::Rendering::Renderer* renderer) override;
 	void ImGui() override;
 
 	void Serialize(json& j) const override;
 	void Deserialize(const json& j) override;
 
 	const char* GetName() const override { return "Number Drawer"; }
+
+	const std::vector<std::unique_ptr<MyEngine::Rendering::Model>>& GetDigitModels() const;
+
+	MyEngine::Rendering::Material* GetMaterial();
 
 	// 値の設定
 	void SetValue(int value);
@@ -65,7 +66,7 @@ private:
 	void UpdateModels();
 
 private:
-	std::vector<std::unique_ptr<Model>> digitModels_;
+	std::vector<std::unique_ptr<MyEngine::Rendering::Model>> digitModels_;
 	std::string texPath_ = "Resources/number_font.png"; // 生成したアトラス画像
 	std::string modelPath_ = "Resources/plane/plane.obj";
 

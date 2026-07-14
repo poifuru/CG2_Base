@@ -7,11 +7,15 @@
 #include "PSOManager.h"
 #include "RenderSystem.h"
 #include "RenderTexture.h"
+#include "RenderingModel.h"
 #include "WindowsAPI.h"
 #include "CameraOrganizer.h"
 #include "MainCameraComponent.h"
 #include "Function.h"
+#include "Model.h"
 #include "Material.h"
+#include "MeshData.h"
+#include "ComponentType.h"
 
 MyEngine::Rendering::Renderer::Renderer() = default;
 MyEngine::Rendering::Renderer::~Renderer() = default;
@@ -23,6 +27,8 @@ void MyEngine::Rendering::Renderer::Initialize(
 	IDxcIncludeHandler* includeHandler,
 	MyEngine::LowLevel::DescriptorHeapManager* heapManager
 ) {
+	device_ = device;
+
 	rootSigManager_ = std::make_unique<MyEngine::Rendering::RootSignatureManager>();
 	rootSigManager_->Initialize(device);
 
@@ -54,6 +60,8 @@ void MyEngine::Rendering::Renderer::Initialize(
 
 	renderTexture_ = std::make_unique<MyEngine::Rendering::RenderTexture>();
 	renderTexture_->Initialize(device, heapManager);
+
+	InitializeShaderTable();
 }
 
 namespace {
@@ -99,30 +107,130 @@ void MyEngine::Rendering::Renderer::RenderScene(ID3D12GraphicsCommandList* cmdLi
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }
 
+void MyEngine::Rendering::Renderer::Draw(std::vector<std::unique_ptr<GameObject>>& objects) {
+	for (auto& obj : objects) {
+		// 3Dモデルの描画
+		if (auto* meshRenderer = obj->GetComponent<MeshRendererComponent>()) {
+			if (auto* model = meshRenderer->GetModel()) {
+				auto* modelData = model->GetModelData();
+				auto* material = model->GetMaterial();
+				auto transformAddr = model->GetTransformGPUAddress();
+				if (modelData && material) {
+					for (const auto& mesh : modelData->meshes) {
+						Submit(mesh, material, transformAddr);
+					}
+				}
+			}
+		}
+		// 2Dスプライトの描画
+		if (auto* spriteComp = obj->GetComponent<SpriteComponent>()) {
+			if (auto* model = spriteComp->GetModel()) {
+				auto* modelData = model->GetModelData();
+				auto* material = model->GetMaterial();
+				auto transformAddr = model->GetTransformGPUAddress();
+				if (modelData && material) {
+					for (const auto& mesh : modelData->meshes) {
+						Submit(mesh, material, transformAddr);
+					}
+				}
+			}
+		}
+		// スカイボックスの描画
+		if (auto* skybox = obj->GetComponent<SkyboxComponent>()) {
+			Submit(
+				skybox->GetMesh(),
+				skybox->GetMaterial(),
+				skybox->GetTransformAddress()
+			);
+		}
+		// ナンバードローワーの描画 
+		if (auto* numDrawer = obj->GetComponent<NumberDrawerComponent>()) {
+			for (const auto& model : numDrawer->GetDigitModels()) {
+				if (model) {
+					auto* modelData = model->GetModelData();
+					auto* material = model->GetMaterial(); 
+					auto transformAddr = model->GetTransformGPUAddress();
+					if (modelData && material) {
+						for (const auto& mesh : modelData->meshes) {
+							Submit(mesh, material, transformAddr);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+uint64_t MyEngine::Rendering::Renderer::MakeShaderKey(
+	MyEngine::Rendering::ShadingModel model,
+	MyEngine::Rendering::InputLayoutType layout
+) {
+	// 上位32bitにShadingModel、下位32bitにInputLayoutTypeを詰める
+	return (static_cast<uint64_t>(model) << 32) | static_cast<uint64_t>(layout);
+}
+
+void MyEngine::Rendering::Renderer::InitializeShaderTable() {
+	// シェーダーテーブルを構築する
+	auto* sm = shaderManager_.get();
+
+	// Standard x Standard3D
+	uint32_t stdVS = sm->CompileAndCacheShader(L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
+	uint32_t stdPS = sm->CompileAndCacheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
+	shaderTable_[MakeShaderKey(ShadingModel::Standard, InputLayoutType::Standard3D)] = { stdVS, stdPS };
+
+	// Skybox x Skybox
+	uint32_t skyVS = sm->CompileAndCacheShader(L"Resources/shader/Skybox.VS.hlsl", L"vs_6_0");
+	uint32_t skyPS = sm->CompileAndCacheShader(L"Resources/shader/Skybox.PS.hlsl", L"ps_6_0");
+	shaderTable_[MakeShaderKey(ShadingModel::Skybox, InputLayoutType::Skybox)] = { skyVS, skyPS };
+}
+
 void MyEngine::Rendering::Renderer::Submit(
-	const D3D12_VERTEX_BUFFER_VIEW& vbView,
-	const D3D12_INDEX_BUFFER_VIEW& ibv,
-	uint32_t indexCount,
-	D3D12_GPU_VIRTUAL_ADDRESS transformGPUAddress,
-	Material* material,
-	uint32_t layer
+	const MyEngine::Rendering::Mesh& mesh,
+	MyEngine::Rendering::Material* material,
+	D3D12_GPU_VIRTUAL_ADDRESS transformAddr
 ) {
 	if (!material) return;
-	// 要求データを RenderCommand に整理
+
+	auto key = MakeShaderKey(material->GetShadingModel(), mesh.inputLayout);
+	auto it = shaderTable_.find(key);
+	assert(it != shaderTable_.end() && "シェーダーが未登録です");
+	const ShaderPair& shaders = it->second;
+
+	// PSODescriptorを組み立てる
+	PSODescriptor desc{};
+	desc.VS_ID         = shaders.vs_ID;
+	desc.PS_ID         = shaders.ps_ID;
+	desc.InputLayoutID = mesh.inputLayout;
+	desc.BlendMode     = material->GetBlendMode();
+	desc.DepthEnable   = material->IsDepthEnable();
+
+	desc.DepthWriteMask = material->IsDepthWrite()
+		? D3D12_DEPTH_WRITE_MASK_ALL
+		: D3D12_DEPTH_WRITE_MASK_ZERO;
+
+	desc.CullMode      = material->IsDoubleSided()
+		? D3D12_CULL_MODE_NONE
+		: D3D12_CULL_MODE_BACK;
+
+	// PSOManagerに渡してPSOを取得（なければ生成・キャッシュ）
+	ID3D12PipelineState* pso = psoManager_->GetOrCreatePSO(
+		device_,
+		desc,
+		rootSigManager_->GetCommonRootSignature(),
+		*shaderManager_,
+		*inputLayoutManager_,
+		*blendModeManager_
+	);
+
+	// RenderCommandに詰めてキューに積む
 	RenderCommand cmd{};
-	cmd.vbView = vbView;
-	cmd.ibv = ibv;
-	cmd.indexCount = indexCount;
-	cmd.transformGPUAddress = transformGPUAddress;
-	cmd.materialIndex = material->GetDescriptorIndex();
-	cmd.textureIndex = material->GetTextureIndex();
-
-	// マテリアルが事前ビルドしたPSOポインタをそのままコピー
-	cmd.pso = material->GetPSO();
-
-	assert(cmd.pso != nullptr); 
-
-	cmd.layer = layer;
-	// 内部の RenderSystem にコマンドを登録
+	cmd.pso                = pso;
+	cmd.vbView             = mesh.vbView;
+	cmd.ibv                = mesh.ibView;
+	cmd.indexCount         = mesh.indexCount;
+	cmd.transformGPUAddress = transformAddr;
+	cmd.materialIndex      = material->GetDescriptorIndex();
+	cmd.textureIndex       = material->GetTextureIndex();
+	cmd.layer              = material->GetLayer();
 	renderSystem_->PushCommand(cmd);
 }

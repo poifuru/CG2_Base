@@ -5,9 +5,12 @@
 #include "ModelFactory.h"
 #include "ModelManager.h"
 #include "TextureManager.h"
-#include "ShaderManager.h"
 #include "CameraOrganizer.h" // カメラ情報を取得するため
-#include "imgui.h"
+#include "Model.h"
+
+MeshRendererComponent::MeshRendererComponent() = default;
+
+MeshRendererComponent::~MeshRendererComponent() = default;
 
 void MeshRendererComponent::Initialize() {
 	if (isInitialized_) return;
@@ -26,13 +29,6 @@ void MeshRendererComponent::Update() {
 	// カメラのデータを取得してモデルをアップデート
 	CameraData& cameraData = CameraOrganizer::GetInstance()->GetCameraData();
 	model_->Update(&cameraData);
-}
-
-void MeshRendererComponent::Draw(MyEngine::Rendering::Renderer* renderer) {
-	if (!model_) return;
-
-	// モデルの描画
-	model_->Draw(renderer);
 }
 
 void MeshRendererComponent::ImGui() {
@@ -148,6 +144,14 @@ void MeshRendererComponent::SetModel(const std::string& modelPath) {
 	if (model_ && gameObject_) {
 		model_->SetParentTransform(&gameObject_->GetTransform());
 	}
+}
+
+MyEngine::Rendering::Model* MeshRendererComponent::GetModel() const {
+	return model_.get();
+}
+
+MyEngine::Rendering::Material* MeshRendererComponent::GetMaterial() const {
+	return model_->GetMaterial();
 }
 
 void MeshRendererComponent::SetTexture(const std::string& textureName) {

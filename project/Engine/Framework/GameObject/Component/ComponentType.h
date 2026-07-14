@@ -10,6 +10,7 @@
 #include "BirdEnemyComponent.h"
 #include "FishEnemyComponent.h"
 #include "EnemyManagerComponent.h"
+#include "SkyboxComponent.h"
 #include "SpriteComponent.h"
 #include "NumberDrawerComponent.h"
 #include "GameDirectorComponent.h"

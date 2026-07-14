@@ -7,7 +7,14 @@
 #include "TextureManager.h"
 #include "WindowsAPI.h"
 #include "MathFunction.h"
-#include "imgui.h"
+#include "BaseCamera.h"
+#include "Model.h"
+#include "Material.h"
+#include "RenderingModel.h"
+
+SpriteComponent::~SpriteComponent() = default;
+
+SpriteComponent::SpriteComponent() = default;
 
 void SpriteComponent::Initialize() {
 	if (isInitialized_) return;
@@ -91,11 +98,6 @@ void SpriteComponent::Update() {
 	model_->Update(&dummyCamera);
 }
 
-void SpriteComponent::Draw(MyEngine::Rendering::Renderer* renderer) {
-	if (!model_) return;
-	model_->Draw(renderer);
-}
-
 void SpriteComponent::ImGui() {
 #ifdef USEIMGUI
 	// テクスチャ
@@ -167,6 +169,14 @@ void SpriteComponent::Deserialize(const json& j) {
 			}
 		}
 	}
+}
+
+MyEngine::Rendering::Model* SpriteComponent::GetModel() const {
+	return model_.get();
+}
+
+MyEngine::Rendering::Material* SpriteComponent::GetMaterial() const {
+	return model_->GetMaterial();
 }
 
 void SpriteComponent::SetTexture(const std::string& textureName) {

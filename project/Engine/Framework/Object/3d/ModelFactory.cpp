@@ -5,33 +5,20 @@
 #include "TextureManager.h"
 #include "GraphicsDevice.h"
 #include "DescriptorHeapManager.h"
-#include "StructuredBuffer.h"
-#include "ShaderManager.h"
 
 void ModelFactory::Initialize(
 	MyEngine::LowLevel::GraphicsDevice* device,
 	MyEngine::LowLevel::DescriptorHeapManager* heapManager,
-	MyEngine::Rendering::RootSignatureManager* rootSigManager, 
-	MyEngine::Rendering::PSOManager* psoManager,
-	MyEngine::Rendering::ShaderManager* shaderManager,
-	MyEngine::Rendering::InputLayoutManager* inputLayoutManager,
-	MyEngine::Rendering::BlendModeManager* blendModeManager,
 	ModelManager* modelManager,
 	TextureManager* textureManager
 ) {
 	device_ = device;
 	heapManager_ = heapManager;
-	rootSigManager_ = rootSigManager;
-	psoManager_ = psoManager;
-	shaderManager_ = shaderManager;
-	inputLayoutManager_ = inputLayoutManager;
-	blendModeManager_ = blendModeManager;
 	modelManager_ = modelManager;
 	textureManager_ = textureManager;
-	shaderManager_ = shaderManager;
 }
 
-std::unique_ptr<Model> ModelFactory::CreateModel(
+std::unique_ptr<MyEngine::Rendering::Model> ModelFactory::CreateModel(
 	uint32_t modelIndex,
 	uint32_t textureIndex
 ) {
@@ -40,7 +27,7 @@ std::unique_ptr<Model> ModelFactory::CreateModel(
 	auto tempModelData = modelData.lock().get();
 
 	// Modelインスタンスを生成（この時点では空）
-	auto model = std::make_unique<Model>();
+	auto model = std::make_unique<MyEngine::Rendering::Model>();
 
 	// 親クラス用のバッファを生成・初期化
 	// Transformバッファをモデルへ設定
@@ -48,24 +35,14 @@ std::unique_ptr<Model> ModelFactory::CreateModel(
 	transformBuffer->Initialize(device_->GetDevice());
 	model->SetTransformBuffer(std::move(transformBuffer));
 
-	// デフォルトのシェーダーIDを取得
-	// シェーダーのコンパイル＆キャッシュ（既存のシェーダーを使用）
-	uint32_t vsID = shaderManager_->CompileAndCacheShader(L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
-	uint32_t psID = shaderManager_->CompileAndCacheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
-
 	// 新しいマテリアルを作成して初期化
-	auto material = std::make_shared<Material>();
+	auto material = std::make_shared<MyEngine::Rendering::Material>();
 	material->Initialize(
 		device_,
-		heapManager_,
-		rootSigManager_,
-		psoManager_,
-		shaderManager_,
-		inputLayoutManager_,
-		blendModeManager_
+		heapManager_
 	);
 	material->SetTextureIndex(textureIndex);
-	material->SetShader(vsID, psID);
+	material->SetShadingModel(MyEngine::Rendering::ShadingModel::Standard);
 	// モデルにマテリアルをセット
 	model->SetMaterial(material);
 

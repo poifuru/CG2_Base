@@ -1,17 +1,7 @@
 #pragma once
+#include "RenderingModel.h"
 
 namespace MyEngine::Rendering {
-	enum class BlendModeType : uint8_t {
-		Opaque,         // 不透明
-		Alpha,          // アルファブレンド
-		Additive,       // 加算合成
-		Subtract,       // 減算合成
-		Multiply,       // 乗算合成
-		Screen,         // スクリーン合成
-
-		Count			// モードの個数
-	};
-
 	class BlendModeManager {
 	public:		//メンバ関数
 		BlendModeManager() = default;

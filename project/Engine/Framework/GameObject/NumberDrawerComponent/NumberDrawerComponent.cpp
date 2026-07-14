@@ -7,7 +7,12 @@
 #include "TextureManager.h"
 #include "WindowsAPI.h"
 #include "MathFunction.h"
-#include "imgui.h"
+#include "BaseCamera.h"
+#include "Model.h"
+
+NumberDrawerComponent::NumberDrawerComponent() = default;
+
+NumberDrawerComponent::~NumberDrawerComponent() = default;
 
 void NumberDrawerComponent::Initialize() {
 	if (isInitialized_) return;
@@ -32,14 +37,6 @@ void NumberDrawerComponent::Update() {
 	if (!gameObject_) return;
 
 	UpdateModels();
-}
-
-void NumberDrawerComponent::Draw(MyEngine::Rendering::Renderer* renderer) {
-	for (auto& model : digitModels_) {
-		if (model) {
-			model->Draw(renderer);
-		}
-	}
 }
 
 void NumberDrawerComponent::ImGui() {
@@ -114,6 +111,10 @@ void NumberDrawerComponent::Deserialize(const json& j) {
 		modelIndex_ = context->modelManager->LoadModelData(modelPath_);
 		SetTexture(texPath_);
 	}
+}
+
+const std::vector<std::unique_ptr<MyEngine::Rendering::Model>>& NumberDrawerComponent::GetDigitModels() const {
+	return digitModels_;
 }
 
 void NumberDrawerComponent::SetValue(int value) {

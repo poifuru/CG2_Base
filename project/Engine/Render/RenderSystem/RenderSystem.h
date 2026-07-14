@@ -7,12 +7,14 @@
 namespace MyEngine::LowLevel{
 	class DescriptorHeapManager;
 }
-class PSOManager;
-class ShaderManager;
-class InputLayoutManager;
-class BlendModeManager;
-class LightManager;
+namespace MyEngine::Rendering {
+	class PSOManager;
+	class ShaderManager;
+	class InputLayoutManager;
+	class BlendModeManager;
+}
 
+class LightManager;
 struct CameraForGPU {
 	Vector3 worldPosition;
 	float padding; // 16バイトアライメント用のパディング
