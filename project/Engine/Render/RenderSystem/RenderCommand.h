@@ -25,6 +25,9 @@ struct RenderCommand {
 	// オブジェクト個別のトランスフォームバッファのGPU仮想アドレス
 	D3D12_GPU_VIRTUAL_ADDRESS transformGPUAddress = 0;
 
+	// オブジェクト固有のカスタム定数バッファのアドレス
+	D3D12_GPU_VIRTUAL_ADDRESS customBufferGPUAddress = 0;
+
 	uint8_t layer = 0;            // 不透明：0、半透明：1 などのソート用
 
 	// デバッグ用の名前を追加

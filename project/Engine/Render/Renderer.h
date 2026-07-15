@@ -63,7 +63,8 @@ namespace MyEngine::Rendering {
 			const MyEngine::Rendering::Mesh& mesh,
 			MyEngine::Rendering::Material* material,
 			D3D12_GPU_VIRTUAL_ADDRESS transformAddr,
-			const char* debugName
+			const char* debugName,
+			D3D12_GPU_VIRTUAL_ADDRESS customAddr = 0
 		);
 
 	private:

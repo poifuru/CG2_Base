@@ -51,7 +51,7 @@ public:
 private:
 	std::unique_ptr<MyEngine::Rendering::Model> model_ = nullptr;
 	std::string modelPath_ = "Resources/AnimatedCube/AnimatedCube.gltf";	// デフォルトモデル
-	std::string texPath_ = "White1x1";		// デフォルトテクスチャ
+	std::string texPath_ = "white1x1";		// デフォルトテクスチャ
 	uint32_t modelIndex_ = 0;
 	uint32_t texIndex_ = 0;
 	bool isDepthEnable_ = true;

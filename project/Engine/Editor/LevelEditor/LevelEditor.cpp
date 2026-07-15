@@ -444,6 +444,10 @@ void LevelEditor::SaveScene(const std::string& fileName,
 		file << sceneJ.dump(4);
 		file.close();
 	}
+
+	// セーブしたファイル名をバッファに記憶する
+	std::string nameOnly = std::filesystem::path(fileName).filename().string();
+	strcpy_s(saveFileName_, nameOnly.c_str());
 }
 
 void LevelEditor::LoadScene(const std::string& fileName, 
@@ -457,6 +461,11 @@ void LevelEditor::LoadScene(const std::string& fileName,
 		json sceneJ;
 		file >> sceneJ;
 		file.close();
+
+		// ロードしたファイル名を保存デフォルト名にする
+		std::string nameOnly = std::filesystem::path(fileName).filename().string();
+		strcpy_s(saveFileName_, nameOnly.c_str());
+
 		if(sceneJ.contains("objects")) {
 			for(const auto& objJ : sceneJ["objects"]) {
 				auto newObj = std::make_unique<GameObject>(context_, objJ["name"]);

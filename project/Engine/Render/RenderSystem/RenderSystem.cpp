@@ -93,6 +93,15 @@ void MyEngine::Rendering::RenderSystem::WriteCommandList(ID3D12GraphicsCommandLi
 		// Slot 0: オブジェクト個別のトランスフォームバッファをバインド
 		cmdList->SetGraphicsRootConstantBufferView(0, cmd.transformGPUAddress);
 
+		// slot 6: カスタムバッファのアドレスがあればバインド
+		if (cmd.customBufferGPUAddress != 0) {
+			cmdList->SetGraphicsRootConstantBufferView(6, cmd.customBufferGPUAddress);
+		}
+		else {
+			// 無ければダミーとしてtransformBufferをセットしてあげる
+			cmdList->SetGraphicsRootConstantBufferView(6, cmd.transformGPUAddress);
+		}
+
 		// Slot 1: マテリアルとテクスチャのバインドレスインデックス
 		uint32_t indices[2] = { cmd.materialIndex, cmd.textureIndex };
 		cmdList->SetGraphicsRoot32BitConstants(1, 2, indices, 0);

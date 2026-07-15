@@ -101,46 +101,49 @@ void MyEngine::Rendering::Renderer::RenderScene(ID3D12GraphicsCommandList* cmdLi
 
 	// RenderTextureへの描画が終わったのでSRVに遷移
 	MyEngine::Utility::TransitionBarrier(
-		cmdList, 
-		renderTexture_->GetResource(), 
+		cmdList,
+		renderTexture_->GetResource(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }
 
 void MyEngine::Rendering::Renderer::Draw(std::vector<std::unique_ptr<GameObject>>& objects) {
-	for (auto& obj : objects) {
+	for(auto& obj : objects) {
 
 		// GameObjectの名前をあらかじめ取得しておく
 		const char* objectName = obj->GetName().c_str();
 
 		// 3Dモデルの描画
-		if (auto* meshRenderer = obj->GetComponent<MeshRendererComponent>()) {
-			if (auto* model = meshRenderer->GetModel()) {
-				auto* modelData = model->GetModelData();
-				auto* material = model->GetMaterial();
-				auto transformAddr = model->GetTransformGPUAddress();
-				if (modelData && material) {
-					for (const auto& mesh : modelData->meshes) {
-						Submit(mesh, material, transformAddr, objectName);
+		if(auto* meshRenderer = obj->GetComponent<MeshRendererComponent>()) {
+			// MeshRendererComponentを継承してるComponentの場合
+			if(!obj->GetComponent<WaterSurfaceComponent>()) {
+				if(auto* model = meshRenderer->GetModel()) {
+					auto* modelData = model->GetModelData();
+					auto* material = model->GetMaterial();
+					auto transformAddr = model->GetTransformGPUAddress();
+					if(modelData && material) {
+						for(const auto& mesh : modelData->meshes) {
+							Submit(mesh, material, transformAddr, objectName);
+						}
 					}
 				}
 			}
 		}
 		// 2Dスプライトの描画
-		if (auto* spriteComp = obj->GetComponent<SpriteComponent>()) {
-			if (auto* model = spriteComp->GetModel()) {
+		if(auto* spriteComp = obj->GetComponent<SpriteComponent>()) {
+			if(auto* model = spriteComp->GetModel()) {
 				auto* modelData = model->GetModelData();
 				auto* material = model->GetMaterial();
 				auto transformAddr = model->GetTransformGPUAddress();
-				if (modelData && material) {
-					for (const auto& mesh : modelData->meshes) {
+				if(modelData && material) {
+					for(const auto& mesh : modelData->meshes) {
 						Submit(mesh, material, transformAddr, objectName);
 					}
 				}
 			}
 		}
 		// スカイボックスの描画
-		if (auto* skybox = obj->GetComponent<SkyboxComponent>()) {
+		if(auto* skybox = obj->GetComponent<SkyboxComponent>()) {
 			Submit(
 				skybox->GetMesh(),
 				skybox->GetMaterial(),
@@ -149,16 +152,32 @@ void MyEngine::Rendering::Renderer::Draw(std::vector<std::unique_ptr<GameObject>
 			);
 		}
 		// ナンバードローワーの描画 
-		if (auto* numDrawer = obj->GetComponent<NumberDrawerComponent>()) {
-			for (const auto& model : numDrawer->GetDigitModels()) {
-				if (model) {
+		if(auto* numDrawer = obj->GetComponent<NumberDrawerComponent>()) {
+			for(const auto& model : numDrawer->GetDigitModels()) {
+				if(model) {
 					auto* modelData = model->GetModelData();
-					auto* material = model->GetMaterial(); 
+					auto* material = model->GetMaterial();
 					auto transformAddr = model->GetTransformGPUAddress();
-					if (modelData && material) {
-						for (const auto& mesh : modelData->meshes) {
+					if(modelData && material) {
+						for(const auto& mesh : modelData->meshes) {
 							Submit(mesh, material, transformAddr, objectName);
 						}
+					}
+				}
+			}
+		}
+		// 水面コンポーネントの描画
+		if(auto* waterComp = obj->GetComponent<WaterSurfaceComponent>()) {
+			if(auto* model = waterComp->GetModel()) {
+				auto* modelData = model->GetModelData();
+				auto* material = model->GetMaterial();
+				auto transformAddr = model->GetTransformGPUAddress();
+				auto customAddr = waterComp->GetCustomBufferAddress();
+
+				if(modelData && material) {
+					for(const auto& mesh : modelData->meshes) {
+						// Submitをオーバーロードするか、引数を拡張して customAddr を渡す
+						Submit(mesh, material, transformAddr, objectName, customAddr);
 					}
 				}
 			}
@@ -190,7 +209,7 @@ void MyEngine::Rendering::Renderer::InitializeShaderTable() {
 
 	// WarterSurface x Standard3D
 	uint32_t watVS = sm->CompileAndCacheShader(L"Resources/shader/WaterSurface.VS.hlsl", L"vs_6_0");
-	uint32_t watPS = sm->CompileAndCacheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
+	uint32_t watPS = sm->CompileAndCacheShader(L"Resources/shader/WaterSurface.PS.hlsl", L"ps_6_0");
 	shaderTable_[MakeShaderKey(ShadingModel::WaterSurface, InputLayoutType::Standard3D)] = { watVS, watPS };
 }
 
@@ -198,9 +217,10 @@ void MyEngine::Rendering::Renderer::Submit(
 	const MyEngine::Rendering::Mesh& mesh,
 	MyEngine::Rendering::Material* material,
 	D3D12_GPU_VIRTUAL_ADDRESS transformAddr,
-	const char* debugName
+	const char* debugName,
+	D3D12_GPU_VIRTUAL_ADDRESS customAddr
 ) {
-	if (!material) return;
+	if(!material) return;
 
 	auto key = MakeShaderKey(material->GetShadingModel(), mesh.inputLayout);
 	auto it = shaderTable_.find(key);
@@ -209,17 +229,17 @@ void MyEngine::Rendering::Renderer::Submit(
 
 	// PSODescriptorを組み立てる
 	PSODescriptor desc{};
-	desc.VS_ID         = shaders.vs_ID;
-	desc.PS_ID         = shaders.ps_ID;
+	desc.VS_ID = shaders.vs_ID;
+	desc.PS_ID = shaders.ps_ID;
 	desc.InputLayoutID = mesh.inputLayout;
-	desc.BlendMode     = material->GetBlendMode();
-	desc.DepthEnable   = material->IsDepthEnable();
+	desc.BlendMode = material->GetBlendMode();
+	desc.DepthEnable = material->IsDepthEnable();
 
 	desc.DepthWriteMask = material->IsDepthWrite()
 		? D3D12_DEPTH_WRITE_MASK_ALL
 		: D3D12_DEPTH_WRITE_MASK_ZERO;
 
-	desc.CullMode      = material->IsDoubleSided()
+	desc.CullMode = material->IsDoubleSided()
 		? D3D12_CULL_MODE_NONE
 		: D3D12_CULL_MODE_BACK;
 
@@ -235,14 +255,15 @@ void MyEngine::Rendering::Renderer::Submit(
 
 	// RenderCommandに詰めてキューに積む
 	RenderCommand cmd{};
-	cmd.pso                = pso;
-	cmd.vbView             = mesh.vbView;
-	cmd.ibv                = mesh.ibView;
-	cmd.indexCount         = mesh.indexCount;
+	cmd.pso = pso;
+	cmd.vbView = mesh.vbView;
+	cmd.ibv = mesh.ibView;
+	cmd.indexCount = mesh.indexCount;
 	cmd.transformGPUAddress = transformAddr;
-	cmd.materialIndex      = material->GetDescriptorIndex();
-	cmd.textureIndex       = material->GetTextureIndex();
-	cmd.layer              = material->GetLayer();
-	cmd.debugName		   = debugName;
+	cmd.customBufferGPUAddress = customAddr;
+	cmd.materialIndex = material->GetDescriptorIndex();
+	cmd.textureIndex = material->GetTextureIndex();
+	cmd.layer = material->GetLayer();
+	cmd.debugName = debugName;
 	renderSystem_->PushCommand(cmd);
 }

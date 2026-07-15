@@ -143,7 +143,7 @@ void MeshRendererComponent::SetModel(const std::string& modelPath) {
 	
 	// モデルの生成（一旦リセットしてから再生成）
 	model_.reset();
-	model_ = context->modelFactory->CreateModel(modelIndex_, 0);
+	model_ = context->modelFactory->CreateModel(modelIndex_, texIndex_);
 
 	if (model_ && gameObject_) {
 		model_->SetParentTransform(&gameObject_->GetTransform());

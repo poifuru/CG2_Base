@@ -70,7 +70,7 @@ protected:
 	MyEngine::Rendering::BlendModeType blendMode_ = MyEngine::Rendering::BlendModeType::Opaque; // 💡 デフォルトは不透明
 
 	bool isDepthEnable_ = true; // デフォルトはデプス有効
-	bool isDoubleSided_ = false; // デフォルトは片面表示（カリング有効）
+	bool isDoubleSided_ = true; // デフォルトは両面表示
 
 	uint8_t layer_ = 0;
 };

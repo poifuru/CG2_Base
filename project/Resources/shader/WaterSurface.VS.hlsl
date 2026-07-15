@@ -7,6 +7,15 @@ struct TransformationMatrix
     float4x4 WorldInverseTranspose;
 };
 
+struct WaterSurfaceInfo
+{
+    float amplitude;    // 振幅(A)
+    float frequency;    // 周波数(w)
+    float steepness;    // 険しさ(Q)
+    float time;         // 時間(t)
+    float2 direction;   // 方向(D)
+};
+
 struct VertexShaderInput
 {
     float4 position : POSITION0;
@@ -15,6 +24,7 @@ struct VertexShaderInput
 };
 
 ConstantBuffer<TransformationMatrix> gTransformationMatrix : register(b0);
+ConstantBuffer<WaterSurfaceInfo> gWaterSurfaceInfo : register(b4);
 
 VertexShaderOutput main(VertexShaderInput input)
 {
@@ -23,12 +33,12 @@ VertexShaderOutput main(VertexShaderInput input)
     // 元の頂点座標をコピー
     float3 position = input.position.xyz;
     
-    // ゲルストナー波のパラメータ（ハードコーディングでテスト）
-    float A = 0.5f; // 振幅（波の高さ）
-    float w = 0.5f; // 周波数（波の細かさ）
-    float2 D = normalize(float2(1.0f, 1.0f)); // 波が進む方向（斜め45度）
-    float Q = 0.5f; // 険しさ（0〜1の間で調整）
-    float t = 0.0f; // 時間（まずは止めた状態にする。後で動かす）
+    // ゲルストナー波のパラメータ
+    float A = gWaterSurfaceInfo.amplitude;
+    float w = gWaterSurfaceInfo.frequency;
+    float Q = gWaterSurfaceInfo.steepness;
+    float t = gWaterSurfaceInfo.time;
+    float2 D = gWaterSurfaceInfo.direction;
     
     // cos / sin の中身を計算
     float theta = w * dot(D, position.xz) + t;

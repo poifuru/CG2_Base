@@ -1,10 +1,8 @@
 #include "PCH.h"
 #include "GameObject.h"
 #include "Component.h"
-#include "imgui.h"
 #include "BaseScene.h"
 #include "ComponentType.h"
-#include "SkyboxComponent.h"
 
 GameObject::GameObject(SceneContext* context, const std::string& name)
 	: context_(context), name_(name) {

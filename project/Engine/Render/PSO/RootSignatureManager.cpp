@@ -5,8 +5,8 @@ void MyEngine::Rendering::RootSignatureManager::Initialize (ID3D12Device* device
 	assert(device != nullptr);
 	HRESULT hr = S_OK;
 
-	// === 共通ルートパラメータの設定（6スロット） ===
-	D3D12_ROOT_PARAMETER rootParameters[6] = {};
+	// === 共通ルートパラメータの設定（7スロット） ===
+	D3D12_ROOT_PARAMETER rootParameters[7] = {};
 
 	// Slot0 : オブジェクト個別トランスフォームバッファ (b0, space0) -> Vertex, Pixel両方から見えるようにする
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -60,6 +60,12 @@ void MyEngine::Rendering::RootSignatureManager::Initialize (ID3D12Device* device
 	rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 	rootParameters[5].Descriptor.ShaderRegister = 3;
 	rootParameters[5].Descriptor.RegisterSpace = 0;
+
+	// Slot6 : オブジェクト固有のカスタム定数バッファ
+	rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParameters[6].Descriptor.ShaderRegister = 4;
+	rootParameters[6].Descriptor.RegisterSpace = 0;
 
 	// --- 静的サンプラーの設定（s0, space0） --- //
 	D3D12_STATIC_SAMPLER_DESC staticSampler{};

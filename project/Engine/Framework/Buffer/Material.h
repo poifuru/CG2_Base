@@ -78,7 +78,7 @@ namespace MyEngine::Rendering {
 		MyEngine::Rendering::BlendModeType blendMode_ = MyEngine::Rendering::BlendModeType::Opaque;
 
 		bool isDepthEnable_ = true;
-		bool isDoubleSided_ = false;
+		bool isDoubleSided_ = true;
 		bool depthWriteEnable_ = true;
 		uint8_t layer_ = 0;
 
