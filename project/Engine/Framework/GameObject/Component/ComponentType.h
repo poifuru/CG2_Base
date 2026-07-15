@@ -14,3 +14,4 @@
 #include "SpriteComponent.h"
 #include "NumberDrawerComponent.h"
 #include "GameDirectorComponent.h"
+#include "WaterSurfaceComponent.h"

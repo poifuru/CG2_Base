@@ -6,10 +6,11 @@ namespace MyEngine::Rendering {
 	struct MaterialData {
 		Vector4 color;
 		Matrix4x4 uvTransform;
-		float roughness; // 粗さ
-		float metallic; // 金属度
+		float roughness;	// 粗さ
+		float metallic;		// 金属度
 		float environmentCoefficient;	// 環境係数
 		BOOL enableLighting;
+		float time = 0.0f;	// 経過時間
 	};
 
 	// テクスチャのファイルパス保存用

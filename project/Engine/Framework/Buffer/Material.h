@@ -67,6 +67,7 @@ namespace MyEngine::Rendering {
 		void SetMetallic(float m) { data_.metallic = m; isDirty_ = true; }
 		void SetEnvironmentCoefficient(float e) { data_.environmentCoefficient = e; isDirty_ = true; }
 		void SetEnableLighting(BOOL flag) { data_.enableLighting = flag; isDirty_ = true; }
+		void SetTime(float time) { data_.time = time; isDirty_ = true; }
 
 		// ImGuiでのパラメータ変更用
 		const MaterialData& GetMaterialData() const { return data_; }

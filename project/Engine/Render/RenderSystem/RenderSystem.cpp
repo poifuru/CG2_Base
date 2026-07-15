@@ -83,6 +83,9 @@ void MyEngine::Rendering::RenderSystem::WriteCommandList(ID3D12GraphicsCommandLi
 			lastPSO = currentPSO;
 		}
 
+		// ドローコールの前にイベントを開始
+		PIXBeginEvent(cmdList, PIX_COLOR(100, 150, 255), cmd.debugName);
+
 		// メッシュのバインド
 		cmdList->IASetVertexBuffers(0, 1, &cmd.vbView);
 		cmdList->IASetIndexBuffer(&cmd.ibv);
@@ -96,6 +99,9 @@ void MyEngine::Rendering::RenderSystem::WriteCommandList(ID3D12GraphicsCommandLi
 
 		// ドローコール
 		cmdList->DrawIndexedInstanced(cmd.indexCount, 1, 0, 0, 0);
+
+		// ドローコールが終わったら即座に閉じる！
+		PIXEndEvent(cmdList);
 	}
 }
 

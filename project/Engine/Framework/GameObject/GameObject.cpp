@@ -51,9 +51,40 @@ void GameObject::ImGui() {
 	}
 
 	// 各コンポーネントのImGui描画（折りたたみヘッダーで表示）
-	for (auto& component : components_) {
-		if (ImGui::CollapsingHeader(component->GetName(), ImGuiTreeNodeFlags_DefaultOpen)) {
+	for (auto it = components_.begin(); it != components_.end(); ) {
+		auto& component = *it;
+		bool isDeleted = false;
+
+		ImGui::PushID(component.get());
+		bool open = false;
+		// 2列のテーブルを作成（境界線なし、幅は自動引き伸ばし）
+		if (ImGui::BeginTable("ComponentHeaderTable", 2, ImGuiTableFlags_NoSavedSettings)) {
+			// 1列目（ヘッダー用）は引き伸ばし、2列目（ボタン用）は25ピクセル固定
+			ImGui::TableSetupColumn("Header", ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableSetupColumn("Button", ImGuiTableColumnFlags_WidthFixed, 25.0f);
+			ImGui::TableNextRow();
+			// 1列目に移動してヘッダーを描画
+			ImGui::TableNextColumn();
+			open = ImGui::CollapsingHeader(component->GetName(), ImGuiTreeNodeFlags_DefaultOpen);
+			// 2列目に移動してXボタンを描画
+			ImGui::TableNextColumn();
+			if (ImGui::Button("X", ImVec2(20, 20))) {
+				isDeleted = true;
+			}
+			ImGui::EndTable();
+		}
+		// ヘッダーの中身はテーブルの外側でウィンドウ幅いっぱいに描画する
+		if (open) {
 			component->ImGui();
+		}
+		ImGui::PopID();
+
+
+		// 安全に要素を削除してループを回す
+		if (isDeleted) {
+			it = components_.erase(it);
+		} else {
+			++it;
 		}
 	}
 
@@ -182,7 +213,6 @@ void GameObject::ImGui() {
 		else {
 			ImGui::TextDisabled("Enemy Manager Component (Already Added)");
 		}
-
 		// スカイボックスコンポーネント
 		if(GetComponent<SkyboxComponent>() == nullptr) {
 			if(ImGui::MenuItem("Skybox Component")) {
@@ -193,7 +223,6 @@ void GameObject::ImGui() {
 		else {
 			ImGui::TextDisabled("Skybox Component (Already Added)");
 		}
-
 		// スプライトコンポーネント
 		if(GetComponent<SpriteComponent>() == nullptr) {
 			if(ImGui::MenuItem("Sprite Component")) {
@@ -204,7 +233,6 @@ void GameObject::ImGui() {
 		else {
 			ImGui::TextDisabled("Sprite Component (Already Added)");
 		}
-
 		// ナンバー表示コンポーネント
 		if(GetComponent<NumberDrawerComponent>() == nullptr) {
 			if(ImGui::MenuItem("Number Drawer Component")) {
@@ -215,7 +243,6 @@ void GameObject::ImGui() {
 		else {
 			ImGui::TextDisabled("Number Drawer Component (Already Added)");
 		}
-
 		// ゲームディレクターコンポーネント
 		if(GetComponent<GameDirectorComponent>() == nullptr) {
 			if(ImGui::MenuItem("Game Director Component")) {
@@ -225,6 +252,16 @@ void GameObject::ImGui() {
 		}
 		else {
 			ImGui::TextDisabled("Game Director Component (Already Added)");
+		}
+		// 水面コンポーネント
+		if(GetComponent<WaterSurfaceComponent>() == nullptr) {
+			if(ImGui::MenuItem("Water Surface Component")) {
+				auto* newComp = AddComponent<WaterSurfaceComponent>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Water Surface Component (Already Added)");
 		}
 
 		// コンポーネントが増えたらここに
@@ -351,6 +388,11 @@ void GameObject::Deserialize(const json& j) {
 			else if(type == "GameDirectorComponent") {
 				auto* comp = GetComponent<GameDirectorComponent>();
 				if(!comp) comp = AddComponent<GameDirectorComponent>();
+				comp->Deserialize(compJ);
+			}
+			else if(type == "WaterSurfaceComponent") {
+				auto* comp = GetComponent<WaterSurfaceComponent>();
+				if(!comp) comp = AddComponent<WaterSurfaceComponent>();
 				comp->Deserialize(compJ);
 			}
 		}

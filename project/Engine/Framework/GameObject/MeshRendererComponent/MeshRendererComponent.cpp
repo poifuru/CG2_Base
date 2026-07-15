@@ -76,6 +76,7 @@ void MeshRendererComponent::Serialize(json& j) const {
 			j["material"]["metallic"] = matData.metallic;
 			j["material"]["environmentCoefficient"] = matData.environmentCoefficient;
 			j["material"]["enableLighting"] = matData.enableLighting;
+			j["material"]["time"] = matData.time;
 
 			const auto& uv = material->GetUvTransform();
 			j["material"]["uvTransform"]["scale"] = { uv.scale.x, uv.scale.y, uv.scale.z };
@@ -113,6 +114,9 @@ void MeshRendererComponent::Deserialize(const json& j) {
 			}
 			if (matJ.contains("enableLighting")) {
 				material->SetEnableLighting(matJ["enableLighting"]);
+			}
+			if(matJ.contains("time")) {
+				material->SetTime(matJ["time"]);
 			}
 			if (matJ.contains("uvTransform")) {
 				const auto& uvJ = matJ["uvTransform"];

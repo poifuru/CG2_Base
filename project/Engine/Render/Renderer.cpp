@@ -109,6 +109,10 @@ void MyEngine::Rendering::Renderer::RenderScene(ID3D12GraphicsCommandList* cmdLi
 
 void MyEngine::Rendering::Renderer::Draw(std::vector<std::unique_ptr<GameObject>>& objects) {
 	for (auto& obj : objects) {
+
+		// GameObjectの名前をあらかじめ取得しておく
+		const char* objectName = obj->GetName().c_str();
+
 		// 3Dモデルの描画
 		if (auto* meshRenderer = obj->GetComponent<MeshRendererComponent>()) {
 			if (auto* model = meshRenderer->GetModel()) {
@@ -117,7 +121,7 @@ void MyEngine::Rendering::Renderer::Draw(std::vector<std::unique_ptr<GameObject>
 				auto transformAddr = model->GetTransformGPUAddress();
 				if (modelData && material) {
 					for (const auto& mesh : modelData->meshes) {
-						Submit(mesh, material, transformAddr);
+						Submit(mesh, material, transformAddr, objectName);
 					}
 				}
 			}
@@ -130,7 +134,7 @@ void MyEngine::Rendering::Renderer::Draw(std::vector<std::unique_ptr<GameObject>
 				auto transformAddr = model->GetTransformGPUAddress();
 				if (modelData && material) {
 					for (const auto& mesh : modelData->meshes) {
-						Submit(mesh, material, transformAddr);
+						Submit(mesh, material, transformAddr, objectName);
 					}
 				}
 			}
@@ -140,7 +144,8 @@ void MyEngine::Rendering::Renderer::Draw(std::vector<std::unique_ptr<GameObject>
 			Submit(
 				skybox->GetMesh(),
 				skybox->GetMaterial(),
-				skybox->GetTransformAddress()
+				skybox->GetTransformAddress(),
+				objectName
 			);
 		}
 		// ナンバードローワーの描画 
@@ -152,7 +157,7 @@ void MyEngine::Rendering::Renderer::Draw(std::vector<std::unique_ptr<GameObject>
 					auto transformAddr = model->GetTransformGPUAddress();
 					if (modelData && material) {
 						for (const auto& mesh : modelData->meshes) {
-							Submit(mesh, material, transformAddr);
+							Submit(mesh, material, transformAddr, objectName);
 						}
 					}
 				}
@@ -182,12 +187,18 @@ void MyEngine::Rendering::Renderer::InitializeShaderTable() {
 	uint32_t skyVS = sm->CompileAndCacheShader(L"Resources/shader/Skybox.VS.hlsl", L"vs_6_0");
 	uint32_t skyPS = sm->CompileAndCacheShader(L"Resources/shader/Skybox.PS.hlsl", L"ps_6_0");
 	shaderTable_[MakeShaderKey(ShadingModel::Skybox, InputLayoutType::Skybox)] = { skyVS, skyPS };
+
+	// WarterSurface x Standard3D
+	uint32_t watVS = sm->CompileAndCacheShader(L"Resources/shader/WaterSurface.VS.hlsl", L"vs_6_0");
+	uint32_t watPS = sm->CompileAndCacheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
+	shaderTable_[MakeShaderKey(ShadingModel::WaterSurface, InputLayoutType::Standard3D)] = { watVS, watPS };
 }
 
 void MyEngine::Rendering::Renderer::Submit(
 	const MyEngine::Rendering::Mesh& mesh,
 	MyEngine::Rendering::Material* material,
-	D3D12_GPU_VIRTUAL_ADDRESS transformAddr
+	D3D12_GPU_VIRTUAL_ADDRESS transformAddr,
+	const char* debugName
 ) {
 	if (!material) return;
 
@@ -232,5 +243,6 @@ void MyEngine::Rendering::Renderer::Submit(
 	cmd.materialIndex      = material->GetDescriptorIndex();
 	cmd.textureIndex       = material->GetTextureIndex();
 	cmd.layer              = material->GetLayer();
+	cmd.debugName		   = debugName;
 	renderSystem_->PushCommand(cmd);
 }

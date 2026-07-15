@@ -9,8 +9,8 @@
 #include "RawInput.h"
 #include "CollisionManager.h"
 #include "GraphicsDevice.h"
-#include "Model.h"
-#include "MeshData.h"
+#include "ModelManager.h"
+#include "WaterSurfaceComponent.h"
 
 PlayScene::PlayScene() = default;
 PlayScene::~PlayScene() = default;

@@ -27,6 +27,9 @@
 
 #include <d3dx12.h>         // Microsoft公式のDX12補助構造体（※別途ダウンロードが必要な場合あり）
 
+// PIX
+#include <pix3.h>
+
 // XInput
 #include <Xinput.h>
 #pragma comment(lib, "Xinput.lib")

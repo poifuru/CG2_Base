@@ -26,4 +26,7 @@ struct RenderCommand {
 	D3D12_GPU_VIRTUAL_ADDRESS transformGPUAddress = 0;
 
 	uint8_t layer = 0;            // 不透明：0、半透明：1 などのソート用
+
+	// デバッグ用の名前を追加
+	const char* debugName = "Unknown Object";
 };

@@ -62,7 +62,8 @@ namespace MyEngine::Rendering {
 		void Submit(
 			const MyEngine::Rendering::Mesh& mesh,
 			MyEngine::Rendering::Material* material,
-			D3D12_GPU_VIRTUAL_ADDRESS transformAddr
+			D3D12_GPU_VIRTUAL_ADDRESS transformAddr,
+			const char* debugName
 		);
 
 	private:

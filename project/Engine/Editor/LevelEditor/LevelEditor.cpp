@@ -35,7 +35,11 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 	ImGui::SameLine();
 
 	if(ImGui::Button("シーン読み込み")) {
-		ImGui::OpenPopup("シーン読み込み"); // ポップアップを開くトリガー
+		ImGui::OpenPopup("シーン読み込み");
+	}
+
+	if(ImGui::Button("新規シーン")) {
+		ImGui::OpenPopup("新規シーン作成確認");
 	}
 
 	ImGui::Separator();
@@ -123,6 +127,25 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 			ImGui::CloseCurrentPopup(); // ポップアップを閉じる
 		}
 
+		ImGui::EndPopup();
+	}
+
+	// 新規シーン作成の確認用モーダル
+	if (ImGui::BeginPopupModal("新規シーン作成確認", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		ImGui::Text("現在のシーンのGameObjectはすべて破棄されます。\nよろしいですか？");
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+		if (ImGui::Button("作成", ImVec2(120, 0))) {
+			gameObjects.clear();          // 全オブジェクト削除
+			selectedObject = nullptr;     // 選択中のポインタをクリア
+			strcpy_s(saveFileName_, "defaultScene.json"); // 保存ファイル名もデフォルトに戻す
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("キャンセル", ImVec2(120, 0))) {
+			ImGui::CloseCurrentPopup();
+		}
 		ImGui::EndPopup();
 	}
 

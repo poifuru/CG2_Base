@@ -3,12 +3,13 @@
 namespace MyEngine::Rendering {
 	// マテリアルの状態定義
 	enum class ShadingModel : uint8_t {
-		Standard,	// 通常のPBRレンダリング
-		UnLighting,	// ライティング無し
-		Skybox,		// スカイボックス
-		Particle,	// パーティクル
+		Standard,		// 通常のPBRレンダリング
+		UnLighting,		// ライティング無し
+		Skybox,			// スカイボックス
+		Particle,		// パーティクル
+		WaterSurface,	// 水面
 
-		Count		// 設定の個数
+		Count			// 設定の個数
 	};
 
 	// ブレンドモードの定義

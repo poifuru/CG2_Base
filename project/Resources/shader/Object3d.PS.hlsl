@@ -14,6 +14,7 @@ struct MaterialData
     float metallic; // 金属度
     float environmentCoefficient;	// 環境係数
     int enableLighting;
+    float time;
 };
 
 struct LightCount
@@ -144,11 +145,11 @@ PixelShaderOutput main(VertexShaderOutput input)
 {
     PixelShaderOutput output;
     
-    // 1. バインドレスマテリアルの取得
+    // バインドレスマテリアルの取得
     uint matIdx = g_Indices.materialIndex;
     MaterialData myMaterial = g_BindlessBuffers[matIdx][0];
     
-    // 2. バインドレステクスチャのサンプリング
+    // バインドレステクスチャのサンプリング
     uint texIdx = g_Indices.textureIndex;
     float4 transformedUV = mul(float4(input.texcoord, 0.0f, 1.0f), myMaterial.uvTransform);
     float4 textureColor = g_Textures[texIdx].Sample(gSampler, transformedUV.xy);

@@ -107,6 +107,7 @@
     <ClCompile Include="Engine\Core\LowLevel\GraphicsCommand\GraphicsCommandCreator.cpp" />
     <ClCompile Include="Engine\Render\Renderer.cpp" />
     <ClCompile Include="Engine\Render\PSO\RenderingModel.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\WaterSurfaceComponent\WaterSurfaceComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -243,6 +244,7 @@
     <ClInclude Include="Engine\Core\LowLevel\GraphicsCommand\GraphicsCommandCreator.h" />
     <ClInclude Include="Engine\Render\Renderer.h" />
     <ClInclude Include="Engine\Render\PSO\RenderingModel.h" />
+    <ClInclude Include="Engine\Framework\GameObject\WaterSurfaceComponent\WaterSurfaceComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />
@@ -293,7 +295,7 @@
     <None Include="Resources\shader\Sprite.hlsli" />
     <None Include="Resources\shader\Skybox.hlsli" />
     <None Include="Resources\shader\Fullscreen.hlsli" />
-    <None Include="Resources\shader\Triangle.hlsli" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

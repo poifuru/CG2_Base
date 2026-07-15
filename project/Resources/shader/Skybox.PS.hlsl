@@ -13,6 +13,7 @@ struct MaterialData
     float metallic; // 金属度
     float environmentCoefficient;	// 環境係数
     int enableLighting;
+    float time;
 };
 
 // 【Slot 1 (space0)】: インデックス定数
