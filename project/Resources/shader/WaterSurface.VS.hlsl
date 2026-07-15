@@ -21,7 +21,7 @@ VertexShaderOutput main(VertexShaderInput input)
     VertexShaderOutput output;
     
     // 元の頂点座標をコピー
-    float4 position = input.position;
+    float3 position = input.position.xyz;
     
     // ゲルストナー波のパラメータ（ハードコーディングでテスト）
     float A = 0.5f; // 振幅（波の高さ）
@@ -38,15 +38,26 @@ VertexShaderOutput main(VertexShaderInput input)
     position.z += Q * A * D.y * cos(theta);
     position.y += A * sin(theta);
     
+    // w成分(1.0f)を新たに追加して4次元ベクトルを完成させる
+    float4 finalPosition = float4(position, 1.0f);
+    
     // 変形後の座標をWVP変換
-    output.position = mul(position, gTransformationMatrix.WVP);
+    output.position = mul(finalPosition, gTransformationMatrix.WVP);
     output.texcoord = input.texcoord;
     
     // 法線は一旦そのまま
     float3 worldNormal = mul(input.normal, (float3x3) gTransformationMatrix.WorldInverseTranspose);
-    output.normal = normalize(worldNormal);
+    // 安全な正規化（ゼロベクトルの場合は上方向 (0, 1, 0) にする）
+    if (length(worldNormal) > 0.0001f)
+    {
+        output.normal = normalize(worldNormal);
+    }
+    else
+    {
+        output.normal = float3(0.0f, 1.0f, 0.0f); // デフォルトの上向き法線
+    }
     
-    output.worldPosition = mul(position, gTransformationMatrix.World).xyz;
+    output.worldPosition = mul(finalPosition, gTransformationMatrix.World).xyz;
     
 	return output;
 }
