@@ -9,11 +9,20 @@ struct TransformationMatrix
 
 struct WaterSurfaceInfo
 {
-    float amplitude;    // 振幅(A)
-    float frequency;    // 周波数(w)
-    float steepness;    // 険しさ(Q)
-    float time;         // 時間(t)
-    float2 direction;   // 方向(D)
+    float amplitude; // 振幅(A)
+    float frequency; // 周波数(w)
+    float steepness; // 険しさ(Q)
+    float padding;
+    float2 direction; // 方向(D)
+    float2 padding1;
+};
+
+struct WaterSurface
+{
+    WaterSurfaceInfo waves[4]; // 4つの波の情報（32バイト * 4 = 128バイト）
+    float time; // 時間
+    int numActiveWaves; // 現在有効にする波の数（1〜4）
+    float padding3[2]; // 16バイト境界に合わせるための余白
 };
 
 struct VertexShaderInput
@@ -24,7 +33,7 @@ struct VertexShaderInput
 };
 
 ConstantBuffer<TransformationMatrix> gTransformationMatrix : register(b0);
-ConstantBuffer<WaterSurfaceInfo> gWaterSurfaceInfo : register(b4);
+ConstantBuffer<WaterSurface> gWaterSurface : register(b4);
 
 VertexShaderOutput main(VertexShaderInput input)
 {
@@ -33,20 +42,46 @@ VertexShaderOutput main(VertexShaderInput input)
     // 元の頂点座標をコピー
     float3 position = input.position.xyz;
     
-    // ゲルストナー波のパラメータ
-    float A = gWaterSurfaceInfo.amplitude;
-    float w = gWaterSurfaceInfo.frequency;
-    float Q = gWaterSurfaceInfo.steepness;
-    float t = gWaterSurfaceInfo.time;
-    float2 D = gWaterSurfaceInfo.direction;
+     // 複数の波の変位を累積する変数
+    float3 waveOffset = float3(0.0f, 0.0f, 0.0f);
     
-    // cos / sin の中身を計算
-    float theta = w * dot(D, position.xz) + t;
+    // 接線と従法線の初期値(変形前はそれぞれX方向、Z方向)
+    float3 tangent = float3(1.0f, 0.0f, 0.0f);
+    float3 binormal = float3(0.0f, 0.0f, 1.0f);
     
-    // 水平方向(x, z)と高さ方向(y)のズレを計算して適用
-    position.x += Q * A * D.x * cos(theta);
-    position.z += Q * A * D.y * cos(theta);
-    position.y += A * sin(theta);
+    for (int i = 0; i < gWaterSurface.numActiveWaves; ++i)
+    {
+        // ゲルストナー波のパラメータ
+        float A = gWaterSurface.waves[i].amplitude;
+        float w = gWaterSurface.waves[i].frequency;
+        float Q = gWaterSurface.waves[i].steepness;
+        float t = gWaterSurface.time;
+        float2 D = gWaterSurface.waves[i].direction;
+    
+        // cos / sin の中身を計算
+        float theta = w * dot(D, position.xz) + t;
+        
+        float sinTheta = sin(theta);
+        float cosTheta = cos(theta);
+    
+        // 水平方向(x, z)と高さ方向(y)のズレを計算して適用
+        waveOffset.x += Q * A * D.x * cos(theta);
+        waveOffset.z += Q * A * D.y * cos(theta);
+        waveOffset.y += A * sin(theta);
+        
+        // 接線ベクトル（X方向の偏微分）の累積
+        tangent.x -= Q * A * D.x * D.x * w * sinTheta;
+        tangent.y += A * D.x * w * cosTheta;
+        tangent.z -= Q * A * D.x * D.y * w * sinTheta;
+        
+        // 従法線ベクトル（Z方向の偏微分）の累積
+        binormal.x -= Q * A * D.x * D.y * w * sinTheta;
+        binormal.y += A * D.y * w * cosTheta;
+        binormal.z -= Q * A * D.y * D.y * w * sinTheta;
+    }
+    
+     // 累積した変位を適用
+    position += waveOffset;
     
     // w成分(1.0f)を新たに追加して4次元ベクトルを完成させる
     float4 finalPosition = float4(position, 1.0f);
@@ -55,19 +90,15 @@ VertexShaderOutput main(VertexShaderInput input)
     output.position = mul(finalPosition, gTransformationMatrix.WVP);
     output.texcoord = input.texcoord;
     
-    // 法線は一旦そのまま
-    float3 worldNormal = mul(input.normal, (float3x3) gTransformationMatrix.WorldInverseTranspose);
-    // 安全な正規化（ゼロベクトルの場合は上方向 (0, 1, 0) にする）
-    if (length(worldNormal) > 0.0001f)
-    {
-        output.normal = normalize(worldNormal);
-    }
-    else
-    {
-        output.normal = float3(0.0f, 1.0f, 0.0f); // デフォルトの上向き法線
-    }
+    // 二つのベクトルの外積から法線を計算して正規化する
+    // 左手系において、binormal × tangent で上向きの法線が求まる
+    float3 localNormal = normalize(cross(binormal, tangent));
+    
+    // 法線をワールド空間に変換してピクセルシェーダーに渡す
+    float3 worldNormal = mul(localNormal, (float3x3) gTransformationMatrix.WorldInverseTranspose);
+    output.normal = normalize(worldNormal);
     
     output.worldPosition = mul(finalPosition, gTransformationMatrix.World).xyz;
     
-	return output;
+    return output;
 }

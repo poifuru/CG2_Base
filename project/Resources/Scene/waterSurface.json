@@ -38,13 +38,13 @@
             "name": "MainCamera",
             "transform": {
                 "position": [
-                    -61.315792083740234,
-                    33.06290054321289,
-                    -62.353240966796875
+                    -6.489535808563232,
+                    20.1575870513916,
+                    96.68553924560547
                 ],
                 "rotation": [
-                    0.3649977743625641,
-                    0.8119890093803406,
+                    0.253997802734375,
+                    3.1299898624420166,
                     0.0
                 ],
                 "scale": [
@@ -67,13 +67,13 @@
             "name": "DebugCamera",
             "transform": {
                 "position": [
-                    -61.315792083740234,
-                    33.06290054321289,
-                    -62.353240966796875
+                    -6.489535808563232,
+                    20.1575870513916,
+                    96.68553924560547
                 ],
                 "rotation": [
-                    0.3649977743625641,
-                    0.8119890093803406,
+                    0.253997802734375,
+                    3.1299898624420166,
                     0.0
                 ],
                 "scale": [
@@ -98,7 +98,7 @@
                         "environmentCoefficient": 0.30000001192092896,
                         "metallic": 0.0,
                         "roughness": 0.10000000149011612,
-                        "time": 27.166423797607422,
+                        "time": 52.182708740234375,
                         "uvTransform": {
                             "rotation": [
                                 0.0,
@@ -118,17 +118,47 @@
                         }
                     },
                     "modelPath": "Resources/WaterSurface/waterSurface.obj",
-                    "texPath": "Resources/WaterSurface/waterSurface.png",
+                    "numActiveWaves": 2,
+                    "texPath": "Resources/WaterSurface/waterSurface_normal (2).png",
                     "type": "WaterSurfaceComponent",
-                    "wave": {
-                        "amplitude": 0.30000001192092896,
-                        "direction": [
-                            0.7108169198036194,
-                            0.7033771276473999
-                        ],
-                        "frequency": 0.5,
-                        "steepness": 0.6000000238418579
-                    }
+                    "waves": [
+                        {
+                            "amplitude": 0.30000001192092896,
+                            "direction": [
+                                0.7071067690849304,
+                                0.7071067690849304
+                            ],
+                            "frequency": 0.4000000059604645,
+                            "steepness": 0.5
+                        },
+                        {
+                            "amplitude": 0.10000000149011612,
+                            "direction": [
+                                -0.7071067690849304,
+                                0.7071067690849304
+                            ],
+                            "frequency": 1.2000000476837158,
+                            "steepness": 0.30000001192092896
+                        },
+                        {
+                            "amplitude": 0.0,
+                            "direction": [
+                                1.0,
+                                0.0
+                            ],
+                            "frequency": 1.0,
+                            "steepness": 0.0
+                        },
+                        {
+                            "amplitude": 0.0,
+                            "direction": [
+                                1.0,
+                                0.0
+                            ],
+                            "frequency": 1.0,
+                            "steepness": 0.0
+                        }
+                    ]
                 }
             ],
             "name": "WaterSurface",
@@ -136,7 +166,7 @@
                 "position": [
                     -0.21548843383789063,
                     0.0,
-                    0.0
+                    3.5878214836120605
                 ],
                 "rotation": [
                     0.0,
@@ -215,6 +245,64 @@
                     1.0,
                     1.0,
                     1.0
+                ]
+            }
+        },
+        {
+            "components": [
+                {
+                    "isDepthEnable": true,
+                    "material": {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "enableLighting": 1,
+                        "environmentCoefficient": 0.30000001192092896,
+                        "metallic": 0.0,
+                        "roughness": 0.5,
+                        "time": 0.0,
+                        "uvTransform": {
+                            "rotation": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "translation": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ]
+                        }
+                    },
+                    "modelPath": "Resources/plane/plane.obj",
+                    "texPath": "white1x1",
+                    "type": "MeshRendererComponent"
+                }
+            ],
+            "name": "jimenn",
+            "transform": {
+                "position": [
+                    0.0,
+                    -1.5545883178710938,
+                    -0.0012380643747746944
+                ],
+                "rotation": [
+                    -1.5307947397232056,
+                    -0.0,
+                    0.0
+                ],
+                "scale": [
+                    40.686561584472656,
+                    50.000022888183594,
+                    0.9999997615814209
                 ]
             }
         }

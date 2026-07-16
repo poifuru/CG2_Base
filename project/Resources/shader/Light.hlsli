@@ -128,7 +128,7 @@ float3 toEye
         float G = GeometrySmith(N, V, L, roughness);
         float3 F = FresnelSchlick(saturate(dot(H, V)), F0);
 
-        float3 specular = (D * G * F) / (4.0f * saturate(dot(N, V)) * saturate(dot(N, L)) + 0.0001f);
+        float3 specular = (D * G * F) / max(4.0f * saturate(dot(N, V)) * saturate(dot(N, L)), 0.01f);
         float3 kD = (float3(1.0f, 1.0f, 1.0f) - F) * (1.0f - metallic);
         float3 diffuse = kD * albedo / PI;
 
@@ -198,7 +198,7 @@ float3 toEye
         float G = GeometrySmith(N, V, L, roughness);
         float3 F = FresnelSchlick(saturate(dot(H, V)), F0);
 
-        float3 specular = (D * G * F) / (4.0f * saturate(dot(N, V)) * saturate(dot(N, L)) + 0.0001f);
+        float3 specular = (D * G * F) / max(4.0f * saturate(dot(N, V)) * saturate(dot(N, L)), 0.01f);
         float3 kD = (float3(1.0f, 1.0f, 1.0f) - F) * (1.0f - metallic);
         float3 diffuse = kD * albedo / PI;
 
@@ -279,7 +279,7 @@ float3 worldNormal
         float G = GeometrySmith(N, V, L, roughness);
         float3 F = FresnelSchlick(saturate(dot(H, V)), F0);
 
-        float3 specular = (D * G * F) / (4.0f * saturate(dot(N, V)) * saturate(dot(N, L)) + 0.0001f);
+        float3 specular = (D * G * F) / max(4.0f * saturate(dot(N, V)) * saturate(dot(N, L)), 0.01f);
         float3 kD = (float3(1.0f, 1.0f, 1.0f) - F) * (1.0f - metallic);
         float3 diffuse = kD * albedo / PI;
 
@@ -349,7 +349,7 @@ float3 worldNormal
         float G = GeometrySmith(N, V, L, roughness);
         float3 F = FresnelSchlick(saturate(dot(H, V)), F0);
 
-        float3 specular = (D * G * F) / (4.0f * saturate(dot(N, V)) * saturate(dot(N, L)) + 0.0001f);
+        float3 specular = (D * G * F) / max(4.0f * saturate(dot(N, V)) * saturate(dot(N, L)), 0.01f);
         float3 kD = (float3(1.0f, 1.0f, 1.0f) - F) * (1.0f - metallic);
         float3 diffuse = kD * albedo / PI;
 

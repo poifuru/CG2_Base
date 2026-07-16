@@ -20,22 +20,29 @@ public:
 	}
 
 private:
-	// シェーダーに送るパラメータ
+	// 波のパラメータ
 	struct WaterSurfaceInfo {
-		float amplitude;
-		float frequency;
-		float steepness;
+		float amplitude;				// 振幅(A)
+		float frequency;				// 周波数(w)
+		float steepness;				// 険しさ(Q)
+		float padding;
+		Vector2 direction;				// 波の進行方向(D)
+		float padding2[2];    
+	};
+
+	// シェーダーに送るパラメータ
+	struct WaterSurfaceForGPU {
+		WaterSurfaceInfo waves[4];
 		float time;
-		Vector2 direction;
+		int numActiveWaves;
+		float padding[2];
 	};
 
 	float time_ = 0.0f;
 
 	// ゲルストナー波のパラメータ
-	float amplitude_ = 0.5f;				// 振幅(A)
-	float frequency_ = 0.5f;				// 周波数(w)
-	float steepness_ = 0.5f;				// 険しさ(Q)
-	Vector2 direction_ = { 1.0f, 1.0f };	// 波の進行方向(D)
+	WaterSurfaceInfo waves_[4];
+	int numActiveWaves_ = 2; // デフォルトで有効にする波の数（1〜4）
 
-	ConstantBuffer<WaterSurfaceInfo> waterSurfaceBuffer_;
+	ConstantBuffer<WaterSurfaceForGPU> waterSurfaceBuffer_;
 };

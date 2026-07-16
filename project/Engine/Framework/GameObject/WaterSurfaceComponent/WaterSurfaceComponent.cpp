@@ -18,6 +18,41 @@ void WaterSurfaceComponent::Initialize() {
 
 	if (auto* model = GetModel()) {
 		model->SetShaders(MyEngine::Rendering::ShadingModel::WaterSurface);
+		model->SetBlendMode(MyEngine::Rendering::BlendModeType::Alpha);
+	}
+
+	// 波のパラメータ初期化
+	// 波1: 大きくゆっくり進む波
+	waves_[0].amplitude = 0.3f;
+	waves_[0].frequency = 0.4f;
+	waves_[0].steepness = 0.5f;
+	waves_[0].direction = Vector2(1.0f, 1.0f);
+	// 方向ベクトルの正規化
+	{
+		float len = std::sqrt(waves_[0].direction.x * waves_[0].direction.x + waves_[0].direction.y * waves_[0].direction.y);
+		if (len > 0.001f) {
+			waves_[0].direction.x /= len;
+			waves_[0].direction.y /= len;
+		}
+	}
+	// 波2: 細かくて少し速いクロスする波
+	waves_[1].amplitude = 0.1f;
+	waves_[1].frequency = 1.2f;
+	waves_[1].steepness = 0.3f;
+	waves_[1].direction = Vector2(-1.0f, 1.0f);
+	{
+		float len = std::sqrt(waves_[1].direction.x * waves_[1].direction.x + waves_[1].direction.y * waves_[1].direction.y);
+		if (len > 0.001f) {
+			waves_[1].direction.x /= len;
+			waves_[1].direction.y /= len;
+		}
+	}
+	// 残りの波は初期値0（フラット）にしておく
+	for (int i = 2; i < 4; ++i) {
+		waves_[i].amplitude = 0.0f;
+		waves_[i].frequency = 1.0f;
+		waves_[i].steepness = 0.0f;
+		waves_[i].direction = Vector2(1.0f, 0.0f);
 	}
 }
 
@@ -34,69 +69,89 @@ void WaterSurfaceComponent::Update() {
 		}
 	}
 
-	// パラメータをGPUバッファにアップデート
-	WaterSurfaceInfo params{};
-	params.amplitude = amplitude_;
-	params.frequency = frequency_;
-	params.steepness = steepness_;
-	params.time = time_;
-	params.direction = direction_;
-	waterSurfaceBuffer_.Update(params);
+	// GPU送信用パラメータの構築
+    WaterSurfaceForGPU params{};
+    params.time = time_;
+    params.numActiveWaves = numActiveWaves_;
+    for (int i = 0; i < 4; ++i) {
+        params.waves[i] = waves_[i];
+    }
 
-	if (auto* model = GetModel()) {
-		if (auto* material = model->GetMaterial()) {
-			material->SetRoughness(0.1f);
-		}
-	}
+    // 定数バッファを更新
+    waterSurfaceBuffer_.Update(params);
 }
 
 void WaterSurfaceComponent::ImGui() {
 	MeshRendererComponent::ImGui();
 
 	ImGui::Separator();
-	ImGui::Text("Gerstner Wave Parameters");
+	ImGui::Text("Gerstner Wave System");
+	// 有効にする波の数 (1〜4)
+	ImGui::SliderInt("Active Waves Count", &numActiveWaves_, 1, 4);
+	// 各波のパラメータを編集
+	for (int i = 0; i < numActiveWaves_; ++i) {
+		ImGui::PushID(i); // IDの衝突を防ぐため、波のインデックスをPush
 
-	// 各パラメータのスライダーを設置
-	ImGui::DragFloat("Amplitude (A)", &amplitude_, 0.01f, 0.0f, 10.0f);
-	ImGui::DragFloat("Frequency (w)", &frequency_, 0.01f, 0.0f, 5.0f);
-	ImGui::DragFloat("Steepness (Q)", &steepness_, 0.01f, 0.0f, 1.0f); // Qは0〜1
+		char label[64];
+		sprintf_s(label, "Wave %d", i + 1);
+		if (ImGui::CollapsingHeader(label, ImGuiTreeNodeFlags_DefaultOpen)) {
+			ImGui::DragFloat("Amplitude (A)", &waves_[i].amplitude, 0.01f, 0.0f, 5.0f);
+			ImGui::DragFloat("Frequency (w)", &waves_[i].frequency, 0.01f, 0.0f, 5.0f);
+			ImGui::DragFloat("Steepness (Q)", &waves_[i].steepness, 0.01f, 0.0f, 1.0f);
 
-	// 方向ベクトルの編集
-	if (ImGui::DragFloat2("Direction (D)", &direction_.x, 0.01f, -1.0f, 1.0f)) {
-		// 方向は正規化しておく
-		float len = std::sqrt(direction_.x * direction_.x + direction_.y * direction_.y);
-		if (len > 0.001f) {
-			direction_.x /= len;
-			direction_.y /= len;
+			if (ImGui::DragFloat2("Direction (D)", &waves_[i].direction.x, 0.01f, -1.0f, 1.0f)) {
+				// 方向ベクトルを変更したら必ず正規化する
+				float len = std::sqrt(waves_[i].direction.x * waves_[i].direction.x + waves_[i].direction.y * waves_[i].direction.y);
+				if (len > 0.001f) {
+					waves_[i].direction.x /= len;
+					waves_[i].direction.y /= len;
+				}
+			}
 		}
+
+		ImGui::PopID();
 	}
 }
 
 void WaterSurfaceComponent::Serialize(json& j) const {
 	MeshRendererComponent::Serialize(j);
 	j["type"] = "WaterSurfaceComponent";
+	j["numActiveWaves"] = numActiveWaves_;
 
-	j["wave"]["amplitude"] = amplitude_;
-	j["wave"]["frequency"] = frequency_;
-	j["wave"]["steepness"] = steepness_;
-	j["wave"]["direction"] = { direction_.x, direction_.y };
+	json wavesJ = json::array();
+	for (int i = 0; i < 4; ++i) {
+		json w;
+		w["amplitude"] = waves_[i].amplitude;
+		w["frequency"] = waves_[i].frequency;
+		w["steepness"] = waves_[i].steepness;
+		w["direction"] = { waves_[i].direction.x, waves_[i].direction.y };
+		wavesJ.push_back(w);
+	}
+	j["waves"] = wavesJ;
 }
 
 void WaterSurfaceComponent::Deserialize(const json& j) {
 	MeshRendererComponent::Deserialize(j);
 
-	if (j.contains("wave")) {
-		const auto& wJ = j["wave"];
-		if (wJ.contains("amplitude")) amplitude_ = wJ["amplitude"];
-		if (wJ.contains("frequency")) frequency_ = wJ["frequency"];
-		if (wJ.contains("steepness")) steepness_ = wJ["steepness"];
-		if (wJ.contains("direction")) {
-			direction_.x = wJ["direction"][0];
-			direction_.y = wJ["direction"][1];
+	if (j.contains("numActiveWaves")) {
+		numActiveWaves_ = j["numActiveWaves"];
+	}
+	if (j.contains("waves") && j["waves"].is_array()) {
+		const auto& wavesJ = j["waves"];
+		int count = std::min(4, (int)wavesJ.size());
+		for (int i = 0; i < count; ++i) {
+			const auto& wJ = wavesJ[i];
+			if (wJ.contains("amplitude")) waves_[i].amplitude = wJ["amplitude"];
+			if (wJ.contains("frequency")) waves_[i].frequency = wJ["frequency"];
+			if (wJ.contains("steepness")) waves_[i].steepness = wJ["steepness"];
+			if (wJ.contains("direction")) {
+				waves_[i].direction.x = wJ["direction"][0];
+				waves_[i].direction.y = wJ["direction"][1];
+			}
 		}
 	}
 
-	// デシリアライズでデータが読み込まれた「後」に、強制的にシェーダーを水面用に上書きする！
+	// デシリアライズでデータが読み込まれた後に、強制的にシェーダーを水面用に上書き
 	if (auto* model = GetModel()) {
 		model->SetShaders(MyEngine::Rendering::ShadingModel::WaterSurface);
 	}
