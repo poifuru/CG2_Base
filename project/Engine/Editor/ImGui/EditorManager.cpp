@@ -34,6 +34,12 @@ void EditorManager::DrawGameWindow(
 	// ゲーム画面をImGuiウィンドウとして描画する
 	ImGui::Begin("Game", nullptr, windowFlags);
 
+	// アスペクト比選択コンボボックスの配置
+	const char* aspectNames[] = { "16:9", "4:3", "Free (Fit)" };
+	ImGui::SetNextItemWidth(120.0f);
+	ImGui::Combo("Aspect", &selectedAspectIndex_, aspectNames, IM_ARRAYSIZE(aspectNames));
+	ImGui::Separator();
+
 	// 純粋にウィンドウ上にマウスがあるか
 	bool isHovered = ImGui::IsWindowHovered();
 	isGameWindowFocused_ = ImGui::IsWindowFocused();
@@ -52,13 +58,64 @@ void EditorManager::DrawGameWindow(
 	isGameWindowHovered_ = isHovered || isGameWindowDragging_;
 
 	// RenderTextureのSRVからGPUハンドルを取得
-	if (renderTexture) {
+	if(renderTexture) {
 		uint32_t srvIndex = renderTexture->GetSrvIndex();
 		D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = heapManager->GetGpuHandle(srvIndex);
 
-		// ウィンドウの大きさに合わせてゲーム画面を描画
-		ImVec2 contentSize = ImGui::GetContentRegionAvail();
-		ImGui::Image((ImTextureID)gpuHandle.ptr, contentSize);
+		// ウィンドウで現在利用可能な領域を取得
+		ImVec2 availSize = ImGui::GetContentRegionAvail();
+
+		// 現在の描画カーソルのスクリーン座標（絶対座標）を取得
+		ImVec2 screenPos = ImGui::GetCursorScreenPos();
+
+		// 選択されたアスペクト比のターゲットを決定
+		float targetAspect = 16.0f / 9.0f;
+		bool isAspectFixed = true;
+		if(selectedAspectIndex_ == 0) {
+			targetAspect = 16.0f / 9.0f;
+		}
+		else if(selectedAspectIndex_ == 1) {
+			targetAspect = 4.0f / 3.0f;
+		}
+		else {
+			isAspectFixed = false; // 自由変形
+		}
+		ImVec2 imageSize = availSize;
+
+		// アスペクト比を固定する場合のサイズ計算
+		if(isAspectFixed && availSize.y > 0.0f) {
+			float availAspect = availSize.x / availSize.y;
+			if(availAspect > targetAspect) {
+				// ウィンドウが横長すぎる場合 ➔ 高さに合わせる
+				imageSize.y = availSize.y;
+				imageSize.x = availSize.y * targetAspect;
+			}
+			else {
+				// ウィンドウが縦長すぎる場合 ➔ 幅に合わせる
+				imageSize.x = availSize.x;
+				imageSize.y = availSize.x / targetAspect;
+			}
+
+			// 画面をウィンドウ中央に寄せる(センタリング)
+			float offsetX = (availSize.x - imageSize.x) * 0.5f;
+			float offsetY = (availSize.y - imageSize.y) * 0.5f;
+
+			ImVec2 cursorPos = ImGui::GetCursorPos();
+			cursorPos.x += offsetX;
+			cursorPos.y += offsetY;
+			ImGui::SetCursorPos(cursorPos);
+
+			// スクリーン座標も中央寄せ分ずらす
+			screenPos.x += offsetX;
+			screenPos.y += offsetY;
+		}
+
+		// 実際の描画位置とサイズをメンバ変数に保存
+		gameScreenPos_ = screenPos;
+		gameScreenSize_ = imageSize;
+
+		// 計算したサイズで描画
+		ImGui::Image((ImTextureID)gpuHandle.ptr, imageSize);
 	}
 
 	ImGui::End();

@@ -96,5 +96,10 @@ namespace MyEngine::LowLevel {
 		static float sUpdateTime_;
 		static float sRenderTime_;
 		static float sGpuWaitTime_;
-	};
+ 
+ 		// 遅延リサイズ用の予約フラグとサイズ
+ 		bool resizeRequested_ = false;
+ 		uint32_t newWidth_ = 0;
+ 		uint32_t newHeight_ = 0;
+ 	};
 }

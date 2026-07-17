@@ -67,8 +67,8 @@ void MyEngine::Rendering::Renderer::Initialize(
 namespace {
 	void SetupViewport(ID3D12GraphicsCommandList* cmdList) {
 		D3D12_VIEWPORT viewport{};
-		viewport.Width = static_cast<float>(WindowsAPI::GetInstance()->GetWindowWidth());
-		viewport.Height = static_cast<float>(WindowsAPI::GetInstance()->GetWindowHeight());
+		viewport.Width = 1280.0f;
+		viewport.Height = 720.0f;
 		viewport.TopLeftX = 0.0f;
 		viewport.TopLeftY = 0.0f;
 		viewport.MinDepth = 0.0f;
@@ -81,8 +81,8 @@ namespace {
 		D3D12_RECT scissorRect{};
 		scissorRect.left = 0;
 		scissorRect.top = 0;
-		scissorRect.right = WindowsAPI::GetInstance()->GetWindowWidth();
-		scissorRect.bottom = WindowsAPI::GetInstance()->GetWindowHeight();
+		scissorRect.right = 1280;
+		scissorRect.bottom = 720;
 
 		cmdList->RSSetScissorRects(1, &scissorRect);
 	}

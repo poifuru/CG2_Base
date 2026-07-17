@@ -65,6 +65,15 @@ void MyEngine::LowLevel::Engine::BeginFrame(
 	ID3D12Resource* renderTexResource,
 	D3D12_CPU_DESCRIPTOR_HANDLE renderTexDescriptorHandle
 ) {
+	// 予約された遅延リサイズを安全に実行する
+	if (resizeRequested_) {
+		if (swapChain_) {
+			cmdQueue_->SignalAndWait();
+			swapChain_->Resize(newWidth_, newHeight_);
+		}
+		resizeRequested_ = false;
+	}
+
 	frameRateController_->Update();
 	InputManager::GetInstance()->Update();
 	cmdList_->Reset();
@@ -117,12 +126,10 @@ void MyEngine::LowLevel::Engine::ExecuteCommandList() {
 }
 
 void MyEngine::LowLevel::Engine::OnResize(uint32_t width, uint32_t height) {
-	if (swapChain_) {
-		// GPUの処理完了を待つ
-		cmdQueue_->SignalAndWait();
-		// リサイズを実行
-		swapChain_->Resize(width, height);
-	}
+	// 即座に実行せず、リサイズを予約する
+	resizeRequested_ = true;
+	newWidth_ = width;
+	newHeight_ = height;
 }
 
 ID3D12Device* MyEngine::LowLevel::Engine::GetDevice() {

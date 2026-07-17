@@ -11,8 +11,8 @@ void MyEngine::Rendering::RenderTexture::Initialize(ID3D12Device* device, MyEngi
 	// リソース作成
 	CreateRenderTextureResource(
 		device,
-		WindowsAPI::GetInstance()->GetWindowWidth(),
-		WindowsAPI::GetInstance()->GetWindowHeight(),
+		1280,
+		720,
 		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
 		kRenderTargetClearValue
 	);

@@ -64,31 +64,31 @@ Game::~Game() {
 void Game::Run() {
 	//ウィンドウの×ボタンが押されるまでループ
 	while(true) {
-
-		if(engine_->ProcessMessage()) {
-			break;
-		}
-
-		// ImGui 新しいフレーム開始
-		ImGuiManager::GetInstance()->BeginFrame(
-			engine_->GetDevice(),
-			engine_->GetDescriptorHeapManager(),
-			renderer_->GetRenderTexture()
-		);
-
-		// F11キーでボーダレスフルスクリーンのトグル切り替え
-		auto* rawInput = InputManager::GetInstance()->GetRawInput();
-		if (rawInput->Trigger(VK_F11)) {
-			auto* win = WindowsAPI::GetInstance();
-			// 現在フルスクリーンならウィンドウモードに、そうでないならボーダレスフルスクリーンにする
-			win->SetFullscreen(!win->IsFullscreen(), true); 
-		}
-
-		//フレーム開始
-		engine_->BeginFrame(
-			renderer_->GetRenderTexture()->GetResource(),
-			renderer_->GetRenderTexture()->GetDescriptorHandle()
-		);
+ 
+ 		if(engine_->ProcessMessage()) {
+ 			break;
+ 		}
+ 
+ 		// F11キーでボーダレスフルスクリーンのトグル切り替え
+ 		auto* rawInput = InputManager::GetInstance()->GetRawInput();
+ 		if (rawInput->Trigger(VK_F11)) {
+ 			auto* win = WindowsAPI::GetInstance();
+ 			// 現在フルスクリーンならウィンドウモードに、そうでないならボーダレスフルスクリーンにする
+ 			win->SetFullscreen(!win->IsFullscreen(), true); 
+ 		}
+ 
+ 		// ImGui 新しいフレーム開始
+ 		ImGuiManager::GetInstance()->BeginFrame(
+ 			engine_->GetDevice(),
+ 			engine_->GetDescriptorHeapManager(),
+ 			renderer_->GetRenderTexture()
+ 		);
+ 
+ 		//フレーム開始
+ 		engine_->BeginFrame(
+ 			renderer_->GetRenderTexture()->GetResource(),
+ 			renderer_->GetRenderTexture()->GetDescriptorHandle()
+ 		);
 
 		// --- 1. Update (ゲーム更新・描画コマンド登録) の計測 ---
 		auto startUpdate = std::chrono::high_resolution_clock::now();

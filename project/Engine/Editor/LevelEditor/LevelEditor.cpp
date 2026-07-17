@@ -199,13 +199,8 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 		static ImGuizmo::MODE currentGizmoMode(ImGuizmo::LOCAL);
 		ImGuiIO& io = ImGui::GetIO();
 
-		ImVec2 viewportPos = ImVec2(0.0f, 0.0f);
-		ImVec2 viewportSize = ImVec2(0.0f, 0.0f);
-
-		// "Game" ウィンドウをアペンドオープンし、位置とサイズを取得する
+		// "Game" ウィンドウをアペンドオープンする
 		ImGui::Begin("Game");
-		viewportPos = ImGui::GetWindowPos();
-		viewportSize = ImGui::GetWindowSize();
 
 		// ギズモ操作用の設定用ウィンドウ
 		ImGui::Begin("Gizmo");
@@ -232,13 +227,10 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 		}
 		ImGui::End();
 
-		// タイトルバー（タブ）の高さ分、位置とサイズを補正する
-		float titleBarHeight = ImGui::GetFrameHeight();
-		viewportPos.y += titleBarHeight;
-		viewportSize.y -= titleBarHeight;
-
-		// 2. ギズモの描画範囲を "Game" ウィンドウの座標に合わせる
-		ImGuizmo::SetRect(viewportPos.x, viewportPos.y, viewportSize.x, viewportSize.y);
+		// 2. ギズモの描画範囲を EditorManager で計算された実際の画面に合わせる
+		ImVec2 screenPos = EditorManager::GetInstance()->GetGameScreenPos();
+		ImVec2 screenSize = EditorManager::GetInstance()->GetGameScreenSize();
+		ImGuizmo::SetRect(screenPos.x, screenPos.y, screenSize.x, screenSize.y);
 
 		// 座標変換 of 右手系補正
 		Matrix4x4 projGizmo = camData.proj;
@@ -272,6 +264,7 @@ void LevelEditor::Update(std::vector<std::unique_ptr<GameObject>>& gameObjects, 
 		);
 
 		ImGui::End();
+
 		if(ImGuizmo::IsUsing()) {
 			wasUsingGizmo = true;
 			float matrixTranslation[3], matrixRotation[3], matrixScale[3];
