@@ -18,6 +18,7 @@ public:
 
 	// 毎フレームImGuiManagerで呼び出す
 	void UpdateAndDraw(
+		ID3D12Device* device,
 		MyEngine::LowLevel::DescriptorHeapManager* heapManager,
 		MyEngine::Rendering::RenderTexture* renderTexture
 	);
@@ -40,6 +41,9 @@ private:
 		MyEngine::LowLevel::DescriptorHeapManager* heapManager,
 		MyEngine::Rendering::RenderTexture* renderTexture
 	);
+
+	// デバッグ情報を出力する
+	void DrawPerformanceWidget(ID3D12Device* device);
 
 private:
 	bool isGameWindowHovered_ = false;

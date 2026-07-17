@@ -2,7 +2,7 @@
 #include "WindowsAPI.h"
 #include "InputManager.h"
 #include "RawInput.h"
-#include "LogManager.h"
+#include "Engine.h"
 
 WindowsAPI* WindowsAPI::GetInstance() {
 	static WindowsAPI instance;
@@ -63,9 +63,27 @@ LRESULT CALLBACK WindowsAPI::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPAR
 	}
 	
 	switch (msg) {
+	case WM_SIZE:
+		if (wparam != SIZE_MINIMIZED) {
+			// 保存しておいたポインタを取り出す
+			WindowsAPI* self = reinterpret_cast<WindowsAPI*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+			if (self) {
+				int32_t width = LOWORD(lparam);
+				int32_t height = HIWORD(lparam);
+				self->windowWidth_ = width;
+				self->windowHeight_ = height;
+				// Engineが登録されていればリサイズを通知
+				if (self->engine_) {
+					self->engine_->OnResize(width, height);
+				}
+			}
+		}
+		break;
+
 	case WM_INPUT:
 		InputManager::GetInstance()->GetRawInput()->HandleInputMessage(lparam);
 		break;
+
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
@@ -91,4 +109,69 @@ void WindowsAPI::Finalize() {
 		DestroyWindow(hwnd_);
 		hwnd_ = nullptr;
 	}
+}
+
+void WindowsAPI::SetFullscreen(bool fullscreen, bool borderless) {
+	if (isFullscreen_ == fullscreen && isBorderless_ == borderless) return;
+
+	if (fullscreen) {
+		if (borderless) {
+			// ボーダレスウィンドウの場合
+			// ウィンドウの現在の状態を保存
+			GetWindowPlacement(hwnd_, &windowPlacement_);
+
+			// モニター全体のサイズを取得
+			HMONITOR monitor = MonitorFromWindow(hwnd_, MONITOR_DEFAULTTONEAREST);
+			MONITORINFO monitorInfo{};
+			monitorInfo.cbSize = sizeof(MONITORINFO);
+			GetMonitorInfo(monitor, &monitorInfo);
+
+			// スタイルを枠無しのポップアップに変更
+			LONG style = GetWindowLong(hwnd_, GWL_STYLE);
+			style &= ~WS_OVERLAPPEDWINDOW; // 枠やタイトルバーに関するフラグをすべて消去
+			style |= WS_POPUP | WS_VISIBLE;
+			SetWindowLong(hwnd_, GWL_STYLE, style);
+
+			LONG exStyle = GetWindowLong(hwnd_, GWL_EXSTYLE);
+			exStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE | WS_EX_WINDOWEDGE);
+			SetWindowLong(hwnd_, GWL_EXSTYLE, exStyle);
+
+			// ウィンドウサイズを画面全体に合わせる（ここで自動的に WM_SIZE が走る）
+			SetWindowPos(hwnd_, HWND_TOP,
+						 monitorInfo.rcMonitor.left,
+						 monitorInfo.rcMonitor.top,
+						 monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left,
+						 monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top,
+						 SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+			windowWidth_ = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
+			windowHeight_ = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
+		}
+	} 
+	else {
+		// ウィンドウモードに戻す場合
+		if (isBorderless_) {
+			// 通常のウィンドウスタイルに戻す
+			LONG style = GetWindowLong(hwnd_, GWL_STYLE);
+			style &= ~WS_POPUP;
+			style |= WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+			SetWindowLong(hwnd_, GWL_STYLE, style);
+
+			// 拡張スタイルをデフォルト（0）に戻す
+			SetWindowLong(hwnd_, GWL_EXSTYLE, 0);
+
+			// ウィンドウ位置とサイズを元に戻す
+			SetWindowPlacement(hwnd_, &windowPlacement_);
+			SetWindowPos(hwnd_, nullptr, 0, 0, 0, 0,
+						 SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+		}
+
+		// クライアント領域のサイズを再取得
+		RECT clientRect;
+		GetClientRect(hwnd_, &clientRect);
+		windowWidth_ = clientRect.right - clientRect.left;
+		windowHeight_ = clientRect.bottom - clientRect.top;
+	}
+
+	isFullscreen_ = fullscreen;
+	isBorderless_ = borderless;
 }

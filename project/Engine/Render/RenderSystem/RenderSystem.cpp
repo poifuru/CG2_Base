@@ -36,11 +36,16 @@ void MyEngine::Rendering::RenderSystem::SetCameraPosition(const Vector3& cameraP
 	cameraBuffer_.Update(gpuData);
 }
 
+uint32_t MyEngine::Rendering::RenderSystem::sDrawCallCount_ = 0;
+
 void MyEngine::Rendering::RenderSystem::SetLightManager(LightManager* lightManager) {
 	activeLightManager_ = lightManager;
 }
 
 void MyEngine::Rendering::RenderSystem::WriteCommandList(ID3D12GraphicsCommandList* cmdList) {
+	// ドローコール数を記録（コマンドキューのサイズ＝ドローコール数）
+	sDrawCallCount_ = static_cast<uint32_t>(commandQueue_.size());
+
 	// レイヤー順（不透明・半透明）にソート
 	std::sort(commandQueue_.begin(), commandQueue_.end(), [](const RenderCommand& a, const RenderCommand& b) {
 		return a.layer < b.layer;

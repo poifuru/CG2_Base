@@ -1,7 +1,5 @@
 #include "PCH.h"
 #include "InputManager.h"
-#include "RawInput.h"
-#include "GamePad.h"
 
 InputManager* InputManager::GetInstance() {
 	static InputManager instance;

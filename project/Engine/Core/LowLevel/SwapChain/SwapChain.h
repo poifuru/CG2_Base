@@ -49,6 +49,8 @@ namespace MyEngine::LowLevel {
 		/// </summary>
 		void EndRender(MyEngine::LowLevel::CommandList* cmdList);
 
+		void Resize(uint32_t width, uint32_t height);
+
 		// --- アクセッサ --- //
 		uint32_t GetCurrentBackBufferIndex() const { return swapChain_->GetCurrentBackBufferIndex(); }
 		ID3D12Resource* GetBackBufferResource(uint32_t index) const { return swapChainResources_[index].Get(); }

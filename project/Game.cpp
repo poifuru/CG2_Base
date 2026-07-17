@@ -6,6 +6,9 @@
 #include "CameraOrganizer.h"
 #include "ImGuiManager.h"
 #include "RenderTexture.h"
+#include "InputManager.h"
+#include "WindowsAPI.h"
+#include <chrono> // 時間計測用
 
 Game::Game() {
 	engine_ = std::make_unique<MyEngine::LowLevel::Engine>();
@@ -68,9 +71,18 @@ void Game::Run() {
 
 		// ImGui 新しいフレーム開始
 		ImGuiManager::GetInstance()->BeginFrame(
+			engine_->GetDevice(),
 			engine_->GetDescriptorHeapManager(),
 			renderer_->GetRenderTexture()
 		);
+
+		// F11キーでボーダレスフルスクリーンのトグル切り替え
+		auto* rawInput = InputManager::GetInstance()->GetRawInput();
+		if (rawInput->Trigger(VK_F11)) {
+			auto* win = WindowsAPI::GetInstance();
+			// 現在フルスクリーンならウィンドウモードに、そうでないならボーダレスフルスクリーンにする
+			win->SetFullscreen(!win->IsFullscreen(), true); 
+		}
 
 		//フレーム開始
 		engine_->BeginFrame(
@@ -78,11 +90,21 @@ void Game::Run() {
 			renderer_->GetRenderTexture()->GetDescriptorHandle()
 		);
 
+		// --- 1. Update (ゲーム更新・描画コマンド登録) の計測 ---
+		auto startUpdate = std::chrono::high_resolution_clock::now();
+		
 		// シーンの更新
 		sceneManager_->Update(&CameraOrganizer::GetInstance()->GetCameraData());
 		// シーンの描画コマンドの積み込み
 		sceneManager_->Draw(renderer_.get());
+		
+		auto endUpdate = std::chrono::high_resolution_clock::now();
+		float updateMs = std::chrono::duration<float, std::milli>(endUpdate - startUpdate).count();
+		MyEngine::LowLevel::Engine::SetUpdateTime(updateMs);
 
+		// --- 2. Render (描画実行・コマンドリスト構築) の計測 ---
+		auto startRender = std::chrono::high_resolution_clock::now();
+		
 		// rendererで実際に描画
 		renderer_->RenderScene(engine_->GetCommandList());
 
@@ -91,8 +113,19 @@ void Game::Run() {
 
 		// ImGuiの描画コマンド積み込み
 		ImGuiManager::GetInstance()->Draw(engine_->GetCommandList());
+		
+		auto endRender = std::chrono::high_resolution_clock::now();
+		float renderMs = std::chrono::duration<float, std::milli>(endRender - startRender).count();
+		MyEngine::LowLevel::Engine::SetRenderTime(renderMs);
 
+		// --- 3. GPU Wait (EndFrameでのGPU同期待ち) の計測 ---
+		auto startWait = std::chrono::high_resolution_clock::now();
+		
 		//フレーム終了
 		engine_->EndFrame();
+		
+		auto endWait = std::chrono::high_resolution_clock::now();
+		float waitMs = std::chrono::duration<float, std::milli>(endWait - startWait).count();
+		MyEngine::LowLevel::Engine::SetGpuWaitTime(waitMs);
 	}
 }

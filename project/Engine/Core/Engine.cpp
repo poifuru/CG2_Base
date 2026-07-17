@@ -12,6 +12,11 @@
 #include "LogManager.h"
 #include "Function.h"
 
+// プロファイラ用の静的変数定義
+float MyEngine::LowLevel::Engine::sUpdateTime_ = 0.0f;
+float MyEngine::LowLevel::Engine::sRenderTime_ = 0.0f;
+float MyEngine::LowLevel::Engine::sGpuWaitTime_ = 0.0f;
+
 MyEngine::LowLevel::Engine::Engine() = default;
 MyEngine::LowLevel::Engine::~Engine() {
 	WindowsAPI::GetInstance()->Finalize();
@@ -19,6 +24,7 @@ MyEngine::LowLevel::Engine::~Engine() {
 
 void MyEngine::LowLevel::Engine::Initialize() {
 	WindowsAPI::GetInstance()->Initialize(1280, 720);
+	WindowsAPI::GetInstance()->RegisterEngine(this);
 
 	LogManager::GetInstance()->Initialize();
 
@@ -108,6 +114,15 @@ void MyEngine::LowLevel::Engine::ResetCommandList() {
 void MyEngine::LowLevel::Engine::ExecuteCommandList() {
 	cmdQueue_->ExecuteCommandList(cmdList_->GetCommandList());
 	cmdQueue_->SignalAndWait();
+}
+
+void MyEngine::LowLevel::Engine::OnResize(uint32_t width, uint32_t height) {
+	if (swapChain_) {
+		// GPUの処理完了を待つ
+		cmdQueue_->SignalAndWait();
+		// リサイズを実行
+		swapChain_->Resize(width, height);
+	}
 }
 
 ID3D12Device* MyEngine::LowLevel::Engine::GetDevice() {

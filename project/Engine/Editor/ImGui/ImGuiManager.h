@@ -27,12 +27,14 @@ public:
 	void Draw(ID3D12GraphicsCommandList* cmdList);
 
 	void BeginFrame(
+		ID3D12Device* device,
 		MyEngine::LowLevel::DescriptorHeapManager* heapManager,
 		MyEngine::Rendering::RenderTexture* renderTexture
 	);
 
 private:
 	void RenderDockingSpace(
+		ID3D12Device* device,
 		MyEngine::LowLevel::DescriptorHeapManager* heapManager,
 		MyEngine::Rendering::RenderTexture* renderTexture
 	);

@@ -7,6 +7,8 @@
 #include "GraphicsDevice.h"
 
 void WaterSurfaceComponent::Initialize() {
+	if(isInitialized_) return;
+
 	MeshRendererComponent::Initialize();
 
 	if (auto* model = GetModel()) {
@@ -155,4 +157,6 @@ void WaterSurfaceComponent::Deserialize(const json& j) {
 	if (auto* model = GetModel()) {
 		model->SetShaders(MyEngine::Rendering::ShadingModel::WaterSurface);
 	}
+
+	isInitialized_ = true;
 }

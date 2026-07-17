@@ -53,6 +53,22 @@ namespace MyEngine::LowLevel {
 		void ResetCommandList();
 		void ExecuteCommandList();
 
+		/// <summary>
+		/// ウィンドウサイズの変更を通知する
+		/// </summary>
+		/// <param name="width"></param>
+		/// <param name="height"></param>
+		void OnResize(uint32_t width, uint32_t height);
+
+		// プロファイル時間取得・設定用
+		static float GetUpdateTime() { return sUpdateTime_; }
+		static float GetRenderTime() { return sRenderTime_; }
+		static float GetGpuWaitTime() { return sGpuWaitTime_; }
+
+		static void SetUpdateTime(float time) { sUpdateTime_ = time; }
+		static void SetRenderTime(float time) { sRenderTime_ = time; }
+		static void SetGpuWaitTime(float time) { sGpuWaitTime_ = time; }
+
 		// 低レイヤーアクセッサ
 		ID3D12Device* GetDevice();
 		MyEngine::LowLevel::GraphicsDevice* GetGraphicsDevice();
@@ -75,5 +91,10 @@ namespace MyEngine::LowLevel {
 		std::unique_ptr<MyEngine::LowLevel::CommandList> cmdList_;
 		std::unique_ptr<MyEngine::LowLevel::SwapChain> swapChain_;
 		std::unique_ptr<MyEngine::LowLevel::DescriptorHeapManager> heapManager_;
+
+		// 静的プロファイル用変数
+		static float sUpdateTime_;
+		static float sRenderTime_;
+		static float sGpuWaitTime_;
 	};
 }

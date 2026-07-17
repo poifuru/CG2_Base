@@ -61,6 +61,7 @@ void ImGuiManager::Draw(ID3D12GraphicsCommandList* cmdList) {
 }
 
 void ImGuiManager::BeginFrame(
+	ID3D12Device* device,
 	MyEngine::LowLevel::DescriptorHeapManager* heapManager,
 	MyEngine::Rendering::RenderTexture* renderTexture
 ) {
@@ -69,11 +70,12 @@ void ImGuiManager::BeginFrame(
 	ImGui_ImplDX12_NewFrame();
 	ImGui::NewFrame();
 
-	RenderDockingSpace(heapManager, renderTexture);
+	RenderDockingSpace(device, heapManager, renderTexture);
 #endif
 }
 
 void ImGuiManager::RenderDockingSpace(
+	ID3D12Device* device,
 	MyEngine::LowLevel::DescriptorHeapManager* heapManager,
 	MyEngine::Rendering::RenderTexture* renderTexture
 ) {
@@ -101,7 +103,7 @@ void ImGuiManager::RenderDockingSpace(
 	ImGui::Begin("View");
 	ImGui::End();
 
-	EditorManager::GetInstance()->UpdateAndDraw(heapManager, renderTexture);
+	EditorManager::GetInstance()->UpdateAndDraw(device, heapManager, renderTexture);
 
 	ImGui::End();
 #endif

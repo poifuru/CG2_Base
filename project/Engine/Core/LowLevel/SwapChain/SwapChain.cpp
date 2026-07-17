@@ -120,3 +120,50 @@ void MyEngine::LowLevel::SwapChain::EndRender(MyEngine::LowLevel::CommandList* c
 
 	MyEngine::Utility::TransitionBarrier(cmdList->GetCommandList(), backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 }
+
+void MyEngine::LowLevel::SwapChain::Resize(uint32_t width, uint32_t height) {
+	if (width <= 0 || height <= 0) return;	// 最小化されたときのガード
+
+	// デバイスを取得
+	Microsoft::WRL::ComPtr<ID3D12Device> d3dDevice;
+	HRESULT hr = swapChain_->GetDevice(IID_PPV_ARGS(d3dDevice.GetAddressOf()));
+	assert(SUCCEEDED(hr));
+
+	// 既存のバックバッファと深度バッファのリソースをすべて解放する
+	for (uint32_t i = 0; i < kBufferCount; ++i) {
+		swapChainResources_[i].Reset();
+	}
+	depthBuffer_.Reset();
+
+	// スワップチェーンのバッファサイズを変更
+	hr = swapChain_->ResizeBuffers(
+		kBufferCount,
+		width,
+		height,
+		DXGI_FORMAT_R8G8B8A8_UNORM,
+		0
+	);
+	assert(SUCCEEDED(hr));
+
+	// RTV（レンダーターゲットビュー）の再生成
+	uint32_t rtvDescriptorSize = d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandleStart = rtvHeap_->GetCPUDescriptorHandleForHeapStart();
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
+	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+	for (uint32_t i = 0; i < kBufferCount; ++i) {
+		hr = swapChain_->GetBuffer(i, IID_PPV_ARGS(&swapChainResources_[i]));
+		assert(SUCCEEDED(hr));
+		rtvHandles_[i] = rtvHandleStart;
+		rtvHandles_[i].ptr += static_cast<SIZE_T>(i) * rtvDescriptorSize;
+		d3dDevice->CreateRenderTargetView(swapChainResources_[i].Get(), &rtvDesc, rtvHandles_[i]);
+	}
+
+	// 4. 新しいサイズで深度バッファを再生成
+	depthBuffer_ = MyEngine::Utility::CreateDepthStencilTextureResource(d3dDevice.Get(), width, height);
+	// DSV（デプスステンシルビュー）の再生成
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	d3dDevice->CreateDepthStencilView(depthBuffer_.Get(), &dsvDesc, dsvHandle_);
+}

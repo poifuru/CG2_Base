@@ -1,8 +1,6 @@
 #pragma once
-
-// 前方宣言
-class RawInput;
-class GamePad;
+#include "RawInput.h"
+#include "GamePad.h"
 
 class InputManager {
 public:

@@ -53,6 +53,9 @@ namespace MyEngine::Rendering {
 		// 一時的なアクセッサ
 		ID3D12Device* GetDevice() { return device_; }
 
+		// ドローコール数取得用
+		static uint32_t GetDrawCallCount() { return sDrawCallCount_; }
+
 	public:
 		// コピー・移動禁止
 		RenderSystem(const RenderSystem&) = delete;
@@ -76,5 +79,8 @@ namespace MyEngine::Rendering {
 
 		// アクティブなライトマネージャーへのポインタ
 		LightManager* activeLightManager_ = nullptr;
+
+		// ドローコール数カウンタ
+		static uint32_t sDrawCallCount_;
 	};
 }

@@ -1,6 +1,11 @@
 #pragma once
 
-class InputManager; // 前方宣言
+// 前方宣言
+class InputManager; 
+
+namespace MyEngine::LowLevel {
+	class Engine;
+}
 
 class WindowsAPI {
 public:
@@ -12,6 +17,15 @@ public:
 	bool ProcessMessage();
 
 	void Finalize();
+
+	// フルスクリーン切り替え関数
+	void SetFullscreen(bool fullscreen, bool borderless);
+
+	bool IsFullscreen() const { return isFullscreen_; }
+	bool IsBorderless() const { return isBorderless_; }
+
+	// Engineの登録用（リサイズ連携のため）
+	void RegisterEngine(MyEngine::LowLevel::Engine* engine) { engine_ = engine; }
 
 	HWND GetHwnd() { return hwnd_; }
 	int32_t GetWindowWidth() { return windowWidth_; }
@@ -36,4 +50,10 @@ private:	//メンバ変数
 	HWND hwnd_ = nullptr;
 	int32_t windowWidth_ = 1280;
 	int32_t windowHeight_ = 720;
+
+	WINDOWPLACEMENT windowPlacement_{ sizeof(WINDOWPLACEMENT) };
+	bool isFullscreen_ = false;
+	bool isBorderless_ = false;
+
+	MyEngine::LowLevel::Engine* engine_ = nullptr; // Engineインスタンスへのポインタ
 };
