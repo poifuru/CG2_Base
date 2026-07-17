@@ -78,6 +78,8 @@ void WaterSurfaceComponent::Update() {
     for (int i = 0; i < 4; ++i) {
         params.waves[i] = waves_[i];
     }
+	params.nearFadeDistance = nearFadeDistance_;
+	params.farFadeDistance = farFadeDistance_;
 
     // 定数バッファを更新
     waterSurfaceBuffer_.Update(params);
@@ -113,6 +115,11 @@ void WaterSurfaceComponent::ImGui() {
 
 		ImGui::PopID();
 	}
+
+	ImGui::Separator();
+	ImGui::Text("Water Transparency Fade");
+	ImGui::DragFloat("Near Fade Distance", &nearFadeDistance_, 1.0f, 0.0f, 1000.0f);
+	ImGui::DragFloat("Far Fade Distance", &farFadeDistance_, 1.0f, 0.0f, 1000.0f);
 }
 
 void WaterSurfaceComponent::Serialize(json& j) const {
@@ -130,10 +137,17 @@ void WaterSurfaceComponent::Serialize(json& j) const {
 		wavesJ.push_back(w);
 	}
 	j["waves"] = wavesJ;
+
+	j["nearFadeDistance"] = nearFadeDistance_;
+	j["farFadeDistance"] = farFadeDistance_;
 }
 
 void WaterSurfaceComponent::Deserialize(const json& j) {
 	MeshRendererComponent::Deserialize(j);
+
+	// 定数バッファを確実に初期化する 
+	auto* device = GetGameObject()->GetContext()->graphicsDevice->GetDevice();
+	waterSurfaceBuffer_.Initialize(device);
 
 	if (j.contains("numActiveWaves")) {
 		numActiveWaves_ = j["numActiveWaves"];
@@ -152,10 +166,17 @@ void WaterSurfaceComponent::Deserialize(const json& j) {
 			}
 		}
 	}
+	if (j.contains("nearFadeDistance")) {
+		nearFadeDistance_ = j["nearFadeDistance"];
+	}
+	if (j.contains("farFadeDistance")) {
+		farFadeDistance_ = j["farFadeDistance"];
+	}
 
 	// デシリアライズでデータが読み込まれた後に、強制的にシェーダーを水面用に上書き
 	if (auto* model = GetModel()) {
 		model->SetShaders(MyEngine::Rendering::ShadingModel::WaterSurface);
+		model->SetBlendMode(MyEngine::Rendering::BlendModeType::Alpha);
 	}
 
 	isInitialized_ = true;

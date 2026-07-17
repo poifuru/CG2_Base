@@ -22,7 +22,8 @@ struct WaterSurface
     WaterSurfaceInfo waves[4]; // 4つの波の情報（32バイト * 4 = 128バイト）
     float time; // 時間
     int numActiveWaves; // 現在有効にする波の数（1〜4）
-    float padding3[2]; // 16バイト境界に合わせるための余白
+    float nearFadeDistance;
+    float farFadeDistance;
 };
 
 struct VertexShaderInput

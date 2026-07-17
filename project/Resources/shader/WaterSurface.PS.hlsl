@@ -19,6 +19,25 @@ struct PushIndices
     uint textureIndex;
 };
 
+struct WaterSurfaceInfo
+{
+    float amplitude;
+    float frequency;
+    float steepness;
+    float padding;
+    float2 direction;
+    float2 padding1;
+};
+
+struct WaterSurface
+{
+    WaterSurfaceInfo waves[4];
+    float time;
+    int numActiveWaves;
+    float nearFadeDistance;
+    float farFadeDistance;
+};
+
 // 【Slot 1 (space0)】: インデックス定数
 ConstantBuffer<PushIndices> g_Indices : register(b1, space0);
 
@@ -33,6 +52,9 @@ ConstantBuffer<Camera> gCamera : register(b2, space0);
 
 // 【Slot 5 (space0)】: ライトデータ一括
 ConstantBuffer<AllLightData> gLightData : register(b3, space0);
+
+// 【Slot 6 (space0)】: 波のデータ
+ConstantBuffer<WaterSurface> gWaterSurface : register(b4, space0);
 
 // サンプラー (s0, space0)
 SamplerState gSampler : register(s0, space0);
@@ -137,8 +159,26 @@ PixelShaderOutput main(VertexShaderOutput input)
     // 現在の計算結果（waterColor）がこれより暗い部分を、minAmbient で底上げする
     waterColor = max(waterColor, minAmbient);
     
+    // カメラからの距離を計算
+    float cameraDist = length(gCamera.worldPosition - input.worldPosition);
+    //float cameraDist = 0.0f;
+    
+    // 距離に応じたフェードファクターを計算 (near以下なら0.0、far以上なら1.0)
+    float distFactor = saturate((cameraDist - gWaterSurface.nearFadeDistance) /
+                       max(0.001f, gWaterSurface.farFadeDistance - gWaterSurface.nearFadeDistance));
+    
     // アルファ値を変化させる
     float finalAlpha = lerp(0.5f, 0.95f, fresnel);
+    
+    // 遠くに行くほど不透明(1.0)になるように補間
+    finalAlpha = lerp(finalAlpha, 1.0f, distFactor);
+    
+    // --- デバッグコード（パターンD）に差し替え ---
+    // G（緑）に numActiveWaves / 10.0f を出力
+    // もし正しく 2 が届いていれば、画面は「少し暗い緑（G = 0.2）」になるよ
+    //float debugWaves = gWaterSurface.numActiveWaves / 10.0f;
+    //output.color.rgb = float3(0.0f, debugWaves, 0.0f);
+    //output.color.a = 1.0f;
     
     // 最終的なカラーを出力
     output.color.rgb = waterColor;

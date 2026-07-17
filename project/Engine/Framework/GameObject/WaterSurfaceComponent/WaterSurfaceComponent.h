@@ -35,7 +35,8 @@ private:
 		WaterSurfaceInfo waves[4];
 		float time;
 		int numActiveWaves;
-		float padding[2];
+		float nearFadeDistance;
+		float farFadeDistance;
 	};
 
 	float time_ = 0.0f;
@@ -43,6 +44,8 @@ private:
 	// ゲルストナー波のパラメータ
 	WaterSurfaceInfo waves_[4];
 	int numActiveWaves_ = 2; // デフォルトで有効にする波の数（1〜4）
+	float nearFadeDistance_ = 30.0f; // デフォルト値（近距離で透け始める距離）
+	float farFadeDistance_ = 150.0f; // デフォルト値（これより遠いと完全に不透明）
 
 	ConstantBuffer<WaterSurfaceForGPU> waterSurfaceBuffer_;
 };
