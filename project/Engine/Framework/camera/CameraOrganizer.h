@@ -33,6 +33,9 @@ public:
 	CameraData& GetCameraData();
 	float GetActiveFov() const { return currentFov_; }
 
+	// カメラシェイクのリクエスト
+	void Shake(float duration = 0.35f, float intensity = 0.4f);
+
 private:
 	//コンストラクタを禁止
 	CameraOrganizer () = default;
@@ -58,4 +61,9 @@ private:
 	float blendDuration_ = 1.5f; // 切り替えかける時間
 	bool isBlending_ = false;
 	float currentFov_ = 0.45f;
+
+	// カメラシェイク用の変数
+	float shakeTimer_ = 0.0f;
+	float shakeDuration_ = 0.0f;
+	float shakeIntensity_ = 0.0f;
 };

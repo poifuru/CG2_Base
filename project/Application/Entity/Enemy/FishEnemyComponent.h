@@ -1,6 +1,11 @@
 #pragma once
 #include "Component.h"
 
+enum class FishState {
+	Submerge, // 潜水
+	Jump      // ジャンプ
+};
+
 class FishEnemyComponent : public Component {
 public:
 	FishEnemyComponent() = default;
@@ -25,6 +30,18 @@ private:
 	float speed_ = 5.0f;      // 移動スピード
 	float direction_ = 1.0f;  // 現在の移動方向（1.0f: 右, -1.0f: 左）
 	bool isInitialized_ = false; // リセット防止
+
+	// 挙動用の追加メンバ
+	FishState state_ = FishState::Submerge;
+	float stateTimer_ = 0.0f;
+	Vector3 velocity_{};
+
+	float submergeDuration_ = 3.0f; // 潜水時間
+	float jumpPowerY_ = 15.0f;      // ジャンプ初速Y
+	float jumpPowerXZ_ = 10.0f;     // ジャンプ初速XZ
+	float gravity_ = -25.0f;        // 重力
+	float waterSurfaceY_ = 0.0f;    // 水面の高さ
+	float rotLerpSpeed_ = 5.0f;     // 回転補間の速度
 
 	bool isDead_ = false;       // 死亡フラグ
 	float deathTimer_ = 0.0f;   // 死亡演出タイマー

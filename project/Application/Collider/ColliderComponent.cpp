@@ -4,6 +4,7 @@
 #include "CollisionManager.h"
 #include "BirdEnemyComponent.h"
 #include "FishEnemyComponent.h"
+#include "PlayerComponent.h"
 #include "MathFunction.h"
 
 // デフォルトは半径1の球として CollisionObject を初期化
@@ -83,11 +84,17 @@ void ColliderComponent::OnCollision(CollisionObject* other) {
 			  Math::Length(Math::Subtract(myObj->GetTransform().translate, otherObj->GetTransform().translate))); // 距離も測る
 	OutputDebugStringA(debugMsg);
 
-	// 自分が「敵（鳥か魚のコンポーネントを持っているか、または名前がEnemy）」で、相手が「弾」なら消滅
 	bool isMyEnemy = (myObj->GetComponent<BirdEnemyComponent>() != nullptr || 
 					  myObj->GetComponent<FishEnemyComponent>() != nullptr ||
 					  myObj->GetName() == "Enemy");
+	bool isOtherEnemy = (otherObj->GetComponent<BirdEnemyComponent>() != nullptr || 
+						 otherObj->GetComponent<FishEnemyComponent>() != nullptr ||
+						 otherObj->GetName() == "Enemy");
 
+	bool isMyPlayer = (myObj->GetName() == "Player" || myObj->GetComponent<PlayerComponent>() != nullptr);
+	bool isOtherPlayer = (otherObj->GetName() == "Player" || otherObj->GetComponent<PlayerComponent>() != nullptr);
+
+	// 1. 自分が「敵」で、相手が「弾」なら敵消滅/撃破処理
 	if (isMyEnemy && otherObj->GetName() == "PlayerBullet") {
 		bool alreadyDead = false;
 		if (auto* bird = myObj->GetComponent<BirdEnemyComponent>()) {
@@ -106,5 +113,12 @@ void ColliderComponent::OnCollision(CollisionObject* other) {
 			CollisionManager::GetInstance()->UnregisterObject(this);
 		}
 		otherObj->Destroy();
+	}
+
+	// 2. 自分が「プレイヤー」で、相手が「敵」の場合の被弾ダメージ処理
+	if (isMyPlayer && isOtherEnemy) {
+		if (auto* playerComp = myObj->GetComponent<PlayerComponent>()) {
+			playerComp->TakeDamage(1);
+		}
 	}
 }

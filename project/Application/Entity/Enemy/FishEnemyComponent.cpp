@@ -7,6 +7,25 @@
 #include "GameDirectorComponent.h"
 #include "BaseScene.h"
 #include "RenderingModel.h"
+#include "PlayerComponent.h"
+#include "MathFunction.h"
+
+namespace {
+	float LerpAngle(float a, float b, float t) {
+		float diff = b - a;
+		while (diff < -3.14159265f) diff += 6.2831853f;
+		while (diff >  3.14159265f) diff -= 6.2831853f;
+		return a + diff * t;
+	}
+
+	Vector3 LerpEuler(const Vector3& current, const Vector3& target, float t) {
+		return {
+			LerpAngle(current.x, target.x, t),
+			LerpAngle(current.y, target.y, t),
+			LerpAngle(current.z, target.z, t)
+		};
+	}
+}
 
 void FishEnemyComponent::Initialize() {
 	if (isInitialized_) return;
@@ -14,12 +33,22 @@ void FishEnemyComponent::Initialize() {
 
 	if (gameObject_) {
 		startPos_ = gameObject_->GetTransform().translate; // 配置された初期位置を開始地点にする
+		waterSurfaceY_ = startPos_.y; // 初期配置の高さを水面とする
 	}
 
 	moveRange_ = 10.0f;
 	speed_ = 5.0f;
 	direction_ = 1.0f;
+
+	state_ = FishState::Submerge;
+	stateTimer_ = 0.0f;
+	submergeDuration_ = 3.0f;
+	jumpPowerY_ = 15.0f;
+	jumpPowerXZ_ = 10.0f;
+	gravity_ = -25.0f;
+	rotLerpSpeed_ = 8.0f;
 }
+
 void FishEnemyComponent::Update() {
 	if (!gameObject_) return;
 
@@ -49,33 +78,147 @@ void FishEnemyComponent::Update() {
 		return;
 	}
 
-	auto& trans = gameObject_->GetTransform();
-
-	// 左右に移動
-	trans.translate.x += speed_ * direction_ * kDeltaTime;
-
-	// 指定範囲を超えたら方向を反転
-	float diff = trans.translate.x - startPos_.x;
-	if (std::abs(diff) > moveRange_) {
-		trans.translate.x = startPos_.x + (moveRange_ * (direction_ > 0.0f ? 1.0f : -1.0f));
-		direction_ *= -1.0f;
+	// 基準となるプレイヤーの位置を探す
+	Vector3 playerPos = { 0.0f, 0.0f, 0.0f };
+	bool foundPlayer = false;
+	auto* context = gameObject_->GetContext();
+	if (context && context->activeGameObjects) {
+		for (const auto& obj : *(context->activeGameObjects)) {
+			if (obj->GetName() == "Player" || obj->GetComponent<PlayerComponent>() != nullptr) {
+				playerPos = obj->GetTransform().translate;
+				foundPlayer = true;
+				break;
+			}
+		}
 	}
 
-	// 進行方向に向くように回転（Yaw）を設定
-	trans.rotate.y = (direction_ > 0.0f) ? 1.570796f : -1.570796f; // ※モデルの初期向きで調整してね！
+	auto& trans = gameObject_->GetTransform();
+	Vector3 targetRot = trans.rotate; // デフォルトの目標角度
+
+	switch (state_) {
+	case FishState::Submerge: {
+		// 水面より少し下に体を沈める
+		float targetY = waterSurfaceY_ - 0.5f;
+		trans.translate.y += (targetY - trans.translate.y) * 5.0f * kDeltaTime;
+
+		// 左右に移動
+		trans.translate.x += speed_ * direction_ * kDeltaTime;
+
+		// 指定範囲を超えたら方向を反転
+		float diff = trans.translate.x - startPos_.x;
+		if (std::abs(diff) > moveRange_) {
+			trans.translate.x = startPos_.x + (moveRange_ * (direction_ > 0.0f ? 1.0f : -1.0f));
+			direction_ *= -1.0f;
+		}
+
+		// 進行方向に向く目標角度を設定
+		targetRot.y = (direction_ > 0.0f) ? 1.570796f : -1.570796f;
+		targetRot.x = 0.0f;
+		targetRot.z = 0.0f;
+
+		// プレイヤーが近くにいたらジャンプ準備
+		if (foundPlayer) {
+			Vector3 toPlayer = playerPos - trans.translate;
+			toPlayer.y = 0.0f; // 水平距離
+			float distXZ = Math::Length(toPlayer);
+
+			if (distXZ < 30.0f) {
+				stateTimer_ += kDeltaTime;
+				if (stateTimer_ >= submergeDuration_) {
+					stateTimer_ = 0.0f;
+					state_ = FishState::Jump;
+
+					// プレイヤーの方向へ向かって放物線を描いて飛ぶ
+					Vector3 dirXZ = Math::Normalize(toPlayer);
+
+					// 滞空時間を計算 (t = -2 * V0y / gravity)
+					float airTime = (gravity_ < -0.001f) ? (-2.0f * jumpPowerY_ / gravity_) : 1.0f;
+
+					// プレイヤーにピッタリ届くための水平初速を計算
+					float requiredPowerXZ = distXZ / airTime;
+					if (requiredPowerXZ > 40.0f) requiredPowerXZ = 40.0f; // 速度上限ガード
+
+					velocity_.x = dirXZ.x * requiredPowerXZ;
+					velocity_.z = dirXZ.z * requiredPowerXZ;
+					velocity_.y = jumpPowerY_;
+
+					// 水しぶきパーティクル
+					ParticleSpawner::SpawnExplosion(context, trans.translate, 5);
+				}
+			}
+		}
+		break;
+	}
+	case FishState::Jump: {
+		// 速度を適用
+		trans.translate += velocity_ * kDeltaTime;
+
+		// 重力を適用
+		velocity_.y += gravity_ * kDeltaTime;
+
+		// 進行方向を向かせる目標回転
+		if (Math::Length(velocity_) > 0.1f) {
+			Vector3 dir = Math::Normalize(velocity_);
+			targetRot.y = std::atan2(dir.x, dir.z);
+			float xzLen = std::sqrt(dir.x * dir.x + dir.z * dir.z);
+			targetRot.x = std::atan2(-dir.y, xzLen);
+			targetRot.z = 0.0f;
+		}
+
+		// 着水判定
+		if (trans.translate.y <= waterSurfaceY_ && velocity_.y < 0.0f) {
+			state_ = FishState::Submerge;
+			stateTimer_ = 0.0f;
+
+			// 着水時のしぶきエフェクト
+			ParticleSpawner::SpawnExplosion(context, trans.translate, 5);
+
+			// 着水した位置を新しい往復開始位置にする
+			startPos_ = trans.translate;
+			startPos_.y = waterSurfaceY_;
+		}
+		break;
+	}
+	}
+
+	// 角度を最短ルートで滑らかに補間する（360度大回転スピン防止）
+	float rotLerpRate = rotLerpSpeed_ * kDeltaTime;
+	if (rotLerpRate > 1.0f) rotLerpRate = 1.0f;
+	trans.rotate = LerpEuler(trans.rotate, targetRot, rotLerpRate);
 }
+
 void FishEnemyComponent::ImGui() {
 	ImGui::DragFloat3("Start Pos", &startPos_.x, 0.1f);
 	ImGui::DragFloat("Move Range", &moveRange_, 0.1f, 0.0f, 100.0f);
 	ImGui::DragFloat("Speed", &speed_, 0.1f, 0.0f, 50.0f);
+	ImGui::Separator();
+	ImGui::DragFloat("Submerge Duration", &submergeDuration_, 0.1f, 0.0f, 20.0f);
+	ImGui::DragFloat("Jump Power Y", &jumpPowerY_, 0.5f, 0.0f, 100.0f);
+	ImGui::DragFloat("Jump Power XZ (Default)", &jumpPowerXZ_, 0.5f, 0.0f, 100.0f);
+	ImGui::DragFloat("Gravity", &gravity_, 0.5f, -100.0f, 0.0f);
+	ImGui::DragFloat("Water Surface Y", &waterSurfaceY_, 0.1f, -50.0f, 50.0f);
+	ImGui::DragFloat("Rotation Lerp Speed", &rotLerpSpeed_, 0.1f, 0.1f, 50.0f);
+
+	const char* stateStr = "Unknown";
+	if (state_ == FishState::Submerge) stateStr = "Submerge";
+	else if (state_ == FishState::Jump) stateStr = "Jump";
+	ImGui::Text("Current State: %s", stateStr);
 }
+
 void FishEnemyComponent::Serialize(json& j) const {
 	j["type"] = "FishEnemyComponent";
 	j["startPos"] = { startPos_.x, startPos_.y, startPos_.z };
 	j["moveRange"] = moveRange_;
 	j["speed"] = speed_;
 	j["direction"] = direction_;
+	j["submergeDuration"] = submergeDuration_;
+	j["jumpPowerY"] = jumpPowerY_;
+	j["jumpPowerXZ"] = jumpPowerXZ_;
+	j["gravity"] = gravity_;
+	j["waterSurfaceY"] = waterSurfaceY_;
+	j["rotLerpSpeed"] = rotLerpSpeed_;
 }
+
 void FishEnemyComponent::Deserialize(const json& j) {
 	isInitialized_ = true;
 	if (j.contains("startPos")) {
@@ -84,6 +227,12 @@ void FishEnemyComponent::Deserialize(const json& j) {
 	if (j.contains("moveRange")) moveRange_ = j["moveRange"];
 	if (j.contains("speed")) speed_ = j["speed"];
 	if (j.contains("direction")) direction_ = j["direction"];
+	if (j.contains("submergeDuration")) submergeDuration_ = j["submergeDuration"];
+	if (j.contains("jumpPowerY")) jumpPowerY_ = j["jumpPowerY"];
+	if (j.contains("jumpPowerXZ")) jumpPowerXZ_ = j["jumpPowerXZ"];
+	if (j.contains("gravity")) gravity_ = j["gravity"];
+	if (j.contains("waterSurfaceY")) waterSurfaceY_ = j["waterSurfaceY"];
+	if (j.contains("rotLerpSpeed")) rotLerpSpeed_ = j["rotLerpSpeed"];
 }
 
 void FishEnemyComponent::OnDead() {

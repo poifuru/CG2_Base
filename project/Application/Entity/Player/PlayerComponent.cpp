@@ -13,11 +13,18 @@
 #include "BaseScene.h"
 #include "ReticleComponent.h"
 #include "ColliderComponent.h"
+#include "BlendModeManager.h"
 #include "../../../../Engine/Editor/ParticleEditor/ParticleSpawner.h"
 
 void PlayerComponent::Initialize() {
 	if (isInitialized_) return;
 	isInitialized_ = true;
+
+	hp_ = 5;
+	maxHp_ = 5;
+	invincibilityTimer_ = 0.0f;
+	invincibilityDuration_ = 1.5f;
+	isDead_ = false;
 
 	speed_ = 0.5f;
 	velocity_ = { 0.0f, 0.0f, 0.0f };
@@ -32,7 +39,18 @@ void PlayerComponent::Initialize() {
 	brakeTurnSpeedMultiplier_ = 3.0f;
 	brakeMoveSpeedMultiplier_ = 0.2f;
 
-	gameObject_->GetTransform().translate = { 0.0f, 0.3f, 0.0f };
+	if (gameObject_) {
+		gameObject_->GetTransform().translate = { 0.0f, 0.3f, 0.0f };
+
+		// プレイヤーにコライダーがなければ自動追加
+		auto* collider = gameObject_->GetComponent<ColliderComponent>();
+		if (!collider) {
+			collider = gameObject_->AddComponent<ColliderComponent>();
+		}
+		if (collider) {
+			collider->SetRadius(2.0f); // 船のサイズに合わせた球判定
+		}
+	}
 }
 
 void PlayerComponent::Update() {
@@ -45,6 +63,23 @@ void PlayerComponent::Update() {
 		cooltime_ -= kDeltaTime;
 	}
 
+	// 無敵タイマーと被弾点滅演出
+	if (invincibilityTimer_ > 0.0f) {
+		invincibilityTimer_ -= kDeltaTime;
+		if (invincibilityTimer_ < 0.0f) invincibilityTimer_ = 0.0f;
+
+		// 赤く点滅
+		bool flashRed = (static_cast<int>(invincibilityTimer_ * 10.0f) % 2 == 0);
+		if (auto* mesh = gameObject_->GetComponent<MeshRendererComponent>()) {
+			mesh->SetColor({ 1.0f, flashRed ? 0.3f : 1.0f, flashRed ? 0.3f : 1.0f, 1.0f });
+		}
+	}
+	else {
+		if (auto* mesh = gameObject_->GetComponent<MeshRendererComponent>()) {
+			mesh->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+		}
+	}
+
 	InputManager::GetInstance()->GetGamePad()->SetStickDeadZone(2000);
 
 	// 移動処理
@@ -52,6 +87,26 @@ void PlayerComponent::Update() {
 
 	// 射撃処理
 	Shoot();
+}
+
+void PlayerComponent::TakeDamage(int damage) {
+	if (isDead_ || invincibilityTimer_ > 0.0f) return;
+
+	hp_ -= damage;
+	invincibilityTimer_ = invincibilityDuration_;
+
+	// 被弾エフェクト
+	if (gameObject_) {
+		ParticleSpawner::SpawnExplosion(gameObject_->GetContext(), gameObject_->GetTransform().translate, 10);
+	}
+
+	// カメラシェイク
+	CameraOrganizer::GetInstance()->Shake(0.35f, 0.4f);
+
+	if (hp_ <= 0) {
+		hp_ = 0;
+		isDead_ = true;
+	}
 }
 
 void PlayerComponent::ResolveReticle(const std::vector<std::unique_ptr<GameObject>>& gameObjects) {
@@ -261,6 +316,13 @@ void PlayerComponent::Shoot() {
 		meshRenderer->SetModel("Resources/bullet/bullet.obj");
 		meshRenderer->SetTexture("Resources/bullet/bullet.png");
 
+		// 弾を大きく見やすく拡大表示
+		bulletObj->GetTransform().scale = { 2.5f, 2.5f, 2.5f };
+
+		// 水面の下に潜り込んでも深度テストで遮蔽されず、水面越しに弾モデルが常にくっきり描画される設定！
+		meshRenderer->SetDepthEnable(false);
+		meshRenderer->SetBlendMode(MyEngine::Rendering::BlendModeType::Alpha);
+
 		// 弾の挙動コンポーネントと当たり判定コンポーネントを追加
 		auto* bulletComp = bulletObj->AddComponent<BulletComponent>();
 		auto* colliderComp = bulletObj->AddComponent<ColliderComponent>();
@@ -271,9 +333,10 @@ void PlayerComponent::Shoot() {
 		// 生成した弾にプレイヤーで設定しているハープーンのパラメータを適用
 		bulletComp->SetSpeed(harpoonSpeed_);
 		bulletComp->SetHomingStrength(harpoonHomingStrength_);
+		bulletComp->SetMaxDistance(harpoonMaxDistance_);
 
-		// 当たり判定の大きさを設定する
-		colliderComp->SetRadius(0.5f);
+		// 当たり判定の大きさを設定する（モデル拡大に合わせて 1.2f に拡張）
+		colliderComp->SetRadius(1.2f);
 
 		// レティクルがロックしている敵がいれば、弾に追尾対象としてセットする
 		if (reticleObject_) {
@@ -322,13 +385,13 @@ void PlayerComponent::Shoot() {
 		}
 		bulletObj->GetTransform().rotate = bulletRot; // 回転を適用
 
-		// 弾発射時の位置から、小規模な火花を6個飛び散らせる！
-		ParticleSpawner::SpawnExplosion(context, 
+		// 弾発射時の位置から水飛沫マズルブラストを10個飛び散らせる！
+		ParticleSpawner::SpawnWaterSplash(context, 
 										{ bulletObj->GetTransform().translate.x, 
-										bulletObj->GetTransform().translate.y + 1.0f,
+										bulletObj->GetTransform().translate.y,
 										bulletObj->GetTransform().translate.z
 										},
-										6);
+										10);
 
 		// セーブ対象外
 		bulletObj->SetSerializable(false);
@@ -340,6 +403,20 @@ void PlayerComponent::Shoot() {
 }
 void PlayerComponent::ImGui() {
 #ifdef USEIMGUI
+	ImGui::Text("--- Player HP Status ---");
+	ImGui::DragInt("HP", &hp_, 1, 0, maxHp_);
+	ImGui::DragInt("Max HP", &maxHp_, 1, 1, 100);
+	float hpRatio = maxHp_ > 0 ? static_cast<float>(hp_) / static_cast<float>(maxHp_) : 0.0f;
+	char hpBuf[32];
+	sprintf_s(hpBuf, "HP: %d / %d", hp_, maxHp_);
+	ImGui::ProgressBar(hpRatio, ImVec2(-1, 0), hpBuf);
+
+	if (ImGui::Button("Test Damage (1 HP)")) {
+		TakeDamage(1);
+	}
+	ImGui::DragFloat("Invincibility Duration", &invincibilityDuration_, 0.1f, 0.0f, 10.0f);
+
+	ImGui::Separator();
 	ImGui::DragFloat("Speed (Power)", &speed_, 0.01f, 0.0f, 5.0f);
 	ImGui::DragFloat("Max Speed", &maxSpeed_, 0.05f, 0.5f, 10.0f); 
 	ImGui::DragFloat("Attenuation (Inertia)", &attenuationRate_, 0.001f, 0.90f, 0.999f);
@@ -362,12 +439,15 @@ void PlayerComponent::ImGui() {
 
 	ImGui::Text("--- Harpoon Gun ---");
 	ImGui::DragFloat("Harpoon Speed", &harpoonSpeed_, 1.0f, 10.0f, 300.0f);
+	ImGui::DragFloat("Harpoon Max Distance (Range)", &harpoonMaxDistance_, 0.5f, 5.0f, 100.0f);
 	ImGui::SliderFloat("Homing Strength", &harpoonHomingStrength_, 0.0f, 0.5f);
 #endif
 }
 
 void PlayerComponent::Serialize(json& j) const {
 	j["type"] = "PlayerComponent";
+	j["hp"] = hp_;
+	j["maxHp"] = maxHp_;
 	j["speed"] = speed_;
 	j["maxSpeed"] = maxSpeed_;
 	j["attenuation"] = attenuationRate_;
@@ -376,13 +456,18 @@ void PlayerComponent::Serialize(json& j) const {
 	j["dirRatioZ"] = dirRatioZ_;
 	j["dirRatioX"] = dirRatioX_;
 	j["harpoonSpeed"] = harpoonSpeed_;
-	j["homingStrength"] = harpoonHomingStrength_;
+	j["harpoonHomingStrength"] = harpoonHomingStrength_;
+	j["harpoonMaxDistance"] = harpoonMaxDistance_;
 	j["brakeTurnSpeedMultiplier"] = brakeTurnSpeedMultiplier_;
 	j["brakeMoveSpeedMultiplier"] = brakeMoveSpeedMultiplier_;
 }
 
 void PlayerComponent::Deserialize(const json& j) {
 	isInitialized_ = true; 
+
+	if(j.contains("hp")) hp_ = j["hp"];
+	if(j.contains("maxHp")) maxHp_ = j["maxHp"];
+	if(j.contains("harpoonMaxDistance")) harpoonMaxDistance_ = j["harpoonMaxDistance"];
 
 	if(j.contains("speed")) {
 		speed_ = j["speed"];

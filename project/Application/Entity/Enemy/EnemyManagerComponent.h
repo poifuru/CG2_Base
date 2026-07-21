@@ -20,7 +20,9 @@ private:
 	void SpawnEnemy();
 
 private:
+	int maxEnemies_ = 5;         // 同時に存在できる敵の最大数
+
 	float spawnInterval_ = 3.0f; // スポーン間隔（秒）
 	float spawnTimer_ = 0.0f;    // 残り時間タイマー
-	float spawnRadius_ = 20.0f;  // プレイヤーからのスポーン距離
+	float spawnRadius_ = 35.0f;  // プレイヤーからのスポーン距離（遠目に変更）
 };

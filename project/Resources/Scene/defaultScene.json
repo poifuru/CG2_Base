@@ -46,24 +46,31 @@
                     "brakeTurnSpeedMultiplier": 4.952000141143799,
                     "dirRatioX": 0.009999990463256836,
                     "dirRatioZ": 0.9900000095367432,
-                    "harpoonSpeed": 300.0,
-                    "homingStrength": 0.019999999552965164,
+                    "harpoonHomingStrength": 0.019999999552965164,
+                    "harpoonMaxDistance": 30.0,
+                    "harpoonSpeed": 60.0,
+                    "hp": 5,
+                    "maxHp": 5,
                     "maxSpeed": 0.5,
                     "speed": 0.15000000596046448,
                     "turnSpeed": 0.10000000149011612,
                     "type": "PlayerComponent"
+                },
+                {
+                    "radius": 2.0,
+                    "type": "ColliderComponent"
                 }
             ],
             "name": "Player",
             "transform": {
                 "position": [
-                    71.86093139648438,
+                    115.45671081542969,
                     0.30000001192092896,
-                    126.23863983154297
+                    153.95791625976563
                 ],
                 "rotation": [
                     0.0,
-                    88.09012603759766,
+                    72.99172973632813,
                     0.0
                 ],
                 "scale": [
@@ -117,13 +124,13 @@
             "name": "MainCamera",
             "transform": {
                 "position": [
-                    54.907928466796875,
-                    8.426715850830078,
-                    102.35218811035156
+                    128.10662841796875,
+                    3.656320571899414,
+                    181.39385986328125
                 ],
                 "rotation": [
-                    0.18978473544120789,
-                    0.6172283291816711,
+                    0.02833634801208973,
+                    -2.7095704078674316,
                     0.0
                 ],
                 "scale": [
@@ -147,12 +154,12 @@
             "transform": {
                 "position": [
                     -61.69614791870117,
-                    23.561763763427734,
+                    28.66175079345703,
                     13.197426795959473
                 ],
                 "rotation": [
-                    0.15620094537734985,
-                    0.669540286064148,
+                    0.09920106828212738,
+                    0.632540225982666,
                     0.0
                 ],
                 "scale": [
@@ -165,8 +172,8 @@
         {
             "components": [
                 {
-                    "angleX": 0.10873602330684662,
-                    "angleY": 119.99774932861328,
+                    "angleX": -0.05126386135816574,
+                    "angleY": 110.38776397705078,
                     "delay": 0.5,
                     "fov": 0.44999998807907104,
                     "offset": [
@@ -182,13 +189,13 @@
             "name": "FollowCamera",
             "transform": {
                 "position": [
-                    54.907928466796875,
-                    8.426715850830078,
-                    102.35218811035156
+                    128.10662841796875,
+                    3.656320571899414,
+                    181.39385986328125
                 ],
                 "rotation": [
-                    0.18978473544120789,
-                    0.6172283291816711,
+                    0.02833634801208973,
+                    -2.7095704078674316,
                     0.0
                 ],
                 "scale": [
@@ -214,7 +221,7 @@
                         "environmentCoefficient": 0.30000001192092896,
                         "metallic": 0.0,
                         "roughness": 0.10000000149011612,
-                        "time": 148.82444763183594,
+                        "time": 134.22801208496094,
                         "uvTransform": {
                             "rotation": [
                                 0.0,
@@ -235,12 +242,12 @@
                     },
                     "modelPath": "Resources/WaterSurface/waterSurface.obj",
                     "nearFadeDistance": 0.0,
-                    "numActiveWaves": 2,
+                    "numActiveWaves": 1,
                     "texPath": "Resources/WaterSurface/waterSurface_normal (2).png",
                     "type": "WaterSurfaceComponent",
                     "waves": [
                         {
-                            "amplitude": 0.6000000238418579,
+                            "amplitude": 0.5,
                             "direction": [
                                 -0.6814693808555603,
                                 0.7318466901779175
@@ -344,13 +351,13 @@
             "name": "reticle",
             "transform": {
                 "position": [
-                    111.74644470214844,
-                    -10.438034057617188,
-                    182.43655395507813
+                    86.25262451171875,
+                    0.8230650424957275,
+                    90.61822509765625
                 ],
                 "rotation": [
-                    0.18978473544120789,
-                    0.6172283291816711,
+                    0.02833634801208973,
+                    -2.7095704078674316,
                     0.0
                 ],
                 "scale": [
@@ -421,6 +428,7 @@
         {
             "components": [
                 {
+                    "maxEnemies": 5,
                     "spawnInterval": 5.0,
                     "spawnRadius": 40.0,
                     "type": "EnemyManagerComponent"
@@ -527,7 +535,7 @@
             "components": [
                 {
                     "currentKills": 0,
-                    "isBossEventTriggered": true,
+                    "isBossEventTriggered": false,
                     "targetKills": 15,
                     "type": "GameDirectorComponent",
                     "uiObjectName": "KillCounterUI"
@@ -741,6 +749,7 @@
         {
             "components": [
                 {
+                    "maxEnemies": 5,
                     "spawnInterval": 7.0,
                     "spawnRadius": 100.0,
                     "type": "EnemyManagerComponent"

@@ -61,12 +61,38 @@ void CameraOrganizer::Update() {
 		finalPos = currentVirtualCamera_->GetPosition();
 		finalRot = currentVirtualCamera_->GetRotate();
 	}
+
+	// カメラシェイク処理
+	if (shakeTimer_ > 0.0f) {
+		shakeTimer_ -= (1.0f / 60.0f);
+		if (shakeTimer_ < 0.0f) shakeTimer_ = 0.0f;
+
+		if (shakeDuration_ > 0.0f) {
+			float progress = shakeTimer_ / shakeDuration_;
+			float currentIntensity = shakeIntensity_ * progress;
+
+			float offsetX = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * currentIntensity;
+			float offsetY = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * currentIntensity;
+			float offsetZ = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * currentIntensity;
+
+			finalPos.x += offsetX;
+			finalPos.y += offsetY;
+			finalPos.z += offsetZ;
+		}
+	}
+
 	// 計算した最終的なカメラ姿勢を実体カメラオブジェクトに適用する
 	auto& mainTrans = mainCamera_->GetGameObject()->GetTransform();
 	mainTrans.translate = finalPos;
 	mainTrans.rotate = finalRot;
 
 	mainCamera_->UpdateMatrix();
+}
+
+void CameraOrganizer::Shake(float duration, float intensity) {
+	shakeDuration_ = duration;
+	shakeTimer_ = duration;
+	shakeIntensity_ = intensity;
 }
 
 void CameraOrganizer::RegisterVirtualCamera(VirtualCameraComponent* virtualCamera) {

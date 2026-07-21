@@ -25,11 +25,24 @@ public:
 	void ResolveReticle(const std::vector<std::unique_ptr<GameObject>>& gameObjects);
 
 	
+	// ダメージ処理
+	void TakeDamage(int damage);
+	int GetHp() const { return hp_; }
+	int GetMaxHp() const { return maxHp_; }
+	bool IsDead() const { return isDead_; }
+
 private:	// プライベート関数
 	void Move();  // 移動処理
 	void Shoot(); // 弾の発射処理
 
 private:
+	// プレイヤーのHPパラメータ
+	int hp_ = 5;
+	int maxHp_ = 5;
+	float invincibilityTimer_ = 0.0f;
+	float invincibilityDuration_ = 1.5f;
+	bool isDead_ = false;
+
 	// プレイヤーのパラメータ
 	float speed_;
 	float maxSpeed_; // 最高速度
@@ -49,6 +62,7 @@ private:
 private:	// ハープーンガンのパラメータ
 	float harpoonSpeed_ = 120.0f;         // 弾速
 	float harpoonHomingStrength_ = 0.02f; // 追尾力
+	float harpoonMaxDistance_ = 18.0f;    // 有効射程（メートル）
 
 	// 外部参照用ポインタ
 	GameObject* reticleObject_ = nullptr;

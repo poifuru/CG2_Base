@@ -20,6 +20,24 @@ void EnemyManagerComponent::Initialize() {
 void EnemyManagerComponent::Update() {
 	if (!gameObject_) return;
 
+	// 縄張りで旋回中（または攻撃行動中）の鳥エネミーを集めて、隊列（フォーメーション）情報を自動配信する
+	auto* context = gameObject_->GetContext();
+	if (context && context->activeGameObjects) {
+		std::vector<BirdEnemyComponent*> activeBirds;
+		for (const auto& obj : *(context->activeGameObjects)) {
+			if (auto* bird = obj->GetComponent<BirdEnemyComponent>()) {
+				if (!bird->IsDead() && bird->GetState() != BirdState::Patrol) {
+					activeBirds.push_back(bird);
+				}
+			}
+		}
+
+		int totalBirds = static_cast<int>(activeBirds.size());
+		for (int i = 0; i < totalBirds; ++i) {
+			activeBirds[i]->SetFormationInfo(i, totalBirds);
+		}
+	}
+
 	// 時間経過でタイマーを減算
 	spawnTimer_ -= kDeltaTime;
 	if (spawnTimer_ <= 0.0f) {
@@ -33,6 +51,17 @@ void EnemyManagerComponent::SpawnEnemy() {
 	auto* context = gameObject_->GetContext();
 
 	if (!context || !context->gameObjects || !context->activeGameObjects) return;
+
+	// 現在の生存敵数をカウント
+	int currentEnemyCount = 0;
+	for (const auto& obj : *(context->activeGameObjects)) {
+		if (obj->GetComponent<BirdEnemyComponent>() != nullptr || obj->GetComponent<FishEnemyComponent>() != nullptr) {
+			currentEnemyCount++;
+		}
+	}
+
+	// 最大数を超えていたら新規スポーンしない
+	if (currentEnemyCount >= maxEnemies_) return;
 
 	// 基準となるプレイヤーの位置を探す
 	Vector3 playerPos = { 0.0f, 0.0f, 0.0f };
@@ -105,18 +134,32 @@ void EnemyManagerComponent::SpawnEnemy() {
 }
 
 void EnemyManagerComponent::ImGui() {
+	ImGui::DragInt("Max Enemies", &maxEnemies_, 1, 1, 100);
 	ImGui::DragFloat("Spawn Interval", &spawnInterval_, 0.1f, 0.5f, 60.0f);
 	ImGui::DragFloat("Spawn Radius", &spawnRadius_, 0.5f, 5.0f, 100.0f);
+
+	// 現在の生存敵数を計算して表示
+	int currentEnemyCount = 0;
+	if (gameObject_ && gameObject_->GetContext() && gameObject_->GetContext()->activeGameObjects) {
+		for (const auto& obj : *(gameObject_->GetContext()->activeGameObjects)) {
+			if (obj->GetComponent<BirdEnemyComponent>() != nullptr || obj->GetComponent<FishEnemyComponent>() != nullptr) {
+				currentEnemyCount++;
+			}
+		}
+	}
+	ImGui::Text("Current Enemies: %d / %d", currentEnemyCount, maxEnemies_);
 }
 
 void EnemyManagerComponent::Serialize(json& j) const {
 	j["type"] = "EnemyManagerComponent";
+	j["maxEnemies"] = maxEnemies_;
 	j["spawnInterval"] = spawnInterval_;
 	j["spawnRadius"] = spawnRadius_;
 }
 
 void EnemyManagerComponent::Deserialize(const json& j) {
 	isInitialized_ = true;
+	if (j.contains("maxEnemies")) maxEnemies_ = j["maxEnemies"];
 	if (j.contains("spawnInterval")) spawnInterval_ = j["spawnInterval"];
 	if (j.contains("spawnRadius")) spawnRadius_ = j["spawnRadius"];
 }

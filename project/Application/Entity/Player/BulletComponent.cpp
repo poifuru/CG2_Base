@@ -4,17 +4,26 @@
 #include "DeltaTime.h"
 #include "MathFunction.h"
 #include "BaseScene.h"
+#include "../../../../Engine/Editor/ParticleEditor/ParticleSpawner.h"
 
 void BulletComponent::Initialize() {
 	if (isInitialized_) return;
 	isInitialized_ = true;
 
 	speed_ = 30.0f;
-	activeTimer_ = 3.0f;
+	activeTimer_ = 5.0f;
+	hasRecordedStart_ = false;
+	isSubmerged_ = false;
 }
 
 void BulletComponent::Update() {
 	if (!gameObject_) return;
+
+	// 発射初期位置の記録
+	if (!hasRecordedStart_) {
+		startPosition_ = gameObject_->GetTransform().translate;
+		hasRecordedStart_ = true;
+	}
 
 	// 追尾ターゲットが現在もシーン内に生存しているか安全確認する！
 	if (target_) {
@@ -60,7 +69,26 @@ void BulletComponent::Update() {
 	}
 	trans.rotate = bulletRot;
 
-	// 寿命チェック
+	// 弾の飛翔軌跡（加算合成の輝く水色トレイル）を生成。水面の下に潜っても100%透けて見える！
+	ParticleSpawner::SpawnBulletGlowTrail(gameObject_->GetContext(), trans.translate, direction_);
+
+	Vector3 currentPos = trans.translate;
+
+	// 1. 初めて水面下（y <= 0.1f）に突入した時だけ着弾水飛沫（Splash）を発生（弾は消さずに水中を直進させる！）
+	if (currentPos.y <= 0.1f && !isSubmerged_) {
+		isSubmerged_ = true;
+		ParticleSpawner::SpawnWaterSplash(gameObject_->GetContext(), currentPos, 14);
+	}
+
+	// 2. 有効射程距離の制限チェック（ハープーンが届かずに失速消滅）
+	float traveledDist = Math::Length(Math::Subtract(currentPos, startPosition_));
+	if (traveledDist >= maxDistance_) {
+		ParticleSpawner::SpawnWaterSplash(gameObject_->GetContext(), currentPos, 6);
+		gameObject_->Destroy();
+		return;
+	}
+
+	// 3. 寿命チェック
 	activeTimer_ -= kDeltaTime;
 	if (activeTimer_ <= 0.0f) {
 		gameObject_->Destroy(); // 親のオブジェクトを破壊（デスフラグを立てる）
