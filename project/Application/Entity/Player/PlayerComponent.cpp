@@ -87,6 +87,13 @@ void PlayerComponent::Update() {
 
 	// 射撃処理
 	Shoot();
+
+	// レティクルへのハープーン有効射程（ロックオン距離）の自動同期
+	if (reticleObject_) {
+		if (auto* reticleComp = reticleObject_->GetComponent<ReticleComponent>()) {
+			reticleComp->SetLockOnMaxDistance(harpoonMaxDistance_);
+		}
+	}
 }
 
 void PlayerComponent::TakeDamage(int damage) {
@@ -265,7 +272,7 @@ void PlayerComponent::Move() {
 		velocity_.y = 0.0f;
 	}*/
 
-	// 💡 移動トレイルの発生
+	// 移動トレイルの発生
 	float speed = Math::Length(velocity_);
 	if (speed > 0.05f) {
 		// 潜水艦の現在の回転（向き）から、正面ベクトルを計算する

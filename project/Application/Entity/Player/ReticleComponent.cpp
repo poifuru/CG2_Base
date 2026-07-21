@@ -9,6 +9,7 @@
 #include "ColliderComponent.h"
 #include "VirtualFollowCamera.h"
 #include "RenderingModel.h"
+#include "PlayerComponent.h"
 
 void ReticleComponent::Initialize() {
 	// すでに初期化済み（ロード済み）なら、デフォルト値での上書きをスキップする
@@ -21,10 +22,11 @@ void ReticleComponent::Initialize() {
 void ReticleComponent::Update() {
 	if (!gameObject_ && !isDebugMode_) return;
 
+	auto* context = gameObject_->GetContext();
+
 	// 固定カメラが最優先（優先度100以上）になっているかチェック
 	bool isFixedCameraActive = false;
 	{
-		auto* context = gameObject_->GetContext();
 		if (context && context->activeGameObjects) {
 			for (const auto& obj : *(context->activeGameObjects)) {
 				if (obj->GetName() == "FixedPointCamera") {
@@ -68,10 +70,22 @@ void ReticleComponent::Update() {
 	// 敵オブジェクトを検索して、一番近い敵をロックオンする
 	lockOnTarget_ = nullptr;
 
-	// 角度（内積）で判定する 1.0に近いほど画面中央。0.985f は画面中心から約10度以内の範囲
-	float maxCos = lockOnAngleCos_; 
+	// プレイヤーの船の座標を取得（距離判定を船基準にするため）
+	Vector3 playerPos = { 0.0f, 0.0f, 0.0f };
+	bool foundPlayer = false;
+	if (context && context->activeGameObjects) {
+		for (const auto& obj : *(context->activeGameObjects)) {
+			if (obj->GetName() == "Player" || obj->GetComponent<PlayerComponent>() != nullptr) {
+				playerPos = obj->GetTransform().translate;
+				foundPlayer = true;
+				break;
+			}
+		}
+	}
 
-	auto* context = gameObject_->GetContext();
+	// 角度（内積）で判定する 1.0に近いほど画面中央。0.990f は画面中心から約8度以内の範囲
+	float maxCos = 0.990f; 
+
 	if (context && context->activeGameObjects) {
 		for (const auto& obj : *(context->activeGameObjects)) {
 			// プレイヤー自身、弾、レティクル、カメラ以外の「コライダー付きオブジェクト」をすべて敵とみなす！
@@ -81,17 +95,17 @@ void ReticleComponent::Update() {
 				obj->GetName() != "FollowCamera" &&
 				obj->GetComponent<ColliderComponent>() != nullptr) {
 
-				Vector3 toEnemy = Math::Subtract(obj->GetTransform().translate, camPos);
-				float distToEnemy = Math::Length(toEnemy);
-				Vector3 dirToEnemy = Math::Normalize(toEnemy);
+				// 距離判定はカメラ（+15mオフセット問題）ではなく「プレイヤーの船」からの正確な距離で計算する！
+				Vector3 toEnemyFromPlayer = Math::Subtract(obj->GetTransform().translate, foundPlayer ? playerPos : camPos);
+				float distToEnemy = Math::Length(toEnemyFromPlayer);
+
+				// 向き（画面中央との一致度）はカメラの視線で計算
+				Vector3 toEnemyFromCam = Math::Subtract(obj->GetTransform().translate, camPos);
+				Vector3 dirToEnemy = Math::Normalize(toEnemyFromCam);
 				float cosAngle = Math::Dot(dirToEnemy, camForward);
 
-				// ★【デバッグ用ログ】敵ごとの距離と角度（内積）を全部出力する！
-				char debugMsg[256];
-				sprintf_s(debugMsg, "[LockOn-Check] Target:%s | Dist:%.2f | Cos:%.4f (TargetCos:%.3f)\n", 
-						  obj->GetName().c_str(), distToEnemy, cosAngle, maxCos);
-				OutputDebugStringA(debugMsg);
-				if (distToEnemy > 1.0f && distToEnemy < 150.0f) {
+				// 船からの距離が弾の有効射程距離（lockOnMaxDistance_）以内の敵のみロックオンする！
+				if (distToEnemy > 1.0f && distToEnemy <= lockOnMaxDistance_) {
 					if (cosAngle > maxCos) {
 						maxCos = cosAngle;
 						lockOnTarget_ = obj.get();
@@ -101,15 +115,7 @@ void ReticleComponent::Update() {
 		}
 	}
 
-	// ★【デバッグ用追加】ロックオンに成功しているか出力する
-	if (lockOnTarget_) {
-		char debugMsg[256];
-		sprintf_s(debugMsg, "[LockOn] Target Found: %s (Cos: %.4f)\n", 
-				  lockOnTarget_->GetName().c_str(), maxCos);
-		OutputDebugStringA(debugMsg);
-	}
-
-	// ロックオン中ならレティクルの色を赤にする（マテリアルカラーの変更）
+	// ロックオン中ならレティクルの色を鮮やかな赤にする（マテリアルカラーの変更）
 	if (auto* renderer = gameObject_->GetComponent<MeshRendererComponent>()) {
 		// レティクルは常に最前面に描画するためデプスを無効にする
 		renderer->SetDepthEnable(false);
@@ -123,11 +129,11 @@ void ReticleComponent::Update() {
 		renderer->SetDoubleSided(true);
 
 		if (lockOnTarget_) {
-			// ロックオン中：赤
-			renderer->SetColor({ 1.0f, 0.0f, 0.0f, 0.5f });
+			// ロックオン成功時：くっきり鮮やかな赤（アルファ0.95）
+			renderer->SetColor({ 1.0f, 0.1f, 0.1f, 0.95f });
 		} else {
-			// 通常時：白（元の色）
-			renderer->SetColor({ 1.0f, 1.0f, 1.0f, 0.5f });
+			// 通常時：黒（半透明）
+			renderer->SetColor({ 0.1f, 0.1f, 0.1f, 0.95f });
 		}
 	}
 }

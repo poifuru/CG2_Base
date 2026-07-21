@@ -42,6 +42,7 @@ void FishEnemyComponent::Initialize() {
 
 	state_ = FishState::Submerge;
 	stateTimer_ = 0.0f;
+	swimPhase_ = 0.0f;
 	submergeDuration_ = 3.0f;
 	jumpPowerY_ = 15.0f;
 	jumpPowerXZ_ = 10.0f;
@@ -101,28 +102,40 @@ void FishEnemyComponent::Update() {
 		float targetY = waterSurfaceY_ - 0.5f;
 		trans.translate.y += (targetY - trans.translate.y) * 5.0f * kDeltaTime;
 
-		// 左右に移動
-		trans.translate.x += speed_ * direction_ * kDeltaTime;
-
-		// 指定範囲を超えたら方向を反転
-		float diff = trans.translate.x - startPos_.x;
-		if (std::abs(diff) > moveRange_) {
-			trans.translate.x = startPos_.x + (moveRange_ * (direction_ > 0.0f ? 1.0f : -1.0f));
-			direction_ *= -1.0f;
-		}
-
-		// 進行方向に向く目標角度を設定
-		targetRot.y = (direction_ > 0.0f) ? 1.570796f : -1.570796f;
-		targetRot.x = 0.0f;
-		targetRot.z = 0.0f;
-
-		// プレイヤーが近くにいたらジャンプ準備
 		if (foundPlayer) {
 			Vector3 toPlayer = playerPos - trans.translate;
 			toPlayer.y = 0.0f; // 水平距離
 			float distXZ = Math::Length(toPlayer);
 
-			if (distXZ < 30.0f) {
+			if (distXZ > 0.1f) {
+				Vector3 fwdDir = Math::Normalize(toPlayer);
+				// 進行方向に垂直な横向きベクトル (Right Vector)
+				Vector3 rightDir = { -fwdDir.z, 0.0f, fwdDir.x };
+
+				// 左右にゆらゆら揺れるサイン波（S字蛇行進行）
+				swimPhase_ += speed_ * 1.5f * kDeltaTime;
+				float sway = std::sin(swimPhase_) * 0.8f; // 左右の揺れ幅
+
+				// 接近移動ベクトル = (プレイヤー方向への前進) + (左右への波状揺れ)
+				Vector3 moveVel = Math::Add(
+					Math::Multiply(speed_, fwdDir),
+					Math::Multiply(speed_ * sway, rightDir)
+				);
+
+				// 移動の適用
+				trans.translate += moveVel * kDeltaTime;
+
+				// 頭（向き）を進行方向に滑らかに向かせる
+				if (Math::Length(moveVel) > 0.001f) {
+					Vector3 moveDirNorm = Math::Normalize(moveVel);
+					targetRot.y = std::atan2(moveDirNorm.x, moveDirNorm.z);
+					targetRot.x = 0.0f;
+					targetRot.z = 0.0f;
+				}
+			}
+
+			// プレイヤーが近く（25m以内）にいて一定の潜水時間が経過したら水面ジャンプ攻撃！
+			if (distXZ < 25.0f) {
 				stateTimer_ += kDeltaTime;
 				if (stateTimer_ >= submergeDuration_) {
 					stateTimer_ = 0.0f;
@@ -146,6 +159,12 @@ void FishEnemyComponent::Update() {
 					ParticleSpawner::SpawnExplosion(context, trans.translate, 5);
 				}
 			}
+		} else {
+			// プレイヤーが見つからない場合はその場で優雅に円を描いて泳ぐ
+			swimPhase_ += speed_ * 0.5f * kDeltaTime;
+			trans.translate.x += std::cos(swimPhase_) * speed_ * kDeltaTime;
+			trans.translate.z += std::sin(swimPhase_) * speed_ * kDeltaTime;
+			targetRot.y = swimPhase_ + 1.570796f;
 		}
 		break;
 	}

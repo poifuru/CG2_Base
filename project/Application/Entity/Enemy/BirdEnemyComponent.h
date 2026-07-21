@@ -41,7 +41,7 @@ private:
 	Vector3 patrolCenter_{}; // スポーン時の自立待機中心
 	float radius_ = 18.0f;  // 半径（遠目に変更）
 	float currentRadius_ = 18.0f; // 切り替え時の実効半径
-	float speed_ = 1.5f;    // 回転スピード（ラジアン/秒）
+	float speed_ = 0.7f;    // 回転スピード（ラジアン/秒）
 	float angle_ = 0.0f;    // 現在の角度（ラジアン）
 	bool isInitialized_ = false; // リセット防止
 

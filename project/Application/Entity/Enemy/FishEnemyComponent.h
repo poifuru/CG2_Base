@@ -34,6 +34,7 @@ private:
 	// 挙動用の追加メンバ
 	FishState state_ = FishState::Submerge;
 	float stateTimer_ = 0.0f;
+	float swimPhase_ = 0.0f;        // 泳ぎ（S字蛇行）の位相角
 	Vector3 velocity_{};
 
 	float submergeDuration_ = 3.0f; // 潜水時間
