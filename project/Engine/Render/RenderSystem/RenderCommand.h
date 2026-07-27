@@ -16,6 +16,7 @@ struct RenderCommand {
 	// メッシュ情報
 	D3D12_VERTEX_BUFFER_VIEW vbView{};
 	D3D12_INDEX_BUFFER_VIEW ibv{};
+	UINT vertexCount = 0;
 	UINT indexCount = 0;
 
 	// リソースやバッファのインデックス

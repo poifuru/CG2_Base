@@ -68,6 +68,8 @@ public:
 
 	// アクセッサ
 	const D3D12_INDEX_BUFFER_VIEW& GetView() const { return ibv_; }
+	void SetView(const D3D12_INDEX_BUFFER_VIEW& ibv) { return ibv_ = ibv; }
+
 	UINT GetIndexCount() const { return static_cast<UINT>(maxIndices_); }
 
 public:

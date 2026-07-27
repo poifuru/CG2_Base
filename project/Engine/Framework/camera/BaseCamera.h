@@ -1,5 +1,5 @@
 #pragma once
-#include "MainCameraComponent.h"
+#include "CameraOrganizer.h"
 
 class BaseCamera {
 public:

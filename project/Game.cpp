@@ -106,7 +106,7 @@ void Game::Run() {
 		auto startRender = std::chrono::high_resolution_clock::now();
 		
 		// rendererで実際に描画
-		renderer_->RenderScene(engine_->GetCommandList());
+		renderer_->RenderScene(engine_->GetCommandList(), engine_->GetDescriptorHeapManager());
 
 		// SwapChainの切り替え(USEIMGUI時)
 		engine_->BeginSwapChainRender();

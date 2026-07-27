@@ -1,10 +1,11 @@
-#include "PCH.h"
+	#include "PCH.h"
 #include "RootSignatureManager.h"
 
 void MyEngine::Rendering::RootSignatureManager::Initialize (ID3D12Device* device) {
 	assert(device != nullptr);
 	HRESULT hr = S_OK;
 
+#pragma region 共通ルートシグネチャ
 	// === 共通ルートパラメータの設定（7スロット） ===
 	D3D12_ROOT_PARAMETER rootParameters[7] = {};
 
@@ -31,7 +32,7 @@ void MyEngine::Rendering::RootSignatureManager::Initialize (ID3D12Device* device
 	range1.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // テクスチャはPixelShaderで使う
+	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL; // テクスチャはVS,PSで使う
 	rootParameters[2].DescriptorTable.pDescriptorRanges = &range1;
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
 
@@ -45,7 +46,7 @@ void MyEngine::Rendering::RootSignatureManager::Initialize (ID3D12Device* device
 	range2.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // テクスチャはPixelShaderで使う
+	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL; // テクスチャはVS,PSで使う
 	rootParameters[3].DescriptorTable.pDescriptorRanges = &range2;
 	rootParameters[3].DescriptorTable.NumDescriptorRanges = 1;
 
@@ -77,7 +78,7 @@ void MyEngine::Rendering::RootSignatureManager::Initialize (ID3D12Device* device
 	staticSampler.MaxLOD = D3D12_FLOAT32_MAX;
 	staticSampler.ShaderRegister = 0;
 	staticSampler.RegisterSpace = 0;
-	staticSampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	staticSampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	// --- ルートシグネチャのビルド --- //
 	D3D12_ROOT_SIGNATURE_DESC desc = {};
@@ -95,4 +96,57 @@ void MyEngine::Rendering::RootSignatureManager::Initialize (ID3D12Device* device
 
 	hr = device->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(rootSignature_.GetAddressOf()));
 	assert(SUCCEEDED(hr));
+#pragma endregion
+
+#pragma region CS用ルートシグネチャ
+	// CS用共通ルートシグネチャの作成
+	// UAV用のレンジ(u0, space0)
+	D3D12_DESCRIPTOR_RANGE uavRange{};
+	uavRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+	uavRange.NumDescriptors = 1;
+	uavRange.BaseShaderRegister = 0; // u0
+	uavRange.RegisterSpace = 0;
+	uavRange.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	// バインドレスSRV用のレンジ(t0, space2)
+	D3D12_DESCRIPTOR_RANGE srvRange{};
+	srvRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	srvRange.NumDescriptors = UINT_MAX;
+	srvRange.BaseShaderRegister = 0; // t0
+	srvRange.RegisterSpace = 2;      // space2
+	srvRange.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	D3D12_ROOT_PARAMETER rootParams[3]{};
+
+	// Slot0 : UAV(u0, space0)
+	rootParams[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParams[0].DescriptorTable.pDescriptorRanges = &uavRange;
+	rootParams[0].DescriptorTable.NumDescriptorRanges = 1;
+
+	// Slot1 : CBV(b0, space0)
+	rootParams[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParams[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParams[1].Descriptor.ShaderRegister = 0; // b0
+	rootParams[1].Descriptor.RegisterSpace = 0;
+
+	// Slot2 : バインドレスSRV(t0, space2)
+	rootParams[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParams[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParams[2].DescriptorTable.pDescriptorRanges = &srvRange;
+	rootParams[2].DescriptorTable.NumDescriptorRanges = 1;
+
+	D3D12_ROOT_SIGNATURE_DESC CSdesc{};
+	CSdesc.pParameters = rootParams;
+	CSdesc.NumParameters = _countof(rootParams);
+
+	Microsoft::WRL::ComPtr<ID3DBlob> blob;
+	Microsoft::WRL::ComPtr<ID3DBlob> CSErrorBlob;
+
+	hr = D3D12SerializeRootSignature(&CSdesc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &CSErrorBlob);
+	assert(SUCCEEDED(hr));
+
+	hr = device->CreateRootSignature(0, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(computeRootSignature_.GetAddressOf()));
+	assert(SUCCEEDED(hr));
+#pragma endregion
 }

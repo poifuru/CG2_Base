@@ -24,12 +24,13 @@ public:
 	// レティクル自動バインド用
 	void ResolveReticle(const std::vector<std::unique_ptr<GameObject>>& gameObjects);
 
-	
 	// ダメージ処理
 	void TakeDamage(int damage);
 	int GetHp() const { return hp_; }
 	int GetMaxHp() const { return maxHp_; }
 	bool IsDead() const { return isDead_; }
+
+	const Vector3& GetForward() const { return forward_; }
 
 private:	// プライベート関数
 	void Move();  // 移動処理
@@ -50,6 +51,7 @@ private:
 	float brakeAttenuationRate_; // ブレーキ時の減衰（値が小さいほど急制動）
 	Vector3 velocity_{};
 	Vector3 acceleration_{};
+	Vector3 forward_{};
 	float cooltime_;		// 発射クールタイム
 	float turnSpeed_;		// 左右への回転を補完するスピード
 	float dirRatioZ_;		// 曲がるときにどのくらいの比率を掛けるか(前方)

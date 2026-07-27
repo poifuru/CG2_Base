@@ -1,13 +1,6 @@
 #pragma once
 #include "Component.h"
-
-struct CameraData {
-	EulerTransform transform;
-	Matrix4x4 world;
-	Matrix4x4 view;
-	Matrix4x4 proj;
-	Matrix4x4 vp;
-};
+#include "CameraOrganizer.h"
 
 class MainCameraComponent : public Component {
 public:

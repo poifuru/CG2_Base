@@ -39,7 +39,15 @@ namespace MyEngine::Rendering {
 			MyEngine::LowLevel::DescriptorHeapManager* heapManager
 		);
 
-		void RenderScene(ID3D12GraphicsCommandList* cmdList);
+		void RenderScene(
+			ID3D12GraphicsCommandList* cmdList,
+			MyEngine::LowLevel::DescriptorHeapManager* heapManager
+		);
+
+		void DispatchCS(
+			ID3D12GraphicsCommandList* cmdList,
+			MyEngine::LowLevel::DescriptorHeapManager* heapManager
+			);
 
 		void Draw(std::vector<std::unique_ptr<GameObject>>& objects);
 
@@ -67,6 +75,8 @@ namespace MyEngine::Rendering {
 			D3D12_GPU_VIRTUAL_ADDRESS customAddr = 0
 		);
 
+
+
 	private:
 		ID3D12Device* device_ = nullptr;
 		std::unique_ptr<MyEngine::Rendering::RootSignatureManager> rootSigManager_;
@@ -80,5 +90,8 @@ namespace MyEngine::Rendering {
 
 		// シェーダーの組み合わせを保存しておく
 		std::unordered_map<uint64_t, ShaderPair> shaderTable_;
+
+		// objectsの参照を覚えておく
+		std::vector<std::unique_ptr<GameObject>>* currentObjects_ = nullptr;
 	};
 }

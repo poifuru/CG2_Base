@@ -214,16 +214,16 @@ void PlayerComponent::Move() {
 		float cx = std::cos(gameObject_->GetTransform().rotate.x);
 		float sx = std::sin(gameObject_->GetTransform().rotate.x);
 
-		Vector3 submarineForward = { sy * cx, -sx, cy * cx };
-		if(Math::Length(submarineForward) > 0.001f) {
-			submarineForward = Math::Normalize(submarineForward);
+		forward_ = { sy * cx, -sx, cy * cx };
+		if(Math::Length(forward_) > 0.001f) {
+			forward_ = Math::Normalize(forward_);
 		}
 
 		// 実際の進む方向 = (正面方向 * dirRatioZ_) + (入力された移動方向 * dirRatioX_)
 		Vector3 actualMoveDir = {};
-		actualMoveDir.x = submarineForward.x * dirRatioZ_ + moveDir.x * dirRatioX_;
-		actualMoveDir.y = submarineForward.y * dirRatioZ_ + moveDir.y * dirRatioX_;
-		actualMoveDir.z = submarineForward.z * dirRatioZ_ + moveDir.z * dirRatioX_;
+		actualMoveDir.x = forward_.x * dirRatioZ_ + moveDir.x * dirRatioX_;
+		actualMoveDir.y = forward_.y * dirRatioZ_ + moveDir.y * dirRatioX_;
+		actualMoveDir.z = forward_.z * dirRatioZ_ + moveDir.z * dirRatioX_;
 
 		if(Math::Length(actualMoveDir) > 0.001f) {
 			actualMoveDir = Math::Normalize(actualMoveDir);
@@ -271,30 +271,6 @@ void PlayerComponent::Move() {
 		gameObject_->GetTransform().translate.y = kWaterSurfaceY;
 		velocity_.y = 0.0f;
 	}*/
-
-	// 移動トレイルの発生
-	float speed = Math::Length(velocity_);
-	if (speed > 0.05f) {
-		// 潜水艦の現在の回転（向き）から、正面ベクトルを計算する
-		float ry = gameObject_->GetTransform().rotate.y;
-		float rx = gameObject_->GetTransform().rotate.x;
-		Vector3 forward = {
-			std::sin(ry) * std::cos(rx),
-			-std::sin(rx),
-			std::cos(ry) * std::cos(rx)
-		};
-		if (Math::Length(forward) > 0.001f) {
-			forward = Math::Normalize(forward);
-		}
-
-		// 進行方向ではなく、常に潜水艦の「真後ろ」から出るようにオフセットを計算
-		Vector3 offset = Math::Multiply(2.1f, forward);
-		Vector3 spawnPos = Math::Subtract(gameObject_->GetTransform().translate, offset);
-		spawnPos.y = spawnPos.y - 0.1f; // 高さの微調整
-
-		Vector3 moveDir = Math::Normalize(velocity_);
-		ParticleSpawner::SpawnTrail(gameObject_->GetContext(), spawnPos, moveDir);
-	}
 }
 
 void PlayerComponent::Shoot() {

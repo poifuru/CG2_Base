@@ -15,6 +15,12 @@ public:
 
 	const char* GetName() const override { return "Water Surface"; }
 
+	// 水面のワールド範囲 (Min) を取得
+	Vector2 GetWaterMin() const;
+
+	// 水面のサイズ (Size) を取得
+	Vector2 GetWaterSize() const;
+
 	D3D12_GPU_VIRTUAL_ADDRESS GetCustomBufferAddress() const {
 		return waterSurfaceBuffer_.GetGPUVirtualAddress();
 	}
@@ -37,6 +43,10 @@ private:
 		int numActiveWaves;
 		float nearFadeDistance;
 		float farFadeDistance;
+		uint32_t rippleTextureIndex;
+		float padding[3];
+		Vector2 waterMin; 
+		Vector2 waterSize;
 	};
 
 	float time_ = 0.0f;

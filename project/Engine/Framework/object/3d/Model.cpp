@@ -1,5 +1,6 @@
 #include "PCH.h"
 #include "Model.h"
+#include "MeshData.h"
 
 MyEngine::Rendering::Model::Model() : BaseObject3d() {
 }

@@ -20,7 +20,7 @@ private:
 	std::string targetName_ = "";
 	GameObject* target_ = nullptr;
 
-	Vector3 offset_ = { 0.0f, 5.0f, -10.0f }; // ターゲットからの距離
+	Vector3 offset_ = { 0.0f, 5.0f, -30.0f }; // ターゲットからの距離
 	float delay_ = 0.1f;                      // 追従の遅延 (0 = 遅延なし, 1 = 動かない)
 
 	// カメラの回転角

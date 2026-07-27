@@ -15,3 +15,4 @@
 #include "NumberDrawerComponent.h"
 #include "GameDirectorComponent.h"
 #include "WaterSurfaceComponent.h"
+#include "BoatWakeComponent.h"

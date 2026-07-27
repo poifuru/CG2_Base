@@ -71,6 +71,7 @@ public:
 
 	// アクセッサ
 	const D3D12_VERTEX_BUFFER_VIEW& GetView() const { return vbv_; }
+	void SetView(const D3D12_VERTEX_BUFFER_VIEW& vbv) { vbv_ = vbv; }
 
 public:
 	// コピー禁止（ポインタの二重管理を防ぐため）

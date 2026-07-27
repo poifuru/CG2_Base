@@ -1,9 +1,16 @@
 #pragma once
 
 // 前方宣言
-struct CameraData;
 class MainCameraComponent;
 class VirtualCameraComponent;
+
+struct CameraData {
+	EulerTransform transform;
+	Matrix4x4 world;
+	Matrix4x4 view;
+	Matrix4x4 proj;
+	Matrix4x4 vp;
+};
 
 class CameraOrganizer {
 public:

@@ -36,6 +36,10 @@ struct WaterSurface
     int numActiveWaves;
     float nearFadeDistance;
     float farFadeDistance;
+    uint rippleTextureIndex; // 波紋のテクスチャ
+    float3 padding;
+    float2 waterMin;         // 水面位置
+    float2 waterSize;        // 水面サイズ
 };
 
 // 【Slot 1 (space0)】: インデックス定数
@@ -59,6 +63,17 @@ ConstantBuffer<WaterSurface> gWaterSurface : register(b4, space0);
 // サンプラー (s0, space0)
 SamplerState gSampler : register(s0, space0);
 
+// 泡の模様を作るためのノイズ関数
+float foamNoise(float2 p)
+{
+    float2 i = floor(p);
+    float2 f = frac(p);
+    float2 u = f * f * (3.0f - 2.0f * f);
+    return lerp(lerp(sin(dot(i + float2(0, 0), float2(12.9898, 78.233))),
+                     sin(dot(i + float2(1, 0), float2(12.9898, 78.233))), u.x),
+                lerp(sin(dot(i + float2(0, 1), float2(12.9898, 78.233))),
+                     sin(dot(i + float2(1, 1), float2(12.9898, 78.233))), u.x), u.y);
+}
 
 PixelShaderOutput main(VertexShaderOutput input)
 {
@@ -173,12 +188,33 @@ PixelShaderOutput main(VertexShaderOutput input)
     // 遠くに行くほど不透明(1.0)になるように補間
     finalAlpha = lerp(finalAlpha, 1.0f, distFactor);
     
-    // --- デバッグコード（パターンD）に差し替え ---
-    // G（緑）に numActiveWaves / 10.0f を出力
-    // もし正しく 2 が届いていれば、画面は「少し暗い緑（G = 0.2）」になるよ
-    //float debugWaves = gWaterSurface.numActiveWaves / 10.0f;
-    //output.color.rgb = float3(0.0f, debugWaves, 0.0f);
-    //output.color.a = 1.0f;
+    // 泡の描画部分
+    if (gWaterSurface.rippleTextureIndex > 0)
+    {
+        float4 rippleData = g_Textures[gWaterSurface.rippleTextureIndex].Sample(gSampler, input.rippleUV);
+        float foamAmount = rippleData.b; // CSの泡の濃さ
+        
+        // 感度を持ち上げてノイズをブレンドする
+        float foamFactor = saturate(foamAmount * 3.0f);
+        
+        if (foamFactor > 0.01f)
+        {
+            // ワールド座標から泡の模様を生成
+            float noise = foamNoise(input.worldPosition.xz * 8.0f) * 0.5f + 0.5f;
+            
+            // 泡の濃さとノイズを合成して、粒状の泡模様を作る
+            float foamPattern = saturate(foamFactor * (noise * 0.5f + 0.5f));
+            
+            // くっきり真っ白な泡カラー（少し青みのある白）
+            float3 foamColor = float3(0.96f, 0.98f, 1.0f);
+            
+            // 水面の色に泡を合成
+            waterColor = lerp(waterColor, foamColor, foamPattern);
+            
+            // 泡の部分はスケスケにならないようアルファ値も1.0へ引き上げる
+            finalAlpha = lerp(finalAlpha, 1.0f, foamPattern);
+        }
+    }
     
     // 最終的なカラーを出力
     output.color.rgb = waterColor;

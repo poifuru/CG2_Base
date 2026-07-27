@@ -2,9 +2,11 @@
 #include "WaterSurfaceComponent.h"
 #include "DeltaTime.h"
 #include "Model.h"
+#include "MeshData.h"
 #include "BaseScene.h"
 #include "GameObject.h"
 #include "GraphicsDevice.h"
+#include "ComponentType.h"
 
 void WaterSurfaceComponent::Initialize() {
 	if(isInitialized_) return;
@@ -80,6 +82,17 @@ void WaterSurfaceComponent::Update() {
     }
 	params.nearFadeDistance = nearFadeDistance_;
 	params.farFadeDistance = farFadeDistance_;
+
+	// シーン内のオブジェクトから BoatWakeComponent を探す
+	auto* wakeComp = GetGameObject()->FindComponentInScene<BoatWakeComponent>();
+
+	if (wakeComp) {
+		// 見つかった BoatWakeComponent から CS 波紋テクスチャのインデックスを取得！
+		params.rippleTextureIndex = wakeComp->GetRippleTextureIndex();
+	}
+
+	params.waterMin = GetWaterMin();
+	params.waterSize = GetWaterSize();
 
     // 定数バッファを更新
     waterSurfaceBuffer_.Update(params);
@@ -180,4 +193,40 @@ void WaterSurfaceComponent::Deserialize(const json& j) {
 	}
 
 	isInitialized_ = true;
+}
+
+Vector2 WaterSurfaceComponent::GetWaterMin() const {
+	if (!gameObject_) return Vector2(0.0f, 0.0f);	// フォールバック
+
+	Vector3 pos = gameObject_->GetTransform().translate;
+	Vector3 scale = gameObject_->GetTransform().scale;
+
+	auto* model = GetModel();
+	if (model) {
+		const auto& bounds = model->GetModelData()->GetTotalAABB();
+		return Vector2(pos.x + bounds.min.x * scale.x, pos.z + bounds.min.z * scale.z);
+	}
+
+	return Vector2(pos.x - 50.0f * scale.x, pos.z - 50.0f * scale.z);
+}
+
+Vector2 WaterSurfaceComponent::GetWaterSize() const {
+	if (!gameObject_) return Vector2(1.0f, 1.0f);
+
+	Vector3 scale = gameObject_->GetTransform().scale;
+	auto* model = GetModel();
+	if (model) {
+		auto& meshes = model->GetModelData()->meshes;
+		if (!meshes.empty()) {
+			const auto& bounds = meshes[0].localBounds;
+
+			// ★ (max - min) で元のサイズを出して、スケールを掛ける！
+			float realWidth = (bounds.max.x - bounds.min.x) * scale.x;
+			float realDepth = (bounds.max.z - bounds.min.z) * scale.z;
+
+			return Vector2(realWidth, realDepth);
+		}
+	}
+
+	return Vector2(100.0f * scale.x, 100.0f * scale.z); // フォールバック
 }

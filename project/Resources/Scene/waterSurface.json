@@ -117,7 +117,7 @@
                             ]
                         }
                     },
-                    "modelPath": "Resources/WaterSurface/waterSurface.obj",
+                    "modelPath": "Resources/WaterSurface/waterSurface0.obj",
                     "numActiveWaves": 2,
                     "texPath": "Resources/WaterSurface/waterSurface_normal (2).png",
                     "type": "WaterSurfaceComponent",

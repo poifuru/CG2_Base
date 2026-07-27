@@ -88,9 +88,15 @@ namespace {
 	}
 }
 
-void MyEngine::Rendering::Renderer::RenderScene(ID3D12GraphicsCommandList* cmdList) {
+void MyEngine::Rendering::Renderer::RenderScene(
+	ID3D12GraphicsCommandList* cmdList,
+	MyEngine::LowLevel::DescriptorHeapManager* heapManager
+) {
 	SetupViewport(cmdList);
 	SetupScissorRect(cmdList);
+
+	// 全コンポーネントのCSを一括実行
+	DispatchCS(cmdList, heapManager);
 
 	// カメラ座標を取得して RenderSystem に設定
 	Vector3 cameraPos = CameraOrganizer::GetInstance()->GetCameraData().transform.translate;
@@ -107,7 +113,27 @@ void MyEngine::Rendering::Renderer::RenderScene(ID3D12GraphicsCommandList* cmdLi
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 }
 
+void MyEngine::Rendering::Renderer::DispatchCS(
+	ID3D12GraphicsCommandList* cmdList,
+	MyEngine::LowLevel::DescriptorHeapManager* heapManager
+) {
+	// ★【ここを追加！】CSでディスクリプタヒープを使う前にコマンドリストへセットする！
+	if (heapManager) {
+		heapManager->SetGraphicsHeap(cmdList);
+	}
+
+	if (currentObjects_) {
+		for (auto& obj : *currentObjects_) {
+			if (auto* wakeComp = obj->GetComponent<BoatWakeComponent>()) {
+				wakeComp->DispatchCS(cmdList);
+			}
+		}
+	}
+}
+
 void MyEngine::Rendering::Renderer::Draw(std::vector<std::unique_ptr<GameObject>>& objects) {
+	currentObjects_ = &objects; // 参照を保存
+
 	for(auto& obj : objects) {
 
 		// GameObjectの名前をあらかじめ取得しておく
@@ -182,6 +208,32 @@ void MyEngine::Rendering::Renderer::Draw(std::vector<std::unique_ptr<GameObject>
 				}
 			}
 		}
+		// BoatWakeComponent の描画
+		if (auto* wakeComp = obj->GetComponent<BoatWakeComponent>()) {
+			/*if (auto* material = wakeComp->GetMaterial()) {
+				const auto& mesh = wakeComp->GetMesh();
+				if (mesh.vertexCount > 0) {
+					auto transformAddr = wakeComp->GetTransformAddress();
+					Submit(mesh, material, transformAddr, objectName);
+				}
+			}*/
+
+			OutputDebugStringA(">>> [1] Found BoatWakeComponent!\n");
+			if (auto* material = wakeComp->GetMaterial()) {
+				OutputDebugStringA(">>> [2] Material is OK!\n");
+				const auto& mesh = wakeComp->GetMesh();
+				char buf[256];
+				sprintf_s(buf, ">>> [3] VertexCount = %u\n", mesh.vertexCount);
+				OutputDebugStringA(buf);
+				if (mesh.vertexCount > 0) {
+					OutputDebugStringA(">>> [4] Submitting BoatWake to RenderSystem!\n");
+					auto transformAddr = wakeComp->GetTransformAddress();
+					Submit(mesh, material, transformAddr, objectName);
+				}
+			} else {
+				OutputDebugStringA(">>> [ERR] Material is NULL!\n");
+			}
+		}
 	}
 }
 
@@ -198,19 +250,24 @@ void MyEngine::Rendering::Renderer::InitializeShaderTable() {
 	auto* sm = shaderManager_.get();
 
 	// Standard x Standard3D
-	uint32_t stdVS = sm->CompileAndCacheShader(L"Resources/shader/Object3d.VS.hlsl", L"vs_6_0");
-	uint32_t stdPS = sm->CompileAndCacheShader(L"Resources/shader/Object3d.PS.hlsl", L"ps_6_0");
+	uint32_t stdVS = sm->CompileAndCacheShader(L"Resources/Shader/Object3d.VS.hlsl", L"vs_6_0");
+	uint32_t stdPS = sm->CompileAndCacheShader(L"Resources/Shader/Object3d.PS.hlsl", L"ps_6_0");
 	shaderTable_[MakeShaderKey(ShadingModel::Standard, InputLayoutType::Standard3D)] = { stdVS, stdPS };
 
 	// Skybox x Skybox
-	uint32_t skyVS = sm->CompileAndCacheShader(L"Resources/shader/Skybox.VS.hlsl", L"vs_6_0");
-	uint32_t skyPS = sm->CompileAndCacheShader(L"Resources/shader/Skybox.PS.hlsl", L"ps_6_0");
+	uint32_t skyVS = sm->CompileAndCacheShader(L"Resources/Shader/Skybox.VS.hlsl", L"vs_6_0");
+	uint32_t skyPS = sm->CompileAndCacheShader(L"Resources/Shader/Skybox.PS.hlsl", L"ps_6_0");
 	shaderTable_[MakeShaderKey(ShadingModel::Skybox, InputLayoutType::Skybox)] = { skyVS, skyPS };
 
 	// WarterSurface x Standard3D
-	uint32_t watVS = sm->CompileAndCacheShader(L"Resources/shader/WaterSurface.VS.hlsl", L"vs_6_0");
-	uint32_t watPS = sm->CompileAndCacheShader(L"Resources/shader/WaterSurface.PS.hlsl", L"ps_6_0");
+	uint32_t watVS = sm->CompileAndCacheShader(L"Resources/Shader/WaterSurface.VS.hlsl", L"vs_6_0");
+	uint32_t watPS = sm->CompileAndCacheShader(L"Resources/Shader/WaterSurface.PS.hlsl", L"ps_6_0");
 	shaderTable_[MakeShaderKey(ShadingModel::WaterSurface, InputLayoutType::Standard3D)] = { watVS, watPS };
+
+	// BoatWake x BoatWake
+	uint32_t wakeVS = sm->CompileAndCacheShader(L"Resources/Shader/BoatWake.VS.hlsl", L"vs_6_0");
+	uint32_t wakePS = sm->CompileAndCacheShader(L"Resources/Shader/BoatWake.PS.hlsl", L"ps_6_0");
+	shaderTable_[MakeShaderKey(ShadingModel::BoatWake, InputLayoutType::BoatWake)] = { wakeVS, wakePS };
 }
 
 void MyEngine::Rendering::Renderer::Submit(
@@ -258,6 +315,7 @@ void MyEngine::Rendering::Renderer::Submit(
 	cmd.pso = pso;
 	cmd.vbView = mesh.vbView;
 	cmd.ibv = mesh.ibView;
+	cmd.vertexCount = mesh.vertexCount;
 	cmd.indexCount = mesh.indexCount;
 	cmd.transformGPUAddress = transformAddr;
 	cmd.customBufferGPUAddress = customAddr;

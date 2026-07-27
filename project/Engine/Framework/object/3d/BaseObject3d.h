@@ -67,7 +67,7 @@ protected:
 	std::unique_ptr<TransformMatrixResource> transformBuffer_ = nullptr;
 	std::shared_ptr<MyEngine::Rendering::Material> material_ = nullptr;
 
-	MyEngine::Rendering::BlendModeType blendMode_ = MyEngine::Rendering::BlendModeType::Opaque; // 💡 デフォルトは不透明
+	MyEngine::Rendering::BlendModeType blendMode_ = MyEngine::Rendering::BlendModeType::Opaque; // デフォルトは不透明
 
 	bool isDepthEnable_ = true; // デフォルトはデプス有効
 	bool isDoubleSided_ = true; // デフォルトは両面表示

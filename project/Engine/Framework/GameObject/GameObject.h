@@ -1,8 +1,8 @@
 #pragma once
+#include "BaseScene.h"
 using json = nlohmann::json;
 
 class Component;
-struct SceneContext;
 
 namespace MyEngine::Rendering {
 	class Renderer;
@@ -72,6 +72,18 @@ public:
 			}
 		}
 		return false;
+	}
+
+	// 指定したコンポーネントを探す
+	template <typename T>
+	T* FindComponentInScene() const {
+		if (!context_ || !context_->activeGameObjects) return nullptr;
+		for (auto& obj : *context_->activeGameObjects) {
+			if (auto* comp = obj->GetComponent<T>()) {
+				return comp;
+			}
+		}
+		return nullptr;
 	}
 
 private:

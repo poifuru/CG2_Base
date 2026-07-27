@@ -42,6 +42,14 @@ void MyEngine::LowLevel::DescriptorHeapManager::FreeIndex(uint32_t index) {
 	freeIndices_.push(index);
 }
 
+void MyEngine::LowLevel::DescriptorHeapManager::CreateCBV(uint32_t index, const D3D12_CONSTANT_BUFFER_VIEW_DESC& desc) {
+	Microsoft::WRL::ComPtr<ID3D12Device> device;
+	HRESULT hr = heap_->GetDevice(IID_PPV_ARGS(device.GetAddressOf()));
+	assert(SUCCEEDED(hr));
+	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = GetCpuHandle(index);
+	device->CreateConstantBufferView(&desc, cpuHandle);
+}
+
 void MyEngine::LowLevel::DescriptorHeapManager::CreateSRVforTexture2D(uint32_t index, ID3D12Resource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC& desc) {
 	// 瞬間的に生デバイスを取得
 	Microsoft::WRL::ComPtr<ID3D12Device> device;
@@ -51,6 +59,15 @@ void MyEngine::LowLevel::DescriptorHeapManager::CreateSRVforTexture2D(uint32_t i
 	// 自分の対応するCPUハンドルを取得して、そこにSRVを焼き付ける
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = GetCpuHandle(index);
 	device->CreateShaderResourceView(resource, &desc, cpuHandle);
+}
+
+void MyEngine::LowLevel::DescriptorHeapManager::CreateUAVforTexture2D(uint32_t index, ID3D12Resource* resource, const D3D12_UNORDERED_ACCESS_VIEW_DESC& desc) {
+	Microsoft::WRL::ComPtr<ID3D12Device> device;
+	HRESULT hr = heap_->GetDevice(IID_PPV_ARGS(device.GetAddressOf()));
+	assert(SUCCEEDED(hr));
+	// インデックス位置のCPUハンドルを取得してUAVを焼き付ける
+	D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = GetCpuHandle(index);
+	device->CreateUnorderedAccessView(resource, nullptr, &desc, cpuHandle);
 }
 
 void MyEngine::LowLevel::DescriptorHeapManager::SetGraphicsHeap(ID3D12GraphicsCommandList* cmdList) {

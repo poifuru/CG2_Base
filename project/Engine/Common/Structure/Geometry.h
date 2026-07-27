@@ -40,4 +40,6 @@ struct Triangle {
 struct AABB {
 	Vector3 min;
 	Vector3 max;
+
+	Vector3 GetSize() const { return Vector3(max.x - min.x, max.y - min.y, max.z - min.z); }
 };

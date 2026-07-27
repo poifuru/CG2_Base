@@ -28,9 +28,8 @@ uint32_t ModelManager::LoadModelData(const std::string& filePath, bool inversion
 	// 頂点バッファ・インデックスバッファの生成と設定、及びテクスチャ自動ロード
 	for (size_t i = 0; i < cpuData.meshes.size(); ++i) {
 		auto& mesh = cpuData.meshes[i];
-		mesh.meshResource.Initialize(device_, mesh.meshData);
-		mesh.vbView = mesh.meshResource.vertexBuffer.GetView();
-		mesh.ibView = mesh.meshResource.indexBuffer.GetView();
+
+		mesh.Initialize(device_, mesh.vertices, mesh.indices);
 
 		// i番目のメッシュに対応するテクスチャパスを取り出してロードする
 		std::string texPath = cpuData.defaultTexturePaths[i];
@@ -126,7 +125,7 @@ MyEngine::Rendering::ModelData ModelManager::LoadModelFile(const std::string& fi
 	for(uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
 
-		MyEngine::Rendering::Mesh myMesh;
+		MyEngine::Rendering::StaticMesh myMesh;
 
 		for(uint32_t i = 0; i < mesh->mNumVertices; ++i) {
 			aiVector3D& position = mesh->mVertices[i];
@@ -143,7 +142,7 @@ MyEngine::Rendering::ModelData ModelManager::LoadModelFile(const std::string& fi
 				vertex.normal = { -normal.x, normal.y, normal.z };
 			}
 			vertex.texcoord = { texcoord.x, texcoord.y };
-			myMesh.meshData.vertices.push_back(vertex);
+			myMesh.vertices.push_back(vertex); 
 		}
 
 		for(uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
@@ -153,14 +152,11 @@ MyEngine::Rendering::ModelData ModelManager::LoadModelFile(const std::string& fi
 			}
 
 			for(uint32_t i = 0; i < face.mNumIndices; ++i) {
-				myMesh.meshData.indices.push_back(face.mIndices[i]);
+				myMesh.indices.push_back(face.mIndices[i]);
 			}
 		}
 
-		myMesh.vertexCount = static_cast<uint32_t>(myMesh.meshData.vertices.size());
-		myMesh.indexCount = static_cast<uint32_t>(myMesh.meshData.indices.size());
-
-		if (myMesh.vertexCount == 0 || myMesh.indexCount == 0) {
+		if (myMesh.vertices.empty() || myMesh.indices.empty()) {
 			continue;
 		}
 

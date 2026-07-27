@@ -261,6 +261,16 @@ void GameObject::ImGui() {
 		else {
 			ImGui::TextDisabled("Water Surface Component (Already Added)");
 		}
+		// 航跡波コンポーネント
+		if(GetComponent<BoatWakeComponent>() == nullptr) {
+			if(ImGui::MenuItem("Boat Wake Component")) {
+				auto* newComp = AddComponent<BoatWakeComponent>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Boat Wake Component (Already Added)");
+		}
 
 		// コンポーネントが増えたらここに
 		ImGui::EndPopup();
@@ -391,6 +401,11 @@ void GameObject::Deserialize(const json& j) {
 			else if(type == "WaterSurfaceComponent") {
 				auto* comp = GetComponent<WaterSurfaceComponent>();
 				if(!comp) comp = AddComponent<WaterSurfaceComponent>();
+				comp->Deserialize(compJ);
+			}
+			else if(type == "BoatWakeComponent") {
+				auto* comp = GetComponent<BoatWakeComponent>();
+				if(!comp) comp = AddComponent<BoatWakeComponent>();
 				comp->Deserialize(compJ);
 			}
 		}

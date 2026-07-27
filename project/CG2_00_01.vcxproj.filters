@@ -108,6 +108,10 @@
     <ClCompile Include="Engine\Render\Renderer.cpp" />
     <ClCompile Include="Engine\Render\PSO\RenderingModel.cpp" />
     <ClCompile Include="Engine\Framework\GameObject\WaterSurfaceComponent\WaterSurfaceComponent.cpp" />
+    <ClCompile Include="Engine\Framework\GameObject\BoatWakeComponent\BoatWakeComponent.cpp" />
+    <ClCompile Include="Engine\Core\DirectXResource\RWTexture2D.cpp" />
+    <ClCompile Include="Engine\Graphics\RippleSimulator\RippleSimulator.cpp" />
+    <ClCompile Include="Engine\Framework\ComputePipeline\ComputePipeline.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -245,6 +249,10 @@
     <ClInclude Include="Engine\Render\Renderer.h" />
     <ClInclude Include="Engine\Render\PSO\RenderingModel.h" />
     <ClInclude Include="Engine\Framework\GameObject\WaterSurfaceComponent\WaterSurfaceComponent.h" />
+    <ClInclude Include="Engine\Framework\GameObject\BoatWakeComponent\BoatWakeComponent.h" />
+    <ClInclude Include="Engine\Core\DirectXResource\RWTexture2D.h" />
+    <ClInclude Include="Engine\Graphics\RippleSimulator\RippleSimulator.h" />
+    <ClInclude Include="Engine\Framework\ComputePipeline\ComputePipeline.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />
@@ -288,16 +296,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\shader\Cube.hlsli" />
-    <None Include="Resources\shader\Line.hlsli" />
-    <None Include="Resources\shader\Object3d.hlsli" />
-    <None Include="Resources\shader\Particle.hlsli" />
-    <None Include="Resources\shader\Sprite.hlsli" />
-    <None Include="Resources\shader\Skybox.hlsli" />
-    <None Include="Resources\shader\Fullscreen.hlsli" />
+    <None Include="Resources\Shader\Cube.hlsli" />
+    <None Include="Resources\Shader\Line.hlsli" />
+    <None Include="Resources\Shader\Object3d.hlsli" />
+    <None Include="Resources\Shader\Particle.hlsli" />
+    <None Include="Resources\Shader\Sprite.hlsli" />
+    <None Include="Resources\Shader\Skybox.hlsli" />
+    <None Include="Resources\Shader\Fullscreen.hlsli" />
     <None Include="packages.config" />
-    <None Include="Resources\shader\Light.hlsli" />
-    <None Include="Resources\shader\MaterialData.hlsli" />
+    <None Include="Resources\Shader\Light.hlsli" />
+    <None Include="Resources\Shader\MaterialData.hlsli" />
+    <None Include="Resources\Shader\WaterSurface.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

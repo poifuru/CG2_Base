@@ -112,7 +112,12 @@ void MyEngine::Rendering::RenderSystem::WriteCommandList(ID3D12GraphicsCommandLi
 		cmdList->SetGraphicsRoot32BitConstants(1, 2, indices, 0);
 
 		// ドローコール
-		cmdList->DrawIndexedInstanced(cmd.indexCount, 1, 0, 0, 0);
+		// indexCount がある場合はインデックス描画、無ければ頂点数で描画
+		if (cmd.indexCount > 0) {
+			cmdList->DrawIndexedInstanced(cmd.indexCount, 1, 0, 0, 0);
+		} else {
+			cmdList->DrawInstanced(cmd.vertexCount, 1, 0, 0);
+		}
 
 		// ドローコールが終わったら即座に閉じる！
 		PIXEndEvent(cmdList);

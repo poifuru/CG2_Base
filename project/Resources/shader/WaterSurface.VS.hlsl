@@ -19,11 +19,15 @@ struct WaterSurfaceInfo
 
 struct WaterSurface
 {
-    WaterSurfaceInfo waves[4]; // 4つの波の情報（32バイト * 4 = 128バイト）
-    float time; // 時間
-    int numActiveWaves; // 現在有効にする波の数（1〜4）
+    WaterSurfaceInfo waves[4];  // 4つの波の情報（32バイト * 4 = 128バイト）
+    float time;                 // 時間
+    int numActiveWaves;         // 現在有効にする波の数（1〜4）
     float nearFadeDistance;
     float farFadeDistance;
+    uint rippleTextureIndex;    // 波紋のテクスチャ
+    float3 padding;
+    float2 waterMin;            // 水面位置
+    float2 waterSize;           // 水面サイズ
 };
 
 struct VertexShaderInput
@@ -33,6 +37,8 @@ struct VertexShaderInput
     float3 normal : NORMAL0;
 };
 
+Texture2D gTextures[] : register(t0, space2);
+SamplerState gSampler : register(s0, space0);
 ConstantBuffer<TransformationMatrix> gTransformationMatrix : register(b0);
 ConstantBuffer<WaterSurface> gWaterSurface : register(b4);
 
@@ -83,6 +89,28 @@ VertexShaderOutput main(VertexShaderInput input)
     
      // 累積した変位を適用
     position += waveOffset;
+    
+    // 頂点のワールド座標(X, Z)を計算！
+    float3 worldPos = mul(float4(position, 1.0f), gTransformationMatrix.World).xyz;
+    
+    // CSと全く同じ式でワールド座標 ➔ UV 座標に変換
+    float2 rippleUV;
+    rippleUV.x = (worldPos.x - gWaterSurface.waterMin.x) / gWaterSurface.waterSize.x;
+    rippleUV.y = 1.0f - ((worldPos.z - gWaterSurface.waterMin.y) / gWaterSurface.waterSize.y);
+    
+    output.rippleUV = rippleUV;
+    
+    // CSで作った波紋を組み込む
+     // インデックスが 0 以外（有効なテクスチャ）の時だけサンプリング
+    if (gWaterSurface.rippleTextureIndex > 0)
+    {
+        // 頂点のuv座標を使ってCSのテクスチャをサンプリングする
+        float4 rippleData = gTextures[gWaterSurface.rippleTextureIndex].SampleLevel(gSampler, rippleUV, 0);
+    
+        // CSが書いた波の高さをY座標に加算
+        float rippleHeight = rippleData.r * 3.3f;
+        position.y += rippleHeight;
+    }
     
     // w成分(1.0f)を新たに追加して4次元ベクトルを完成させる
     float4 finalPosition = float4(position, 1.0f);
