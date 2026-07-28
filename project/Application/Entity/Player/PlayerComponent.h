@@ -35,6 +35,7 @@ public:
 private:	// プライベート関数
 	void Move();  // 移動処理
 	void Shoot(); // 弾の発射処理
+	void UpdateCanonRotation(); // 大砲（Canonノード）の追従回転処理
 
 private:
 	// プレイヤーのHPパラメータ
@@ -65,6 +66,12 @@ private:	// ハープーンガンのパラメータ
 	float harpoonSpeed_ = 120.0f;         // 弾速
 	float harpoonHomingStrength_ = 0.02f; // 追尾力
 	float harpoonMaxDistance_ = 18.0f;    // 有効射程（メートル）
+
+	// 大砲（Canonノード）の調整用パラメータ
+	Quaternion initialCanonRotation_{ 0.0f, 0.0f, 0.0f, 1.0f };
+	bool hasCapturedCanonInitialRot_ = false;
+	float canonOffsetYaw_ = 0.0f;   // 左右オフセット（度）
+	float canonOffsetPitch_ = 0.0f; // 上下オフセット（度）
 
 	// 外部参照用ポインタ
 	GameObject* reticleObject_ = nullptr;

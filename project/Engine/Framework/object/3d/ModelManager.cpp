@@ -221,6 +221,11 @@ MyEngine::Rendering::Node ModelManager::ReadNode(aiNode* node) {
 	);
 
 	result.name = node->mName.C_Str();
+
+	for(uint32_t i = 0; i < node->mNumMeshes; ++i) {
+		result.meshIndices.push_back(node->mMeshes[i]);
+	}
+
 	result.children.resize(node->mNumChildren);
 	for(uint32_t childIndex = 0; childIndex < node->mNumChildren; ++childIndex) {
 		result.children[childIndex] = ReadNode(node->mChildren[childIndex]);

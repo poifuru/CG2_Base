@@ -35,7 +35,7 @@
                             ]
                         }
                     },
-                    "modelPath": "Resources/player/player.obj",
+                    "modelPath": "Resources/player/player.gltf",
                     "texPath": "white1x1",
                     "type": "MeshRendererComponent"
                 },
@@ -44,12 +44,14 @@
                     "brakeAttenuation": 0.9800000190734863,
                     "brakeMoveSpeedMultiplier": 0.29899999499320984,
                     "brakeTurnSpeedMultiplier": 4.952000141143799,
+                    "canonOffsetPitch": 0.0,
+                    "canonOffsetYaw": 0.0,
                     "dirRatioX": 0.009999990463256836,
                     "dirRatioZ": 0.9900000095367432,
                     "harpoonHomingStrength": 0.019999999552965164,
                     "harpoonMaxDistance": 30.0,
                     "harpoonSpeed": 100.0,
-                    "hp": 4,
+                    "hp": 0,
                     "maxHp": 5,
                     "maxSpeed": 0.5,
                     "speed": 0.15000000596046448,
@@ -71,13 +73,13 @@
             "name": "Player",
             "transform": {
                 "position": [
-                    -186.08555603027344,
+                    49.624969482421875,
                     0.8199999928474426,
-                    -97.99759674072266
+                    -4.543187618255615
                 ],
                 "rotation": [
                     0.0,
-                    87.00387573242188,
+                    87.8486099243164,
                     0.0
                 ],
                 "scale": [
@@ -131,13 +133,13 @@
             "name": "MainCamera",
             "transform": {
                 "position": [
-                    -127.62757110595703,
-                    7.929166793823242,
-                    -136.19256591796875
+                    -17.434814453125,
+                    14.520479202270508,
+                    -20.083209991455078
                 ],
                 "rotation": [
-                    0.06591019034385681,
-                    -0.9920523762702942,
+                    0.16129708290100098,
+                    1.3430818319320679,
                     0.0
                 ],
                 "scale": [
@@ -160,13 +162,13 @@
             "name": "DebugCamera",
             "transform": {
                 "position": [
-                    -61.69614791870117,
-                    28.66175079345703,
-                    13.197426795959473
+                    35.045372009277344,
+                    33.11906051635742,
+                    121.99916076660156
                 ],
                 "rotation": [
-                    0.09920106828212738,
-                    0.632540225982666,
+                    0.23520100116729736,
+                    2.857539653778076,
                     0.0
                 ],
                 "scale": [
@@ -179,8 +181,8 @@
         {
             "components": [
                 {
-                    "angleX": 0.028736427426338196,
-                    "angleY": 137.23802185058594,
+                    "angleX": 0.12373652309179306,
+                    "angleY": 139.5731964111328,
                     "delay": 0.5,
                     "fov": 0.5,
                     "offset": [
@@ -196,13 +198,13 @@
             "name": "FollowCamera",
             "transform": {
                 "position": [
-                    -127.62757110595703,
-                    7.929166793823242,
-                    -136.19256591796875
+                    -17.434814453125,
+                    14.520479202270508,
+                    -20.083209991455078
                 ],
                 "rotation": [
-                    0.06591019034385681,
-                    -0.9920523762702942,
+                    0.16129708290100098,
+                    1.3430818319320679,
                     0.0
                 ],
                 "scale": [
@@ -228,7 +230,7 @@
                         "environmentCoefficient": 0.30000001192092896,
                         "metallic": 0.0,
                         "roughness": 0.10000000149011612,
-                        "time": 93.35546112060547,
+                        "time": 84.75362396240234,
                         "uvTransform": {
                             "rotation": [
                                 0.0,
@@ -256,8 +258,8 @@
                         {
                             "amplitude": 0.10000000149011612,
                             "direction": [
-                                -0.6814693808555603,
-                                0.7318466901779175
+                                0.0,
+                                1.0
                             ],
                             "frequency": 0.4000000059604645,
                             "steepness": 0.5
@@ -305,9 +307,9 @@
                     0.0
                 ],
                 "scale": [
-                    10.0,
                     1.0,
-                    10.0
+                    1.0,
+                    1.0
                 ]
             }
         },
@@ -317,7 +319,7 @@
                     "isDepthEnable": false,
                     "material": {
                         "color": [
-                            0.10000000149011612,
+                            1.0,
                             0.10000000149011612,
                             0.10000000149011612,
                             0.949999988079071
@@ -358,13 +360,13 @@
             "name": "reticle",
             "transform": {
                 "position": [
-                    -211.16082763671875,
-                    1.3429193496704102,
-                    -81.61404418945313
+                    78.71916198730469,
+                    -1.5393791198730469,
+                    2.1989192962646484
                 ],
                 "rotation": [
-                    0.06591019034385681,
-                    -0.9920523762702942,
+                    0.16129708290100098,
+                    1.3430818319320679,
                     0.0
                 ],
                 "scale": [
@@ -516,7 +518,7 @@
                     "spacing": 0.0,
                     "texPath": "Resources/number_font.png",
                     "type": "NumberDrawerComponent",
-                    "value": 10
+                    "value": 5
                 }
             ],
             "name": "KillCounterUI",
@@ -541,7 +543,7 @@
         {
             "components": [
                 {
-                    "currentKills": 5,
+                    "currentKills": 10,
                     "isBossEventTriggered": false,
                     "targetKills": 15,
                     "type": "GameDirectorComponent",
@@ -766,6 +768,105 @@
             "transform": {
                 "position": [
                     0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "components": [
+                {
+                    "farFadeDistance": 70.0,
+                    "isDepthEnable": true,
+                    "material": {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "enableLighting": 1,
+                        "environmentCoefficient": 0.30000001192092896,
+                        "metallic": 0.0,
+                        "roughness": 0.10000000149011612,
+                        "time": 84.75362396240234,
+                        "uvTransform": {
+                            "rotation": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "translation": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ]
+                        }
+                    },
+                    "modelPath": "Resources/WaterSurface/waterSurface.obj",
+                    "nearFadeDistance": 0.0,
+                    "numActiveWaves": 1,
+                    "texPath": "Resources/WaterSurface/waterSurface_normal (2).png",
+                    "type": "WaterSurfaceComponent",
+                    "waves": [
+                        {
+                            "amplitude": 0.10000000149011612,
+                            "direction": [
+                                0.0,
+                                1.0
+                            ],
+                            "frequency": 0.4000000059604645,
+                            "steepness": 0.5
+                        },
+                        {
+                            "amplitude": 0.10000000149011612,
+                            "direction": [
+                                -0.7071067690849304,
+                                0.7071067690849304
+                            ],
+                            "frequency": 1.2000000476837158,
+                            "steepness": 0.30000001192092896
+                        },
+                        {
+                            "amplitude": 0.0,
+                            "direction": [
+                                1.0,
+                                0.0
+                            ],
+                            "frequency": 1.0,
+                            "steepness": 0.0
+                        },
+                        {
+                            "amplitude": 0.0,
+                            "direction": [
+                                1.0,
+                                0.0
+                            ],
+                            "frequency": 1.0,
+                            "steepness": 0.0
+                        }
+                    ]
+                }
+            ],
+            "name": "WaterSurface0",
+            "transform": {
+                "position": [
+                    100.0,
                     0.0,
                     0.0
                 ],

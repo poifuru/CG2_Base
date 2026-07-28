@@ -104,12 +104,17 @@ VertexShaderOutput main(VertexShaderInput input)
      // インデックスが 0 以外（有効なテクスチャ）の時だけサンプリング
     if (gWaterSurface.rippleTextureIndex > 0)
     {
-        // 頂点のuv座標を使ってCSのテクスチャをサンプリングする
-        float4 rippleData = gTextures[gWaterSurface.rippleTextureIndex].SampleLevel(gSampler, rippleUV, 0);
+        //if (gWaterSurface.rippleTextureIndex > 0 &&
+        //rippleUV.x >= 0.0f && rippleUV.x <= 1.0f &&
+        //rippleUV.y >= 0.0f && rippleUV.y <= 1.0f)
+        //{
+            // 頂点のuv座標を使ってCSのテクスチャをサンプリングする
+            float4 rippleData = gTextures[gWaterSurface.rippleTextureIndex].SampleLevel(gSampler, rippleUV, 0);
     
-        // CSが書いた波の高さをY座標に加算
-        float rippleHeight = rippleData.r * 3.3f;
-        position.y += rippleHeight;
+            // CSが書いた波の高さをY座標に加算
+            float rippleHeight = rippleData.r * 2.3f;
+            position.y += rippleHeight;
+        //}
     }
     
     // w成分(1.0f)を新たに追加して4次元ベクトルを完成させる

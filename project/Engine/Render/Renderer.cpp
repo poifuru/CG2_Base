@@ -146,10 +146,10 @@ void MyEngine::Rendering::Renderer::Draw(std::vector<std::unique_ptr<GameObject>
 				if(auto* model = meshRenderer->GetModel()) {
 					auto* modelData = model->GetModelData();
 					auto* material = model->GetMaterial();
-					auto transformAddr = model->GetTransformGPUAddress();
 					if(modelData && material) {
-						for(const auto& mesh : modelData->meshes) {
-							Submit(mesh, material, transformAddr, objectName);
+						for(size_t i = 0; i < modelData->meshes.size(); ++i) {
+							auto transformAddr = model->GetMeshTransformGPUAddress(static_cast<uint32_t>(i));
+							Submit(modelData->meshes[i], material, transformAddr, objectName);
 						}
 					}
 				}

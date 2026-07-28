@@ -47,7 +47,7 @@ std::unique_ptr<MyEngine::Rendering::Model> ModelFactory::CreateModel(
 	model->SetMaterial(material);
 
 	// アセットの設定
-	model->Initialize(tempModelData);
+	model->Initialize(tempModelData, device_->GetDevice());
 
 	return model;
 }
