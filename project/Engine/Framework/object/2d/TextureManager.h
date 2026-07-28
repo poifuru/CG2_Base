@@ -13,7 +13,7 @@ public:		//外部公開メソッド
 	void Initialize (ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, MyEngine::LowLevel::DescriptorHeapManager* heapManager);
 
 	//画像をロードする関数
-	uint32_t LoadTexture (const std::string& filePath);
+	uint32_t LoadTexture (const std::string& filePath, bool isSRGB);
 
 	// テクスチャアンロード（使い終わったら参照カウントを減らす）
 	void UnloadTexture(const std::string& filePath);
@@ -22,13 +22,7 @@ public:		//外部公開メソッド
 	void ClearIntermediateResource ();
 
 	// テクスチャID（ファイルパス）からバインドレスヒープ内のインデックスを取得する
-	uint32_t GetTextureIndex(const std::string& filePath) const {
-		auto it = textureMap_.find(filePath);
-		if (it != textureMap_.end()) {
-			return it->second.textureIndex;
-		}
-		return 0; // 見つからない場合はデフォルトの0番
-	}
+	uint32_t GetTextureIndex(const std::string& filePath) const;
 
 public:
 	// コピー・移動禁止

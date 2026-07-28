@@ -7,17 +7,17 @@
     <ClCompile Include="Engine\Graphics\primitive\cube\CubeRenderer.cpp" />
     <ClCompile Include="Engine\Graphics\primitive\line\LineRenderer.cpp" />
     <ClCompile Include="Engine\Render\PSO\BlendModeManager.cpp" />
-    <ClCompile Include="Engine\Core\Utility\LogManager.cpp" />
-    <ClCompile Include="Engine\Core\Utility\ChangeString.cpp" />
+    <ClCompile Include="Engine\Common\Utility\LogManager.cpp" />
+    <ClCompile Include="Engine\Common\Utility\ChangeString.cpp" />
     <ClCompile Include="Engine\Render\PSO\InputLayoutManager.cpp" />
     <ClCompile Include="Engine\Editor\ImGui\ImGuiManager.cpp" />
     <ClCompile Include="Engine\Editor\ImGui\EditorManager.cpp" />
     <ClCompile Include="Engine\Core\LeakChecker.cpp" />
-    <ClCompile Include="Engine\Core\Utility\Function.cpp" />
+    <ClCompile Include="Engine\Common\Utility\Function.cpp" />
     <ClCompile Include="Engine\Core\Input\GamePad.cpp" />
     <ClCompile Include="Engine\Core\Input\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Engine\Core\Utility\MathFunction.cpp" />
+    <ClCompile Include="Engine\Common\Utility\MathFunction.cpp" />
     <ClCompile Include="Engine\Framework\Object\2d\Sprite.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\Model.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\ModelFactory.cpp" />
@@ -31,7 +31,7 @@
     <ClCompile Include="Engine\Render\PSO\RootSignatureManager.cpp" />
     <ClCompile Include="Engine\Render\PSO\PSOManager.cpp" />
     <ClCompile Include="Engine\Graphics\primitive\Mesh.cpp" />
-    <ClCompile Include="Engine\Core\Utility\Easing.cpp" />
+    <ClCompile Include="Engine\Common\Utility\Easing.cpp" />
     <ClCompile Include="Engine\Core\SRV\SRVManager.cpp" />
     <ClCompile Include="application\entity\Entity.cpp" />
     <ClCompile Include="Engine\Render\PSO\ShaderManager.cpp" />
@@ -112,6 +112,7 @@
     <ClCompile Include="Engine\Core\DirectXResource\RWTexture2D.cpp" />
     <ClCompile Include="Engine\Graphics\RippleSimulator\RippleSimulator.cpp" />
     <ClCompile Include="Engine\Framework\ComputePipeline\ComputePipeline.cpp" />
+    <ClCompile Include="Engine\Common\Utility\ColorUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -134,17 +135,17 @@
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="Engine\Core\Utility\LogManager.h" />
-    <ClInclude Include="Engine\Core\Utility\ChangeString.h" />
+    <ClInclude Include="Engine\Common\Utility\LogManager.h" />
+    <ClInclude Include="Engine\Common\Utility\ChangeString.h" />
     <ClInclude Include="Engine\Render\PSO\InputLayoutManager.h" />
     <ClInclude Include="Engine\Editor\ImGui\ImGuiManager.h" />
     <ClInclude Include="Engine\Editor\ImGui\EditorManager.h" />
     <ClInclude Include="Engine\Core\LeakChecker.h" />
     <ClInclude Include="Engine\Core\Input\GamePad.h" />
-    <ClInclude Include="Engine\Core\Utility\Function.h" />
-    <ClInclude Include="Engine\Core\Utility\MathFunction.h" />
+    <ClInclude Include="Engine\Common\Utility\Function.h" />
+    <ClInclude Include="Engine\Common\Utility\MathFunction.h" />
     <ClInclude Include="Engine\Framework\Object\2d\Sprite.h" />
-    <ClInclude Include="Engine\Core\Utility\struct.h" />
+    <ClInclude Include="Engine\Common\Utility\struct.h" />
     <ClInclude Include="Engine\Framework\Object\3d\Model.h" />
     <ClInclude Include="Engine\Framework\Object\3d\ModelFactory.h" />
     <ClInclude Include="Engine\Core\Input\InputManager.h" />
@@ -155,7 +156,7 @@
     <ClInclude Include="application\scene\SceneManager.h" />
     <ClInclude Include="application\scene\TitleScene.h" />
     <ClInclude Include="application\scene\PlayScene.h" />
-    <ClInclude Include="Engine\Core\Utility\Easing.h" />
+    <ClInclude Include="Engine\Common\Utility\Easing.h" />
     <ClInclude Include="Engine\Core\SRV\SRVManager.h" />
     <ClInclude Include="application\entity\Entity.h" />
     <ClInclude Include="application\entity\player\PlayerComponent.h" />
@@ -176,7 +177,7 @@
     <ClInclude Include="application\scene\TestScene.h" />
     <ClInclude Include="Engine\Framework\Object\3d\SkyboxComponent.h" />
     <ClInclude Include="Engine\Core\RenderTexture.h" />
-    <ClInclude Include="Engine\Core\Utility\DeltaTime.h" />
+    <ClInclude Include="Engine\Common\Utility\DeltaTime.h" />
     <ClInclude Include="application\entity\player\BulletComponent.h" />
     <ClInclude Include="application\entity\player\ReticleComponent.h" />
     <ClInclude Include="Application\Collider\Collision.h" />
@@ -253,6 +254,7 @@
     <ClInclude Include="Engine\Core\DirectXResource\RWTexture2D.h" />
     <ClInclude Include="Engine\Graphics\RippleSimulator\RippleSimulator.h" />
     <ClInclude Include="Engine\Framework\ComputePipeline\ComputePipeline.h" />
+    <ClInclude Include="Engine\Common\Utility\ColorUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

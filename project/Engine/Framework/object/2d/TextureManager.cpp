@@ -47,7 +47,7 @@ void TextureManager::Initialize (ID3D12Device* device, ID3D12GraphicsCommandList
 	textureMap_["white1x1"] = dummyData;
 }
 
-uint32_t TextureManager::LoadTexture (const std::string& filePath) {
+uint32_t TextureManager::LoadTexture (const std::string& filePath, bool isSRGB) {
 	// すでに同じパスで読み込まれていたら、新しく作らずに参照カウントだけ増やしてインデックスを返す
 	if (textureMap_.count(filePath)) {
 		textureMap_.at(filePath).refCount++;
@@ -66,6 +66,8 @@ uint32_t TextureManager::LoadTexture (const std::string& filePath) {
 	if (filePathW.ends_with(L".dds")) {
 		hr = DirectX::LoadFromDDSFile(filePathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
 	} else {
+		// isSRGB フラグに応じて WIC フラグを切替
+		DWORD wicFlags = isSRGB ? DirectX::WIC_FLAGS_FORCE_SRGB : DirectX::WIC_FLAGS_FORCE_LINEAR;
 		hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 	}
 
@@ -83,6 +85,7 @@ uint32_t TextureManager::LoadTexture (const std::string& filePath) {
 	if (DirectX::IsCompressed(image.GetMetadata().format)) {
 		mipImage = std::move(image);
 	} else {
+		DWORD filterFlags = isSRGB ? DirectX::TEX_FILTER_SRGB : DirectX::TEX_FILTER_DEFAULT;
 		hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 4, mipImage);
 		if (FAILED(hr)) {
 			mipImage = std::move(image); // 失敗したら元の画像で妥協
@@ -141,6 +144,14 @@ void TextureManager::UnloadTexture(const std::string& filePath) {
 void TextureManager::ClearIntermediateResource () {
 	// コピーが完全に終わった中間リソースを一斉掃除する
 	intermediateResources_.clear();
+}
+
+uint32_t TextureManager::GetTextureIndex(const std::string& filePath) const  {
+	auto it = textureMap_.find(filePath);
+	if (it != textureMap_.end()) {
+		return it->second.textureIndex;
+	}
+	return 0; // 見つからない場合はデフォルトの0番
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(ID3D12Device* device, const DirectX::TexMetadata& metadata) {
