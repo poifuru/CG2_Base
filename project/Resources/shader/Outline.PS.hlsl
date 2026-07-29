@@ -34,6 +34,17 @@ PixelShaderOutput main(VertexShaderOutput input)
     
     // 現在のピクセルの元の色
     float4 sceneColor = gTexture.Sample(gSampler, input.texcoord);
+    float2 uv = input.texcoord;
+    
+    // 中心ピクセルの生の深度値（0.0〜1.0）を取得
+    float rawDepth = gDepthTexture.Sample(gSampler, uv).r;
+    
+    // 深度が0.999以上（スカイボックスや何も描画されていない背景）はアウトライン処理をスキップ！
+    if (rawDepth >= 0.999f)
+    {
+        output.color = sceneColor;
+        return output;
+    }
     
     // テクスチャの解像度を取得して、1ピクセルあたりのUVサイズを計算
     float width, height;
@@ -41,7 +52,6 @@ PixelShaderOutput main(VertexShaderOutput input)
     float2 texelSize = float2(1.0f / width, 1.0f / height) * gOutlineBuffer.edgeThickness;
     float near = gOutlineBuffer.cameraNear;
     float far = gOutlineBuffer.cameraFar;
-    float2 uv = input.texcoord;
     
     // --- ラプラシアンフィルタによるエッジ検出 ---
     // 中心ピクセルと、上下左右の4つの隣接ピクセルの線形深度を取得
@@ -54,7 +64,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     // ラプラシアン（2階微分）を計算して、深度の急激な変化（エッジ）を検出
     float laplacian = abs(up + down + left + right - 4.0f * center);
     
-    // 【重要】遠くのオブジェクトほどデプスの絶対値の差が大きくなりやすいので、
+    // 遠くのオブジェクトほどデプスの絶対値の差が大きくなりやすいので、
     // 中心ピクセルの距離で割ることで、遠近に関わらず一定の太さでエッジが出るように「正規化」する
     float edgeDepth = laplacian / center;
     

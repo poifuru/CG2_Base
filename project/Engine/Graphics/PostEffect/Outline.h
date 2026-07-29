@@ -19,8 +19,8 @@ public:
 private:
 	struct alignas(16) OutlineForGPU {
 		Vector4 color = { 0.0f, 0.0f, 0.0f, 1.0f }; // 初期値：黒色不透明
-		float edgeThreshold = 0.01f;                 // 初期値：感度
-		float edgeThickness = 1.0f;                  // 初期値：太さ1倍
+		float edgeThreshold = 0.1f;                 // 初期値：感度
+		float edgeThickness = 0.5f;                  // 初期値：太さ1倍
 		float cameraNear = 0.1f;
 		float cameraFar = 1000.0f;
 		float padding[3];
