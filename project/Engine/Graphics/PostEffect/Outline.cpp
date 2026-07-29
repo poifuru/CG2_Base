@@ -10,8 +10,8 @@ void Outline::Initialize(ID3D12Device* device) {
 
 	// 初期パラメータの設定
 	param_.color = { 0.0f, 0.0f, 0.0f, 1.0f }; // デフォルト：黒色不透明
-	param_.edgeThreshold = 0.01f;               // デフォルト：エッジ感度
-	param_.edgeThickness = 1.0f;                // デフォルト：エッジ太さ1倍
+	param_.edgeThreshold = 0.1f;               // デフォルト：エッジ感度
+	param_.edgeThickness = 0.5f;                // デフォルト：エッジ太さ1倍
 	param_.cameraNear = 0.1f;
 	param_.cameraFar = 1000.0f;
 
