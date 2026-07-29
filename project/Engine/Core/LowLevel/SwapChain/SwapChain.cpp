@@ -2,6 +2,7 @@
 #include "SwapChain.h"
 #include "CommandList.h"
 #include "Function.h"
+#include "DescriptorHeapManager.h"
 
 MyEngine::LowLevel::SwapChain::SwapChain() = default;
 
@@ -108,7 +109,13 @@ void MyEngine::LowLevel::SwapChain::BeginRender(MyEngine::LowLevel::CommandList*
 	ID3D12Resource* backBuffer = GetBackBufferResource(bbIndex);
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = GetRtvHandle(bbIndex);
 
-	MyEngine::Utility::TransitionBarrier(cmdList->GetCommandList(), backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	MyEngine::Utility::TransitionBarrier(
+		cmdList->GetCommandList(),
+		backBuffer, 
+		D3D12_RESOURCE_STATE_PRESENT,
+		D3D12_RESOURCE_STATE_RENDER_TARGET
+	);
+	
 	cmdList->SetRenderTargets(rtvHandle, &dsvHandle_);
 	cmdList->ClearRenderTarget(rtvHandle, clearColor);
 	cmdList->ClearDepthBuffer(dsvHandle_, 1.0f);
@@ -159,11 +166,34 @@ void MyEngine::LowLevel::SwapChain::Resize(uint32_t width, uint32_t height) {
 		d3dDevice->CreateRenderTargetView(swapChainResources_[i].Get(), &rtvDesc, rtvHandles_[i]);
 	}
 
-	// 4. 新しいサイズで深度バッファを再生成
+	// 新しいサイズで深度バッファを再生成
 	depthBuffer_ = MyEngine::Utility::CreateDepthStencilTextureResource(d3dDevice.Get(), width, height);
 	// DSV（デプスステンシルビュー）の再生成
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 	d3dDevice->CreateDepthStencilView(depthBuffer_.Get(), &dsvDesc, dsvHandle_);
+
+	if (dsvSrvIndex_ != 0) {
+		// 再生成された depthBuffer_ で SRV を更新
+		// （heapManager の参照が必要なため、呼び出し元で更新するか、heapManager を保持させて呼ぶ）
+	}
+}
+
+void MyEngine::LowLevel::SwapChain::CreateDepthSRV(
+	ID3D12Device* device, 
+	MyEngine::LowLevel::DescriptorHeapManager* heapManager
+){
+	heapManager_ = heapManager;
+
+	if (dsvSrvIndex_ == 0) {
+		dsvSrvIndex_ = heapManager->AllocateIndex();
+	}
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Texture2D.MipLevels = 1;
+	heapManager->CreateSRVforTexture2D(dsvSrvIndex_, depthBuffer_.Get(), srvDesc);
 }

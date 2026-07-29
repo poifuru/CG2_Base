@@ -55,6 +55,8 @@ void MyEngine::LowLevel::Engine::Initialize() {
 
 	heapManager_ = std::make_unique<MyEngine::LowLevel::DescriptorHeapManager>();
 	heapManager_->Initialize(device_->GetDevice(), 4096);
+
+	swapChain_->CreateDepthSRV(device_->GetDevice(), heapManager_.get());
 }
 
 bool MyEngine::LowLevel::Engine::ProcessMessage() {

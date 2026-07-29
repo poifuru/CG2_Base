@@ -24,11 +24,9 @@ public:
 	const Matrix4x4& GetProjMat () { return camera_.proj; }
 	const Matrix4x4& GetVPMat () { return camera_.vp; }
 	
-	const float& GetNear() { return near_; }
-	const float& GetFar() { return far_; }
+	const float& GetNear() { return camera_.nearClip; }
+	const float& GetFar() { return camera_.farClip; }
 
 protected:
 	CameraData camera_ = {};
-	float near_ = 0.1f;
-	float far_ = 1000.f;
 };

@@ -32,6 +32,12 @@ void Outline::ImGui() {
 	}
 }
 
+void Outline::UpdateCameraNearFar(float nearClip, float farClip) {
+	param_.cameraNear = nearClip;
+	param_.cameraFar = farClip;
+	buffer_->Update(param_);
+}
+
 D3D12_GPU_VIRTUAL_ADDRESS Outline::GetConstantBufferAddress() const {
 	return buffer_->GetGPUVirtualAddress();
 }

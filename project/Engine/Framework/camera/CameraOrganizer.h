@@ -10,6 +10,8 @@ struct CameraData {
 	Matrix4x4 view;
 	Matrix4x4 proj;
 	Matrix4x4 vp;
+	float nearClip = 0.1f;
+	float farClip = 1000.f;
 };
 
 class CameraOrganizer {

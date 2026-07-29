@@ -7,6 +7,7 @@
 // 前方宣言
 namespace MyEngine::LowLevel {
 	class CommandList;
+	class DescriptorHeapManager;
 }
 
 namespace MyEngine::LowLevel {
@@ -51,12 +52,16 @@ namespace MyEngine::LowLevel {
 
 		void Resize(uint32_t width, uint32_t height);
 
+		void CreateDepthSRV(ID3D12Device* device, MyEngine::LowLevel::DescriptorHeapManager* heapManager);
+
 		// --- アクセッサ --- //
 		uint32_t GetCurrentBackBufferIndex() const { return swapChain_->GetCurrentBackBufferIndex(); }
 		ID3D12Resource* GetBackBufferResource(uint32_t index) const { return swapChainResources_[index].Get(); }
 		D3D12_CPU_DESCRIPTOR_HANDLE GetRtvHandle(uint32_t index) const { return rtvHandles_[index]; }
 		D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferRtvHandle() const { return GetRtvHandle(GetCurrentBackBufferIndex()); }
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDsvHandle() const { return dsvHandle_; }
+		uint32_t GetDepthSrvIndex() const { return dsvSrvIndex_; }
+		ID3D12Resource* GetDepthBufferResource() const { return depthBuffer_.Get(); }
 
 	public:
 		// コピー・移動禁止
@@ -78,5 +83,9 @@ namespace MyEngine::LowLevel {
 		Microsoft::WRL::ComPtr<ID3D12Resource> depthBuffer_;
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvHeap_;
 		D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_{};
+		uint32_t dsvSrvIndex_ = 0; // 深度SRVインデックス
+
+		// ポインタ
+		MyEngine::LowLevel::DescriptorHeapManager* heapManager_;
 	};
 }

@@ -17,6 +17,7 @@
 #include "MeshData.h"
 #include "ComponentType.h"
 #include "PostEffectManager.h"
+#include "Outline.h"
 
 MyEngine::Rendering::Renderer::Renderer() = default;
 MyEngine::Rendering::Renderer::~Renderer() = default;
@@ -103,7 +104,7 @@ void MyEngine::Rendering::Renderer::RenderScene(
 ) {
 	cmdList_ = cmdList;
 
-	// 1. 描画する直前に RENDER_TARGET へバリア遷移
+	// 描画する直前に RENDER_TARGET へバリア遷移
 	renderTexture_->ChangeState(cmdList_, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 	// レンダーターゲットと深度バッファを renderTexture_ にセット
@@ -130,6 +131,15 @@ void MyEngine::Rendering::Renderer::RenderScene(
 	renderSystem_->ClearCommands();
 
 	renderTexture_->ChangeState(cmdList_, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+	// カメラの Near/Far を Outline エフェクトに渡す
+	auto cameraData = CameraOrganizer::GetInstance()->GetCameraData();
+	if (postEffectManager_) {
+		auto* outline = static_cast<Outline*>(postEffectManager_->GetEffect(static_cast<size_t>(PostEffectType::Outline)));
+		if (outline) {
+			outline->UpdateCameraNearFar(cameraData.nearClip, cameraData.farClip);
+		}
+	}
 }
 
 void MyEngine::Rendering::Renderer::DispatchCS(
@@ -483,6 +493,19 @@ void MyEngine::Rendering::Renderer::Pingpong(PostEffectManager* postEffectManage
 		float clearColor[4] = { 0.14f, 0.14f, 0.14f, 1.0f };
 		cmdList_->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
+		// 深度が必要なエフェクトかチェック
+		bool isDepthEffect = (effect->GetShadingModel() == ShadingModel::PostEffect_Outline);
+
+		if (isDepthEffect) {
+			// 深度バッファを DEPTH_WRITE -> PIXEL_SHADER_RESOURCE へ遷移
+			MyEngine::Utility::TransitionBarrier(
+				cmdList_,
+				swapChain_->GetDepthBufferResource(),
+				D3D12_RESOURCE_STATE_DEPTH_WRITE,
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+			);
+		}
+
 		// 描画実行
 		SubmitPostEffect(
 			cmdList_,
@@ -491,6 +514,16 @@ void MyEngine::Rendering::Renderer::Pingpong(PostEffectManager* postEffectManage
 			currentInput->GetSrvIndex(), // 入力テクスチャ
 			effect->GetExtraSrvIndex()   // 追加テクスチャ(マスク等)
 		);
+
+		if (isDepthEffect) {
+			// 深度バッファを PIXEL_SHADER_RESOURCE -> DEPTH_WRITE へすぐ戻す！
+			MyEngine::Utility::TransitionBarrier(
+				cmdList_,
+				swapChain_->GetDepthBufferResource(),
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+				D3D12_RESOURCE_STATE_DEPTH_WRITE
+			);
+		}
 
 		// 今書き込んだバッファを SRV (読み込み用) にバリア遷移
 		nextOutput->ChangeState(cmdList_, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);

@@ -8,7 +8,10 @@ public:
 
 	void ImGui() override;
 
+	void UpdateCameraNearFar(float nearClip, float farClip);
+
 	D3D12_GPU_VIRTUAL_ADDRESS GetConstantBufferAddress() const override;
+
 
 	uint32_t GetSrvIndexSceneColor() { return srvIndexSceneColor_; }
 	uint32_t GetSrvIndexDepth() { return srvIndexDepth_; }
