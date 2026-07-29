@@ -1,9 +1,9 @@
 #pragma once
 #include "BaseScene.h"
-#include "Model.h"
-#include "LightManager.h"
 #include "GameObject.h"
 
+class LightManager;
+class PostEffectManager;
 class LevelEditor;
 
 class PlayScene : public BaseScene {
@@ -14,6 +14,8 @@ public:
 	void Initialize() override;
 	void Update(CameraData* cameraData) override;
 	void Draw(MyEngine::Rendering::Renderer* renderer) override;
+
+	PostEffectManager* GetPostEffectManager() override { return postEffectManager_.get(); }
 
 private:
 	void CleanupObject();
@@ -28,6 +30,7 @@ private:
 	GameObject* selectedObject_ = nullptr;
 
 	std::unique_ptr<LightManager> lightManager_ = nullptr;
+	std::unique_ptr<PostEffectManager> postEffectManager_ = nullptr;
 
 #ifdef USEIMGUI
 	// エディタインスタンス

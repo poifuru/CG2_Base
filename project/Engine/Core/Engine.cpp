@@ -10,7 +10,7 @@
 #include "SwapChain.h"
 #include "DescriptorHeapManager.h"
 #include "LogManager.h"
-#include "Function.h"
+#include "RenderTexture.h"
 
 // プロファイラ用の静的変数定義
 float MyEngine::LowLevel::Engine::sUpdateTime_ = 0.0f;
@@ -61,10 +61,7 @@ bool MyEngine::LowLevel::Engine::ProcessMessage() {
 	return WindowsAPI::GetInstance()->ProcessMessage();
 }
 
-void MyEngine::LowLevel::Engine::BeginFrame(
-	ID3D12Resource* renderTexResource,
-	D3D12_CPU_DESCRIPTOR_HANDLE renderTexDescriptorHandle
-) {
+void MyEngine::LowLevel::Engine::BeginFrame(D3D12_CPU_DESCRIPTOR_HANDLE renderTexDescriptorHandle) {
 	// 予約された遅延リサイズを安全に実行する
 	if (resizeRequested_) {
 		if (swapChain_) {
@@ -79,18 +76,8 @@ void MyEngine::LowLevel::Engine::BeginFrame(
 	cmdList_->Reset();
 
 #ifdef USEIMGUI
-	// RenderTextureをレンダーターゲットに設定
-	ID3D12GraphicsCommandList* cmdList = cmdList_->GetCommandList();
-	MyEngine::Utility::TransitionBarrier(cmdList, renderTexResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = renderTexDescriptorHandle;
-	float clearColor[] = { 0.14f, 0.14f, 0.14f, 1.0f };
-	cmdList_->ClearRenderTarget(rtvHandle, clearColor);
-
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = swapChain_->GetDsvHandle();
-	cmdList_->ClearDepthBuffer(dsvHandle);
-
-	cmdList_->SetRenderTargets(rtvHandle, &dsvHandle);
+	/*D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = swapChain_->GetDsvHandle();
+	cmdList_->SetRenderTargets(renderTexDescriptorHandle, &dsvHandle);*/
 #else
 	// 直接SwapChainのバックバッファに描画する
 	float clearColor[] = { 0.14f, 0.14f, 0.14f, 1.0f };

@@ -9,8 +9,8 @@
 #include "RawInput.h"
 #include "CollisionManager.h"
 #include "GraphicsDevice.h"
-#include "ModelManager.h"
-#include "WaterSurfaceComponent.h"
+#include "LightManager.h"
+#include "PostEffectManager.h"
 
 PlayScene::PlayScene() = default;
 PlayScene::~PlayScene() = default;
@@ -66,6 +66,9 @@ void PlayScene::Initialize() {
 	// ライトマネージャーの初期化
 	lightManager_ = std::make_unique<LightManager>();
 	lightManager_->Initialize(context_->graphicsDevice->GetDevice());
+
+	postEffectManager_ = std::make_unique<PostEffectManager>();
+	postEffectManager_->Initialize(context_->graphicsDevice->GetDevice());
 }
 
 void PlayScene::Update(CameraData* cameraData) {
@@ -141,6 +144,8 @@ void PlayScene::Update(CameraData* cameraData) {
 	}
 
 #ifdef USEIMGUI
+	postEffectManager_->ImGui();
+
 	// エディタの更新処理に丸投げ！
 	levelEditor_->Update(gameObjects_, selectedObject_, cameraData);
 #endif
@@ -153,6 +158,8 @@ void PlayScene::Draw(MyEngine::Rendering::Renderer* renderer) {
 	}
 
 	renderer->Draw(gameObjects_);
+
+	renderer->SetPostEffectManager(postEffectManager_.get());
 }
 
 void PlayScene::CleanupObject() {

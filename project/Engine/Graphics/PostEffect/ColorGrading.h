@@ -1,13 +1,14 @@
 #pragma once
 #include "BasePostEffect.h"
+#include "ConstantBuffer.h"
 
 class ColorGrading : public BasePostEffect {
 public:
-	void Initialize(DxCommon* dxCommon) override;
-
-	void Draw(RenderTexture* renderTexture, CameraOrganizer* camera) override;
+	void Initialize(ID3D12Device* device) override;
 
 	void ImGui() override;
+
+	D3D12_GPU_VIRTUAL_ADDRESS GetConstantBufferAddress() const override;
 
 private:
 	struct alignas(16) ColorGradingForGPU {
@@ -20,5 +21,6 @@ private:
 	};
 
 private:
-	ColorGradingForGPU* cpuData_ = nullptr;
+	std::unique_ptr<ConstantBuffer<ColorGradingForGPU>> buffer_;
+	ColorGradingForGPU param_;
 };

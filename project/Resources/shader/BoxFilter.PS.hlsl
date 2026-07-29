@@ -1,6 +1,6 @@
 #include "Fullscreen.hlsli"
 
-Texture2D<float4> gTexture : register(t0);
+Texture2D<float4> gTexture : register(t0, space2);
 SamplerState gSampler : register(s0);
 
 // 定数を定義

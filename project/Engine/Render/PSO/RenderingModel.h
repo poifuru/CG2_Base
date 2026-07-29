@@ -10,6 +10,16 @@ namespace MyEngine::Rendering {
 		WaterSurface,	// 水面
 		BoatWake,		// 航跡波
 
+		// ポストエフェクト用
+		PostEffect_CopyImage,		// コピー
+		PostEffect_Outline,			// アウトライン
+		PostEffect_ColorGrading,	// カラーグレーティング
+		PostEffect_Fog,				// フォグ
+		PostEffect_Vignette,		// ヴィネット
+		PostEffect_RadialBlur,		// ラジアルブラー
+		PostEffect_Dissolve,		// ディゾルブ
+		PostEffect_RandomNoise,		// ランダムノイズ
+
 		Count			// 設定の個数
 	};
 
@@ -27,16 +37,16 @@ namespace MyEngine::Rendering {
 
 	// インプットレイアウトの定義
 	enum class InputLayoutType : uint32_t {
-		Standard3D, //POSITION, TEXCOORD, NORMALを持つレイアウト
+		Standard3D,			//POSITION, TEXCOORD, NORMALを持つレイアウト
 		SkinningStandard3D,	// Standard3Dの設定にSkinning用の設定を足したもの
-		Particle,   // Particle用
-		LineMesh,   // LineMesh描画用
-		CubeMesh,   // CubeMesh描画用
-		MeshShader, // 将来のメッシュシェーダー用(InputLayout不要)
-		Skybox,     // Skybox描画用
-		PostProcess,// PostEffect用(InputLayout不要)
-		BoatWake,	// 航跡波用
+		Particle,			// Particle用
+		LineMesh,			// LineMesh描画用
+		CubeMesh,			// CubeMesh描画用
+		MeshShader,			// 将来のメッシュシェーダー用(InputLayout不要)
+		Skybox,				// Skybox描画用
+		PostProcess,		// PostEffect用(InputLayout不要)
+		BoatWake,			// 航跡波用
 
-		Count           // 設定の個数
+		Count				// 設定の個数
 	};
 }

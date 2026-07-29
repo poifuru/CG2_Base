@@ -44,6 +44,13 @@ public:
 	MyEngine::Rendering::Renderer* GetRenderer() { return renderer_; }
 	void SetRenderer(MyEngine::Rendering::Renderer* renderer) { renderer_ = renderer; }
 
+	PostEffectManager* GetPostEffectManager() const {
+		if (currentScene_) {
+			return currentScene_->GetPostEffectManager();
+		}
+		return nullptr;
+	}
+
 	// シーン遷移用のテンプレート関数
 	template <typename T>
 	void ChangeScene() {

@@ -113,6 +113,9 @@
     <ClCompile Include="Engine\Graphics\RippleSimulator\RippleSimulator.cpp" />
     <ClCompile Include="Engine\Framework\ComputePipeline\ComputePipeline.cpp" />
     <ClCompile Include="Engine\Common\Utility\ColorUtils.cpp" />
+    <ClCompile Include="Engine\Graphics\PostEffect\Dissolve.cpp" />
+    <ClCompile Include="Engine\Graphics\PostEffect\RadialBlur.cpp" />
+    <ClCompile Include="Engine\Graphics\PostEffect\RandomNoise.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -255,6 +258,10 @@
     <ClInclude Include="Engine\Graphics\RippleSimulator\RippleSimulator.h" />
     <ClInclude Include="Engine\Framework\ComputePipeline\ComputePipeline.h" />
     <ClInclude Include="Engine\Common\Utility\ColorUtils.h" />
+    <ClInclude Include="Engine\Graphics\PostEffect\Dissolve.h" />
+    <ClInclude Include="Engine\Graphics\PostEffect\RadialBlur.h" />
+    <ClInclude Include="Engine\Graphics\PostEffect\RandomNoise.h" />
+    <ClInclude Include="Engine\Graphics\PostEffect\PostEffectType.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

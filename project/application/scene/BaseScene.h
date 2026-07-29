@@ -20,6 +20,8 @@ namespace MyEngine::Rendering {
 	class BlendModeManager;
 }
 
+class PostEffectManager;
+
 // シーンで必要になる高レベルマネージャーや低レイヤー参照のポインタを束ねた薄い構造体
 struct SceneContext {
 	TextureManager* textureManager = nullptr;
@@ -55,6 +57,8 @@ public:
 	virtual void Update(CameraData* cameraData) = 0;
 	virtual void Draw(MyEngine::Rendering::Renderer* renderer) = 0;
 	virtual void DrawUI() {}
+
+	virtual PostEffectManager* GetPostEffectManager() { return nullptr; }
 
 protected:
 	// 借りてきたポインタ群

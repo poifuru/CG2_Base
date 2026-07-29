@@ -1,8 +1,7 @@
 #include "PCH.h"
 #include "RenderTexture.h"
 #include "DescriptorHeapManager.h"
-#include "WindowsAPI.h"
-#include <cassert>
+#include "Function.h"
 
 void MyEngine::Rendering::RenderTexture::Initialize(ID3D12Device* device, MyEngine::LowLevel::DescriptorHeapManager* heapManager) {
 	// オフスクリーンレンダリング用のクリアカラー
@@ -85,7 +84,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> MyEngine::Rendering::RenderTexture::Creat
 		&heapProperties,
 		D3D12_HEAP_FLAG_NONE,
 		&resourceDesc,
-		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,	// 最初はSRV(PIXEL_SHADER_RESOURCE)として作っておく
+		D3D12_RESOURCE_STATE_RENDER_TARGET  ,	// 最初はPIXEL_SHADER_RESOURCE として作っておく
 		&clearValue,	// Clear最適値。ClearRenderTargetをこの色でClearするようにする。
 		IID_PPV_ARGS(&resource_)
 	);
@@ -93,4 +92,14 @@ Microsoft::WRL::ComPtr<ID3D12Resource> MyEngine::Rendering::RenderTexture::Creat
 
 	// 作ったresourceを返す
 	return resource_;
+}
+
+void MyEngine::Rendering::RenderTexture::ChangeState(
+	ID3D12GraphicsCommandList* cmdList,
+	D3D12_RESOURCE_STATES newState
+) {
+		if (currentState_ != newState) {
+			MyEngine::Utility::TransitionBarrier(cmdList, resource_.Get(), currentState_, newState);
+			currentState_ = newState; // 現在の状態を更新！
+		}
 }

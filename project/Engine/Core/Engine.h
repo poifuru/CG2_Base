@@ -12,6 +12,10 @@ namespace MyEngine::LowLevel {
 	class DescriptorHeapManager;
 }
 
+namespace MyEngine::Rendering {
+	class RenderTexture;
+}
+
 namespace MyEngine::LowLevel {
 	class Engine {
 	public:
@@ -32,12 +36,9 @@ namespace MyEngine::LowLevel {
 		/// <summary>
 		/// 描画前処理
 		/// </summary>
-		/// <param name="renderTexResource"></param>
+		/// <param name="renderTexture"></param>
 		/// <param name="renderTexDescriptorHandle"></param>
-		void BeginFrame(
-			ID3D12Resource* renderTexResource,
-			D3D12_CPU_DESCRIPTOR_HANDLE renderTexDescriptorHandle
-		);
+		void BeginFrame(D3D12_CPU_DESCRIPTOR_HANDLE renderTexDescriptorHandle);
 
 		/// <summary>
 		/// 描画後処理
@@ -79,6 +80,7 @@ namespace MyEngine::LowLevel {
 		IDxcIncludeHandler* GetIncludeHandler();
 
 		MyEngine::LowLevel::DescriptorHeapManager* GetDescriptorHeapManager() { return heapManager_.get(); }
+		MyEngine::LowLevel::SwapChain* GetSwapChain() { return swapChain_.get(); }
 
 	private:
 		LeakChecker leakCheck_{};

@@ -11,8 +11,8 @@ struct OutlineBuffer
 };
 
 ConstantBuffer<OutlineBuffer> gOutlineBuffer : register(b0);
-Texture2D<float4> gTexture : register(t0); // 描画済みのメイン画像
-Texture2D<float> gDepthTexture : register(t1); // デプスバッファ (R24_UNORM_X8_TYPELESSなど)
+Texture2D<float4> gTexture : register(t0, space2); // 描画済みのメイン画像
+Texture2D<float> gDepthTexture : register(t1, space2); // デプスバッファ (R24_UNORM_X8_TYPELESSなど)
 SamplerState gSampler : register(s0);
 
 struct PixelShaderOutput

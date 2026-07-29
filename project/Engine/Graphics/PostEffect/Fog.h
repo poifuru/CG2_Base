@@ -1,13 +1,17 @@
 #pragma once
 #include "BasePostEffect.h"
+#include "ConstantBuffer.h"
 
 class Fog : public BasePostEffect {
 public:
-	void Initialize(DxCommon* dxCommon) override;
-
-	void Draw(RenderTexture* renderTexture, CameraOrganizer* camera) override;
+	void Initialize(ID3D12Device* device) override;
 
 	void ImGui() override;
+
+	D3D12_GPU_VIRTUAL_ADDRESS GetConstantBufferAddress() const override;
+
+	uint32_t GetSrvIndexSceneColor() { return srvIndexSceneColor_; }
+	uint32_t GetSrvIndexDepth() { return srvIndexDepth_; }
 
 private:
 	struct alignas(16) FogForGPU {
@@ -25,7 +29,8 @@ private:
 	};
 
 private:
-	FogForGPU* cpuData_ = nullptr;
+	std::unique_ptr<ConstantBuffer<FogForGPU>> buffer_;
+	FogForGPU param_;
 
 	uint32_t srvIndexSceneColor_ = 0; // シーンカラー用のインデックス
 	uint32_t srvIndexDepth_ = 0;      // デプスバッファ用のインデックス

@@ -3,7 +3,10 @@
 
 namespace MyEngine::LowLevel {
 	class DescriptorHeapManager;
+	class SwapChain;
 }
+
+class PostEffectManager;
 
 namespace MyEngine::Rendering {
 	class RenderTexture;
@@ -36,7 +39,8 @@ namespace MyEngine::Rendering {
 			IDxcUtils* dxcUtils,
 			IDxcCompiler3* dxcCompiler,
 			IDxcIncludeHandler* includeHandler,
-			MyEngine::LowLevel::DescriptorHeapManager* heapManager
+			MyEngine::LowLevel::DescriptorHeapManager* heapManager,
+			MyEngine::LowLevel::SwapChain* swapChain
 		);
 
 		void RenderScene(
@@ -45,11 +49,12 @@ namespace MyEngine::Rendering {
 		);
 
 		void DispatchCS(
-			ID3D12GraphicsCommandList* cmdList,
 			MyEngine::LowLevel::DescriptorHeapManager* heapManager
 			);
 
 		void Draw(std::vector<std::unique_ptr<GameObject>>& objects);
+
+		void ExecutePostProcess(PostEffectManager* postEffectManager);
 
 		MyEngine::Rendering::RenderSystem* GetRenderSystem() { return renderSystem_.get(); }
 		MyEngine::Rendering::RenderTexture* GetRenderTexture() { return renderTexture_.get(); }
@@ -58,6 +63,13 @@ namespace MyEngine::Rendering {
 		MyEngine::Rendering::ShaderManager* GetShaderManager() { return shaderManager_.get(); }
 		MyEngine::Rendering::InputLayoutManager* GetInputLayoutManager() { return inputLayoutManager_.get(); }
 		MyEngine::Rendering::BlendModeManager* GetBlendModeManager() { return blendModeManager_.get(); }
+
+		void SetPostEffectManager(PostEffectManager* postEffectManager) { postEffectManager_ = postEffectManager; }
+
+		// 最終的な描画結果の RenderTexture を取得するゲッター
+		RenderTexture* GetFinalRenderTexture() const { 
+			return finalRenderTexture_ ? finalRenderTexture_ : renderTexture_.get(); 
+		}
 
 	private:
 		uint64_t MakeShaderKey(
@@ -75,10 +87,24 @@ namespace MyEngine::Rendering {
 			D3D12_GPU_VIRTUAL_ADDRESS customAddr = 0
 		);
 
+		void SubmitPostEffect(
+			ID3D12GraphicsCommandList* cmdList,
+			MyEngine::Rendering::ShadingModel model,
+			D3D12_GPU_VIRTUAL_ADDRESS cbvAddress,
+			uint32_t srcTextureSrvIndex,
+			uint32_t extraSrvIndex
+		);
 
+		// ピンポンレンダリング用のヘルパー関数
+		void Pingpong(PostEffectManager* postEffectManager);
+		void SetBackBufferAsRenderTarget();
 
 	private:
 		ID3D12Device* device_ = nullptr;
+		ID3D12GraphicsCommandList* cmdList_ = nullptr;
+		MyEngine::LowLevel::DescriptorHeapManager* heapManager_ = nullptr;
+		MyEngine::LowLevel::SwapChain* swapChain_ = nullptr;
+
 		std::unique_ptr<MyEngine::Rendering::RootSignatureManager> rootSigManager_;
 		std::unique_ptr<MyEngine::Rendering::ShaderManager> shaderManager_;
 		std::unique_ptr<MyEngine::Rendering::InputLayoutManager> inputLayoutManager_;
@@ -87,11 +113,19 @@ namespace MyEngine::Rendering {
 
 		std::unique_ptr<MyEngine::Rendering::RenderSystem> renderSystem_;
 		std::unique_ptr<MyEngine::Rendering::RenderTexture> renderTexture_;
+		// ピンポン用の中間テクスチャ2枚
+		std::unique_ptr<MyEngine::Rendering::RenderTexture> workTextures_[2];
 
 		// シェーダーの組み合わせを保存しておく
 		std::unordered_map<uint64_t, ShaderPair> shaderTable_;
 
 		// objectsの参照を覚えておく
 		std::vector<std::unique_ptr<GameObject>>* currentObjects_ = nullptr;
+		
+		// PostEffectManagerの参照
+		PostEffectManager* postEffectManager_ = nullptr;
+
+		// ポストエフェクト適用後の最終テクスチャを指すポインタ
+		RenderTexture* finalRenderTexture_ = nullptr;
 	};
 }

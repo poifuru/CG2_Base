@@ -22,6 +22,9 @@ namespace MyEngine::Rendering {
 			ID3D12Device* device, uint32_t width, uint32_t height, DXGI_FORMAT format, const Vector4& clearColor
 		);
 
+		// 状態を安全に変更する関数
+		void ChangeState(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES newState);
+
 		// アクセッサ
 		ID3D12Resource* GetResource() const { return resource_.Get(); }
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDescriptorHandle() const { return rtvHandle_; }
@@ -37,5 +40,8 @@ namespace MyEngine::Rendering {
 
 		// シェーダーマネージャーに渡すときに使うインデックス
 		uint32_t srvIndex_ = 0;
+
+		// 初期状態を覚えておく（作成時は PIXEL_SHADER_RESOURCE ）
+		D3D12_RESOURCE_STATES currentState_ = D3D12_RESOURCE_STATE_RENDER_TARGET  ;
 	};
 }

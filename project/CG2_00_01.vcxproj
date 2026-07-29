@@ -188,6 +188,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\Collider\ColliderComponent.cpp" />
     <ClCompile Include="Application\Entity\Enemy\BirdEnemyComponent.cpp" />
     <ClCompile Include="Application\Entity\Enemy\EnemyManagerComponent.cpp" />
+    <ClCompile Include="Engine\Graphics\PostEffect\Dissolve.cpp" />
     <ClCompile Include="Engine\Common\Utility\ColorUtils.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\GraphicsCommand\CommandList.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\GraphicsCommand\CommandQueue.cpp" />
@@ -329,6 +330,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Framework\GameObject\BoatWakeComponent\BoatWakeComponent.cpp" />
     <ClCompile Include="Engine\Core\DirectXResource\RWTexture2D.cpp" />
     <ClCompile Include="Engine\Graphics\RippleSimulator\RippleSimulator.cpp" />
+    <ClCompile Include="Engine\Graphics\PostEffect\RadialBlur.cpp" />
+    <ClCompile Include="Engine\Graphics\PostEffect\RandomNoise.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Collider\Collision.h" />
@@ -342,6 +345,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\Collider\ColliderComponent.h" />
     <ClInclude Include="Application\Entity\Enemy\BirdEnemyComponent.h" />
     <ClInclude Include="Application\Entity\Enemy\EnemyManagerComponent.h" />
+    <ClInclude Include="Engine\Graphics\PostEffect\Dissolve.h" />
     <ClInclude Include="Engine\Common\Utility\ColorUtils.h" />
     <ClInclude Include="Engine\Framework\ComputePipeline\ComputePipeline.h" />
     <ClInclude Include="Engine\Core\LowLevel\GraphicsCommand\CommandList.h" />
@@ -366,6 +370,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Core\LowLevel\GraphicsDevice\GraphicsDevice.h" />
     <ClInclude Include="Engine\Core\LowLevel\SwapChain\SwapChain.h" />
     <ClInclude Include="Engine\Core\WindowsAPI\WindowsAPI.h" />
+    <ClInclude Include="Engine\Graphics\PostEffect\PostEffectType.h" />
     <ClInclude Include="Engine\Render\RenderSystem\RenderCommand.h" />
     <ClInclude Include="Engine\Editor\Command\ICommand.h" />
     <ClInclude Include="Engine\Framework\Buffer\Animation.h" />
@@ -477,6 +482,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Framework\GameObject\BoatWakeComponent\BoatWakeComponent.h" />
     <ClInclude Include="Engine\Core\DirectXResource\RWTexture2D.h" />
     <ClInclude Include="Engine\Graphics\RippleSimulator\RippleSimulator.h" />
+    <ClInclude Include="Engine\Graphics\PostEffect\RadialBlur.h" />
+    <ClInclude Include="Engine\Graphics\PostEffect\RandomNoise.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

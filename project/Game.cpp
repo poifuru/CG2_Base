@@ -20,7 +20,8 @@ Game::Game() {
 		engine_->GetDxcUtils(),
 		engine_->GetDxcCompiler(),
 		engine_->GetIncludeHandler(),
-		engine_->GetDescriptorHeapManager()
+		engine_->GetDescriptorHeapManager(),
+		engine_->GetSwapChain()
 	);
 
 	// ロード用コマンドリストをリセットしてロード開始
@@ -81,16 +82,13 @@ void Game::Run() {
  		ImGuiManager::GetInstance()->BeginFrame(
  			engine_->GetDevice(),
  			engine_->GetDescriptorHeapManager(),
- 			renderer_->GetRenderTexture()
+			renderer_->GetFinalRenderTexture()
  		);
  
  		//フレーム開始
- 		engine_->BeginFrame(
- 			renderer_->GetRenderTexture()->GetResource(),
- 			renderer_->GetRenderTexture()->GetDescriptorHandle()
- 		);
+ 		engine_->BeginFrame(renderer_->GetRenderTexture()->GetDescriptorHandle());
 
-		// --- 1. Update (ゲーム更新・描画コマンド登録) の計測 ---
+		// --- Update (ゲーム更新・描画コマンド登録) の計測 ---
 		auto startUpdate = std::chrono::high_resolution_clock::now();
 		
 		// シーンの更新
@@ -102,7 +100,7 @@ void Game::Run() {
 		float updateMs = std::chrono::duration<float, std::milli>(endUpdate - startUpdate).count();
 		MyEngine::LowLevel::Engine::SetUpdateTime(updateMs);
 
-		// --- 2. Render (描画実行・コマンドリスト構築) の計測 ---
+		// --- Render (描画実行・コマンドリスト構築) の計測 ---
 		auto startRender = std::chrono::high_resolution_clock::now();
 		
 		// rendererで実際に描画
@@ -111,6 +109,10 @@ void Game::Run() {
 		// SwapChainの切り替え(USEIMGUI時)
 		engine_->BeginSwapChainRender();
 
+		if (auto* peManager = sceneManager_->GetPostEffectManager()) {
+			renderer_->ExecutePostProcess(peManager);
+		}
+
 		// ImGuiの描画コマンド積み込み
 		ImGuiManager::GetInstance()->Draw(engine_->GetCommandList());
 		
@@ -118,7 +120,7 @@ void Game::Run() {
 		float renderMs = std::chrono::duration<float, std::milli>(endRender - startRender).count();
 		MyEngine::LowLevel::Engine::SetRenderTime(renderMs);
 
-		// --- 3. GPU Wait (EndFrameでのGPU同期待ち) の計測 ---
+		// --- GPU Wait (EndFrameでのGPU同期待ち) の計測 ---
 		auto startWait = std::chrono::high_resolution_clock::now();
 		
 		//フレーム終了

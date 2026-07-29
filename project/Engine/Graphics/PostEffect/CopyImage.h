@@ -3,7 +3,7 @@
 
 class CopyImageEffect : public BasePostEffect {
 public:
-	void Initialize(DxCommon* dxCommon) override;
-	void Draw(RenderTexture* renderTexture, CameraOrganizer* camera) override;
+	void Initialize(ID3D12Device* device) override;
 	void ImGui() override;
+	D3D12_GPU_VIRTUAL_ADDRESS GetConstantBufferAddress() const override;
 };

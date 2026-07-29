@@ -55,6 +55,7 @@ namespace MyEngine::LowLevel {
 		uint32_t GetCurrentBackBufferIndex() const { return swapChain_->GetCurrentBackBufferIndex(); }
 		ID3D12Resource* GetBackBufferResource(uint32_t index) const { return swapChainResources_[index].Get(); }
 		D3D12_CPU_DESCRIPTOR_HANDLE GetRtvHandle(uint32_t index) const { return rtvHandles_[index]; }
+		D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferRtvHandle() const { return GetRtvHandle(GetCurrentBackBufferIndex()); }
 		D3D12_CPU_DESCRIPTOR_HANDLE GetDsvHandle() const { return dsvHandle_; }
 
 	public:
