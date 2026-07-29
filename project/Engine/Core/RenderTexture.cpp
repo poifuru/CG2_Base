@@ -9,7 +9,8 @@ void MyEngine::Rendering::RenderTexture::Initialize(ID3D12Device* device, MyEngi
 	const Vector4 kRenderTargetClearValue{ 0.14f, 0.14f, 0.14f, 1.0f }; // SwapChainのClear色と合わせる
 
 	// フォーマット
-	DXGI_FORMAT renderFormat = DXGI_FORMAT_R16G16B16A16_FLOAT ;
+	//DXGI_FORMAT renderFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	DXGI_FORMAT renderFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 
 	// リソース作成
 	CreateRenderTextureResource(

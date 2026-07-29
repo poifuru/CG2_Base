@@ -17,7 +17,7 @@ void TextureManager::Initialize (ID3D12Device* device, ID3D12GraphicsCommandList
 	// 何も読み込まれなかった時用の真っ白なダミーテクスチャを登録しておく
 	// RGBAの1x1ピクセルの画像をメモリ上で即席で作る
 	DirectX::ScratchImage image;
-	HRESULT hr = image.Initialize2D(DXGI_FORMAT_R8G8B8A8_UNORM, 1, 1, 1, 1);
+	HRESULT hr = image.Initialize2D(DXGI_FORMAT_R8G8B8A8_UNORM_SRGB , 1, 1, 1, 1);
 	assert(SUCCEEDED(hr));
 
 	uint32_t* pixelData = reinterpret_cast<uint32_t*>(image.GetPixels());
@@ -47,7 +47,7 @@ void TextureManager::Initialize (ID3D12Device* device, ID3D12GraphicsCommandList
 	textureMap_["white1x1"] = dummyData;
 }
 
-uint32_t TextureManager::LoadTexture (const std::string& filePath, bool isSRGB) {
+uint32_t TextureManager::LoadTexture (const std::string& filePath) {
 	// すでに同じパスで読み込まれていたら、新しく作らずに参照カウントだけ増やしてインデックスを返す
 	if (textureMap_.count(filePath)) {
 		textureMap_.at(filePath).refCount++;
@@ -67,7 +67,7 @@ uint32_t TextureManager::LoadTexture (const std::string& filePath, bool isSRGB) 
 		hr = DirectX::LoadFromDDSFile(filePathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
 	} else {
 		// isSRGB フラグに応じて WIC フラグを切替
-		DWORD wicFlags = isSRGB ? DirectX::WIC_FLAGS_FORCE_SRGB : DirectX::WIC_FLAGS_FORCE_LINEAR;
+		//DWORD wicFlags = isSRGB ? DirectX::WIC_FLAGS_FORCE_SRGB : DirectX::WIC_FLAGS_FORCE_LINEAR;
 		hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 	}
 
@@ -85,7 +85,7 @@ uint32_t TextureManager::LoadTexture (const std::string& filePath, bool isSRGB) 
 	if (DirectX::IsCompressed(image.GetMetadata().format)) {
 		mipImage = std::move(image);
 	} else {
-		DWORD filterFlags = isSRGB ? DirectX::TEX_FILTER_SRGB : DirectX::TEX_FILTER_DEFAULT;
+		//DWORD filterFlags = isSRGB ? DirectX::TEX_FILTER_SRGB : DirectX::TEX_FILTER_DEFAULT;
 		hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 4, mipImage);
 		if (FAILED(hr)) {
 			mipImage = std::move(image); // 失敗したら元の画像で妥協
