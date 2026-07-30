@@ -1,0 +1,168 @@
+{
+    "name": "scene",
+    "objects": [
+        {
+            "components": [
+                {
+                    "far": 1000.0,
+                    "near": 0.10000000149011612,
+                    "type": "MainCameraComponent"
+                }
+            ],
+            "name": "MainCamera",
+            "transform": {
+                "position": [
+                    5.231621742248535,
+                    -1.2803218364715576,
+                    -0.5747578740119934
+                ],
+                "rotation": [
+                    -0.33100003004074097,
+                    4.830997943878174,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "components": [
+                {
+                    "fov": 0.44999998807907104,
+                    "priority": 10,
+                    "sensitivity": 0.0010000000474974513,
+                    "speed": 0.30000001192092896,
+                    "type": "VirtualDebugCamera"
+                }
+            ],
+            "name": "DebugCamera",
+            "transform": {
+                "position": [
+                    5.231621742248535,
+                    -1.2803218364715576,
+                    -0.5747578740119934
+                ],
+                "rotation": [
+                    -0.33100003004074097,
+                    4.830997943878174,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "components": [
+                {
+                    "isDepthEnable": true,
+                    "material": {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "enableLighting": 1,
+                        "environmentCoefficient": 0.30000001192092896,
+                        "metallic": 0.0,
+                        "roughness": 0.5,
+                        "time": 0.0,
+                        "uvTransform": {
+                            "rotation": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "translation": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ]
+                        }
+                    },
+                    "modelPath": "Resources/human/walk.gltf",
+                    "texPath": "Resources/human/white.png",
+                    "type": "MeshRendererComponent"
+                },
+                {
+                    "directoryPath": "Resources/AnimatedCube",
+                    "fileName": "AnimatedCube.gltf",
+                    "isLoop": true,
+                    "isPlaying": true,
+                    "speed": 1.0,
+                    "type": "AnimationComponent"
+                },
+                {
+                    "type": "SkeletonComponent"
+                },
+                {
+                    "type": "SkinClusterComponent"
+                }
+            ],
+            "name": "model",
+            "transform": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.1730490922927856,
+                    1.070122480392456,
+                    2.7884583473205566
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    0.9999995231628418
+                ]
+            }
+        },
+        {
+            "components": [
+                {
+                    "color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "decay": 1.0,
+                    "intensity": 4.349999904632568,
+                    "lightType": 1,
+                    "radius": 100.0,
+                    "type": "LightComponent"
+                }
+            ],
+            "name": "Light",
+            "transform": {
+                "position": [
+                    -0.18097496032714844,
+                    0.5015077590942383,
+                    -1.1635844707489014
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ]
+}
