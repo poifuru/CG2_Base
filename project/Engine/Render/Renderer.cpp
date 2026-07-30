@@ -276,8 +276,20 @@ void MyEngine::Rendering::Renderer::ExecutePostProcess(
 	// ピンポンレンダリング
 	Pingpong(postEffectManager);
 
+#ifdef USEIMGUI
 	// ImGuiがバックバッファに描画できるように、レンダーターゲットをバックバッファに戻す
 	SetBackBufferAsRenderTarget();
+#else
+	// リリリースビルド（USEIMGUI無効）：最終画面を画面（バックバッファ）に全画面描画して出力する！
+	SetBackBufferAsRenderTarget();
+	SubmitPostEffect(
+		cmdList_,
+		ShadingModel::PostEffect_CopyImage,
+		0,
+		finalRenderTexture_->GetSrvIndex(),
+		0
+	);
+#endif
 }
 
 uint64_t MyEngine::Rendering::Renderer::MakeShaderKey(
