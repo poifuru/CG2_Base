@@ -98,7 +98,7 @@
                         1.0,
                         1.0
                     ],
-                    "intensity": 10.0,
+                    "intensity": 80.0,
                     "lightType": 0,
                     "type": "LightComponent"
                 }
@@ -133,13 +133,13 @@
             "name": "MainCamera",
             "transform": {
                 "position": [
-                    32.92534637451172,
-                    16.920795440673828,
-                    -71.55323791503906
+                    -32.15045166015625,
+                    13.584526062011719,
+                    -71.29891204833984
                 ],
                 "rotation": [
-                    0.19652070105075836,
-                    0.5695929527282715,
+                    0.10020118951797485,
+                    0.8875367045402527,
                     0.0
                 ],
                 "scale": [
@@ -153,7 +153,7 @@
             "components": [
                 {
                     "fov": 0.44999998807907104,
-                    "priority": 10,
+                    "priority": 20,
                     "sensitivity": 0.0010000000474974513,
                     "speed": 0.30000001192092896,
                     "type": "VirtualDebugCamera"
@@ -162,13 +162,13 @@
             "name": "DebugCamera",
             "transform": {
                 "position": [
-                    26.310775756835938,
-                    30.59929847717285,
-                    119.00006866455078
+                    -32.15045166015625,
+                    13.584526062011719,
+                    -71.29891204833984
                 ],
                 "rotation": [
-                    0.2542010247707367,
-                    4.302539825439453,
+                    0.10020118951797485,
+                    0.8875367045402527,
                     0.0
                 ],
                 "scale": [
@@ -190,7 +190,7 @@
                         5.099999904632568,
                         -70.0
                     ],
-                    "priority": 20,
+                    "priority": 10,
                     "targetName": "Player",
                     "type": "VirtualFollowCamera"
                 }
@@ -198,13 +198,13 @@
             "name": "FollowCamera",
             "transform": {
                 "position": [
-                    32.92534637451172,
+                    32.92670440673828,
                     16.920795440673828,
-                    -71.55323791503906
+                    -71.55302429199219
                 ],
                 "rotation": [
-                    0.19652070105075836,
-                    0.5695929527282715,
+                    0.1965232491493225,
+                    0.5695779323577881,
                     0.0
                 ],
                 "scale": [
@@ -230,7 +230,7 @@
                         "environmentCoefficient": 0.30000001192092896,
                         "metallic": 0.0,
                         "roughness": 0.10000000149011612,
-                        "time": 207.24351501464844,
+                        "time": 93.63885498046875,
                         "uvTransform": {
                             "rotation": [
                                 0.0,
@@ -256,7 +256,7 @@
                     "type": "WaterSurfaceComponent",
                     "waves": [
                         {
-                            "amplitude": 0.10000000149011612,
+                            "amplitude": 0.0,
                             "direction": [
                                 0.0,
                                 1.0
@@ -360,13 +360,13 @@
             "name": "reticle",
             "transform": {
                 "position": [
-                    85.81623840332031,
-                    -2.605022430419922,
-                    11.037895202636719
+                    45.01244354248047,
+                    3.5811662673950195,
+                    -8.483150482177734
                 ],
                 "rotation": [
-                    0.19652070105075836,
-                    0.5695929527282715,
+                    0.10020118951797485,
+                    0.8875367045402527,
                     0.0
                 ],
                 "scale": [
@@ -518,7 +518,7 @@
                     "spacing": 0.0,
                     "texPath": "Resources/number_font.png",
                     "type": "NumberDrawerComponent",
-                    "value": 1
+                    "value": 15
                 }
             ],
             "name": "KillCounterUI",
@@ -543,7 +543,7 @@
         {
             "components": [
                 {
-                    "currentKills": 14,
+                    "currentKills": 0,
                     "isBossEventTriggered": false,
                     "targetKills": 15,
                     "type": "GameDirectorComponent",
@@ -731,7 +731,7 @@
                         5.0,
                         -10.0
                     ],
-                    "priority": 20,
+                    "priority": 10,
                     "targetName": "",
                     "type": "VirtualFollowCamera"
                 }
@@ -799,7 +799,7 @@
                         "environmentCoefficient": 0.30000001192092896,
                         "metallic": 0.0,
                         "roughness": 0.10000000149011612,
-                        "time": 207.24351501464844,
+                        "time": 93.63885498046875,
                         "uvTransform": {
                             "rotation": [
                                 0.0,

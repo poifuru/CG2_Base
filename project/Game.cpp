@@ -8,7 +8,6 @@
 #include "RenderTexture.h"
 #include "InputManager.h"
 #include "WindowsAPI.h"
-#include <chrono> // 時間計測用
 
 Game::Game() {
 	engine_ = std::make_unique<MyEngine::LowLevel::Engine>();
@@ -109,6 +108,7 @@ void Game::Run() {
 		// SwapChainの切り替え(USEIMGUI時)
 		engine_->BeginSwapChainRender();
 
+		// ポストエフェクト
 		if (auto* peManager = sceneManager_->GetPostEffectManager()) {
 			renderer_->ExecutePostProcess(peManager);
 		}

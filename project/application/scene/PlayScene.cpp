@@ -69,8 +69,6 @@ void PlayScene::Initialize() {
 
 	postEffectManager_ = std::make_unique<PostEffectManager>();
 	postEffectManager_->Initialize(context_->graphicsDevice->GetDevice());
-	postEffectManager_->SetEffectActive(PostEffectType::Outline, true);
-	postEffectManager_->SetEffectActive(PostEffectType::Vignette, true);
 }
 
 void PlayScene::Update(CameraData* cameraData) {

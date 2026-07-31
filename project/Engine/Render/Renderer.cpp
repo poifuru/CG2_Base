@@ -280,7 +280,7 @@ void MyEngine::Rendering::Renderer::ExecutePostProcess(
 	// ImGuiがバックバッファに描画できるように、レンダーターゲットをバックバッファに戻す
 	SetBackBufferAsRenderTarget();
 #else
-	// リリリースビルド（USEIMGUI無効）：最終画面を画面（バックバッファ）に全画面描画して出力する！
+	// リリリースビルド（USEIMGUI無効）：最終画面を画面（バックバッファ）に全画面描画して出力する
 	SetBackBufferAsRenderTarget();
 	SubmitPostEffect(
 		cmdList_,
@@ -440,6 +440,10 @@ void MyEngine::Rendering::Renderer::SubmitPostEffect(
 	desc.FillMode = D3D12_FILL_MODE_SOLID;
 	desc.DepthEnable = FALSE;
 
+	if(lastEffect_) {
+		desc.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	}
+
 	ID3D12PipelineState* pso = psoManager_->GetOrCreatePSO(
 		device_, desc, rootSigManager_->GetCommonRootSignature(),
 		*shaderManager_, *inputLayoutManager_, *blendModeManager_
@@ -469,6 +473,9 @@ void MyEngine::Rendering::Renderer::SubmitPostEffect(
 }
 
 void MyEngine::Rendering::Renderer::Pingpong(PostEffectManager* postEffectManager) {
+	// フラグのリセット
+	lastEffect_ = false;
+
 	// 最後に描画するアクティブなエフェクトのインデックスを探す
 	int lastActiveIndex = -1;
 	for(int i = static_cast<int>(postEffectManager->GetEffectCount()) - 1; i >= 0; --i) {
@@ -481,6 +488,7 @@ void MyEngine::Rendering::Renderer::Pingpong(PostEffectManager* postEffectManage
 
 	// アクティブなエフェクトが一つも無ければ、素の renderTexture_ を最終結果にして終了
 	if(lastActiveIndex == -1) {
+		lastEffect_ = true;
 		finalRenderTexture_ = renderTexture_.get();
 		return;
 	}
@@ -528,7 +536,7 @@ void MyEngine::Rendering::Renderer::Pingpong(PostEffectManager* postEffectManage
 		);
 
 		if (isDepthEffect) {
-			// 深度バッファを PIXEL_SHADER_RESOURCE -> DEPTH_WRITE へすぐ戻す！
+			// 深度バッファを PIXEL_SHADER_RESOURCE -> DEPTH_WRITE へ戻す
 			MyEngine::Utility::TransitionBarrier(
 				cmdList_,
 				swapChain_->GetDepthBufferResource(),

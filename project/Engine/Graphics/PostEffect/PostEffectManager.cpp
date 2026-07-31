@@ -1,8 +1,6 @@
 #include "PCH.h"
 #include "PostEffectManager.h"
 #include "PostEffectType.h"
-#include "RenderTexture.h"
-#include "SRVManager.h"
 
 void PostEffectManager::Initialize(ID3D12Device* device) {
 	// ポストエフェクトをすべて初期化

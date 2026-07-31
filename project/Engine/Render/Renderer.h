@@ -127,5 +127,6 @@ namespace MyEngine::Rendering {
 
 		// ポストエフェクト適用後の最終テクスチャを指すポインタ
 		RenderTexture* finalRenderTexture_ = nullptr;
+		bool lastEffect_ = false;
 	};
 }

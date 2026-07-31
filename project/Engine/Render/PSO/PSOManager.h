@@ -29,7 +29,7 @@ namespace MyEngine::Rendering {
 		//トポロジータイプ
 		D3D12_PRIMITIVE_TOPOLOGY_TYPE PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 		//RTVの情報
-		DXGI_FORMAT RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+		DXGI_FORMAT RTVFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		UINT NumRenderTargets = 1;
 
 		//DepthStencilの設定

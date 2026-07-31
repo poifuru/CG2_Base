@@ -2,10 +2,18 @@
 #include "ColorUtils.h"
 
 float ColorUtils::GammaToLinear(float val) {
-	if (val <= 0.04045f) {
+	if(val <= 0.04045f) {
 		return val / 12.92f;
 	}
 	return std::pow((val + 0.055f) / 1.055f, 2.4f);
+}
+
+Vector3 ColorUtils::ToLinear(const Vector3& srgbColor) {
+	return Vector3(
+		ColorUtils::GammaToLinear(srgbColor.x),
+		ColorUtils::GammaToLinear(srgbColor.y),
+		ColorUtils::GammaToLinear(srgbColor.z)
+	);
 }
 
 Vector4 ColorUtils::ToLinear(const Vector4& srgbColor) {

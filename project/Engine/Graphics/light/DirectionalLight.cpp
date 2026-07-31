@@ -1,7 +1,5 @@
 #include "PCH.h"
 #include "DirectionalLight.h"
-#include <string>
-#include "imgui.h"
 #include "MathFunction.h"
 
 // フロート型の最大値を定義

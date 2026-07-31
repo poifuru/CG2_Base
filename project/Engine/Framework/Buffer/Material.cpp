@@ -3,6 +3,7 @@
 #include "GraphicsDevice.h"
 #include "DescriptorHeapManager.h"
 #include "MathFunction.h"
+#include "ColorUtils.h"
 
 void MyEngine::Rendering::Material::Initialize(
 	MyEngine::LowLevel::GraphicsDevice* device,
@@ -27,12 +28,18 @@ void MyEngine::Rendering::Material::Initialize(
 void MyEngine::Rendering::Material::Update() {
 	// 値が書き換わっている時だけGPUに送る
 	if(isDirty_ && buffer_) {
-		// 送信する構造体データの中に行列を計算して詰める
-		data_.uvTransform = Math::MakeAffineMatrix(
+		// 送信用の一時データを作る
+		MaterialData sendData = data_;
+
+		// 行列を計算して詰める
+		sendData.uvTransform = Math::MakeAffineMatrix(
 			uvTransform_.scale, uvTransform_.rotate, uvTransform_.translate
 		);
 
-		buffer_->Update({ data_ });
+		// Linearに変換
+		sendData.color = ColorUtils::ToLinear(data_.color);
+
+		buffer_->Update({ sendData });
 		isDirty_ = false;
 	}
 }

@@ -13,7 +13,7 @@ public:		//外部公開メソッド
 	void Initialize (ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, MyEngine::LowLevel::DescriptorHeapManager* heapManager);
 
 	//画像をロードする関数
-	uint32_t LoadTexture (const std::string& filePath);
+	uint32_t LoadTexture (const std::string& filePath, bool isSRGB = true);
 
 	// テクスチャアンロード（使い終わったら参照カウントを減らす）
 	void UnloadTexture(const std::string& filePath);

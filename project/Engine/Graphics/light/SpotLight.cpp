@@ -1,6 +1,5 @@
 #include "PCH.h"
 #include "SpotLight.h"
-#include "imgui.h"
 #include "MathFunction.h"
 
 // フロート型の最大値を定義

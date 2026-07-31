@@ -1,6 +1,7 @@
 #include "PCH.h"
 #include "LightManager.h"
 #include "LightComponent.h"
+#include "ColorUtils.h"
 
 void LightManager::Initialize(ID3D12Device* device) {
 	assert(device != nullptr);
@@ -8,7 +9,7 @@ void LightManager::Initialize(ID3D12Device* device) {
 }
 
 void LightManager::Update() {
-	// コンポーネントから集約されたデータをそのままGPUへ転送するだけ！
+	// コンポーネントから集約されたデータをそのままGPUへ転送するだけ
 	lightBuffer_.Update(lightCPUData_);
 }
 
@@ -51,7 +52,7 @@ void LightManager::Register(const LightComponent* light) {
 void LightManager::RegisterDirectionalLight(const Vector4& color, const Vector3& direction, float intensity) {
 	int32_t index = lightCPUData_.count.dirLight;
 	if (index >= MaxCount) return;
-	lightCPUData_.dirLights[index].color = color;
+	lightCPUData_.dirLights[index].color = ColorUtils::ToLinear(color);
 	lightCPUData_.dirLights[index].direction = direction;
 	lightCPUData_.dirLights[index].intensity = intensity;
 	lightCPUData_.count.dirLight++;
@@ -62,7 +63,7 @@ void LightManager::RegisterPointLight(const Vector4& color, const Vector3& posit
 ) {
 	int32_t index = lightCPUData_.count.pointLight;
 	if (index >= MaxCount) return;
-	lightCPUData_.pointLights[index].color = color;
+	lightCPUData_.pointLights[index].color = ColorUtils::ToLinear(color);
 	lightCPUData_.pointLights[index].position = position;
 	lightCPUData_.pointLights[index].intensity = intensity;
 	lightCPUData_.pointLights[index].radius = radius;
@@ -75,7 +76,7 @@ void LightManager::RegisterSpotLight(const Vector4& color, const Vector3& positi
 ) {
 	int32_t index = lightCPUData_.count.spotLight;
 	if (index >= MaxCount) return;
-	lightCPUData_.spotLights[index].color = color;
+	lightCPUData_.spotLights[index].color = ColorUtils::ToLinear(color);
 	lightCPUData_.spotLights[index].position = position;
 	lightCPUData_.spotLights[index].intensity = intensity;
 	lightCPUData_.spotLights[index].direction = direction;
@@ -91,7 +92,7 @@ void LightManager::RegisterRectLight(const Vector4& color, const Vector3& positi
 ) {
 	int32_t index = lightCPUData_.count.rectLight;
 	if (index >= MaxCount) return;
-	lightCPUData_.rectLights[index].color = color;
+	lightCPUData_.rectLights[index].color = ColorUtils::ToLinear(color);
 	lightCPUData_.rectLights[index].position = position;
 	lightCPUData_.rectLights[index].intensity = intensity;
 	lightCPUData_.rectLights[index].direction = direction;
