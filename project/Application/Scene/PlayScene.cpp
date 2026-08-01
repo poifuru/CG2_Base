@@ -140,6 +140,7 @@ void PlayScene::Update(CameraData* cameraData) {
 			}
 		}
 
+		lightManager_->ImGui();
 		lightManager_->Update();
 	}
 

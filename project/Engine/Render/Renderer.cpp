@@ -276,12 +276,20 @@ void MyEngine::Rendering::Renderer::ExecutePostProcess(
 	// ピンポンレンダリング
 	Pingpong(postEffectManager);
 
-#ifdef USEIMGUI
-	// ImGuiがバックバッファに描画できるように、レンダーターゲットをバックバッファに戻す
-	SetBackBufferAsRenderTarget();
-#else
-	// リリリースビルド（USEIMGUI無効）：最終画面を画面（バックバッファ）に全画面描画して出力する
-	SetBackBufferAsRenderTarget();
+	// CopyImageをワークバッファに描画して finalRenderTexture_ を更新する
+	RenderTexture* toneMapOutput = workTextures_[0].get();
+	if (finalRenderTexture_ == workTextures_[0].get()) {
+		toneMapOutput = workTextures_[1].get(); // 被らない方のバッファを使う
+	}
+
+	toneMapOutput->ChangeState(cmdList_, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = toneMapOutput->GetDescriptorHandle();
+	cmdList_->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+
+	// ワークバッファへの描画なのでlastEffectはfalse
+	lastEffect_ = false;
+
+	// トーンマップ実行（CopyImage.PS.hlsl）
 	SubmitPostEffect(
 		cmdList_,
 		ShadingModel::PostEffect_CopyImage,
@@ -289,7 +297,24 @@ void MyEngine::Rendering::Renderer::ExecutePostProcess(
 		finalRenderTexture_->GetSrvIndex(),
 		0
 	);
-#endif
+	toneMapOutput->ChangeState(cmdList_, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+	// ここで最終結果をトーンマップ済みのテクスチャに差し替える
+	finalRenderTexture_ = toneMapOutput;
+
+	// バックバッファへの書き込み時だけlastEffectをtrue
+	lastEffect_ = true;
+	// 画面（バックバッファ）にも描画しておく
+	SetBackBufferAsRenderTarget();
+	lastEffect_ = true;
+	SubmitPostEffect(
+		cmdList_,
+		ShadingModel::PostEffect_CopyImage,
+		0,
+		finalRenderTexture_->GetSrvIndex(),
+		0
+	);
+	lastEffect_ = false;
 }
 
 uint64_t MyEngine::Rendering::Renderer::MakeShaderKey(

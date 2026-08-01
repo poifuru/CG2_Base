@@ -58,6 +58,7 @@ struct RectLight
 
 struct AllLightData
 {
+    float4 ambientColor; // 環境光の色 (RGB) と 強さ (A)
     LightCount count;
     DirectionalLight dirLights[50];
     PointLight pointLights[50];
@@ -245,7 +246,14 @@ float3 toEye
         totalDiffuse += diffuse;
     }
     
-    return totalDiffuse;
+    // アルベドの計算
+    float3 albedo = material.color.rgb * color.rgb;
+    
+    // 環境光の計算
+    float3 ambient = allLights.ambientColor.rgb * albedo;
+    
+    // 直接光と環境光を合成
+    return totalDiffuse + ambient;
 }
 
 float3 UpdateLights(
@@ -396,5 +404,12 @@ float3 worldNormal
         totalDiffuse += diffuse;
     }
     
-    return totalDiffuse;
+    // アルベドの計算
+    float3 albedo = material.color.rgb * color.rgb;
+    
+    // 環境光の計算
+    float3 ambient = allLights.ambientColor.rgb * albedo;
+   
+    // 直接光と環境光を合成
+    return totalDiffuse + ambient;
 }

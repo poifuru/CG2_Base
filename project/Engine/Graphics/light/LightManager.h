@@ -67,7 +67,8 @@ struct RectLightForGPU {
 };
 
 // すべてのライトをまとめる構造体
-struct AllLightDataForGPU {
+struct AllLightDataForGPU {	
+	Vector4 ambientColor;
 	LightCount count;
 
 	DirectionalLightForGPU dirLights[MaxCount];
@@ -83,6 +84,8 @@ public:
 
 	void Initialize(ID3D12Device* device);
 	void Update();
+
+	void ImGui();
 
 	// フレームの最初にライト数をゼロにリセットする
 	void ClearLights();
@@ -123,4 +126,7 @@ private:
 	int selectPointLightIndex_ = 0;
 	int selectSpotLightIndex_ = 0;
 	int selectRectLightIndex_ = 0;
+
+	Vector3 ambientColor_ = { 0.2f, 0.3f, 0.45f }; // デフォルトはほんのり青みがかった空色
+	float ambientIntensity_ = 5.0f;                // 環境光の強さ
 };

@@ -9,8 +9,35 @@ void LightManager::Initialize(ID3D12Device* device) {
 }
 
 void LightManager::Update() {
+	// 環境光の色を Linear 化して intensity を掛け合わせて構造体にセット！
+	Vector3 linearColor = ColorUtils::ToLinear(ambientColor_) * ambientIntensity_;
+	lightCPUData_.ambientColor = Vector4(linearColor.x, linearColor.y, linearColor.z, 1.0f);
+
 	// コンポーネントから集約されたデータをそのままGPUへ転送するだけ
 	lightBuffer_.Update(lightCPUData_);
+}
+
+void LightManager::ImGui() {
+#ifdef USEIMGUI
+	ImGui::Begin("Light Manager");
+	// 環境光 (Ambient Light)
+	if (ImGui::CollapsingHeader("Ambient Light", ImGuiTreeNodeFlags_DefaultOpen)) {
+		ImGui::ColorEdit3("Ambient Color", &ambientColor_.x);
+		ImGui::DragFloat("Ambient Intensity", &ambientIntensity_, 0.01f, 0.0f, 5.0f);
+	}
+	ImGui::Separator();
+
+	// 有効ライト数のサマリー表示
+	ImGui::Text("Active Lights Count:");
+	ImGui::Text("  Directional: %d / %d", lightCPUData_.count.dirLight, MaxCount);
+	ImGui::Text("  Point      : %d / %d", lightCPUData_.count.pointLight, MaxCount);
+	ImGui::Text("  Spot       : %d / %d", lightCPUData_.count.spotLight, MaxCount);
+	ImGui::Text("  Rect       : %d / %d", lightCPUData_.count.rectLight, MaxCount);
+
+	ImGui::Separator();
+	
+	ImGui::End();
+#endif
 }
 
 void LightManager::ClearLights() {
