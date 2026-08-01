@@ -42,7 +42,7 @@ void ImGuiManager::Initialize(
 	initInfo.Device = device;
 	initInfo.CommandQueue = cmdQueue;
 	initInfo.NumFramesInFlight = 3;
-	initInfo.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	initInfo.RTVFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	initInfo.SrvDescriptorHeap = heapManager->GetHeap();
 	initInfo.UserData = heapManager;
 	

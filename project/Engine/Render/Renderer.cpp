@@ -466,7 +466,7 @@ void MyEngine::Rendering::Renderer::SubmitPostEffect(
 	desc.DepthEnable = FALSE;
 
 	if(lastEffect_) {
-		desc.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+		desc.RTVFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	}
 
 	ID3D12PipelineState* pso = psoManager_->GetOrCreatePSO(

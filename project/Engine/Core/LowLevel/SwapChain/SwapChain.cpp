@@ -17,11 +17,11 @@ void MyEngine::LowLevel::SwapChain::Initialize(
 
 	HRESULT hr = S_OK;
 
-	// スワップチェーンの設定(トリプルバッファ用)
+	// スワップチェーンの設定
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 	swapChainDesc.Width = width;
 	swapChainDesc.Height = height;
-	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // RTV側で_SRGBにするため、ここはUNORM
+	swapChainDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; // HDR対応させる
 	swapChainDesc.SampleDesc.Count = 1;
 	swapChainDesc.SampleDesc.Quality = 0;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -43,6 +43,21 @@ void MyEngine::LowLevel::SwapChain::Initialize(
 	hr = swapChain1.As(&swapChain_);
 	assert(SUCCEEDED(hr));
 
+	// IDXGISwapChain3へインターフェースを取得
+	Microsoft::WRL::ComPtr<IDXGISwapChain3> swapChain3;
+	if(SUCCEEDED(swapChain_->QueryInterface(IID_PPV_ARGS(&swapChain3)))) {
+		// sRGB(Linear FP16)用のColorSpace
+		DXGI_COLOR_SPACE_TYPE colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
+
+		UINT colorSpaceSupport = 0;
+		if(SUCCEEDED(swapChain3->CheckColorSpaceSupport(colorSpace, &colorSpaceSupport)) &&
+		   (colorSpaceSupport & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT)) {
+
+			// WindowsにこのスワップチェーンはscRGB HDRであることを伝える
+			swapChain3->SetColorSpace1(colorSpace);
+		}
+	}
+
 	// RTV用のディスクリプタヒープを作成（数は3つ分）
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc{};
 	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -61,7 +76,7 @@ void MyEngine::LowLevel::SwapChain::Initialize(
 
 	// バックバッファリソースの取得とRTVの生成
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
-	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; // ガンマ補正を自動でかけるためSRGB
+	rtvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; // ガンマ補正を自動でかけるためSRGB
 	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandleStart = rtvHeap_->GetCPUDescriptorHandleForHeapStart();
