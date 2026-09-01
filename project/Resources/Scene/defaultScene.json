@@ -4,94 +4,6 @@
         {
             "components": [
                 {
-                    "isDepthEnable": true,
-                    "material": {
-                        "color": [
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0
-                        ],
-                        "enableLighting": 1,
-                        "environmentCoefficient": 0.30000001192092896,
-                        "metallic": 0.0,
-                        "roughness": 0.5,
-                        "time": 0.0,
-                        "uvTransform": {
-                            "rotation": [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            "scale": [
-                                1.0,
-                                1.0,
-                                1.0
-                            ],
-                            "translation": [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        }
-                    },
-                    "modelPath": "Resources/player/player.gltf",
-                    "texPath": "white1x1",
-                    "type": "MeshRendererComponent"
-                },
-                {
-                    "attenuation": 0.9900000095367432,
-                    "brakeAttenuation": 0.9800000190734863,
-                    "brakeMoveSpeedMultiplier": 0.29899999499320984,
-                    "brakeTurnSpeedMultiplier": 4.952000141143799,
-                    "canonOffsetPitch": 0.0,
-                    "canonOffsetYaw": 0.0,
-                    "dirRatioX": 0.009999990463256836,
-                    "dirRatioZ": 0.9900000095367432,
-                    "harpoonHomingStrength": 0.019999999552965164,
-                    "harpoonMaxDistance": 30.0,
-                    "harpoonSpeed": 100.0,
-                    "hp": 0,
-                    "maxHp": 5,
-                    "maxSpeed": 0.5,
-                    "speed": 0.15000000596046448,
-                    "turnSpeed": 0.10000000149011612,
-                    "type": "PlayerComponent"
-                },
-                {
-                    "radius": 2.0,
-                    "type": "ColliderComponent"
-                },
-                {
-                    "maxLifetime": 6.400000095367432,
-                    "spawnInterval": 0.10000000149011612,
-                    "trailWidth": 0.699999988079071,
-                    "type": "BoatWakeComponent",
-                    "widthExpandRate": 1.0
-                }
-            ],
-            "name": "Player",
-            "transform": {
-                "position": [
-                    92.84738159179688,
-                    0.8199999928474426,
-                    63.920860290527344
-                ],
-                "rotation": [
-                    0.0,
-                    82.66297149658203,
-                    0.0
-                ],
-                "scale": [
-                    3.0,
-                    3.0,
-                    3.0
-                ]
-            }
-        },
-        {
-            "components": [
-                {
                     "color": [
                         1.0,
                         1.0,
@@ -133,13 +45,13 @@
             "name": "MainCamera",
             "transform": {
                 "position": [
-                    -45.09870910644531,
-                    12.836405754089355,
-                    -51.59273910522461
+                    -133.93814086914063,
+                    17.547473907470703,
+                    8.11722183227539
                 ],
                 "rotation": [
-                    0.2692013382911682,
-                    0.6561641693115234,
+                    0.1502012312412262,
+                    1.4943509101867676,
                     0.0
                 ],
                 "scale": [
@@ -162,297 +74,13 @@
             "name": "DebugCamera",
             "transform": {
                 "position": [
-                    -45.09870910644531,
-                    12.836405754089355,
-                    -51.59273910522461
+                    -133.93814086914063,
+                    17.547473907470703,
+                    8.11722183227539
                 ],
                 "rotation": [
-                    0.2692013382911682,
-                    0.6561641693115234,
-                    0.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "components": [
-                {
-                    "angleX": 0.30873554944992065,
-                    "angleY": 141.99810791015625,
-                    "delay": 0.5,
-                    "fov": 0.5,
-                    "offset": [
-                        0.0,
-                        5.099999904632568,
-                        -70.0
-                    ],
-                    "priority": 10,
-                    "targetName": "Player",
-                    "type": "VirtualFollowCamera"
-                }
-            ],
-            "name": "FollowCamera",
-            "transform": {
-                "position": [
-                    131.03692626953125,
-                    26.94866180419922,
-                    116.69264221191406
-                ],
-                "rotation": [
-                    0.3479729890823364,
-                    -2.5151543617248535,
-                    0.0
-                ],
-                "scale": [
-                    0.9999949932098389,
-                    0.999997615814209,
-                    0.9999949932098389
-                ]
-            }
-        },
-        {
-            "components": [
-                {
-                    "farFadeDistance": 70.0,
-                    "isDepthEnable": true,
-                    "material": {
-                        "color": [
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0
-                        ],
-                        "enableLighting": 1,
-                        "environmentCoefficient": 0.30000001192092896,
-                        "metallic": 0.0,
-                        "roughness": 0.10000000149011612,
-                        "time": 161.2380828857422,
-                        "uvTransform": {
-                            "rotation": [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            "scale": [
-                                1.0,
-                                1.0,
-                                1.0
-                            ],
-                            "translation": [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        }
-                    },
-                    "modelPath": "Resources/WaterSurface/waterSurface.obj",
-                    "nearFadeDistance": 0.0,
-                    "numActiveWaves": 1,
-                    "texPath": "Resources/WaterSurface/waterSurface_normal.png",
-                    "type": "WaterSurfaceComponent",
-                    "waves": [
-                        {
-                            "amplitude": 0.0,
-                            "direction": [
-                                0.0,
-                                1.0
-                            ],
-                            "frequency": 0.4000000059604645,
-                            "steepness": 0.5
-                        },
-                        {
-                            "amplitude": 0.6000000238418579,
-                            "direction": [
-                                -0.9821276664733887,
-                                0.18821541965007782
-                            ],
-                            "frequency": 1.2000000476837158,
-                            "steepness": 0.30000001192092896
-                        },
-                        {
-                            "amplitude": 0.0,
-                            "direction": [
-                                1.0,
-                                0.0
-                            ],
-                            "frequency": 1.0,
-                            "steepness": 0.0
-                        },
-                        {
-                            "amplitude": 0.0,
-                            "direction": [
-                                1.0,
-                                0.0
-                            ],
-                            "frequency": 1.0,
-                            "steepness": 0.0
-                        }
-                    ]
-                }
-            ],
-            "name": "Watersurface",
-            "transform": {
-                "position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "components": [
-                {
-                    "isDepthEnable": false,
-                    "material": {
-                        "color": [
-                            0.10000000149011612,
-                            0.10000000149011612,
-                            0.10000000149011612,
-                            0.949999988079071
-                        ],
-                        "enableLighting": 0,
-                        "environmentCoefficient": 0.30000001192092896,
-                        "metallic": 0.0,
-                        "roughness": 0.5,
-                        "time": 0.0,
-                        "uvTransform": {
-                            "rotation": [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            "scale": [
-                                1.0,
-                                1.0,
-                                1.0
-                            ],
-                            "translation": [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        }
-                    },
-                    "modelPath": "Resources/reticle/reticle.obj",
-                    "texPath": "Resources/reticle/reticle.png",
-                    "type": "MeshRendererComponent"
-                },
-                {
-                    "lockOnAngleCos": 0.9997000098228455,
-                    "offsetZ": 100.0,
-                    "type": "ReticleComponent"
-                }
-            ],
-            "name": "reticle",
-            "transform": {
-                "position": [
-                    13.712203979492188,
-                    -13.75975513458252,
-                    24.787372589111328
-                ],
-                "rotation": [
-                    0.2692013382911682,
-                    0.6561641693115234,
-                    0.0
-                ],
-                "scale": [
-                    1.5,
-                    1.5,
-                    1.0
-                ]
-            }
-        },
-        {
-            "components": [
-                {
-                    "isDepthEnable": true,
-                    "material": {
-                        "color": [
-                            0.9233871102333069,
-                            0.44680023193359375,
-                            0.0,
-                            1.0
-                        ],
-                        "enableLighting": 1,
-                        "environmentCoefficient": 0.30000001192092896,
-                        "metallic": 0.0,
-                        "roughness": 0.5,
-                        "time": 0.0,
-                        "uvTransform": {
-                            "rotation": [
-                                0.0,
-                                0.0,
-                                0.0
-                            ],
-                            "scale": [
-                                1.0,
-                                1.0,
-                                1.0
-                            ],
-                            "translation": [
-                                0.0,
-                                0.0,
-                                0.0
-                            ]
-                        }
-                    },
-                    "modelPath": "Resources/stage/stage.obj",
-                    "texPath": "white1x1",
-                    "type": "MeshRendererComponent"
-                }
-            ],
-            "name": "stage",
-            "transform": {
-                "position": [
-                    0.0,
-                    -100.0,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
-                    0.0,
-                    -1.5700000524520874
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "components": [
-                {
-                    "maxEnemies": 5,
-                    "spawnInterval": 5.0,
-                    "spawnRadius": 40.0,
-                    "type": "EnemyManagerComponent"
-                }
-            ],
-            "name": "EnemySpwner_0",
-            "transform": {
-                "position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
-                    0.0,
+                    0.1502012312412262,
+                    1.4943509101867676,
                     0.0
                 ],
                 "scale": [
@@ -491,66 +119,43 @@
         {
             "components": [
                 {
-                    "alignment": 1,
-                    "anchorPoint": [
-                        0.5,
-                        0.5
-                    ],
-                    "color": [
-                        0.15178126096725464,
-                        0.15725809335708618,
-                        0.11730946600437164,
-                        1.0
-                    ],
-                    "layer": 5,
-                    "position": [
-                        235.0,
-                        62.0
-                    ],
-                    "scale": [
-                        1.0,
-                        0.30000001192092896
-                    ],
-                    "size": [
-                        32.0,
-                        180.0
-                    ],
-                    "spacing": 0.0,
-                    "texPath": "Resources/number_font.png",
-                    "type": "NumberDrawerComponent",
-                    "value": 14
+                    "isDepthEnable": true,
+                    "material": {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "enableLighting": 1,
+                        "environmentCoefficient": 0.30000001192092896,
+                        "metallic": 0.0,
+                        "roughness": 0.5,
+                        "time": 0.0,
+                        "uvTransform": {
+                            "rotation": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "translation": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ]
+                        }
+                    },
+                    "modelPath": "Resources/plane/plane.obj",
+                    "texPath": "white1x1",
+                    "type": "MeshRendererComponent"
                 }
             ],
-            "name": "KillCounterUI",
-            "transform": {
-                "position": [
-                    13.5,
-                    -3.799999952316284,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "scale": [
-                    1.0,
-                    -6.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "components": [
-                {
-                    "currentKills": 1,
-                    "isBossEventTriggered": false,
-                    "targetKills": 15,
-                    "type": "GameDirectorComponent",
-                    "uiObjectName": "KillCounterUI"
-                }
-            ],
-            "name": "GameDirector",
+            "name": "Plane",
             "transform": {
                 "position": [
                     0.0,
@@ -558,227 +163,13 @@
                     0.0
                 ],
                 "rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "components": [
-                {
-                    "anchorPoint": [
-                        0.5,
-                        0.5
-                    ],
-                    "color": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ],
-                    "layer": 4,
-                    "position": [
-                        116.0,
-                        85.0
-                    ],
-                    "rotation": 0.0,
-                    "scale": [
-                        1.0,
-                        1.0
-                    ],
-                    "size": [
-                        100.0,
-                        100.0
-                    ],
-                    "texPath": "Resources/fish_icon.png",
-                    "type": "SpriteComponent"
-                }
-            ],
-            "name": "fish_icon",
-            "transform": {
-                "position": [
-                    1.600000023841858,
-                    -1.5,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
+                    -1.5700000524520874,
                     0.0,
                     0.0
                 ],
                 "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "components": [
-                {
-                    "anchorPoint": [
-                        0.5,
-                        0.5
-                    ],
-                    "color": [
-                        1.0,
-                        1.0,
-                        1.0,
-                        1.0
-                    ],
-                    "layer": 4,
-                    "position": [
-                        83.0,
-                        50.0
-                    ],
-                    "rotation": 0.0,
-                    "scale": [
-                        1.0,
-                        1.0
-                    ],
-                    "size": [
-                        100.0,
-                        100.0
-                    ],
-                    "texPath": "Resources/bird_icon.png",
-                    "type": "SpriteComponent"
-                }
-            ],
-            "name": "bird_icon",
-            "transform": {
-                "position": [
-                    -1.7000000476837158,
-                    -5.0,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "components": [
-                {
-                    "anchorPoint": [
-                        0.5,
-                        0.5
-                    ],
-                    "color": [
-                        0.15294118225574493,
-                        0.1568627506494522,
-                        0.11764705926179886,
-                        1.0
-                    ],
-                    "layer": 4,
-                    "position": [
-                        177.0,
-                        67.0
-                    ],
-                    "rotation": 0.0,
-                    "scale": [
-                        1.0,
-                        1.0
-                    ],
-                    "size": [
-                        30.0,
-                        30.0
-                    ],
-                    "texPath": "Resources/batu.png",
-                    "type": "SpriteComponent"
-                }
-            ],
-            "name": "batu",
-            "transform": {
-                "position": [
-                    7.699999809265137,
-                    -3.299999952316284,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "components": [
-                {
-                    "angleX": 0.20000000298023224,
-                    "angleY": 0.0,
-                    "delay": 0.10000000149011612,
-                    "fov": 0.44999998807907104,
-                    "offset": [
-                        0.0,
-                        5.0,
-                        -10.0
-                    ],
-                    "priority": 10,
-                    "targetName": "",
-                    "type": "VirtualFollowCamera"
-                }
-            ],
-            "name": "FixedPointCamera",
-            "transform": {
-                "position": [
-                    0.0,
-                    400.2690124511719,
-                    0.0
-                ],
-                "rotation": [
-                    1.5069999694824219,
-                    0.0,
-                    0.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "components": [
-                {
-                    "maxEnemies": 5,
-                    "spawnInterval": 7.0,
-                    "spawnRadius": 100.0,
-                    "type": "EnemyManagerComponent"
-                }
-            ],
-            "name": "EnemySawner_1",
-            "transform": {
-                "position": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "rotation": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "scale": [
-                    1.0,
-                    1.0,
+                    100.0,
+                    100.0,
                     1.0
                 ]
             }
