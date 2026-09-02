@@ -271,6 +271,16 @@ void GameObject::ImGui() {
 		else {
 			ImGui::TextDisabled("Boat Wake Component (Already Added)");
 		}
+		// だるま落としコンポーネント
+		if(GetComponent<DarumaTowerComponent>() == nullptr) {
+			if(ImGui::MenuItem("Daruma Tower Component")) {
+				auto* newComp = AddComponent<DarumaTowerComponent>();
+				newComp->Initialize();
+			}
+		}
+		else {
+			ImGui::TextDisabled("Daruma Tower Component (Already Added)");
+		}
 
 		// コンポーネントが増えたらここに
 		ImGui::EndPopup();

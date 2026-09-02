@@ -69,6 +69,13 @@ void PlayScene::Initialize() {
 
 	postEffectManager_ = std::make_unique<PostEffectManager>();
 	postEffectManager_->Initialize(context_->graphicsDevice->GetDevice());
+
+	// 達磨落としタワーの初期化
+	auto darumaTowerObj = std::make_unique<GameObject>(context_, "DarumaTowerManager");
+	darumaTowerObj->GetTransform().translate = Vector3(0.0f, 0.0f, 0.0f);
+	auto* towerComp = darumaTowerObj->AddComponent<DarumaTowerComponent>();
+	towerComp->Initialize();
+	gameObjects_.push_back(std::move(darumaTowerObj));
 }
 
 void PlayScene::Update(CameraData* cameraData) {

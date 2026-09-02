@@ -46,6 +46,7 @@
     <ClCompile Include="Engine\Graphics\light\RectLight.cpp" />
     <ClCompile Include="Engine\Audio\AudioManager.cpp" />
     <ClCompile Include="application\entity\player\PlayerComponent.cpp" />
+    <ClCompile Include="Application\Entity\Daruma\DarumaTowerComponent.cpp" />
     <ClCompile Include="application\scene\DebugScene.cpp" />
     <ClCompile Include="application\scene\TestScene.cpp" />
     <ClCompile Include="Engine\Framework\Object\3d\SkyboxComponent.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="Engine\Core\SRV\SRVManager.h" />
     <ClInclude Include="application\entity\Entity.h" />
     <ClInclude Include="application\entity\player\PlayerComponent.h" />
+    <ClInclude Include="Application\Entity\Daruma\DarumaTowerComponent.h" />
     <ClInclude Include="application\entity\boss\Boss.h" />
     <ClInclude Include="Engine\Render\PSO\ShaderManager.h" />
     <ClInclude Include="Engine\Framework\Object\3d\BaseObject3d.h" />
