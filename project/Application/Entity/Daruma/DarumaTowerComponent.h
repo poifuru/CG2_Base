@@ -42,7 +42,7 @@ private:
 	float knockOutDuration_ = 0.2f; // 弾き出しアニメーションの時間（秒）
 	float fallSpeed_ = 12.0f;        // 落下速度
 	int initialBlockCount_ = 5;
-	Vector3 blockScale_{ 2.0f, 1.0f, 2.0f };
+	Vector3 blockScale_{ 1.0f, 1.0f, 1.0f };
 	float blockHeight_ = 2.0f;     // ブロック自体の高さ
 	float blockSpacing_ = 0.05f;   // ブロック同士の隙間・間隔
 };
