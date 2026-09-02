@@ -117,6 +117,8 @@
     <ClCompile Include="Engine\Graphics\PostEffect\Dissolve.cpp" />
     <ClCompile Include="Engine\Graphics\PostEffect\RadialBlur.cpp" />
     <ClCompile Include="Engine\Graphics\PostEffect\RandomNoise.cpp" />
+    <ClCompile Include="Engine\Editor\BlockEditor\BlockEditor.cpp" />
+    <ClCompile Include="Engine\Editor\BlockEditor\BlockData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application\scene\BaseScene.h" />
@@ -264,6 +266,8 @@
     <ClInclude Include="Engine\Graphics\PostEffect\RadialBlur.h" />
     <ClInclude Include="Engine\Graphics\PostEffect\RandomNoise.h" />
     <ClInclude Include="Engine\Graphics\PostEffect\PostEffectType.h" />
+    <ClInclude Include="Engine\Editor\BlockEditor\BlockEditor.h" />
+    <ClInclude Include="Engine\Editor\BlockEditor\BlockData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Render\PSO\RootSignatureManager.h" />

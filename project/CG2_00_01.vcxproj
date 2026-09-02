@@ -189,6 +189,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Application\Collider\ColliderComponent.cpp" />
     <ClCompile Include="Application\Entity\Enemy\BirdEnemyComponent.cpp" />
     <ClCompile Include="Application\Entity\Enemy\EnemyManagerComponent.cpp" />
+    <ClCompile Include="Engine\Editor\BlockEditor\BlockData.cpp" />
+    <ClCompile Include="Engine\Editor\BlockEditor\BlockEditor.cpp" />
     <ClCompile Include="Engine\Graphics\PostEffect\Dissolve.cpp" />
     <ClCompile Include="Engine\Common\Utility\ColorUtils.cpp" />
     <ClCompile Include="Engine\Core\LowLevel\GraphicsCommand\CommandList.cpp" />
@@ -346,6 +348,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Application\Collider\ColliderComponent.h" />
     <ClInclude Include="Application\Entity\Enemy\BirdEnemyComponent.h" />
     <ClInclude Include="Application\Entity\Enemy\EnemyManagerComponent.h" />
+    <ClInclude Include="Engine\Editor\BlockEditor\BlockData.h" />
+    <ClInclude Include="Engine\Editor\BlockEditor\BlockEditor.h" />
     <ClInclude Include="Engine\Graphics\PostEffect\Dissolve.h" />
     <ClInclude Include="Engine\Common\Utility\ColorUtils.h" />
     <ClInclude Include="Engine\Framework\ComputePipeline\ComputePipeline.h" />
